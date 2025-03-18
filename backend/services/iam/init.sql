@@ -118,6 +118,26 @@ CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE subscription_plans (
+    plan_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50) UNIQUE NOT NULL CHECK (name IN ('Basic', 'Pro', 'Premium')),
+    monthly_price DECIMAL(10,2) NOT NULL CHECK (monthly_price >= 0),
+    max_products INTEGER NOT NULL,
+    commission_percent DECIMAL(4,2) NOT NULL,
+    features JSONB, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TABLE user_subscriptions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    plan_id UUID NOT NULL REFERENCES subscription_plans(plan_id) ON DELETE RESTRICT,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE
+);
 
 -- Add Indexes to Optimize Queries
 CREATE INDEX idx_users_email ON users(email);
