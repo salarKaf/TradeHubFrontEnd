@@ -1,0 +1,31 @@
+name: IAM Service CI/CD
+
+on:
+  push:
+    branches:
+      - backend  # این اکشن فقط زمانی اجرا می‌شود که تغییرات به شاخه backend ارسال شود.
+  pull_request:
+    branches:
+      - backend  # این اکشن برای PR‌هایی که به شاخه backend ارسال می‌شود اجرا می‌شود.
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # برای اجرای روی آخرین نسخه سیستم عامل Ubuntu
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # بررسی کد از مخزن
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # نسخه پایتون مورد استفاده
+
+      - name: Install dependencies for IAM
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/services/iam/requirements.txt  # نصب وابستگی‌ها از فایل requirements.txt مربوط به سرویس iam
+
+      - name: Run IAM tests
+        run: |
+          pytest backend/services/iam/tests/units  # اجرای تست‌ها در پوشه iam/tests
