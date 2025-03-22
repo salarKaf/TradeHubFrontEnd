@@ -21,3 +21,4 @@ sqlalchemy-utils
 gunicorn
 typing
 httpx[http2]
+pytest==6.2.4
