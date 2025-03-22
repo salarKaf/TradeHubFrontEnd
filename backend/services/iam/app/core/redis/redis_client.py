@@ -1,7 +1,7 @@
 from redis import Redis
 from loguru import logger
 
-from  core.configs.config import get_settings
+from  app.core.configs.config import get_settings
 
 config = get_settings()
 

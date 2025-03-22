@@ -2,7 +2,7 @@ from typing import Annotated
 from loguru import logger
 from fastapi import Depends, HTTPException, status
 
-from domain.schemas.user_schema import (
+from app.domain.schemas.user_schema import (
     UserCreateSchema,
     UserResponseSchema,
     VerifyOTPSchema,
@@ -10,10 +10,10 @@ from domain.schemas.user_schema import (
     ResendOTPResponseSchema,
     ResendOTPSchema
 )
-from services.auth_services.auth_service import AuthService
-from services.auth_services.otp_service import OTPService
-from services.base_service import BaseService
-from services.user_service import UserService
+from app.services.auth_services.auth_service import AuthService
+from app.services.auth_services.otp_service import OTPService
+from app.services.base_service import BaseService
+from app.services.user_service import UserService
 
 #TODO check pass strength
 class RegisterService(BaseService):
@@ -117,7 +117,7 @@ class RegisterService(BaseService):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid OTP❌"
             )
-            
+
         user = await self.user_service.get_user_by_email(verify_user_schema.email)
         await self.user_service.update_verified_status(user.user_id, {"can_reset_password": True})
 

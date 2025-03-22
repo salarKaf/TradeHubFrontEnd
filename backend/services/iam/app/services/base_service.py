@@ -1,4 +1,4 @@
-from  core.configs.config import get_settings, Settings
+from app.core.configs.config import get_settings, Settings
 
 
 class BaseService:

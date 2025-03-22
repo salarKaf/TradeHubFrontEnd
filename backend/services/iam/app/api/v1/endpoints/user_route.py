@@ -3,8 +3,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from loguru import logger
 
-from domain.models.user_model import User
-from domain.schemas.user_schema import (
+from  app.domain.models.user_model import User
+from  app.domain.schemas.user_schema import (
     UserCreateSchema,
     UserResponseSchema,
     VerifyOTPSchema,
@@ -16,11 +16,11 @@ from domain.schemas.user_schema import (
     UpdateUserInfoSchema,
     ForgetPasswordSchema
         )
-from domain.schemas.token_schema import TokenSchema, TokenDataSchema
-from services.auth_services.auth_service import AuthService
-from services.register_service import RegisterService
-from services.user_service import UserService
-from services.auth_services.auth_service import get_current_user
+from  app.domain.schemas.token_schema import TokenSchema, TokenDataSchema
+from  app.services.auth_services.auth_service import AuthService
+from  app.services.register_service import RegisterService
+from  app.services.user_service import UserService
+from  app.services.auth_services.auth_service import get_current_user
 user_router = APIRouter()
 
 #TODO add check username password email

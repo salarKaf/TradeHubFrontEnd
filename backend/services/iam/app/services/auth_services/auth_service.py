@@ -4,12 +4,12 @@ from loguru import logger
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from  domain.models.user_model import User
-from  services.auth_services.hash_service import HashService
-from  services.base_service import BaseService
-from  services.user_service import UserService
-from domain.schemas.token_schema import TokenDataSchema, TokenSchema
-from domain.schemas.user_schema import UserLoginSchema
+from  app.domain.models.user_model import User
+from  app.services.auth_services.hash_service import HashService
+from  app.services.base_service import BaseService
+from  app.services.user_service import UserService
+from app.domain.schemas.token_schema import TokenDataSchema, TokenSchema
+from app.domain.schemas.user_schema import UserLoginSchema
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/users/login")
 

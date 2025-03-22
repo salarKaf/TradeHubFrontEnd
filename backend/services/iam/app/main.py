@@ -11,9 +11,9 @@ import smtplib
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
-from api.v1.endpoints.user_route import user_router
-app = FastAPI()
+from app.api.v1.endpoints.user_route import user_router
 
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
