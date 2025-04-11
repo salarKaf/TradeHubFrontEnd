@@ -3,25 +3,29 @@ from typing import Annotated
 from loguru import logger
 import jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 from  app.domain.models.user_model import User
+from  app.domain.models.buyer_model import Buyer
 from  app.services.auth_services.hash_service import HashService
 from  app.services.base_service import BaseService
 from  app.services.user_service import UserService
+from  app.services.buyer_service import BuyerService
 from app.domain.schemas.token_schema import TokenDataSchema, TokenSchema
 from app.domain.schemas.user_schema import UserLoginSchema
+from app.domain.schemas.buyer_schema import BuyerLoginSchema
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/users/login")
-
-
+http_bearer = HTTPBearer() 
+        
 class AuthService(BaseService):
     def __init__(
         self,
         hash_service: Annotated[HashService, Depends()],
         user_service: Annotated[UserService, Depends()],
+        buyer_service: Annotated[BuyerService, Depends()],
     ) -> None:
         super().__init__()
         self.user_service = user_service
+        self.buyer_service = buyer_service
         self.hash_service = hash_service
 
     async def authenticate_user(self, user: UserLoginSchema) -> TokenSchema:
@@ -51,10 +55,41 @@ class AuthService(BaseService):
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        access_token = self.create_access_token(data={"sub": str(existing_user.user_id)})
+        access_token = self.create_access_token(data={"sub": str(existing_user.user_id), "role": "user"})
 
         logger.info(f"User with email {user.email} authenticated successfully")
         return TokenSchema(access_token=access_token, token_type="bearer")
+
+
+    async def authenticate_buyer(self, buyer: BuyerLoginSchema) -> TokenSchema:
+        existing_buyer = await self.buyer_service.get_buyer_by_email(buyer.email)
+        logger.info(f"Authenticating buyer with email: {buyer.email}")
+
+        if not existing_buyer:
+            logger.error(f"Buyer with email {buyer.email} does not exist")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer does not exist"
+            )
+
+        if not existing_buyer.is_verified:
+            logger.error(f"Buyer with email {buyer.email} is not verified")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer is not verified"
+            )
+
+        if not self.hash_service.verify_password(buyer.password, existing_buyer.password_hash):
+            logger.error(f"Invalid password for buyer with email {buyer.email}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        access_token = self.create_access_token(data={"sub": str(existing_buyer.buyer_id), "role": "buyer"})
+
+        logger.info(f"Buyer with email {buyer.email} authenticated successfully")
+        return TokenSchema(access_token=access_token, token_type="bearer")
+    
 
     def create_access_token(self, data: dict) -> str:
         logger.info("Creating access token")
@@ -70,29 +105,78 @@ class AuthService(BaseService):
 
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
     user_service: Annotated[UserService, Depends()],
+    token: HTTPAuthorizationCredentials = Depends(http_bearer), 
+
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    logger.info(f"Validating token {token}")
+    
+    logger.info(f"Validating token for user {token}")
+    
     try:
+
         payload = jwt.decode(
-            token,
+            token.credentials,
             user_service.config.JWT_SECRET_KEY,
             algorithms=[user_service.config.JWT_ALGORITHM],
         )
         user_id: str = payload.get("sub")
-        user = await user_service.get_user_by_id(user_id)
-        if user_id is None:
-            logger.error("Could not validate credentials")
+        role: str = payload.get("role") 
+
+        if role != "user":
             raise credentials_exception
+
+        user = await user_service.get_user_by_id(user_id)
+        if not user:
+            logger.error("User not found")
+            raise credentials_exception
+
     except jwt.PyJWTError:
         logger.error("Error decoding token")
         raise credentials_exception
 
     logger.info(f"User with id {user_id} validated successfully")
     return user
+
+
+async def get_current_buyer(
+    buyer_service: Annotated[BuyerService, Depends()],
+    token: HTTPAuthorizationCredentials = Depends(http_bearer),  
+
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    logger.info(f"Validating token for user {token}")
+    
+    try:
+        payload = jwt.decode(
+            token.credentials,
+            buyer_service.config.JWT_SECRET_KEY,
+            algorithms=[buyer_service.config.JWT_ALGORITHM],
+        )
+        buyer_id: str = payload.get("sub")
+        role: str = payload.get("role")  
+
+        if role != "buyer":
+            raise credentials_exception
+
+        buyer = await buyer_service.get_buyer_by_id(buyer_id)
+        if not buyer:
+            logger.error("buyer not found")
+            raise credentials_exception
+
+    except jwt.PyJWTError:
+        logger.error("Error decoding token")
+        raise credentials_exception
+
+    logger.info(f"buyer with id {buyer_id} validated successfully")
+    return buyer
+
