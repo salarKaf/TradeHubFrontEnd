@@ -11,7 +11,7 @@ CREATE TABLE users (
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    can_reset_password = Column(Boolean, default=False)
+    can_reset_password BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -49,6 +49,7 @@ CREATE TABLE websites (
     total_sales BIGINT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE TABLE store_owners ( 
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
@@ -75,7 +76,6 @@ CREATE TABLE items (
     discount_price DECIMAL(10,2) CHECK (discount_price >= 0),
     discount_active BOOLEAN DEFAULT FALSE,
     discount_expires_at TIMESTAMP,
-    is_physical BOOLEAN NOT NULL,
     content_type VARCHAR(50) CHECK (content_type IN ('video', 'pdf', 'zip', 'external_link')) DEFAULT 'external_link',
     delivery_url VARCHAR(255),
     delivery_expires_at TIMESTAMP,
@@ -93,8 +93,6 @@ CREATE TABLE orders (
     buyer_id UUID NOT NULL REFERENCES buyers(buyer_id) ON DELETE CASCADE,
     status VARCHAR(20) CHECK (status IN ('Pending', 'Paid', 'Canceled')) NOT NULL DEFAULT 'Pending',
     total_price DECIMAL(10,2) CHECK (total_price >= 0) NOT NULL,
-    tracking_number VARCHAR(255),
-    shipping_status VARCHAR(20) CHECK (shipping_status IN ('Pending', 'Shipped', 'Delivered')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -112,7 +110,8 @@ CREATE TABLE orders_archive (
 
 CREATE TABLE reviews (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_id UUID NOT NULL REFERENCES orders(order_id) ON DELETE CASCADE,
+    item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
+    buyer_id UUID REFERENCES buyers(buyer_id) ON DELETE SET NULL,
     rating INTEGER CHECK (rating >= 1 AND rating <= 5),
     comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
