@@ -20,16 +20,16 @@ class User(Base):
     can_reset_password = Column(Boolean, default=False, nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
 
-class StoreOwner(Base):
-    __tablename__ = "store_owners"
+class WebsiteOwner(Base):
+    __tablename__ = "website_owners"
 
     id = Column(UUID, primary_key=True, default=uuid4)
     website_id = Column(UUID, ForeignKey("websites.website_id"), nullable=False)
     user_id = Column(UUID, ForeignKey("users.user_id"), nullable=False)
     joined_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
-    website = relationship("Website", backref="store_owners")
-    user = relationship("User", backref="store_owners")
+    website = relationship("Website", backref="website_owners")
+    user = relationship("User", backref="website_owners")
 
 class Category(Base):
     __tablename__ = "categories"
@@ -39,6 +39,17 @@ class Category(Base):
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
 
     websites = relationship("Website", back_populates="category")
+
+class WebsiteCategory(Base):
+    __tablename__ = "website_categories"
+
+    id = Column(UUID, primary_key=True, default=uuid4)
+    website_id = Column(UUID(as_uuid=True), ForeignKey("websites.website_id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(255), nullable=False)
+    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
+
+    website = relationship("Website", back_populates="website_categories")    
+
 
 class Website(Base):
     __tablename__ = "websites"
@@ -58,5 +69,7 @@ class Website(Base):
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
     category = relationship("Category", back_populates="websites")
+    website_categories = relationship("WebsiteCategory", back_populates="website")
 
-    
+
+
