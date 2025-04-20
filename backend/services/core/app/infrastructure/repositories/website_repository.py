@@ -32,3 +32,14 @@ class WebsiteRepository:
         self.db.refresh(website_category)
         logger.info(f"✅ website category '{website_category.name}' created with id: {website_category.id}")
         return website_category    
+
+
+    def get_website_by_id(self, website_id: UUID) -> Website:
+        website = self.db.query(Website).filter(Website.website_id == website_id).first()
+
+        if website is None:
+            logger.warning(f"⚠️ No website found with id: {website_id}")
+        else:
+            logger.info(f"✅ Website found with id: {website_id}")
+
+        return website   
