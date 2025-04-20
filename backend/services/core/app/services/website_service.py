@@ -1,6 +1,6 @@
 from app.infrastructure.repositories.website_repository import WebsiteRepository
 from app.domain.models.website_model import Website, WebsiteCategory
-from app.domain.schemas.website_schema import WebsiteCreateSchema, WebsiteCategoryCreateSchema
+from app.domain.schemas.website_schema import WebsiteCreateSchema, WebsiteCategoryCreateSchema, WebsiteResponseSchema
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from app.services.base_service import BaseService
@@ -50,29 +50,17 @@ class WebsiteService(BaseService):
             logger.error(f"Error creating website category: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error creating website category: {str(e)}")
 
-    async def get_website_by_id(self, website_id: UUID) -> WebsiteResponseSchema:
+    async def get_website_by_id(self, website_id: UUID) -> Website:
         logger.info(f"Starting to fetch website with ID: {website_id}")
 
         try:
             website = self.website_repository.get_website_by_id(website_id)
 
-            if website is None:
+            if not website  :
                 logger.warning(f"⚠️ No website found with id: {website_id}")
                 raise HTTPException(status_code=404, detail="Website not found")
 
-            return WebsiteResponseSchema(
-                business_name=website.business_name,
-                category_id=website.category_id,
-                welcome_text=website.welcome_text,
-                qa_page=website.qa_page,
-                guide_page=website.guide_page,
-                social_links=website.social_links,
-                website_url=website.website_url,
-                custom_domain=website.custom_domain,
-                logo_url=website.logo_url,
-                banner_image=website.banner_image,
-                message="Website fetched successfully ✅"
-            )
+            return website
 
         except Exception as e:
             logger.error(f"Error occurred while fetching website with ID {website_id}: {str(e)}")

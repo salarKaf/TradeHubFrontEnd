@@ -10,11 +10,11 @@ from typing import Annotated
 class WebsiteMainService(BaseService):
     def __init__(
         self,
-        website_repository: Annotated[WebsiteRepository, Depends()],
+        # website_repository: Annotated[WebsiteRepository, Depends()],
         website_service: Annotated[WebsiteService, Depends()],
     ) -> None:
         super().__init__()
-        self.website_repository = website_repository
+        # self.website_repository = website_repository
         self.website_service = website_service
 
     async def create_website(self, user_id: UUID, website_data: WebsiteCreateSchema) -> WebsiteResponseSchema:
@@ -24,6 +24,7 @@ class WebsiteMainService(BaseService):
             created_website = await self.website_service.create_website(user_id, website_data)
             
             return WebsiteResponseSchema(
+                id = created_website.website_id,
                 business_name=created_website.business_name,
                 category_id=created_website.category_id,
                 welcome_text=created_website.welcome_text,
@@ -64,14 +65,16 @@ class WebsiteMainService(BaseService):
         logger.info(f"Starting to fetch website with ID: {website_id}")
 
         try:
-            website = self.website_repository.get_website_by_id(website_id)
+            # Fetch the website using the repository
+            website = await self.website_service.get_website_by_id(website_id)
 
-            if website is None:
-                logger.warning(f"⚠️ No website found with id: {website_id}")
-                raise HTTPException(status_code=404, detail="Website not found")
+            # if website is None:
+            #     logger.warning(f"⚠️ No website found with id: {website_id}")
+            #     raise HTTPException(status_code=404, detail="Website not found")
+
 
             return WebsiteResponseSchema(
-                id=website.website_id,
+                id = website.website_id,
                 business_name=website.business_name,
                 category_id=website.category_id,
                 welcome_text=website.welcome_text,
@@ -82,10 +85,9 @@ class WebsiteMainService(BaseService):
                 custom_domain=website.custom_domain,
                 logo_url=website.logo_url,
                 banner_image=website.banner_image,
-                created_at=website.created_at,
-                message="Website fetched successfully ✅"
+                message="Website fetched successfully ✅"   
             )
 
         except Exception as e:
             logger.error(f"Error occurred while fetching website with ID {website_id}: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error fetching website: {str(e)}")        
+            raise HTTPException(status_code=500, detail=f"Error fetching website: {str(e)}")
