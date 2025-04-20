@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.services.webiste_main_service import WebsiteMainService
+from app.services.website_main_service import WebsiteMainService
 from app.domain.schemas.website_schema import (WebsiteCreateSchema, WebsiteResponseSchema, WebsiteCategoryCreateSchema, WebsiteCategoryResponseSchema)
 from app.services.auth_services.auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
 from typing import Annotated
+from uuid import UUID
 
 website_router = APIRouter()
 
@@ -27,3 +28,16 @@ async def create_website_category(
     logger.info(f"Creating a new website category with data: {website_category_data.dict()}")
     created_category = await website_service.create_website_category(website_category_data)
     return created_category
+
+
+@website_router.get("/get_website/{website_id}", response_model=WebsiteResponseSchema, status_code=status.HTTP_200_OK)
+async def get_website(
+    website_id: UUID,  # Website ID passed in the URL path
+    website_service: Annotated[WebsiteMainService, Depends()]  # Website service to fetch the website
+):
+    logger.info(f"Requesting website details with website_id: {website_id}.")
+    
+    return await website_service.get_website_by_id(website_id)
+# @website_router.get("/get_website/{website_id}", response_model=WebsiteResponseSchema)
+# async def get_website(website_id: UUID, website_service: WebsiteMainService):
+#     return await website_service.get_website_by_id(website_id)
