@@ -62,17 +62,17 @@ joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 6. Store Categories
-CREATE TABLE store_categories (
+CREATE TABLE website_categories (
 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
 name VARCHAR(255) NOT NULL,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 7. Store Subcategories
-CREATE TABLE store_subcategories (
+-- 7. website Subcategories
+CREATE TABLE website_subcategories (
 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-parent_category_id UUID NOT NULL REFERENCES store_categories(id) ON DELETE CASCADE,
+parent_category_id UUID NOT NULL REFERENCES website_categories(id) ON DELETE CASCADE,
 name VARCHAR(255) NOT NULL,
 description TEXT,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -82,8 +82,8 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 CREATE TABLE items (
 item_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
-category_id UUID NOT NULL REFERENCES store_categories(id) ON DELETE CASCADE,
-subcategory_id UUID REFERENCES store_subcategories(id) ON DELETE SET NULL,
+category_id UUID NOT NULL REFERENCES website_categories(id) ON DELETE CASCADE,
+subcategory_id UUID REFERENCES website_subcategories(id) ON DELETE SET NULL,
 name VARCHAR(255) NOT NULL,
 description TEXT,
 price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
@@ -181,5 +181,5 @@ CREATE INDEX idx_buyers_email ON buyers(email);
 CREATE INDEX idx_websites_owner_id ON websites(category_id);
 CREATE INDEX idx_orders_website_id ON orders(website_id);
 CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
-CREATE INDEX idx_store_owners_website_id ON store_owners(website_id);
-CREATE INDEX idx_store_owners_user_id ON store_owners(user_id);
+CREATE INDEX idx_website_owners_website_id ON website_owners(website_id);
+CREATE INDEX idx_website_owners_user_id ON website_owners(user_id);
