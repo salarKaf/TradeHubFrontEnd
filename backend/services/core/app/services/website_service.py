@@ -18,16 +18,15 @@ class WebsiteService(BaseService):
 
     async def create_website(self, user_id: UUID, website_data: WebsiteCreateSchema) -> Website:
         
-        created_website = self.website_repository.create_website(website = Website(
+        created_website = self.website_repository.create_website(website=Website(
             business_name=website_data.business_name,
             category_id=website_data.category_id,
             welcome_text=website_data.welcome_text,
             qa_page=website_data.qa_page,
             guide_page=website_data.guide_page,
             social_links=website_data.social_links,
-            
-        )
-    )
+            faqs=website_data.faqs   
+        ))
         logger.info(f"Website created successfully with ID: {created_website.website_id}")
 
         website_owner = self.website_repository.create_website_owner(user_id, created_website.website_id)
