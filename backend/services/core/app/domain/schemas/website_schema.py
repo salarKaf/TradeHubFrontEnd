@@ -9,7 +9,6 @@ class FAQSchema(BaseModel):
     answer: str
 
 
-# SOCIAL LINKS Schema
 class SocialLinksSchema(BaseModel):
     telegram: Optional[HttpUrl]
     instagram: Optional[HttpUrl]
@@ -18,13 +17,12 @@ class WebsiteCreateSchema(BaseModel):
     business_name: str
     category_id: Optional[UUID] = None
     welcome_text: Optional[str] = None
-    qa_page: Optional[str] = None
     guide_page: Optional[str] = None
-    social_links: Optional[Dict[str, HttpUrl]] = None
-    faqs: Optional[List[FAQSchema]] = []
+    social_links: Optional[ SocialLinksSchema] = None
+    faqs: Optional[List[FAQSchema]]  
 
     class Config:
-        from_attributes = True  # orm_mode for Pydantic v2
+        from_attributes = True   
 
 class WebsiteUpdateSchema(BaseModel):
     business_name: Optional[str] = None
@@ -34,9 +32,8 @@ class WebsiteUpdateSchema(BaseModel):
     logo_url: Optional[str] = None
     banner_image: Optional[str] = None
     welcome_text: Optional[str] = None
-    qa_page: Optional[str] = None
     guide_page: Optional[str] = None
-    social_links: Optional[Dict[str, HttpUrl]] = None
+    social_links: Optional[SocialLinksSchema] = None
     faqs: Optional[List[FAQSchema]] = None
 
     class Config:
@@ -47,9 +44,8 @@ class WebsiteResponseSchema(BaseModel):
     business_name: str
     category_id: Optional[UUID] = None
     welcome_text: Optional[str] = None
-    qa_page: Optional[str] = None
     guide_page: Optional[str] = None
-    social_links: Optional[Dict[str, HttpUrl]] = None
+    social_links: Optional[SocialLinksSchema] = None
     faqs: Optional[List[FAQSchema]] = None
     website_url: Optional[str] = None
     custom_domain: Optional[str] = None
