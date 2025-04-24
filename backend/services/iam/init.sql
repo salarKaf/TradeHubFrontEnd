@@ -25,18 +25,12 @@ phone_number VARCHAR(20),
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Categories Table
-CREATE TABLE categories (
-category_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-name VARCHAR(100) UNIQUE NOT NULL,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+
 
 -- 4. Websites Table
 CREATE TABLE websites (
 website_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 business_name VARCHAR(255) NOT NULL,
-category_id UUID REFERENCES categories(category_id) ON DELETE SET NULL,
 website_url VARCHAR(255) UNIQUE NOT NULL,
 custom_domain VARCHAR(255) UNIQUE,
 logo_url VARCHAR(255),
