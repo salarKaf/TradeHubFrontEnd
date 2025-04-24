@@ -54,7 +54,7 @@ class WebsiteCategory(Base):
 class Website(Base):
     __tablename__ = "websites"
 
-    website_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    website_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     business_name = Column(String(255), nullable=False)
     category_id = Column(UUID(as_uuid=True), ForeignKey("categories.category_id", ondelete="SET NULL"), nullable=True)
     website_url = Column(String(255), unique=True)
@@ -66,7 +66,7 @@ class Website(Base):
     guide_page = Column(Text, nullable=True)
     social_links = Column(JSONB, nullable=True)
     total_sales = Column(BigInteger, default=0)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
     category = relationship("Category", back_populates="websites")
     website_categories = relationship("WebsiteCategory", back_populates="website", cascade="all, delete-orphan")
