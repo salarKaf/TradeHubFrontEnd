@@ -31,15 +31,6 @@ class WebsiteOwner(Base):
     website = relationship("Website", backref="website_owners")
     user = relationship("User", backref="website_owners")
 
-class Category(Base):
-    __tablename__ = "categories"
-
-    category_id = Column(UUID, primary_key=True, default= uuid4)
-    name = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
-
-    websites = relationship("Website", back_populates="category")
-
 class WebsiteCategory(Base):
     __tablename__ = "website_categories"
 
@@ -48,7 +39,9 @@ class WebsiteCategory(Base):
     name = Column(String(255), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
-    website = relationship("Website", back_populates="website_categories")    
+    website = relationship("Website", back_populates="website_categories")   
+    subcategories = relationship("WebsiteSubcategory", back_populates="parent_category", cascade="all, delete-orphan")
+ 
 
 
 class Website(Base):
@@ -56,7 +49,6 @@ class Website(Base):
 
     website_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     business_name = Column(String(255), nullable=False)
-    category_id = Column(UUID(as_uuid=True), ForeignKey("categories.category_id", ondelete="SET NULL"), nullable=True)
     website_url = Column(String(255), unique=True)
     custom_domain = Column(String(255), unique=True)
     logo_url = Column(String(255), nullable=True)
@@ -68,7 +60,6 @@ class Website(Base):
     total_sales = Column(BigInteger, default=0)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
-    category = relationship("Category", back_populates="websites")
     website_categories = relationship("WebsiteCategory", back_populates="website", cascade="all, delete-orphan")
 
 
