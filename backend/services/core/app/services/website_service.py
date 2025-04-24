@@ -6,6 +6,7 @@ from fastapi import HTTPException, Depends
 from app.services.base_service import BaseService
 from typing import Annotated
 from loguru import logger
+from fastapi.encoders import jsonable_encoder
 
 class WebsiteService(BaseService):
     def __init__(
@@ -22,10 +23,10 @@ class WebsiteService(BaseService):
             business_name=website_data.business_name,
             category_id=website_data.category_id,
             welcome_text=website_data.welcome_text,
-            qa_page=website_data.qa_page,
             guide_page=website_data.guide_page,
-            social_links=website_data.social_links,
-            faqs=website_data.faqs   
+            social_links=jsonable_encoder(website_data.social_links),  # ✅ اینجا
+            faqs=jsonable_encoder(website_data.faqs),  # ✅ اینجا هم
+
         ))
         logger.info(f"Website created successfully with ID: {created_website.website_id}")
 

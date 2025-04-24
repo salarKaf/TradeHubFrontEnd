@@ -6,6 +6,7 @@ from fastapi import HTTPException, Depends
 from loguru import logger
 from app.services.base_service import BaseService
 from typing import Annotated
+from fastapi.encoders import jsonable_encoder
 
 class WebsiteMainService(BaseService):
     def __init__(
@@ -24,19 +25,18 @@ class WebsiteMainService(BaseService):
             created_website = await self.website_service.create_website(user_id, website_data)
             
             return WebsiteResponseSchema(
-                id=website.website_id,
-                business_name=website.business_name,
-                category_id=website.category_id,
-                welcome_text=website.welcome_text,
-                qa_page=website.qa_page,
-                guide_page=website.guide_page,
-                social_links=website.social_links,
-                faqs=website.faqs,
-                website_url=website.website_url,
-                custom_domain=website.custom_domain,
-                logo_url=website.logo_url,
-                banner_image=website.banner_image,
-                created_at=website.created_at,
+                id=created_website.website_id,
+                business_name=created_website.business_name,
+                category_id=created_website.category_id,
+                welcome_text=created_website.welcome_text,
+                guide_page=created_website.guide_page,
+                social_links=jsonable_encoder(created_website.social_links),  # ✅ اینجا
+                faqs=jsonable_encoder(created_website.faqs),  # ✅ اینجا هم
+                website_url=created_website.website_url,
+                custom_domain=created_website.custom_domain,
+                logo_url=created_website.logo_url,
+                banner_image=created_website.banner_image,
+                created_at=created_website.created_at,
                 message="Website fetched successfully ✅"
             )
 
