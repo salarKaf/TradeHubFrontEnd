@@ -63,3 +63,13 @@ class Website(Base):
     website_categories = relationship("WebsiteCategory", back_populates="website", cascade="all, delete-orphan")
 
 
+class WebsiteSubcategory(Base):
+    __tablename__ = "website_subcategories"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    parent_category_id = Column(UUID(as_uuid=True), ForeignKey("website_categories.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
+
+    parent_category = relationship("WebsiteCategory", back_populates="subcategories")
