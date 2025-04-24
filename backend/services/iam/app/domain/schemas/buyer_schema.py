@@ -58,7 +58,6 @@ class UpdateBuyerInfoSchema(BaseModel):
     name: Optional[str]
     email: Optional[str]
     phone_number: Optional[str]
-    address: Optional[str]
 
 
 class ResetPasswordSchema(BaseModel):
