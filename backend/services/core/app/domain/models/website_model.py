@@ -62,9 +62,9 @@ class Website(Base):
     logo_url = Column(String(255), nullable=True)
     banner_image = Column(String(255), nullable=True)
     welcome_text = Column(Text, nullable=True)
-    qa_page = Column(Text, nullable=True)
     guide_page = Column(Text, nullable=True)
     social_links = Column(JSONB, nullable=True)
+    faqs = Column(JSONB, nullable=True)
     total_sales = Column(BigInteger, default=0)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
