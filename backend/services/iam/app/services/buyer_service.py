@@ -26,7 +26,7 @@ class BuyerService(BaseService):
             Buyer(
                 name=buyer_body.name,
                 email=buyer_body.email,
-                password_hash=self.hash_service.hash_password(buyer_body.password),  # Hash the password
+                password_hash=self.hash_service.hash_password(buyer_body.password), 
             )
         )
 
@@ -49,16 +49,25 @@ class BuyerService(BaseService):
             if update_fields['password'] != update_fields['confirm_password']:
                 logger.info(f"❌ Password confirmation does not match")
                 raise HTTPException(status_code=400, detail='Password confirmation does not match')
-        update_fields['password_hash'] = self.hash_service.hash_password(update_fields['password'])
+
+        if 'email' in update_fields:
+            existing = self.buyer_repository.get_buyer_by_email(update_fields['email'])
+            if existing and existing.buyer_id != buyer_id:
+                raise HTTPException(status_code=400, detail="Email already in use")    
+
+        #TODO add check double phone number          
+
+
+        update_fields['password'] = self.hash_service.hash_password(update_fields['password'])
         update_fields.pop('confirm_password')
         
-        # Clean out empty values to avoid overwriting with empty fields
         update_fields = {key: value for key, value in update_fields.items() if value != ""}  
 
         return self.buyer_repository.update_buyer(buyer_id, update_fields)
 
     async def update_can_reset_password_status(self, buyer_id: uuid.UUID, update_fields: Dict) -> Buyer: 
         logger.info(f"🔃 Updating buyer with id {buyer_id}")
+        
         return self.buyer_repository.update_buyer(buyer_id, update_fields)
 
     async def change_buyer_password(self, email: str, update_fields: Dict) -> Buyer:
@@ -68,7 +77,7 @@ class BuyerService(BaseService):
             logger.info(f"❌ Password confirmation does not match")
             raise HTTPException(status_code=400, detail='Password confirmation does not match')
         
-        update_fields['password_hash'] = self.hash_service.hash_password(update_fields['password'])
+        update_fields['password'] = self.hash_service.hash_password(update_fields['password'])
         update_fields.pop('confirm_password')
 
         buyer = self.buyer_repository.get_buyer_by_email(email)
