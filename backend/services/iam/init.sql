@@ -22,7 +22,6 @@ name VARCHAR(255) NOT NULL,
 email VARCHAR(255) UNIQUE NOT NULL,
 password_hash TEXT NOT NULL,
 phone_number VARCHAR(20),
-address TEXT,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -53,15 +52,15 @@ total_sales BIGINT DEFAULT 0,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Store Owners
-CREATE TABLE store_owners (
+-- 5. website Owners
+CREATE TABLE website_owners (
 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
 user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
 joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Store Categories
+-- 6. website Categories
 CREATE TABLE website_categories (
 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
