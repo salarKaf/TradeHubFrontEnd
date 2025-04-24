@@ -1,9 +1,18 @@
-from pydantic import BaseModel 
+from pydantic import BaseModel, HttpUrl, Field
 from uuid import UUID
 from typing import Optional, Dict, List
-from pydantic.networks import HttpUrl
 from datetime import datetime
 
+
+class FAQSchema(BaseModel):
+    question: str
+    answer: str
+
+
+# SOCIAL LINKS Schema
+class SocialLinksSchema(BaseModel):
+    telegram: Optional[HttpUrl]
+    instagram: Optional[HttpUrl]
 
 class WebsiteCreateSchema(BaseModel):
     business_name: str
@@ -11,29 +20,12 @@ class WebsiteCreateSchema(BaseModel):
     welcome_text: Optional[str] = None
     qa_page: Optional[str] = None
     guide_page: Optional[str] = None
-    social_links: Optional[List[str]] = []
+    social_links: Optional[Dict[str, HttpUrl]] = None
+    faqs: Optional[List[FAQSchema]] = []
+
     class Config:
-        orm_mode = True
+        from_attributes = True  # orm_mode for Pydantic v2
 
-class WebsiteBase(WebsiteCreateSchema):
-    website_url: str
-    custom_domain: Optional[str] = None
-    logo_url: Optional[str] = None
-    banner_image: Optional[str] = None
-
-
-class WebsiteResponseSchema(BaseModel):
-    business_name: str
-    category_id: Optional[UUID] = None
-    welcome_text: Optional[str] = None
-    qa_page: Optional[str] = None
-    guide_page: Optional[str] = None
-    social_links: Optional[List[str]] = []
-    website_url: Optional[str] = None
-    custom_domain: Optional[str] = None
-    logo_url: Optional[str] = None
-    banner_image: Optional[str] = None
-    message: str
 class WebsiteUpdateSchema(BaseModel):
     business_name: Optional[str] = None
     category_id: Optional[UUID] = None
@@ -45,10 +37,29 @@ class WebsiteUpdateSchema(BaseModel):
     qa_page: Optional[str] = None
     guide_page: Optional[str] = None
     social_links: Optional[Dict[str, HttpUrl]] = None
+    faqs: Optional[List[FAQSchema]] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+class WebsiteResponseSchema(BaseModel):
+    id: Optional[UUID] = None
+    business_name: str
+    category_id: Optional[UUID] = None
+    welcome_text: Optional[str] = None
+    qa_page: Optional[str] = None
+    guide_page: Optional[str] = None
+    social_links: Optional[Dict[str, HttpUrl]] = None
+    faqs: Optional[List[FAQSchema]] = None
+    website_url: Optional[str] = None
+    custom_domain: Optional[str] = None
+    logo_url: Optional[str] = None
+    banner_image: Optional[str] = None
+    created_at: Optional[datetime] = None
+    message: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 
 class WebsiteCategoryCreateSchema(BaseModel):
@@ -62,4 +73,4 @@ class WebsiteCategoryResponseSchema(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
