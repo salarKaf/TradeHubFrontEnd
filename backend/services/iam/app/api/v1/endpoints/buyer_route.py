@@ -24,7 +24,6 @@ from app.services.auth_services.auth_service import get_current_buyer
 
 buyer_router = APIRouter()
 
-#TODO add check username, password, email
 @buyer_router.post(
     "/Register",
     response_model=BuyerResponseSchema,
@@ -78,8 +77,8 @@ async def update_profile(
         buyer_data: UpdateBuyerInfoSchema,
         buyer_service: Annotated[BuyerService, Depends()]
 ):
-    logger.info(f'🔃 Changing buyer info for buyer {current_user.user_id}')
-    return await buyer_service.update_buyer(current_user.user_id, dict(buyer_data))   
+    logger.info(f'🔃 Changing buyer info for buyer {current_user.buyer_id}')
+    return await buyer_service.update_buyer(current_user.buyer_id, dict(buyer_data))   
 
 
 @buyer_router.get("/Me", response_model=BuyerInfoSchema, status_code=status.HTTP_200_OK)

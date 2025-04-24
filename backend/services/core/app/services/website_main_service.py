@@ -27,11 +27,10 @@ class WebsiteMainService(BaseService):
             return WebsiteResponseSchema(
                 id=created_website.website_id,
                 business_name=created_website.business_name,
-                category_id=created_website.category_id,
                 welcome_text=created_website.welcome_text,
                 guide_page=created_website.guide_page,
-                social_links=jsonable_encoder(created_website.social_links),  # ✅ اینجا
-                faqs=jsonable_encoder(created_website.faqs),  # ✅ اینجا هم
+                social_links=jsonable_encoder(created_website.social_links), 
+                faqs=jsonable_encoder(created_website.faqs),  
                 website_url=created_website.website_url,
                 custom_domain=created_website.custom_domain,
                 logo_url=created_website.logo_url,
@@ -75,9 +74,9 @@ class WebsiteMainService(BaseService):
                 business_name=website.business_name,
                 category_id=website.category_id,
                 welcome_text=website.welcome_text,
-                qa_page=website.qa_page,
                 guide_page=website.guide_page,
-                social_links=website.social_links,
+                social_links=jsonable_encoder(website.social_links), 
+                faqs=jsonable_encoder(website.faqs),  
                 website_url=website.website_url,
                 custom_domain=website.custom_domain,
                 logo_url=website.logo_url,

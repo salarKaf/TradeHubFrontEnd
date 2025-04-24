@@ -11,8 +11,8 @@ import smtplib
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
-from api.v1.endpoints.user_route import core_user_router
-from api.v1.endpoints.follow_route import core_follow_router
+from app.api.v1.endpoints.websites_routes import website_router
+
 
 app = FastAPI()
 
@@ -26,6 +26,7 @@ app.add_middleware(
 )
 
 logging.info("Core Service Started")
+app.include_router(website_router, prefix="/api/v1/websites", tags=["websites"])
 
 
 @app.get("/")

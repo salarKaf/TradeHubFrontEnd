@@ -32,12 +32,11 @@ async def create_website_category(
 
 @website_router.get("/get_website/{website_id}", response_model=WebsiteResponseSchema, status_code=status.HTTP_200_OK)
 async def get_website(
-    website_id: UUID,  # Website ID passed in the URL path
-    website_service: Annotated[WebsiteMainService, Depends()]  # Website service to fetch the website
+    website_id: UUID,   
+    website_service: Annotated[WebsiteMainService, Depends()]
 ):
     logger.info(f"Requesting website details with website_id: {website_id}.")
     
     return await website_service.get_website_by_id(website_id)
-# @website_router.get("/get_website/{website_id}", response_model=WebsiteResponseSchema)
-# async def get_website(website_id: UUID, website_service: WebsiteMainService):
-#     return await website_service.get_website_by_id(website_id)
+
+

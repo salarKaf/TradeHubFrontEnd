@@ -1,5 +1,4 @@
 import pytest
-import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.core.redis.redis_client import redis_client 

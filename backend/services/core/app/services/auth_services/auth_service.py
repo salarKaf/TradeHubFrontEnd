@@ -3,7 +3,7 @@ from typing import Annotated
 from loguru import logger
 import jwt
 from fastapi import Depends, HTTPException, status
-from  app.domain.models.user_model import User
+from  app.domain.models.website_model import User
 from  app.domain.models.buyer_model import Buyer
 from  app.services.auth_services.hash_service import HashService
 from  app.services.base_service import BaseService

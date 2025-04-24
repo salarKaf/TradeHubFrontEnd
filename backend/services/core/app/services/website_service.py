@@ -24,8 +24,8 @@ class WebsiteService(BaseService):
             category_id=website_data.category_id,
             welcome_text=website_data.welcome_text,
             guide_page=website_data.guide_page,
-            social_links=jsonable_encoder(website_data.social_links),  # ✅ اینجا
-            faqs=jsonable_encoder(website_data.faqs),  # ✅ اینجا هم
+            social_links=jsonable_encoder(website_data.social_links),  
+            faqs=jsonable_encoder(website_data.faqs), 
 
         ))
         logger.info(f"Website created successfully with ID: {created_website.website_id}")

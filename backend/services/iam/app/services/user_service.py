@@ -26,7 +26,7 @@ class UserService(BaseService):
                 first_name=user_body.first_name,
                 last_name=user_body.last_name,
                 email=user_body.email,
-                password=self.hash_service.hash_password(user_body.password),  # Fix
+                password=self.hash_service.hash_password(user_body.password), 
             )
         )
 

@@ -18,7 +18,7 @@ from  app.domain.schemas.user_schema import (
         )
 from  app.domain.schemas.token_schema import TokenSchema, TokenDataSchema
 from  app.services.auth_services.auth_service import AuthService
-from  app.services.register_service import RegisterService
+from  app.services.user_register_service import RegisterService
 from  app.services.user_service import UserService
 from  app.services.auth_services.auth_service import get_current_user
 user_router = APIRouter()

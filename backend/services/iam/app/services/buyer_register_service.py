@@ -30,7 +30,6 @@ class RegisterService(BaseService):
         self.auth_service = auth_service
 
     async def register_buyer(self, buyer: BuyerCreateSchema) -> BuyerResponseSchema:
-        # Check if the email already exists
         existing_email = await self.buyer_service.get_buyer_by_email(buyer.email)
 
         if existing_email:
@@ -42,10 +41,8 @@ class RegisterService(BaseService):
         if buyer.password != buyer.confirm_password:
             raise HTTPException(status_code=400, detail='Password confirmation does not match')
 
-        # Create new buyer
         new_buyer = await self.buyer_service.create_buyer(buyer)
 
-        # Send OTP to new buyer
         otp = self.otp_service.send_otp(new_buyer.email)
 
         logger.info(f"Buyer with email: {buyer.email} created successfully")
@@ -58,7 +55,6 @@ class RegisterService(BaseService):
     async def verify_buyer(
         self, verify_buyer_schema: VerifyOTPSchema
     ) -> VerifyOTPResponseSchema:
-        # Verify OTP
         if not self.otp_service.verify_otp(
             verify_buyer_schema.email, verify_buyer_schema.otp
         ):
@@ -67,7 +63,6 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid OTP❌"
             )
 
-        # Get buyer and update their verified status
         buyer = await self.buyer_service.get_buyer_by_email(verify_buyer_schema.email)
         await self.buyer_service.update_verified_status(buyer.buyer_id, {"is_verified": True})
 
@@ -79,7 +74,6 @@ class RegisterService(BaseService):
     async def resend_otp(
         self, resend_otp_schema: ResendOTPSchema
     ) -> ResendOTPResponseSchema:
-        # Get existing buyer by email
         existing_buyer = await self.buyer_service.get_buyer_by_email(resend_otp_schema.email)
         
         if not existing_buyer:
@@ -88,21 +82,18 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer does not exist"
             )
 
-        # If buyer is already verified, no need to resend OTP
         if existing_buyer.is_verified:
             logger.error(f"Buyer with email {resend_otp_schema.email} already verified")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer already verified"
             )
 
-        # If OTP already exists, prevent sending another one
         if self.otp_service.check_exist(resend_otp_schema.email):
             logger.error(f"OTP for email {resend_otp_schema.email} already exists")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="OTP already exists"
             )
 
-        # Send new OTP
         otp = self.otp_service.send_otp(resend_otp_schema.email)
 
         logger.info(f"OTP resent to email {resend_otp_schema.email}")
@@ -115,7 +106,6 @@ class RegisterService(BaseService):
     async def verify_otp_forget_password(
         self, verify_buyer_schema: VerifyOTPSchema
     ) -> dict:
-        # Verify OTP for forget password flow
         if not self.otp_service.verify_otp(
             verify_buyer_schema.email, verify_buyer_schema.otp
         ):
@@ -124,7 +114,6 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid OTP❌"
             )
 
-        # Get buyer and update their reset password status
         buyer = await self.buyer_service.get_buyer_by_email(verify_buyer_schema.email)
         await self.buyer_service.update_verified_status(buyer.buyer_id, {"can_reset_password": True})
 
