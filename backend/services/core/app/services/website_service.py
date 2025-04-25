@@ -1,12 +1,13 @@
-from app.infrastructure.repositories.website_repository import WebsiteRepository
+from app.infrastructure.repositories.website_repository import WebsiteRepository, WebsiteSubcategory
 from app.domain.models.website_model import Website, WebsiteCategory
-from app.domain.schemas.website_schema import WebsiteCreateSchema, WebsiteCategoryCreateSchema, WebsiteResponseSchema
+from app.domain.schemas.website_schema import WebsiteCreateSchema, WebsiteCategoryCreateSchema, WebsiteResponseSchema, WebsiteSubcategoryCreateSchema
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from app.services.base_service import BaseService
 from typing import Annotated
 from loguru import logger
 from fastapi.encoders import jsonable_encoder
+from typing import List
 
 class WebsiteService(BaseService):
     def __init__(
@@ -50,6 +51,25 @@ class WebsiteService(BaseService):
             logger.error(f"Error creating website category: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error creating website category: {str(e)}")
 
+
+    async def get_website_categories_by_website_id(self, website_id: UUID) -> List[WebsiteCategory]:
+        logger.info(f"Fetching categories for website ID: {website_id}")
+
+        try:
+            categories = self.website_repository.get_website_categories_by_website_id(website_id)
+
+            if not categories:
+                raise HTTPException(status_code=404, detail="No categories found for this website")
+            
+            return categories
+
+        except HTTPException as http_exc:
+            raise http_exc
+
+        except Exception as e:
+            logger.error(f"Error fetching categories for website ID {website_id}: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error fetching categories: {str(e)}")        
+
     async def get_website_by_id(self, website_id: UUID) -> Website:
         logger.info(f"Starting to fetch website with ID: {website_id}")
 
@@ -62,6 +82,28 @@ class WebsiteService(BaseService):
 
             return website
 
+        except HTTPException as http_exc:
+            raise http_exc    
+
         except Exception as e:
             logger.error(f"Error occurred while fetching website with ID {website_id}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error fetching website: {str(e)}")        
+
+    async def create_website_subcategory(self, subcategory_data: WebsiteSubcategoryCreateSchema) -> WebsiteSubcategory:
+        logger.info(f"Starting to create website subcategory with data: {subcategory_data.dict()}")
+
+        try:
+            new_subcategory = self.website_repository.create_website_subcategory(
+                subcategory=WebsiteSubcategory(
+                    parent_category_id=subcategory_data.parent_category_id,
+                    name=subcategory_data.name
+                )
+            )
+            return new_subcategory
+
+        except Exception as e:
+            logger.error(f"Error creating website subcategory: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error creating website subcategory: {str(e)}")   
+
+
+
