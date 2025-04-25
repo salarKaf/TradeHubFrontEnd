@@ -1,10 +1,11 @@
-from app.domain.models.website_model import Website, WebsiteOwner, WebsiteCategory
+from app.domain.models.website_model import Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory
 from sqlalchemy.orm import Session
 from loguru import logger
 from uuid import UUID
 from app.core.postgres_db.database import get_db
 from typing import Annotated
 from fastapi import Depends
+from typing import List
 
 class WebsiteRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -43,3 +44,21 @@ class WebsiteRepository:
             logger.info(f"✅ Website found with id: {website_id}")
 
         return website   
+
+    def create_website_subcategory(self, subcategory: WebsiteSubcategory) -> WebsiteSubcategory:
+        self.db.add(subcategory)
+        self.db.commit()
+        self.db.refresh(subcategory)
+        logger.info(f"✅ Subcategory '{subcategory.name}' created with id: {subcategory.id}")
+        return subcategory    
+
+
+    def get_website_categories_by_website_id(self, website_id: UUID) -> List[WebsiteCategory]:
+        categories = self.db.query(WebsiteCategory).filter(WebsiteCategory.website_id == website_id).all()
+
+        if not categories:
+            logger.warning(f"⚠️ No categories found for website id: {website_id}")
+        else:
+            logger.info(f"✅ Found {len(categories)} categories for website id: {website_id}")
+
+        return categories    
