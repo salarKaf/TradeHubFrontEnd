@@ -17,12 +17,15 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 -- 2. Buyers Table (Customers)
 CREATE TABLE buyers (
-buyer_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-name VARCHAR(255) NOT NULL,
-email VARCHAR(255) UNIQUE NOT NULL,
-password_hash TEXT NOT NULL,
-phone_number VARCHAR(20),
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  buyer_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  password_hash TEXT NOT NULL,
+  phone_number VARCHAR(20),
+  address TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (website_id, email)  
 );
 
 
@@ -169,7 +172,7 @@ answered_at TIMESTAMP
 );
 
 -- ✅ Indexes
-CREATE INDEX idx_users_email ON users(email);
+CREATE UNIQUE INDEX idx_buyers_website_email ON buyers (website_id, email);
 CREATE INDEX idx_buyers_email ON buyers(email);
 CREATE INDEX idx_websites_owner_id ON websites(category_id);
 CREATE INDEX idx_orders_website_id ON orders(website_id);
