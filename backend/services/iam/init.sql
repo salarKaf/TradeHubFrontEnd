@@ -25,6 +25,7 @@ CREATE TABLE buyers (
   phone_number VARCHAR(20),
   address TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  can_reset_password BOOLEAN DEFAULT FALSE,
   UNIQUE (website_id, email)  
 );
 
