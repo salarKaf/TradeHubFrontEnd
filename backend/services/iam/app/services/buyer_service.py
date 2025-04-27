@@ -24,15 +24,16 @@ class BuyerService(BaseService):
         logger.info(f"⚒️ Creating buyer with email: {buyer_body.email}")
         return self.buyer_repository.create_buyer(
             Buyer(
+                website_id=buyer_body.website_id,
                 name=buyer_body.name,
                 email=buyer_body.email,
-                password_hash=self.hash_service.hash_password(buyer_body.password), 
+                password=self.hash_service.hash_password(buyer_body.password), 
             )
         )
 
-    async def get_buyer_by_email(self, email: str) -> Buyer:
+    async def get_buyer_by_email(self, website_id:uuid.UUID ,email: str) -> Buyer:
         logger.info(f"📥 Fetching buyer with email {email}")
-        return self.buyer_repository.get_buyer_by_email(email)
+        return self.buyer_repository.get_buyer_by_email(email, website_id)
 
     async def get_buyer_by_id(self, buyer_id: uuid.UUID) -> Buyer:  
         logger.info(f"📥 Fetching buyer with id {buyer_id}")
@@ -51,7 +52,7 @@ class BuyerService(BaseService):
                 raise HTTPException(status_code=400, detail='Password confirmation does not match')
 
         if 'email' in update_fields:
-            existing = self.buyer_repository.get_buyer_by_email(update_fields['email'])
+            existing = self.buyer_repository.get_buyer_by_email(update_fields['email'], update_fields['website_id'])
             if existing and existing.buyer_id != buyer_id:
                 raise HTTPException(status_code=400, detail="Email already in use")    
 
@@ -80,7 +81,7 @@ class BuyerService(BaseService):
         update_fields['password'] = self.hash_service.hash_password(update_fields['password'])
         update_fields.pop('confirm_password')
 
-        buyer = self.buyer_repository.get_buyer_by_email(email)
+        buyer = self.buyer_repository.get_buyer_by_email(email, update_fields['website_id'])
         if not buyer or not buyer.can_reset_password:
             raise HTTPException(status_code=400, detail='You need to verify the OTP first')
 

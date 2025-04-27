@@ -47,6 +47,7 @@ class RegisterService(BaseService):
 
         logger.info(f"Buyer with email: {buyer.email} created successfully")
         return BuyerResponseSchema(
+            website_id = new_buyer.website_id,
             name=new_buyer.name,
             email=new_buyer.email,
             message='Buyer Created Successfully, OTP Sent To The Email✅'
