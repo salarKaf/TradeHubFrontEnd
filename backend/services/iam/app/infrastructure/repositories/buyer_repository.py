@@ -18,9 +18,13 @@ class BuyerRepository:
         logger.info(f"✅ Buyer {buyer.buyer_id} created")
         return buyer
 
-    def get_buyer_by_email(self, email: str) -> Buyer:
-        logger.info(f"📥 Fetching buyer with email: {email}")
-        return self.db.query(Buyer).filter(Buyer.email == email).first()
+    def get_buyer_by_email(self, email: str, website_id: uuid.UUID) -> Buyer:
+        logger.info(f"📥 Fetching buyer with email: {email} for website: {website_id}")
+        return self.db.query(Buyer).filter(
+            Buyer.email == email,
+            Buyer.website_id == website_id
+        ).first()
+
 
     def get_buyer_by_phone_number(self, phone_number: str) -> Buyer:
         logger.info(f"📥 Fetching buyer with phone number: {phone_number}")
