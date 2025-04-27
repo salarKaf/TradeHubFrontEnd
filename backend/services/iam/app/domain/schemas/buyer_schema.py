@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 class BuyerBase(BaseModel):
+    website_id: UUID
     name: str
     email: str
 
@@ -30,12 +31,14 @@ class VerifyOTPResponseSchema(BaseModel):
 
 
 class BuyerLoginSchema(BaseModel):
+    website_id: UUID
     email: str
     password: str
 
 
 class BuyerInfoSchema(BaseModel):
     buyer_id: UUID
+    website_id: UUID
     name: str
     email: str
 
@@ -44,6 +47,7 @@ class BuyerInfoSchema(BaseModel):
 
 
 class ResendOTPSchema(BaseModel):
+    website_id: UUID
     email: str
 
 
@@ -53,6 +57,7 @@ class ResendOTPResponseSchema(BaseModel):
 
 
 class UpdateBuyerInfoSchema(BaseModel):
+    website_id: UUID
     password: Optional[str]
     confirm_password: Optional[str]
     name: Optional[str]
@@ -61,6 +66,7 @@ class UpdateBuyerInfoSchema(BaseModel):
 
 
 class ResetPasswordSchema(BaseModel):
+    website_id: UUID
     email: str
     otp: str
     new_password: str
@@ -68,6 +74,8 @@ class ResetPasswordSchema(BaseModel):
 
 
 class ForgetPasswordSchema(BaseModel):
+    website_id: UUID
+    website_id: UUID
     email: str
     password: str
     confirm_password: str
