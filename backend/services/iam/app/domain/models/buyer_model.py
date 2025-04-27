@@ -34,4 +34,5 @@ class Buyer(Base):
     password = Column(Text, nullable=False)
     phone_number = Column(String(20), nullable=True)
     is_verified = Column(Boolean, default=False, nullable=False)
+    can_reset_password = Column(Boolean, default=False, nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp(), nullable=False)
