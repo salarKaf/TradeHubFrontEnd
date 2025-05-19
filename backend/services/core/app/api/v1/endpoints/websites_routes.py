@@ -8,6 +8,7 @@ from loguru import logger
 from typing import Annotated, List
 from uuid import UUID
 
+
 website_router = APIRouter()
 
 @website_router.post("/create_website", response_model=WebsiteResponseSchema, status_code=status.HTTP_201_CREATED)
@@ -49,6 +50,20 @@ async def get_website_categories(
     logger.info(f"Requesting website categories for website id: {website_id}")
     categories = await website_service.get_website_categories_by_website_id(website_id)
     return categories
+
+
+@website_router.delete("/delete_website_category/{category_id}", status_code=status.HTTP_200_OK)
+async def delete_website_category(
+    category_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)], 
+    website_service: Annotated[WebsiteMainService, Depends()] 
+):
+    logger.info(f"Deleting website category with ID: {category_id}")
+    
+    await website_service.delete_website_category(category_id)
+    
+    return {"detail": "Category deleted successfully"}
+
 
 
 @website_router.post("/create_website_subcategory", response_model=WebsiteSubcategoryResponseSchema, status_code=status.HTTP_201_CREATED)
