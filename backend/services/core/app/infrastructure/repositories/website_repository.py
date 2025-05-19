@@ -12,7 +12,6 @@ class WebsiteRepository:
         self.db = db
         
     def create_website(self, website: Website) -> Website:
-
         self.db.add(website)
         self.db.commit()
         self.db.refresh(website)
@@ -62,3 +61,19 @@ class WebsiteRepository:
             logger.info(f"✅ Found {len(categories)} categories for website id: {website_id}")
 
         return categories    
+
+    def get_category_by_id(self, category_id: UUID) -> WebsiteCategory:
+        category = self.db.query(WebsiteCategory).filter(WebsiteCategory.id == category_id).first()
+        
+        if not category :
+            logger.warning(f"⚠️ No category found with id: {category_id}")
+        else:
+            logger.info(f"✅ category found with id: {category_id}")
+    
+        return category
+    def delete_category(self, category_id: UUID) -> None:
+        category = self.db.query(WebsiteCategory).filter(WebsiteCategory.id == category_id).first()
+        self.db.delete(category)
+        self.db.commit()
+        logger.info(f"Deleted category with ID {category_id} from database.")
+       
