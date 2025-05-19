@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, ForeignKey, BigInteger, TIMESTAMP, func, Boolean
+from sqlalchemy import Column, String, Text, ForeignKey, BigInteger, TIMESTAMP, func, Boolean, DECIMAL, Integer
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
@@ -69,7 +69,26 @@ class WebsiteSubcategory(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     parent_category_id = Column(UUID(as_uuid=True), ForeignKey("website_categories.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
     parent_category = relationship("WebsiteCategory", back_populates="subcategories")
+
+
+class Item(Base):
+    __tablename__ = 'items'
+
+    item_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    website_id = Column(UUID(as_uuid=True), ForeignKey('websites.website_id', ondelete='CASCADE'), nullable=False)
+    category_id = Column(UUID(as_uuid=True), ForeignKey('website_categories.id', ondelete='CASCADE'), nullable=False)
+    subcategory_id = Column(UUID(as_uuid=True), ForeignKey('website_subcategories.id', ondelete='SET NULL'), nullable=True)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    price = Column(DECIMAL(10, 2), nullable=False)
+    discount_price = Column(DECIMAL(10, 2), nullable=True)
+    discount_active = Column(Boolean, default=False)
+    discount_expires_at = Column(TIMESTAMP, nullable=True)
+    delivery_url = Column(String(255), nullable=False)
+    post_purchase_note = Column(Text, nullable=True)
+    stock = Column(Integer, nullable=True)
+    image_url = Column(String(255), nullable=True)
+    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)    
