@@ -9,7 +9,6 @@ from app.services.base_service import BaseService
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
 from typing import List
-
 class WebsiteMainService(BaseService):
     def __init__(
         self,
@@ -73,7 +72,6 @@ class WebsiteMainService(BaseService):
         return WebsiteResponseSchema(
             id = website.website_id,
             business_name=website.business_name,
-            category_id=website.category_id,
             welcome_text=website.welcome_text,
             guide_page=website.guide_page,
             social_links=jsonable_encoder(website.social_links), 
@@ -102,7 +100,14 @@ class WebsiteMainService(BaseService):
             for cat in categories
         ]
 
-        
+    async def delete_website_category(self, category_id: UUID) -> None:
+        logger.info(f"Starting to delete website category with ID: {category_id}")
+
+        await self.website_service.delete_category_by_id(category_id)
+
+        logger.info(f"Successfully deleted website category with ID: {category_id}")
+        return {"message": "Category deleted successfully"}
+
 
     async def create_website_subcategory(self, subcategory_data: WebsiteSubcategoryCreateSchema) -> WebsiteSubcategoryResponseSchema:
         logger.info(f"Starting to create website subcategory with data: {subcategory_data.dict()}")

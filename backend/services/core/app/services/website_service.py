@@ -70,6 +70,25 @@ class WebsiteService(BaseService):
             logger.error(f"Error fetching categories for website ID {website_id}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error fetching categories: {str(e)}")        
 
+    async def delete_category_by_id(self, category_id: UUID) -> None:
+        logger.info(f"Attempting to delete category with ID: {category_id}")
+        
+        try:
+            category = self.website_repository.get_category_by_id(category_id)
+            
+            if not category:
+                raise HTTPException(status_code=404, detail="Category not found")
+
+            self.website_repository.delete_category(category_id)
+            logger.info(f"Category with ID {category_id} successfully deleted.")
+
+        except HTTPException as http_exc:
+            raise http_exc
+
+        except Exception as e:
+            logger.error(f"Error deleting category with ID {category_id}: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error deleting category: {str(e)}")
+
     async def get_website_by_id(self, website_id: UUID) -> Website:
         logger.info(f"Starting to fetch website with ID: {website_id}")
 
