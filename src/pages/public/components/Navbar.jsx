@@ -66,11 +66,22 @@ export default function Navbar() {
       </svg>
 
       {/* نوبار */}
-      <div className="relative z-10 flex justify-between items-center px-8 py-6 text-white">
-        <div className="space-x-4">
-          <button className="bg-white text-[#1E212D] px-4 py-2 rounded-md">ورود</button>
-          <button className="bg-orange-400 text-white px-4 py-2 rounded-md">شروع کنید</button>
+      <div className="relative z-10 flex justify-between items-center px-8 py-6 text-[#FAF3E0]">
+        <div className="flex gap-4">
+          <Link
+            to="/login"
+            className="border border-white text-white bg-transparent px-5 py-2 rounded-2xl font-bold hover:bg-white hover:text-[#1E212D] transition-all">
+            ورود به حساب
+          </Link>
+          <Link
+            to="/signup"
+            className="bg-[#EABF9F] text-[#1E212D] px-5 py-2 rounded-2xl font-bold hover:bg-[#f3d6bb] transition-all"
+          >
+            شروع کنید
+          </Link>
+
         </div>
+
 
         <div className="flex space-x-8 rtl:space-x-reverse">
           {links.map(({ path, label }) => {
@@ -79,8 +90,8 @@ export default function Navbar() {
               <Link
                 key={path}
                 to={path}
-                className={`font-rubik font-semibold hover:text-orange-400 px-3 py-1 rounded transition-all
-                  ${isActive ? "border-2 border-orange-400" : ""}`}
+                className={`font-rubik font-semibold hover:text-[#EABF9F] px-3 py-1 rounded transition-all
+                  ${isActive ? "border-2 border-[#EABF9F]  rounded-md " : ""}`}
               >
                 {label}
               </Link>
