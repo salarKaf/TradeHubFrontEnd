@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from app.api.v1.endpoints.websites_routes import website_router
-
+from app.api.v1.endpoints.item_routes import item_router
 
 app = FastAPI()
 
@@ -27,6 +27,7 @@ app.add_middleware(
 
 logging.info("Core Service Started")
 app.include_router(website_router, prefix="/api/v1/websites", tags=["websites"])
+app.include_router(item_router, prefix="/api/v1/items", tags=["items"])
 
 
 @app.get("/")
