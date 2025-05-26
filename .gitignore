@@ -1,0 +1,48 @@
+# VS Code settings
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node.js dependencies
+node_modules/
+
+# Python virtual envs
+.env
+__pycache__/
+*.py[cod]
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Compiled stuff
+*.class
+*.o
+*.so
+*.exe
+*.out
+
+# IDE stuff
+.idea/
+*.iml
+
+# Others
+dist/
+build/
+coverage/
+.env.*
+*.swp
+*.bak
+.idea/
+*.pyc
+*.rdb
+
+
+../../../../../../.env/
+../../../../../../.idea/
+../../../../../../.vscode/
