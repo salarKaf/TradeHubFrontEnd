@@ -17,3 +17,12 @@ class ItemRepository:
       self.db.refresh(item)
       logger.info(f"✅ Item created with id: {item.item_id}")
       return item
+    
+    def get_item_by_id(self, item_id: UUID) -> Optional[Item]:
+        item = self.db.query(Item).filter(Item.item_id == item_id).first()
+        if item:
+            logger.info(f"Item found with id: {item_id}")
+        else:
+            logger.warning(f"No item found with id: {item_id}")
+        return item
+        
