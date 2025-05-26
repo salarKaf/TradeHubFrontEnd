@@ -43,3 +43,28 @@ class ItemMainService(BaseService):
         except Exception as e:
             logger.error(f"Error occurred while creating item: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error creating item: {str(e)}")             
+        
+
+        
+    async def get_item_by_id(self, item_id: UUID) -> ItemResponseSchema:
+        logger.info(f"Starting to fetch item with ID: {item_id}")
+
+        item = await self.item_service.get_item_by_id(item_id)
+
+        return ItemResponseSchema(
+            item_id=item.item_id,
+            website_id=item.website_id,
+            category_id=item.category_id,
+            subcategory_id=item.subcategory_id,
+            name=item.name,
+            description=item.description,
+            price=item.price,
+            discount_price=item.discount_price,
+            discount_active=item.discount_active,
+            discount_expires_at=item.discount_expires_at,
+            delivery_url=item.delivery_url,
+            post_purchase_note=item.post_purchase_note,
+            stock=item.stock,
+            image_url=item.image_url,
+            created_at=item.created_at,
+        )

@@ -33,5 +33,21 @@ class ItemService(BaseService):
 
       return created_item
     
+    async def get_item_by_id(self, item_id: UUID) -> Item:
+        logger.info(f"Fetching item with ID: {item_id}")
 
+        try:
+            item = self.item_repository.get_item_by_id(item_id)
+
+            if not item:
+                raise HTTPException(status_code=404, detail="Item not found")
+            
+            return item
+
+        # except HTTPException as http_exc:
+        #     raise http_exc
+
+        except Exception as e:
+            logger.error(f"Error fetching item with ID {item_id}: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error fetching item: {str(e)}")
 
