@@ -7,6 +7,8 @@ import SignupForm from "./pages/public/signUp";
 import LoginForm from "./pages/public/login"
 import Navbar from "./pages/public/components/Navbar";
 import CreateStore from "./pages/public/CreateStore";
+import ChooseSellerType from "./pages/public/ChooseSellerType";
+import RulesTrade from "./pages/public/rulesTrade";
 
 export default function App() {
   const location = useLocation();
@@ -26,6 +28,8 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/login"  element={<LoginForm></LoginForm>}/>
         <Route path="/storeForm" element={<CreateStore></CreateStore>}/>
+        <Route path="/choose-seller-types" element={<ChooseSellerType></ChooseSellerType>}/>
+        <Route path="/rules" element={<RulesTrade></RulesTrade>}></Route>
       </Routes>
     </>
   );

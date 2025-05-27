@@ -14,10 +14,10 @@ module.exports = {
       },
 
       animation: {
-        bubble1: "float1 14s ease-in-out infinite",
-        bubble2: "float2 11s ease-in-out infinite",
-        bubble3: "float3 18 ease-in-out infinite",
-        bubble4: "float4 16 ease-in-out infinite",
+        bubble1: "float1 7s ease-in-out infinite",
+        bubble2: "float2 6s ease-in-out infinite",
+        bubble3: "float3 8s ease-in-out infinite",
+        bubble4: "float4 10s ease-in-out infinite",
       },
 
       keyframes: {
