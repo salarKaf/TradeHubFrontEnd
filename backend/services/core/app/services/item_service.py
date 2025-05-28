@@ -97,3 +97,16 @@ class ItemService(BaseService):
         updated_item = self.item_repository.update_item(item)
         
         return updated_item    
+    
+
+    async def delete_item(self, item_id: UUID) -> bool:
+        logger.info(f"Deleting item with ID: {item_id}")
+
+        item = self.item_repository.get_item_by_id(item_id)
+        
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        self.item_repository.delete_item(item)
+        
+        return True

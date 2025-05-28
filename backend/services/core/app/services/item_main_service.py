@@ -1,6 +1,6 @@
 from app.infrastructure.repositories.item_repository import ItemRepository
 from app.services.item_service import ItemService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
@@ -72,6 +72,7 @@ class ItemMainService(BaseService):
 
 
     async def get_items_by_subcategory_id(self, subcategory_id: UUID) -> List[ItemResponseSchema]:
+        logger.info(f"Starting to fetch items with subcategory id: {subcategory_id}")
         items = await self.item_service.get_items_by_subcategory_id(subcategory_id)
 
         return [
@@ -97,6 +98,7 @@ class ItemMainService(BaseService):
     
 
     async def get_items_by_category_id(self, category_id: UUID) -> List[ItemResponseSchema]:
+        logger.info(f"Starting to fetch items with subcategory id: {category_id}")
         items = await self.item_service.get_items_by_category_id(category_id)
 
         return [
@@ -144,3 +146,11 @@ class ItemMainService(BaseService):
             image_url=updated_item.image_url,
             created_at=updated_item.created_at,
         )
+    
+
+    async def delete_item(self, item_id: UUID) -> MessageResponse:
+        logger.info(f"Deleting item with ID: {item_id}")
+
+        await self.item_service.delete_item(item_id)
+
+        return {"message": f"Item deleted successfully."}

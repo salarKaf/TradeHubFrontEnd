@@ -38,3 +38,9 @@ class ItemRepository:
         self.db.commit()
         self.db.refresh(item)
         return item
+    
+
+    def delete_item(self, item: Item) -> Item:
+        self.db.delete(item)
+        self.db.commit()
+        return item

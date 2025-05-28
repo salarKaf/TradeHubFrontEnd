@@ -38,3 +38,22 @@ class ItemResponseSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ItemUpdateSchema(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[Decimal] = None
+    discount_price: Optional[Decimal] = None
+    discount_active: Optional[bool] = None
+    discount_expires_at: Optional[datetime] = None
+    delivery_url: Optional[str] = None
+    post_purchase_note: Optional[str] = None
+    stock: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+
+class MessageResponse(BaseModel):
+    message: str        

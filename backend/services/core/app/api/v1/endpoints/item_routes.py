@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.item_main_service import ItemMainService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse
 from app.services.auth_services.auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
@@ -58,3 +58,11 @@ async def edit_item(
     return await item_service.edit_item(item_id, item_data)
 
 
+@item_router.delete("/delete_item/{item_id}", response_model=MessageResponse, status_code=status.HTTP_200_OK)
+async def delete_item(
+    item_id: UUID,
+    item_service: Annotated[ItemMainService, Depends()],
+):
+    logger.info(f"Requesting to delete item with ID: {item_id}")
+    
+    return await item_service.delete_item(item_id)
