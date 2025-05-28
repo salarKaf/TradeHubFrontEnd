@@ -77,22 +77,15 @@ class ItemService(BaseService):
         
     async def edit_item(self, item_id: UUID, item_data: ItemUpdateSchema) -> Item:
         logger.info(f"Updating item with ID: {item_id}")
-
-        # Get the item from the database
         item = self.item_repository.get_item_by_id(item_id)
         
         if not item:
             raise HTTPException(status_code=404, detail="Item not found")
 
-        item.name = item_data.name or item.name
-        item.description = item_data.description or item.description
-        item.price = item_data.price or item.price
-        item.discount_price = item_data.discount_price or item.discount_price
-        item.discount_active = item_data.discount_active or item.discount_active
-        item.discount_expires_at = item_data.discount_expires_at or item.discount_expires_at
-        item.delivery_url = item_data.delivery_url or item.delivery_url
-        item.post_purchase_note = item_data.post_purchase_note or item.post_purchase_note
-        item.stock = item_data.stock or item.stock
+        update_data = item_data.dict(exclude_unset=True)  
+    
+        for key, value in update_data.items():
+            setattr(item, key, value)
         
         updated_item = self.item_repository.update_item(item)
         
