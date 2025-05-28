@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 from uuid import UUID
 from app.core.postgres_db.database import get_db
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 from fastapi import Depends
 
 
@@ -25,4 +25,12 @@ class ItemRepository:
         else:
             logger.warning(f"No item found with id: {item_id}")
         return item
-        
+    
+    def get_items_by_category_id(self, category_id: UUID) -> List[Item]:
+     
+        return self.db.query(Item).filter(Item.category_id == category_id).all()
+    
+    
+    def get_items_by_subcategory_id(self, subcategory_id: UUID) -> List[Item]:
+     
+        return self.db.query(Item).filter(Item.subcategory_id == subcategory_id).all()
