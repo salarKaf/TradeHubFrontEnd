@@ -32,7 +32,7 @@ async def get_item_by_id(
 
 
 @item_router.get("/items/by_category/{category_id}", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
-async def get_items_by_subcategory(
+async def get_items_by_category(
     category_id: UUID,
     item_main_service: Annotated[ItemMainService, Depends()]
 ):
@@ -50,10 +50,11 @@ async def get_items_by_subcategory(
 @item_router.put("/edit_item/{item_id}", response_model=ItemResponseSchema, status_code=status.HTTP_200_OK)
 async def edit_item(
     item_id: UUID,
-    item_data: ItemUpdateSchema,  
+    item_data: ItemUpdateSchema,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
     item_service: Annotated[ItemMainService, Depends()],
 ):
-    logger.info(f"Requesting to edit item with ID: {item_id}")
+    logger.info(f"User with id: {current_user.user_id} is requesting to edit item with ID: {item_id}")
     
     return await item_service.edit_item(item_id, item_data)
 
@@ -61,14 +62,15 @@ async def edit_item(
 @item_router.delete("/delete_item/{item_id}", response_model=MessageResponse, status_code=status.HTTP_200_OK)
 async def delete_item(
     item_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
     item_service: Annotated[ItemMainService, Depends()],
 ):
-    logger.info(f"Requesting to delete item with ID: {item_id}")
+    logger.info(f"User with id: {current_user.user_id} is requesting to delete item with ID: {item_id}")
     
     return await item_service.delete_item(item_id)
 
 
 
 @item_router.get("/newest_items", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
-async def get_newest_items(website_id: UUID, item_main_service: ItemMainService = Depends()):
-    return await item_main_service.get_newest_items(website_id, limit=10)
+async def get_newest_items(website_id: UUID, limit:int, item_main_service: ItemMainService = Depends()):
+    return await item_main_service.get_newest_items(website_id, limit)
