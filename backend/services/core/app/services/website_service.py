@@ -101,8 +101,8 @@ class WebsiteService(BaseService):
 
             return website
 
-        except HTTPException as http_exc:
-            raise http_exc    
+        # except HTTPException as http_exc:
+        #     raise http_exc    
 
         except Exception as e:
             logger.error(f"Error occurred while fetching website with ID {website_id}: {str(e)}")
@@ -125,4 +125,21 @@ class WebsiteService(BaseService):
             raise HTTPException(status_code=500, detail=f"Error creating website subcategory: {str(e)}")   
 
 
+    # async def get_website_by_name(self, website_name: str) -> Website:
+    #     website = self.website_repository.get_website_by_name(website_name)
+        
+    #     if not website:
+    #         raise HTTPException(status_code=404, detail="Website not found")
+        
+    #     return website
 
+
+    async def get_subcategories_by_category_id(self, category_id: UUID) -> List[WebsiteSubcategory]:
+        logger.info(f"Fetching subcategories for category ID: {category_id}")
+        
+        subcategories = self.website_repository.get_subcategories_by_category_id(category_id)
+        
+        if not subcategories:
+            raise HTTPException(status_code=404, detail="No subcategories found for this category")
+        
+        return subcategories

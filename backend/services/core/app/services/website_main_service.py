@@ -9,6 +9,8 @@ from app.services.base_service import BaseService
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
 from typing import List
+
+
 class WebsiteMainService(BaseService):
     def __init__(
         self,
@@ -125,4 +127,40 @@ class WebsiteMainService(BaseService):
 
         except Exception as e:
             logger.error(f"Error occurred while creating website subcategory: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error creating website subcategory: {str(e)}")        
+            raise HTTPException(status_code=500, detail=f"Error creating website subcategory: {str(e)}")  
+
+
+    # async def get_website_by_name(self, website_name: str) -> WebsiteResponseSchema:
+    #     logger.info(f"Fetching website by name: {website_name}")
+
+    #     website = await self.website_service.get_website_by_name(website_name)
+
+    #     return WebsiteResponseSchema(
+    #         id=website.website_id,
+    #         business_name=website.business_name,
+    #         welcome_text=website.welcome_text,
+    #         guide_page=website.guide_page,
+    #         social_links=jsonable_encoder(website.social_links),
+    #         faqs=jsonable_encoder(website.faqs),
+    #         website_url=website.website_url,
+    #         custom_domain=website.custom_domain,
+    #         logo_url=website.logo_url,
+    #         banner_image=website.banner_image,
+    #         created_at=website.created_at,
+    #         message="Website fetched successfully ✅"
+    #     )
+
+
+    async def get_subcategories_by_category_id(self, category_id: UUID) -> List[WebsiteSubcategoryResponseSchema]:
+        logger.info(f"Fetching subcategories for category ID: {category_id}")
+        
+        subcategories = await self.website_service.get_subcategories_by_category_id(category_id)
+        
+        return [
+            WebsiteSubcategoryResponseSchema(
+                id=subcat.id,
+                parent_category_id=subcat.parent_category_id,
+                name=subcat.name,
+                created_at=subcat.created_at
+            ) for subcat in subcategories
+        ]
