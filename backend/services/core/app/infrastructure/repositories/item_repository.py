@@ -27,10 +27,14 @@ class ItemRepository:
         return item
     
     def get_items_by_category_id(self, category_id: UUID) -> List[Item]:
-     
         return self.db.query(Item).filter(Item.category_id == category_id).all()
     
     
     def get_items_by_subcategory_id(self, subcategory_id: UUID) -> List[Item]:
-     
         return self.db.query(Item).filter(Item.subcategory_id == subcategory_id).all()
+    
+
+    def update_item(self, item: Item) -> Item:
+        self.db.commit()
+        self.db.refresh(item)
+        return item
