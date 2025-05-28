@@ -44,3 +44,13 @@ class ItemRepository:
         self.db.delete(item)
         self.db.commit()
         return item
+    
+
+    def get_newest_items(self, website_id: UUID, limit: int) -> List[Item]:
+        return (
+            self.db.query(Item)
+            .filter(Item.website_id == website_id)
+            .order_by(Item.created_at.desc())
+            .limit(limit)
+            .all()
+        )

@@ -66,3 +66,9 @@ async def delete_item(
     logger.info(f"Requesting to delete item with ID: {item_id}")
     
     return await item_service.delete_item(item_id)
+
+
+
+@item_router.get("/newest_items", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
+async def get_newest_items(website_id: UUID, item_main_service: ItemMainService = Depends()):
+    return await item_main_service.get_newest_items(website_id, limit=10)

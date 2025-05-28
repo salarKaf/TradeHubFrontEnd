@@ -110,3 +110,10 @@ class ItemService(BaseService):
         self.item_repository.delete_item(item)
         
         return True
+    
+
+    async def get_newest_items(self, website_id: UUID, limit: int) -> List[Item]:
+        logger.info(f"Fetching the first {limit} newest items")
+
+        items = self.item_repository.get_newest_items(website_id, limit)
+        return items

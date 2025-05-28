@@ -154,3 +154,28 @@ class ItemMainService(BaseService):
         await self.item_service.delete_item(item_id)
 
         return {"message": f"Item deleted successfully."}
+    
+
+
+    async def get_newest_items(self, website_id: UUID, limit: int) -> List[ItemResponseSchema]:
+        items = await self.item_service.get_newest_items(website_id, limit)
+        return [
+        ItemResponseSchema(
+            item_id=item.item_id,
+            website_id=item.website_id,
+            category_id=item.category_id,
+            subcategory_id=item.subcategory_id,
+            name=item.name,
+            description=item.description,
+            price=item.price,
+            discount_price=item.discount_price,
+            discount_active=item.discount_active,
+            discount_expires_at=item.discount_expires_at,
+            delivery_url=item.delivery_url,
+            post_purchase_note=item.post_purchase_note,
+            stock=item.stock,
+            image_url=item.image_url,
+            created_at=item.created_at
+        )
+        for item in items
+    ]
