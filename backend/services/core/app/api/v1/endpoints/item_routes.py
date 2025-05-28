@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.item_main_service import ItemMainService
-from app.domain.schemas.item_schema import ItemCreateSchema,ItemResponseSchema 
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema
 from app.services.auth_services.auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
@@ -44,3 +44,17 @@ async def get_items_by_subcategory(
     item_main_service: Annotated[ItemMainService, Depends()]
 ):
     return await item_main_service.get_items_by_subcategory_id(subcategory_id)
+
+
+
+@item_router.put("/edit_item/{item_id}", response_model=ItemResponseSchema, status_code=status.HTTP_200_OK)
+async def edit_item(
+    item_id: UUID,
+    item_data: ItemUpdateSchema,  
+    item_service: Annotated[ItemMainService, Depends()],
+):
+    logger.info(f"Requesting to edit item with ID: {item_id}")
+    
+    return await item_service.edit_item(item_id, item_data)
+
+
