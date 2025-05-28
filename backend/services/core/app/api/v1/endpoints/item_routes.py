@@ -19,3 +19,28 @@ async def create_item(
 
     created_item = await item_service.create_item(item_data)
     return created_item
+
+
+@item_router.get("/items/{item_id}", response_model=ItemResponseSchema, status_code=status.HTTP_200_OK)
+async def get_item_by_id(
+    item_id: UUID,
+    item_main_service: Annotated[ItemMainService, Depends()]
+):
+    logger.info(f"Fetching item with ID: {item_id}")
+    item_response = await item_main_service.get_item_by_id(item_id)
+    return item_response
+
+
+@item_router.get("/items/by_category/{category_id}", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
+async def get_items_by_subcategory(
+    category_id: UUID,
+    item_main_service: Annotated[ItemMainService, Depends()]
+):
+    return await item_main_service.get_items_by_category_id(category_id)
+
+@item_router.get("/items/by_subcategory/{subcategory_id}", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
+async def get_items_by_subcategory(
+    subcategory_id: UUID,
+    item_main_service: Annotated[ItemMainService, Depends()]
+):
+    return await item_main_service.get_items_by_subcategory_id(subcategory_id)
