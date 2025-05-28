@@ -30,6 +30,15 @@ async def get_website(
     
     return await website_service.get_website_by_id(website_id)
 
+# @website_router.get("/get_website_by_name/{website_name}", response_model=WebsiteResponseSchema, status_code=status.HTTP_200_OK)
+# async def get_website_by_name(
+#     website_name: str,
+#     website_service: Annotated[WebsiteMainService, Depends()]
+# ):
+#     logger.info(f"Requesting website details with website_name: {website_name}.")
+    
+#     return await website_service.get_website_by_name(website_name)
+
 
 @website_router.post("/create_website_category", response_model=WebsiteCategoryResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_website_category(
@@ -75,3 +84,14 @@ async def create_website_subcategory(
     logger.info(f"User {current_user.user_id} is creating a website subcategory with data: {subcategory_data.dict()}")
     created_subcategory = await website_service.create_website_subcategory(subcategory_data)
     return created_subcategory
+
+
+
+@website_router.get("/get_subcategories_by_category_id/{category_id}", response_model=List[WebsiteSubcategoryResponseSchema], status_code=status.HTTP_200_OK)
+async def get_subcategories_by_category_id(
+    category_id: UUID,
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    logger.info(f"Requesting subcategories for category_id: {category_id}.")
+    
+    return await website_service.get_subcategories_by_category_id(category_id)
