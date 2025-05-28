@@ -1,4 +1,5 @@
-from app.domain.models.website_model import Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory
+from app.domain.models.website_model import (Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory
+                                             , Item)
 from sqlalchemy.orm import Session
 from loguru import logger
 from uuid import UUID
@@ -75,5 +76,11 @@ class WebsiteRepository:
         category = self.db.query(WebsiteCategory).filter(WebsiteCategory.id == category_id).first()
         self.db.delete(category)
         self.db.commit()
-        logger.info(f"Deleted category with ID {category_id} from database.")
+        logger.info(f"✅ Deleted category with ID {category_id} from database.")
        
+    # def get_website_by_name(self, website_name: str) -> Website:
+    #     website = self.db.query(Website).filter(Website.custom_domain == website_name).first()
+    #     return website
+    
+    def get_subcategories_by_category_id(self, category_id: UUID) -> List[WebsiteSubcategory]:
+        return self.db.query(WebsiteSubcategory).filter(WebsiteSubcategory.parent_category_id == category_id).all()
