@@ -1,6 +1,6 @@
 from app.infrastructure.repositories.item_repository import ItemRepository
 from app.services.item_service import ItemService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
@@ -122,3 +122,25 @@ class ItemMainService(BaseService):
 
 
 
+    async def edit_item(self, item_id: UUID, item_data: ItemUpdateSchema) -> ItemResponseSchema:
+        logger.info(f"Editing item with ID: {item_id}")
+
+        updated_item = await self.item_service.edit_item(item_id, item_data)
+
+        return ItemResponseSchema(
+            item_id=updated_item.item_id,
+            website_id=updated_item.website_id,
+            category_id=updated_item.category_id,
+            subcategory_id=updated_item.subcategory_id,
+            name=updated_item.name,
+            description=updated_item.description,
+            price=updated_item.price,
+            discount_price=updated_item.discount_price,
+            discount_active=updated_item.discount_active,
+            discount_expires_at=updated_item.discount_expires_at,
+            delivery_url=updated_item.delivery_url,
+            post_purchase_note=updated_item.post_purchase_note,
+            stock=updated_item.stock,
+            image_url=updated_item.image_url,
+            created_at=updated_item.created_at,
+        )
