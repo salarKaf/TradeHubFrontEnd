@@ -87,7 +87,6 @@ price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
 discount_price DECIMAL(10,2) CHECK (discount_price >= 0),
 discount_active BOOLEAN DEFAULT FALSE,
 discount_expires_at TIMESTAMP,
-content_type VARCHAR(50) CHECK (content_type IN ('video', 'pdf', 'zip', 'external_link')) DEFAULT 'external_link',
 delivery_url VARCHAR(255),
 delivery_expires_at TIMESTAMP,
 download_token TEXT,
@@ -141,24 +140,26 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 -- 13. Subscription Plans
 CREATE TABLE subscription_plans (
-plan_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-name VARCHAR(50) UNIQUE NOT NULL CHECK (name IN ('Basic', 'Pro', 'Premium')),
-monthly_price DECIMAL(10,2) NOT NULL CHECK (monthly_price >= 0),
-max_products INTEGER NOT NULL,
-commission_percent DECIMAL(4,2) NOT NULL,
-features JSONB,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  plan_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(50) UNIQUE NOT NULL,
+  item_limit INTEGER NOT NULL,
+  allow_discount BOOLEAN DEFAULT FALSE,
+  allow_cart_save BOOLEAN DEFAULT FALSE,
+  allow_file_upload BOOLEAN DEFAULT FALSE,
+  allow_analytics BOOLEAN DEFAULT FALSE
 );
 
--- 14. User Subscriptions
-CREATE TABLE user_subscriptions (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-plan_id UUID NOT NULL REFERENCES subscription_plans(plan_id) ON DELETE RESTRICT,
-started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-expires_at TIMESTAMP,
-is_active BOOLEAN DEFAULT TRUE
+
+-- 14. Website plans
+CREATE TABLE website_plans (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
+  plan_id UUID NOT NULL REFERENCES plans(id),
+  activated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP,
+  is_active BOOLEAN DEFAULT TRUE
 );
+
 
 -- 15. Product Questions
 CREATE TABLE item_questions (
