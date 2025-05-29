@@ -114,4 +114,6 @@ class WebsitePlan(Base):
     plan_id = Column(UUID(as_uuid=True), ForeignKey("subscription_plans.plan_id"), nullable=False)
     activated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
     expires_at = Column(TIMESTAMP, nullable=True)
-    is_active = Column(Boolean, default=True)    
+    is_active = Column(Boolean, default=True) 
+
+    plan = relationship("SubscriptionPlan", backref="website_plans")   
