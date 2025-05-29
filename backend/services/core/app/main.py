@@ -13,8 +13,20 @@ from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from app.api.v1.endpoints.websites_routes import website_router
 from app.api.v1.endpoints.item_routes import item_router
+from app.infrastructure.scheduler.scheduler import SchedulerService
+from contextlib import asynccontextmanager
 
 app = FastAPI()
+
+from app.core.postgres_db.database import get_db
+from app.infrastructure.repositories.plan_repository import PlanRepository
+
+@app.on_event("startup")
+async def start_scheduler():
+    db = next(get_db()) 
+    plan_repo = PlanRepository(db)
+    scheduler = SchedulerService(plan_repo)
+    scheduler.start()
 
 
 app.add_middleware(
