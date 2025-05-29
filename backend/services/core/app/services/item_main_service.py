@@ -17,12 +17,11 @@ class ItemMainService(BaseService):
 
 
     async def create_item(self, item_data: ItemCreateSchema) -> ItemResponseSchema:
-        logger.info(f"Starting to create item with data: {item_data.dict()}")
+        logger.info(f"Starting to create item... ")
 
-        try:
-            created_item = await self.item_service.create_item(item_data)
+        created_item = await self.item_service.create_item(item_data)
 
-            return ItemResponseSchema(
+        return ItemResponseSchema(
                 item_id=created_item.item_id,
                 website_id=created_item.website_id,
                 category_id=created_item.category_id,
@@ -38,11 +37,7 @@ class ItemMainService(BaseService):
                 stock=created_item.stock,
                 image_url=created_item.image_url,
                 created_at=created_item.created_at,
-            )
-
-        except Exception as e:
-            logger.error(f"Error occurred while creating item: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error creating item: {str(e)}")             
+            )    
         
 
         
