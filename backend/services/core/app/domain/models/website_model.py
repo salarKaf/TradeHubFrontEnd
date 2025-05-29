@@ -92,3 +92,26 @@ class Item(Base):
     stock = Column(Integer, nullable=True)
     image_url = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)    
+
+
+class SubscriptionPlan(Base):
+    __tablename__ = "subscription_plans"
+
+    plan_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    name = Column(String(50), unique=True, nullable=False)
+    item_limit = Column(Integer, nullable=False)
+    allow_discount = Column(Boolean, default=False)
+    allow_cart_save = Column(Boolean, default=False)
+    allow_file_upload = Column(Boolean, default=False)
+    allow_analytics = Column(Boolean, default=False)    
+
+
+class WebsitePlan(Base):
+    __tablename__ = "website_plans"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    website_id = Column(UUID(as_uuid=True), ForeignKey("websites.website_id", ondelete="CASCADE"), nullable=False)
+    plan_id = Column(UUID(as_uuid=True), ForeignKey("subscription_plans.plan_id"), nullable=False)
+    activated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
+    expires_at = Column(TIMESTAMP, nullable=True)
+    is_active = Column(Boolean, default=True)    
