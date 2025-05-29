@@ -54,3 +54,7 @@ class ItemRepository:
             .limit(limit)
             .all()
         )
+    
+
+    def count_items_by_website_id(self, website_id: UUID) -> int:
+        return self.db.query(Item).filter(Item.website_id == website_id).count()
