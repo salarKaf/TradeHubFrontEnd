@@ -1,9 +1,48 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 export default function LoginForm() {
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
+    });
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const navigate = useNavigate();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const params = new URLSearchParams();
+            params.append("username", formData.email);  // نام کاربری که معمولاً ایمیل هست
+            params.append("password", formData.password);
+
+            const response = await axios.post(
+                "http://10.14.18.74:8000/api/v1/users/login",
+                params,
+                {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                }
+            );
+
+            localStorage.setItem("token", response.data.access_token);
+            navigate("/storeForm");
+
+        } catch (error) {
+            alert(error.response?.data?.detail || "خطا در ورود");
+        }
+    };
+
+
+
+
 
     return (
         <>
@@ -77,12 +116,14 @@ export default function LoginForm() {
                     </div>
 
                     {/* فرم */}
-                    <form className="space-y-6 ">
+                    <form className="space-y-6 " onSubmit={handleSubmit}>
                         <div>
                             <div className="relative">
                                 <input
                                     type="email"
                                     placeholder="ایمیل"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] font-rubik font-medium
                                  text-[#1E212D] border border-[#EABF9F] placeholder:text-[#1E212D] placeholder:font-rubik
                                   placeholder:font-medium   transition-all duration-300 ease-in-out focus:scale-[1.03] focus:ring-2 focus:ring-[#1E212D]"
@@ -101,6 +142,8 @@ export default function LoginForm() {
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         placeholder="رمز عبور"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                         className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] font-rubik font-medium text-[#1E212D] border border-[#EABF9F]
                                      placeholder:text-[#1E212D] placeholder:font-rubik placeholder:font-medium
                                      transition-all duration-300 ease-in-out focus:scale-[1.03] focus:ring-2 focus:ring-[#1E212D]"

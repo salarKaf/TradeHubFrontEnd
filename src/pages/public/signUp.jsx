@@ -1,23 +1,50 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import axios from "axios";
 export default function SignupForm() {
+
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // جلو گیری از reload شدن صفحه
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+        // بررسی اینکه پسوردها یکی هستن
+        if (formData.password !== formData.confirmPassword) {
+            alert("رمز عبور و تکرار آن یکسان نیست.");
+            return;
+        }
 
-        // اعتبارسنجی ساده: در صورت نیاز می‌تونی این رو واقعی‌تر کنی
-        const isValid = true;
+        try {
+            // اینجا axios اطلاعات رو می‌فرسته
+            const response = await axios.post("http://10.14.18.74:8000/api/v1/users/Register", {
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                email: formData.email,
+                password: formData.password,
+                confirm_password: formData.confirmPassword
+            });
 
-        if (isValid) {
+
+            // اگر موفق بود
+            alert("ثبت‌نام موفقیت‌آمیز بود!");
             navigate("/storeForm");
-        } else {
-            alert("لطفاً اطلاعات را به درستی وارد کنید.");
+
+        } catch (error) {
+            // اگر خطایی از سمت سرور اومد
+            const message = error.response?.data?.message || "خطا در ثبت‌نام";
+            alert(message);
         }
     };
+
 
     return (
         <>
@@ -80,20 +107,39 @@ export default function SignupForm() {
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="flex gap-3 mt-10">
-                            <InputWithIcon placeholder="نام" icon="/TradePageimages/icons8-id-verified.png" />
-                            <InputWithIcon placeholder="نام خانوادگی" icon="/TradePageimages/icons8-id-verified.png" />
+                            <InputWithIcon
+                                placeholder="نام"
+                                icon="/TradePageimages/icons8-id-verified.png"
+                                value={formData.firstName}
+                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
+                            <InputWithIcon
+                                placeholder="نام خانوادگی"
+                                icon="/TradePageimages/icons8-id-verified.png"
+                                value={formData.lastName}
+                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
                         </div>
-                        <InputWithIcon placeholder="ایمیل" icon="/TradePageimages/icons8-email.png" type="email" />
+                        <InputWithIcon
+                            placeholder="ایمیل"
+                            icon="/TradePageimages/icons8-email.png"
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        />
+
                         <div className="flex gap-4">
                             <PasswordInput
                                 placeholder="رمز عبور"
                                 show={showConfirmPassword}
                                 toggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                                value={setFormData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             />
                             <PasswordInput
                                 placeholder="تکرار رمز عبور"
                                 show={showPassword}
                                 toggle={() => setShowPassword(!showPassword)}
+                                value={setFormData.confirmPassword}
+                                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                             />
                         </div>
 
@@ -118,12 +164,14 @@ export default function SignupForm() {
     );
 }
 
-function InputWithIcon({ placeholder, icon, type = "text" }) {
+function InputWithIcon({ placeholder, icon, type = "text", value, onChange }) {
     return (
         <div className="flex-1 relative">
             <input
                 type={type}
                 placeholder={placeholder}
+                value={value}
+                onChange={onChange}
                 className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] text-[#1E212D] font-rubik font-medium placeholder:text-[#1E212D]
                 placeholder:font-rubik placeholder:text-base transition-all duration-300 ease-in-out focus:scale-[1.03] 
                 focus:outline-none focus:ring-2 focus:ring-[#1E212D] border border-[#1E212D]"
@@ -133,12 +181,14 @@ function InputWithIcon({ placeholder, icon, type = "text" }) {
     );
 }
 
-function PasswordInput({ placeholder, show, toggle }) {
+function PasswordInput({ placeholder, show, toggle, value, onChange }) {
     return (
         <div className="flex-1 relative">
             <input
                 type={show ? "text" : "password"}
                 placeholder={placeholder}
+                value={value}
+                onChange={onChange}
                 className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] text-[#1E212D] font-rubik font-medium placeholder:text-[#1E212D]
                 placeholder:font-rubik placeholder:text-base transition-all duration-300 ease-in-out focus:scale-[1.03] 
                 focus:outline-none focus:ring-2 focus:ring-[#1E212D] border border-[#1E212D]"
