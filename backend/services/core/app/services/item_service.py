@@ -1,4 +1,5 @@
 from app.infrastructure.repositories.item_repository import ItemRepository
+from app.services.plan_service import PlanService
 from app.domain.models.website_model import Item
 from app.domain.schemas.item_schema import ItemResponseSchema, ItemCreateSchema,ItemUpdateSchema
 from uuid import UUID
@@ -11,11 +12,16 @@ class ItemService(BaseService):
     def __init__(
         self,
         item_repository: Annotated[ItemRepository, Depends()],
+        plan_service: Annotated[PlanService, Depends()],
     ) -> None:
         super().__init__()  
         self.item_repository = item_repository
+        self.plan_service =plan_service
 
     async def create_item(self, item_data: ItemCreateSchema) -> Item:
+      
+      await self.plan_service.check_item_limit(item_data.website_id)
+
       item = Item(
           website_id=item_data.website_id,
           category_id=item_data.category_id,
