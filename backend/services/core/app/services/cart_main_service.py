@@ -1,6 +1,6 @@
 from app.services.base_service import BaseService
 from app.services.cart_service import CartService
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 from fastapi import Depends
 from uuid import UUID
 from app.domain.schemas.cart_schema import CartItemResponseSchema
@@ -25,6 +25,7 @@ class CartMainService(BaseService):
 
 
     async def get_cart_items(self, buyer_id: UUID) -> List[CartItemResponseSchema]:
+        logger.info(f"Getting cart for buyer: {buyer_id}")
         items = await self.cart_service.get_cart_items(buyer_id)
         return [CartItemResponseSchema(
           id= item.id, 
@@ -34,3 +35,11 @@ class CartMainService(BaseService):
           added_at= item.added_at,
           expires_at= item.expires_at  
         ) for item in items]  
+
+    async def remove_one_from_cart(self, cart_item_id: UUID) -> dict:
+        updated_item = await self.cart_service.remove_one_from_cart(cart_item_id)
+        if updated_item is None:
+            return {"message": "Item removed from cart."}
+        else:
+            return {"message": "Item quantity decreased by one."}
+    

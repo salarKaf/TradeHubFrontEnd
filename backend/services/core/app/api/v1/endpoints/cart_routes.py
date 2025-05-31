@@ -15,7 +15,7 @@ async def add_item_to_cart(
     current_buyer: Annotated[TokenDataSchema, Depends(get_current_buyer)],
     cart_main_service: Annotated[CartMainService, Depends()]
 ):
-    logger.info(f"User {current_buyer.buyer_id} adding item {cart_data.item_id} to cart")
+    logger.info(f"Buyer {current_buyer.buyer_id} adding item {cart_data.item_id} to cart")
     return await cart_main_service.add_item(
         cart_data.website_id,
         current_buyer.buyer_id,
@@ -31,3 +31,19 @@ async def get_my_cart(
 ):
     logger.info(f"buyer {current_buyer.buyer_id} fetching their cart items")
     return await cart_main_service.get_cart_items(current_buyer.buyer_id)
+
+
+
+@cart_router.post(
+    "/remove_one_from_cart/{cart_item_id}",
+    status_code=status.HTTP_200_OK,
+)
+async def remove_one_from_cart(
+    cart_item_id: UUID,
+    current_buyer: Annotated[TokenDataSchema, Depends(get_current_buyer)],
+    cart_main_service: Annotated[CartMainService, Depends()],
+):
+    logger.info(f"Buyer {current_buyer.buyer_id} removing item {cart_item_id} to cart")
+    
+    message = await cart_main_service.remove_one_from_cart(cart_item_id)
+    return message
