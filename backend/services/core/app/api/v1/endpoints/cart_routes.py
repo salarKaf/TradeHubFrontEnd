@@ -22,3 +22,13 @@ async def add_item_to_cart(
         cart_data.item_id,
         cart_data.quantity
     )
+
+
+
+@cart_router.get("/my_cart", response_model=List[CartItemResponseSchema], status_code=status.HTTP_200_OK)
+async def get_my_cart(
+    current_buyer: Annotated[TokenDataSchema, Depends(get_current_buyer)],
+    cart_main_service: Annotated[CartMainService, Depends()]
+):
+    logger.info(f"buyer {current_buyer.buyer_id} fetching their cart items")
+    return await cart_main_service.get_cart_items(current_buyer.buyer_id)

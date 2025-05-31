@@ -23,3 +23,14 @@ class CartMainService(BaseService):
         expires_at= cart_item.expires_at
         )
 
+
+    async def get_cart_items(self, buyer_id: UUID) -> List[CartItemResponseSchema]:
+        items = await self.cart_service.get_cart_items(buyer_id)
+        return [CartItemResponseSchema(
+          id= item.id, 
+          website_id= item.website_id, 
+          item_id= item.item_id, 
+          quantity= item.quantity, 
+          added_at= item.added_at,
+          expires_at= item.expires_at  
+        ) for item in items]  

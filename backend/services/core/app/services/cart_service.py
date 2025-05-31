@@ -17,4 +17,5 @@ class CartService:
         cart_item = self.cart_repository.add_item(website_id, buyer_id, item_id, quantity)
         return cart_item
 
-
+    async def get_cart_items(self, buyer_id: UUID) -> List[CartItem]:
+        return self.cart_repository.get_cart_items_by_buyer(buyer_id)

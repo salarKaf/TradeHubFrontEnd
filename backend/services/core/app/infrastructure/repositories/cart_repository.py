@@ -6,7 +6,7 @@ from fastapi import Depends
 from uuid import UUID
 import datetime
 from loguru import logger
-
+from typing import List
 class CartRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
         self.db = db
@@ -44,3 +44,7 @@ class CartRepository:
         self.db.refresh(cart_item)
         logger.info(f"Added item {item_id} to cart for buyer {buyer_id}")
         return cart_item
+      
+
+    def get_cart_items_by_buyer(self, buyer_id: UUID) -> List[CartItem]:
+        return self.db.query(CartItem).filter(CartItem.buyer_id == buyer_id).all()   
