@@ -48,3 +48,10 @@ class CartRepository:
 
     def get_cart_items_by_buyer(self, buyer_id: UUID) -> List[CartItem]:
         return self.db.query(CartItem).filter(CartItem.buyer_id == buyer_id).all()   
+    
+
+    def delete_expired_items(self, current_time: datetime):
+      expired_items = self.db.query(CartItem).filter(CartItem.expires_at <= current_time).all()
+      for item in expired_items:
+          self.db.delete(item)
+      self.db.commit()
