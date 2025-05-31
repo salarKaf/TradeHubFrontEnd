@@ -33,6 +33,7 @@ class ItemResponseSchema(BaseModel):
     delivery_url: str = None
     post_purchase_note: Optional[str] = None
     stock: int
+    is_available: bool
     image_url: Optional[str] = None
     created_at: datetime
 
@@ -50,6 +51,7 @@ class ItemUpdateSchema(BaseModel):
     delivery_url: Optional[str] = None
     post_purchase_note: Optional[str] = None
     stock: Optional[int] = None
+    is_available: Optional[bool] = None
 
     class Config:
         from_attributes = True

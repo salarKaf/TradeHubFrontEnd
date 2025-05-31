@@ -18,6 +18,9 @@ class ItemMainService(BaseService):
 
     async def create_item(self, item_data: ItemCreateSchema) -> ItemResponseSchema:
         logger.info(f"Starting to create item... ")
+        
+        if item_data.stock <= 0:
+            raise HTTPException(status_code=400, detail="Stock must be greater than zero")
 
         created_item = await self.item_service.create_item(item_data)
 
@@ -35,6 +38,7 @@ class ItemMainService(BaseService):
                 delivery_url=created_item.delivery_url,
                 post_purchase_note=created_item.post_purchase_note,
                 stock=created_item.stock,
+                is_available=created_item.is_available,
                 image_url=created_item.image_url,
                 created_at=created_item.created_at,
             )    
@@ -60,6 +64,7 @@ class ItemMainService(BaseService):
             delivery_url=item.delivery_url,
             post_purchase_note=item.post_purchase_note,
             stock=item.stock,
+            is_available=item.is_available,
             image_url=item.image_url,
             created_at=item.created_at,
         )
@@ -85,6 +90,7 @@ class ItemMainService(BaseService):
                 delivery_url=item.delivery_url,
                 post_purchase_note=item.post_purchase_note,
                 stock=item.stock,
+                is_available=item.is_available,
                 image_url=item.image_url,
                 created_at=item.created_at,
             )
@@ -111,6 +117,7 @@ class ItemMainService(BaseService):
                 delivery_url=item.delivery_url,
                 post_purchase_note=item.post_purchase_note,
                 stock=item.stock,
+                is_available=item.is_available,
                 image_url=item.image_url,
                 created_at=item.created_at,
             )
@@ -138,6 +145,7 @@ class ItemMainService(BaseService):
             delivery_url=updated_item.delivery_url,
             post_purchase_note=updated_item.post_purchase_note,
             stock=updated_item.stock,
+            is_available=updated_item.is_available,
             image_url=updated_item.image_url,
             created_at=updated_item.created_at,
         )
