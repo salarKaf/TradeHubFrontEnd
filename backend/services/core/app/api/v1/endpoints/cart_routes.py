@@ -20,7 +20,6 @@ async def add_item_to_cart(
         cart_data.website_id,
         current_buyer.buyer_id,
         cart_data.item_id,
-        cart_data.quantity
     )
 
 
