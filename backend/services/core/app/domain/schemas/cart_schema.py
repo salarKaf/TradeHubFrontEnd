@@ -6,7 +6,6 @@ from datetime import datetime
 class CartItemCreateSchema(BaseModel):
     website_id: UUID
     item_id: UUID
-    quantity: int
 
 class CartItemResponseSchema(BaseModel):
     id: UUID
