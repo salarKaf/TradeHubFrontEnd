@@ -11,8 +11,8 @@ class CartMainService(BaseService):
         super().__init__()
         self.cart_service = cart_service
 
-    async def add_item(self, website_id: UUID, buyer_id: UUID, item_id: UUID, quantity: int) -> CartItemResponseSchema:
-        cart_item = await self.cart_service.add_item_to_cart(website_id, buyer_id, item_id, quantity)
+    async def add_item(self, website_id: UUID, buyer_id: UUID, item_id: UUID) -> CartItemResponseSchema:
+        cart_item = await self.cart_service.add_item_to_cart(website_id, buyer_id, item_id)
         logger.info(f"Cart item added: {cart_item.id}")
         return CartItemResponseSchema(
         id= cart_item.id, 
