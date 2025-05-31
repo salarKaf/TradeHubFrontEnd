@@ -173,6 +173,20 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 answered_at TIMESTAMP
 );
 
+
+CREATE TABLE cart_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
+  buyer_id UUID NOT NULL,
+  item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP
+);
+
+
+
+
 -- ✅ Indexes
 CREATE UNIQUE INDEX idx_buyers_website_email ON buyers (website_id, email);
 CREATE INDEX idx_buyers_email ON buyers(email);
