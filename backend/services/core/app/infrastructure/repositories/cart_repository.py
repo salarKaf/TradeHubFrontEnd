@@ -12,8 +12,24 @@ class CartRepository:
         self.db = db
 
     def add_item(self, website_id: UUID, buyer_id: UUID, item_id: UUID, quantity: int) -> CartItem:
-        now = datetime.datetime.utcnow()
-        expires_at = now + datetime.timedelta(hours=2)
+        
+      existing_cart_item = self.db.query(CartItem).filter_by(
+        website_id=website_id,
+        buyer_id=buyer_id,
+        item_id=item_id).first()
+      
+      now = datetime.datetime.utcnow()
+      expires_at = now + datetime.timedelta(hours=2)
+      if existing_cart_item:
+        existing_cart_item.quantity += quantity
+        existing_cart_item.expires_at = expires_at 
+        self.db.commit()
+        self.db.refresh(existing_cart_item)
+        logger.info(f"Updated quantity of item {item_id} in cart for buyer {buyer_id}")
+        return existing_cart_item
+
+
+      else:
 
         cart_item = CartItem(
             website_id=website_id,
