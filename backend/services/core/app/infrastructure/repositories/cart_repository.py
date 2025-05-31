@@ -11,7 +11,7 @@ class CartRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
         self.db = db
 
-    def add_item(self, website_id: UUID, buyer_id: UUID, item_id: UUID, quantity: int) -> CartItem:
+    def add_item(self, website_id: UUID, buyer_id: UUID, item_id: UUID) -> CartItem:
         
       existing_cart_item = self.db.query(CartItem).filter_by(
         website_id=website_id,
@@ -21,7 +21,7 @@ class CartRepository:
       now = datetime.datetime.utcnow()
       expires_at = now + datetime.timedelta(hours=2)
       if existing_cart_item:
-        existing_cart_item.quantity += quantity
+        existing_cart_item.quantity += 1
         existing_cart_item.expires_at = expires_at 
         self.db.commit()
         self.db.refresh(existing_cart_item)
@@ -35,7 +35,7 @@ class CartRepository:
             website_id=website_id,
             buyer_id=buyer_id,
             item_id=item_id,
-            quantity=quantity,
+            quantity=1,
             added_at=now,
             expires_at=expires_at
         )
@@ -55,3 +55,6 @@ class CartRepository:
       for item in expired_items:
           self.db.delete(item)
       self.db.commit()
+
+
+  
