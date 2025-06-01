@@ -72,7 +72,6 @@ class WebsiteCategoryResponseSchema(BaseModel):
 class WebsiteSubcategoryCreateSchema(BaseModel):
     parent_category_id: UUID
     name: str
-    description: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -81,8 +80,17 @@ class WebsiteSubcategoryResponseSchema(BaseModel):
     id: UUID
     parent_category_id: UUID
     name: str
-    description: Optional[str]
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class MessageResponse(BaseModel):
+    message: str
+        
+
+
+class AddWebsiteOwnerSchema(BaseModel):
+    email: str
+    website_id: UUID

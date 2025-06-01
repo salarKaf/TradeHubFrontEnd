@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.website_main_service import WebsiteMainService
 from app.domain.schemas.website_schema import (WebsiteCreateSchema, WebsiteResponseSchema, WebsiteCategoryCreateSchema,
-WebsiteCategoryResponseSchema, WebsiteCategoryResponseSchema, WebsiteSubcategoryResponseSchema, WebsiteSubcategoryCreateSchema)
+WebsiteCategoryResponseSchema, WebsiteCategoryResponseSchema,
+WebsiteSubcategoryResponseSchema, WebsiteSubcategoryCreateSchema, AddWebsiteOwnerSchema)
 from app.services.auth_services.auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
@@ -20,6 +21,13 @@ async def create_website(
     logger.info(f"User with id: {current_user.user_id} is creating a website.")
     
     return await website_service.create_website(current_user.user_id, website_data)
+
+@website_router.get("/my_website", response_model=WebsiteResponseSchema)
+async def get_my_website(
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_main_service: Annotated[WebsiteMainService, Depends()]
+):
+    return await website_main_service.get_website_for_user(current_user.user_id)
 
 @website_router.get("/get_website/{website_id}", response_model=WebsiteResponseSchema, status_code=status.HTTP_200_OK)
 async def get_website(
@@ -95,3 +103,13 @@ async def get_subcategories_by_category_id(
     logger.info(f"Requesting subcategories for category_id: {category_id}.")
     
     return await website_service.get_subcategories_by_category_id(category_id)
+
+
+
+@website_router.post("/add_owner/{website_id}", status_code=201)
+async def add_website_owner(
+    owner_data: AddWebsiteOwnerSchema,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_main_service: Annotated[WebsiteMainService, Depends()]
+):
+    return await website_main_service.add_new_owner(current_user.user_id, owner_data)

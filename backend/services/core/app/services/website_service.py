@@ -1,4 +1,4 @@
-from app.infrastructure.repositories.website_repository import WebsiteRepository, WebsiteSubcategory
+from app.infrastructure.repositories.website_repository import WebsiteRepository, WebsiteSubcategory, WebsiteOwner
 from app.domain.models.website_model import Website, WebsiteCategory
 from app.domain.schemas.website_schema import WebsiteCreateSchema, WebsiteCategoryCreateSchema, WebsiteResponseSchema, WebsiteSubcategoryCreateSchema
 from uuid import UUID
@@ -143,3 +143,15 @@ class WebsiteService(BaseService):
             raise HTTPException(status_code=404, detail="No subcategories found for this category")
         
         return subcategories
+    
+
+    async def add_new_owner(self,owner_id: UUID ,user_id: UUID, website_id: UUID) -> WebsiteOwner:
+        website_owner = self.website_repository.get_owner_by_user_and_website(owner_id, website_id)
+        if not website_owner:
+            raise HTTPException(status_code=403, detail="You are not the owner of this website and cannot add owners.")
+
+        existing_owner = self.website_repository.get_owner(user_id)
+        if existing_owner:
+            raise HTTPException(status_code=409, detail="User already owns a website.")
+        new_owner = self.website_repository.create_website_owner(user_id, website_id)
+        return new_owner

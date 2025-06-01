@@ -1,7 +1,8 @@
-from app.infrastructure.repositories.website_repository import WebsiteRepository
 from app.services.website_service import WebsiteService
+from app.services.user_service import UserService
 from app.domain.schemas.website_schema import (WebsiteResponseSchema, WebsiteCreateSchema, WebsiteCategoryCreateSchema,
-WebsiteCategoryResponseSchema, WebsiteSubcategoryCreateSchema, WebsiteSubcategoryResponseSchema)
+WebsiteCategoryResponseSchema, WebsiteSubcategoryCreateSchema,
+WebsiteSubcategoryResponseSchema, MessageResponse, AddWebsiteOwnerSchema)
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
@@ -14,17 +15,22 @@ from typing import List
 class WebsiteMainService(BaseService):
     def __init__(
         self,
-        # website_repository: Annotated[WebsiteRepository, Depends()],
         website_service: Annotated[WebsiteService, Depends()],
+        user_service: Annotated[UserService, Depends()],
     ) -> None:
         super().__init__()
-        # self.website_repository = website_repository
         self.website_service = website_service
+        self.user_service = user_service
+
 
     async def create_website(self, user_id: UUID, website_data: WebsiteCreateSchema) -> WebsiteResponseSchema:
         logger.info(f"Starting to create website for user {user_id} with data: {website_data.dict()}")
 
         try:
+            website = self.get_website_for_user(user_id)
+            if website:
+                raise HTTPException(status_code=409, detail="You only can own one website")
+
             created_website = await self.website_service.create_website(user_id, website_data)
             
             return WebsiteResponseSchema(
@@ -41,13 +47,15 @@ class WebsiteMainService(BaseService):
                 created_at=created_website.created_at,
                 message="Website fetched successfully ✅"
             )
+        
+        except HTTPException as http_exc:
+            raise http_exc   
 
         except Exception as e:
             logger.error(f"Error occurred while creating website for user {user_id}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error creating website: {str(e)}")
 
 
-    #TODO cavoid defining repeated categories
     async def create_website_category(self, website_category_data: WebsiteCategoryCreateSchema) -> WebsiteCategoryResponseSchema:
         logger.info(f"Starting to create website category with data: {website_category_data.dict()}")
 
@@ -164,3 +172,30 @@ class WebsiteMainService(BaseService):
                 created_at=subcat.created_at
             ) for subcat in subcategories
         ]
+    
+
+    async def get_website_for_user(self, user_id: UUID) -> WebsiteResponseSchema:
+        website = await self.user_service.get_website_for_user(user_id)
+        return WebsiteResponseSchema(
+            id=website.website_id,
+            business_name=website.business_name,
+            welcome_text=website.welcome_text,
+            guide_page=website.guide_page,
+            social_links=jsonable_encoder(website.social_links),
+            faqs=jsonable_encoder(website.faqs),
+            website_url=website.website_url,
+            custom_domain=website.custom_domain,
+            logo_url=website.logo_url,
+            banner_image=website.banner_image,
+            created_at=website.created_at,
+            message="Website fetched successfully ✅"
+        )
+
+    async def add_new_owner(self,owner_id: UUID ,new_owner_data: AddWebsiteOwnerSchema) -> MessageResponse:
+        existing_user = await self.user_service.get_user_by_email(new_owner_data.email)
+        if not existing_user:
+            raise HTTPException(status_code=404, detail="User is not a member of our platform")
+
+        await self.website_service.add_new_owner(owner_id, existing_user.user_id, new_owner_data.website_id)   
+        return MessageResponse(message="User successfully added as website owner.")
+

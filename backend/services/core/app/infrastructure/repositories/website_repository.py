@@ -1,12 +1,11 @@
-from app.domain.models.website_model import (Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory
-                                             , Item)
+from app.domain.models.website_model import Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory
 from sqlalchemy.orm import Session
 from loguru import logger
 from uuid import UUID
 from app.core.postgres_db.database import get_db
 from typing import Annotated
 from fastapi import Depends
-from typing import List
+from typing import List, Optional
 
 class WebsiteRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -84,3 +83,16 @@ class WebsiteRepository:
     
     def get_subcategories_by_category_id(self, category_id: UUID) -> List[WebsiteSubcategory]:
         return self.db.query(WebsiteSubcategory).filter(WebsiteSubcategory.parent_category_id == category_id).all()
+    
+
+
+    def get_owner(self, user_id: UUID) -> Optional[WebsiteOwner]:
+        return self.db.query(WebsiteOwner).filter(
+            WebsiteOwner.user_id == user_id
+        ).first()
+
+    def get_owner_by_user_and_website(self, user_id: UUID, website_id: UUID) -> Optional[WebsiteOwner]:
+        return self.db.query(WebsiteOwner).filter(
+            WebsiteOwner.user_id == user_id,
+            WebsiteOwner.website_id == website_id
+        ).first()
