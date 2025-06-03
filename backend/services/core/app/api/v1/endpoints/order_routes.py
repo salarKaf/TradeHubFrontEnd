@@ -20,3 +20,11 @@ async def create_order(
     
     logger.info(f"Buyer {current_buyer.buyer_id} creating order for website {website_id}")
     return await order_main_service.create_order(current_buyer.buyer_id, website_id)
+
+
+@order_router.get("/my_orders", response_model=List[OrderResponseSchema], status_code=status.HTTP_200_OK)
+async def get_my_orders(
+    current_buyer: Annotated[TokenDataSchema, Depends(get_current_buyer)],
+    order_main_service: Annotated[OrderMainService, Depends()]
+):
+    return await order_main_service.get_my_orders(current_buyer.buyer_id)

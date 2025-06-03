@@ -21,3 +21,7 @@ class OrderService:
         order = self.order_repository.create_order_from_cart(buyer_id, website_id)
         self.cart_repository.clear_cart(buyer_id)
         return order
+
+    async def get_orders_by_buyer(self, buyer_id: UUID) -> List[Order]:
+     logger.info(f"Getting order for buyer: {buyer_id}")
+     return self.order_repository.get_orders_by_buyer(buyer_id)

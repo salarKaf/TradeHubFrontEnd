@@ -50,9 +50,13 @@ class OrderRepository:
                 order_id=order.order_id,
                 item_id=cart_item.item_id,
                 quantity=cart_item.quantity,
-                price=price
+                price=price * cart_item.quantity
             )
             self.db.add(order_item)
 
         self.db.commit()
         return order
+
+
+    def get_orders_by_buyer(self, buyer_id: UUID) -> List[Order]:
+     return self.db.query(Order).filter(Order.buyer_id == buyer_id).all()
