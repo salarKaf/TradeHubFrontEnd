@@ -1,17 +1,18 @@
-import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 export default function RulesTrade() {
-  const [selectedOption, setSelectedOption] = useState(null);
-  const fileInputRef = useRef(null);
+  const [accepted, setAccepted] = useState(false);
 
-  const handleSelect = (option) => {
-    setSelectedOption(option);
-  };
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleIconClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+  const handleNextClick = (e) => {
+    e.preventDefault();
+    if (!accepted) {
+      setError("شما باید قوانین را بپذیرید.");
+    } else {
+      setError("");
+      navigate("/");  // مسیر بعدی
     }
   };
 
@@ -34,39 +35,90 @@ export default function RulesTrade() {
         <div className="absolute -top-3 -right-3 w-full h-full rounded-3xl bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-xl z-10" />
 
         {/* فرم اصلی جلویی (پایین-چپ) */}
-        <div className="relative z-20 bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-2xl rounded-3xl p-10 space-y-6 text-right text-[#EABF9F]">
-          <h2 className="mb-8 text-white">نوع فروشنده را انتخاب کنید</h2>
+        <div className="relative z-20 bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-2xl rounded-3xl p-10 space-y-6 text-right text-white">
 
-          <div className="flex justify-center gap-8 mb-8">
-            <button
-              onClick={() => handleSelect("personal")}
-              className={`bg-[#FFF6DD] text-black rounded-xl px-6 py-4 shadow-md hover:bg-[#F0E0B3] transition transform ${
-                selectedOption === "personal"
-                  ? "scale-110 border-2 border-[#EABF9F] bg-[#EABF9F]"
-                  : ""
-              }`}
-            >
-              فروشگاه متعلق به یک شخص است
-            </button>
-            <button
-              onClick={() => handleSelect("company")}
-              className={`bg-[#FFF6DD] text-black rounded-xl px-6 py-4 shadow-md hover:bg-[#F0E0B3] transition transform ${
-                selectedOption === "company"
-                  ? "scale-110 border-2 border-[#EABF9F] bg-[#EABF9F]"
-                  : ""
-              }`}
-            >
-              فروشگاه متعلق به یک شرکت یا گروه است
-            </button>
+          <h1 className="text-2xl font-semibold mb-6 text-center text-gray-100">
+            قوانین و مقررات
+          </h1>
+
+          <div className="overflow-y-auto max-h-[300px] px-4 py-2 mb-6">
+            <p className="mb-4 leading-relaxed text-justify text-sm">
+              با ثبت‌نام و فعالیت به عنوان فروشنده در این سامانه، شما متعهد به
+              رعایت موارد زیر می‌باشید:
+            </p>
+            <ol className="list-decimal list-inside space-y-3 text-xs leading-relaxed text-justify">
+              <li>
+                مسئولیت محصول:
+                <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                  <li>کلیه محصولات ثبت‌شده توسط فروشنده باید دارای مالکیت قانونی یا حق فروش معتبر باشند.</li>
+                  <li>فروشنده موظف است از ثبت محصولاتی که ناقض حقوق مالکیت فکری، قوانین ایران یا هرگونه مقررات مربوطه باشد، خودداری نماید.</li>
+                  <li>مسئولیت کامل صحت، کیفیت، و محتوای محصولات ارائه‌شده بر عهده فروشنده می‌باشد.</li>
+                </ul>
+              </li>
+              <li>
+                کیفیت و صحت اطلاعات محصول:
+                <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                  <li>توضیحات، تصاویر و اطلاعات ثبت‌شده برای هر محصول باید دقیق، صحیح و مطابق با ویژگی‌های واقعی محصول باشد.</li>
+                </ul>
+              </li>
+              <li>
+                تحویل محصول:
+                <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                  <li>فروشنده موظف است بلافاصله پس از تایید خرید، محصول دیجیتال را مطابق با اطلاعات ثبت‌شده به خریدار تحویل دهد.</li>
+                  <li>در صورت بروز مشکل در تحویل یا کیفیت محصول، فروشنده ملزم به همکاری جهت رفع مشکل یا بازپرداخت مبلغ به خریدار می‌باشد.</li>
+                </ul>
+              </li>
+              <li>
+                درآمد و تسویه حساب:
+                <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                  <li>مبلغ حاصل از فروش پس از کسر کارمزد مشخص‌شده توسط سامانه، در بازه زمانی تعیین‌شده به فروشنده پرداخت خواهد شد.</li>
+                  <li>در صورت بروز اختلاف با شکایت از سوی خریدار، سامانه مجاز است تسویه حساب را تا زمان بررسی نهایی به حالت تعلیق درآورد.</li>
+                </ul>
+              </li>
+              <li>
+                سیاست‌های کلی و مقررات:
+                <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                  <li>فروشنده موظف به رعایت کلیه قوانین جاری کشور در زمینه فعالیت‌های تجاری و ارائه محصولات دیجیتال می‌باشد.</li>
+                  <li>سامانه این اختیار را دارد که در صورت مشاهده هرگونه تخلف، بدون نیاز به اطلاع قبلی، حساب کاربری فروشنده را تعلیق یا مسدود نماید.</li>
+                </ul>
+              </li>
+              <li>
+                تغییرات در قوانین:
+                <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                  <li>قوانین و مقررات ممکن است در هر زمان به‌روزرسانی شوند. ادامه فعالیت فروشنده در سامانه به منزله پذیرش تغییرات جدید خواهد بود.</li>
+                </ul>
+              </li>
+            </ol>
           </div>
 
+
+
+
+
+
+          <div className="flex items-center space-x-3 mb-6">
+            <input
+              type="checkbox"
+              id="acceptRules"
+              checked={accepted}
+              onChange={() => setAccepted(!accepted)}
+              className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
+            />
+            <label htmlFor="acceptRules" className="text-sm text-gray-200 select-none">
+              تمامی قوانین را می‌پذیرم.
+            </label>
+          </div>
+          {/* پیام خطا */}
+          {error && (
+            <p className="text-red-500 text-sm mb-4 text-right">{error}</p>
+          )}
           <div className="flex justify-between pt-6">
-            <Link
-              to="/"
+            <button
+              onClick={handleNextClick}
               className="bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold hover:bg-[#e7b78e] transition"
             >
               بعدی
-            </Link>
+            </button>
             <Link
               to="/storeForm"
               className="bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold hover:bg-[#e7b78e] transition"
@@ -79,3 +131,31 @@ export default function RulesTrade() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

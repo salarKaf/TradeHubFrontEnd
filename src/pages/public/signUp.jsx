@@ -56,6 +56,9 @@ export default function SignupForm() {
                 <a href="/" className="text-[#FAF3E0] text-lg font-rubik hover:underline">خانه</a>
             </div>
 
+            <Link to='/storeForm'>meweeeeeeeeeeeeeeeeeeeeeeee</Link>
+
+
             <div
                 className="min-h-screen relative flex items-center justify-start px-8"
                 style={{
