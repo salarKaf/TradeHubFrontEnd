@@ -1,42 +1,58 @@
 from typing import Annotated, Dict
 from loguru import logger
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from  app.core.postgres_db.database import get_db
 from uuid import UUID
-from  app.domain.models.order_model import Order, CartItem 
+from  app.domain.models.order_model import Order, OrderItem
 from app.infrastructure.repositories.item_repository import ItemRepository
+from app.infrastructure.repositories.cart_repository import CartRepository
 from datetime import datetime
 
 class OrderRepository:
     def __init__(self,
     db: Annotated[Session, Depends(get_db)],
-    item_repository: Annotated[ItemRepository, Depends()],):
+    item_repository: Annotated[ItemRepository, Depends()],
+    cart_repository: Annotated[CartRepository, Depends()],
+    ):
       self.db = db
       self.item_repository = item_repository
+      self.cart_repository = cart_repository
+
         
-    def create_orders_from_cart(self, cart_items: List[CartItem]) -> List[Order]:
-        orders = []
+    def create_order_from_cart(self, buyer_id: UUID, website_id: UUID) -> Order:
+        cart_items = self.cart_repository.get_cart_items_by_buyer(buyer_id)
+        if not cart_items:
+            raise HTTPException(status_code=404, detail="Cart is empty for this website.")
+
+        total_price = 0
         for cart_item in cart_items:
-            order = Order(
-                website_id=cart_item.website_id,
-                buyer_id=cart_item.buyer_id,
+            item = self.item_repository.get_item_by_id(cart_item.item_id)
+            price = item.discount_price if (item.discount_active and item.discount_expires_at and item.discount_expires_at > datetime.utcnow()) else item.price
+            total_price += float(price) * cart_item.quantity
+
+        order = Order(
+            website_id=website_id,
+            buyer_id=buyer_id,
+            status='Pending',
+            total_price=total_price,
+            created_at=datetime.utcnow()
+        )
+        self.db.add(order)
+        self.db.flush()  
+
+        for cart_item in cart_items:
+            item = self.item_repository.get_item_by_id(cart_item.item_id)
+            price = item.discount_price if (item.discount_active and item.discount_expires_at and item.discount_expires_at > datetime.utcnow()) else item.price
+
+            order_item = OrderItem(
+                order_id=order.order_id,
                 item_id=cart_item.item_id,
-                status='Pending',
-                total_price=self._calculate_total_price(cart_item),
-                created_at=datetime.utcnow()
+                quantity=cart_item.quantity,
+                price=price
             )
-            self.db.add(order)
-            orders.append(order)
+            self.db.add(order_item)
+
         self.db.commit()
-        return orders
-
-    def _calculate_total_price(self, cart_item: CartItem) -> float:
-        item = self.item_repository.get_item_by_id(cart_item.item_id)
-        if item.discount_active and item.discount_expires_at and item.discount_expires_at > datetime.utcnow():
-            return float(item.discount_price or item.price) * cart_item.quantity
-        else:
-            return float(item.price) * cart_item.quantity
-
-
+        return order

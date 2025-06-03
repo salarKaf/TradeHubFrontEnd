@@ -16,14 +16,8 @@ class OrderService:
         self.order_repository = order_repository
         self.cart_repository = cart_repository
 
-    async def create_order_from_cart(self, buyer_id: UUID) -> List[Order]:
-        logger.info(f"Creating order(s) for buyer {buyer_id}...")
-
-        cart_items = self.cart_repository.get_cart_items_by_buyer(buyer_id)
-        if not cart_items:
-            raise HTTPException(status_code=404, detail="Cart is empty for this website.")
-
-        orders = self.order_repository.create_orders_from_cart(cart_items)
+    async def create_order_from_cart(self, buyer_id: UUID, website_id: UUID) -> Order:
+        logger.info(f"Creating order for buyer {buyer_id} on website {website_id}...")
+        order = self.order_repository.create_order_from_cart(buyer_id, website_id)
         self.cart_repository.clear_cart(buyer_id)
-
-        return orders
+        return order

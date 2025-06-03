@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
 
@@ -8,15 +8,25 @@ class OrderCreateSchema(BaseModel):
     website_id: UUID
     buyer_id: UUID
 
-class OrderResponseSchema(BaseModel):
+
+class OrderItemResponseSchema(BaseModel):
+    order_item_id: UUID
     order_id: UUID
-    website_id: UUID
     item_id: UUID
-    buyer_id: UUID
-    total_price: Decimal
-    status: str
-    created_at: datetime
+    quantity: int
+    price: Decimal
 
     class Config:
         from_attributes = True
 
+class OrderResponseSchema(BaseModel):
+    order_id: UUID
+    website_id: UUID
+    buyer_id: UUID
+    status: str
+    total_price: Decimal
+    created_at: datetime
+    order_items: List[OrderItemResponseSchema]
+
+    class Config:
+        from_attributes = True

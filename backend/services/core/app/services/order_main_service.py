@@ -17,7 +17,7 @@ class OrderMainService(BaseService):
     async def create_order(self, buyer_id: UUID, website_id: UUID) -> List[OrderResponseSchema]:
         
         logger.info(f"Main service: Creating order for buyer {buyer_id} on website {website_id}")
-        orders = await self.order_service.create_order_from_cart(buyer_id)
+        orders: List[Order] = await self.order_service.create_order_from_cart(buyer_id, website_id)
         
         return [
             OrderResponseSchema(
