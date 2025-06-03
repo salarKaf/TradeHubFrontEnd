@@ -184,9 +184,13 @@ CREATE TABLE cart_items (
   expires_at TIMESTAMP
 );
 
-
-
-
+CREATE TABLE order_items (
+    order_item_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    order_id UUID NOT NULL REFERENCES orders(order_id) ON DELETE CASCADE,
+    item_id UUID NOT NULL REFERENCES items(item_id),
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    price DECIMAL(10, 2) NOT NULL
+);
 -- ✅ Indexes
 CREATE UNIQUE INDEX idx_buyers_website_email ON buyers (website_id, email);
 CREATE INDEX idx_buyers_email ON buyers(email);
