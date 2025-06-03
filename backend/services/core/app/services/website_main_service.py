@@ -27,7 +27,7 @@ class WebsiteMainService(BaseService):
         logger.info(f"Starting to create website for user {user_id} with data: {website_data.dict()}")
 
         try:
-            website = self.get_website_for_user(user_id)
+            website = await self.user_service.check_is_owner(user_id)
             if website:
                 raise HTTPException(status_code=409, detail="You only can own one website")
 
@@ -198,4 +198,6 @@ class WebsiteMainService(BaseService):
 
         await self.website_service.add_new_owner(owner_id, existing_user.user_id, new_owner_data.website_id)   
         return MessageResponse(message="User successfully added as website owner.")
+    
 
+    

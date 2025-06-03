@@ -22,7 +22,6 @@ class WebsiteService(BaseService):
         
         created_website = self.website_repository.create_website(website=Website(
             business_name=website_data.business_name,
-            category_id=website_data.category_id,
             welcome_text=website_data.welcome_text,
             guide_page=website_data.guide_page,
             social_links=jsonable_encoder(website_data.social_links),  
@@ -155,3 +154,6 @@ class WebsiteService(BaseService):
             raise HTTPException(status_code=409, detail="User already owns a website.")
         new_owner = self.website_repository.create_website_owner(user_id, website_id)
         return new_owner
+
+
+    

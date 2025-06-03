@@ -1,77 +1,41 @@
 from typing import Annotated, Dict
 from loguru import logger
 from fastapi import Depends, HTTPException
-from  app.domain.models.website_model import User
-from  app.domain.schemas.user_schema import UserCreateSchema
+from  app.domain.models.website_model import User, Website
 from  app.infrastructure.repositories.user_repository import UserRepository
-from  app.services.auth_services.hash_service import HashService
+from  app.infrastructure.repositories.website_repository import WebsiteRepository
 from  app.services.base_service import BaseService
-import uuid
+from uuid import UUID
 
 
 class UserService(BaseService):
     def __init__(
         self,
         user_repository: Annotated[UserRepository, Depends()],
-        hash_service: Annotated[HashService, Depends()],
+        website_repository: Annotated[WebsiteRepository, Depends()],
+
     ) -> None:
         super().__init__()
         self.user_repository = user_repository
-        self.hash_service = hash_service
-
-    async def create_user(self, user_body: UserCreateSchema) -> User:
-        logger.info(f"⚒️ Creating user with email: {user_body.email}")
-        return self.user_repository.create_user(
-            User(
-                first_name=user_body.first_name,
-                last_name=user_body.last_name,
-                email=user_body.email,
-                password=self.hash_service.hash_password(user_body.password), 
-            )
-        )
+        self.website_repository = website_repository
 
     async def get_user_by_email(self, email: str) -> User:
         logger.info(f"📥 Fetching user with email {email}")
         return self.user_repository.get_user_by_email(email)
 
-    async def get_user_by_id(self, user_id: uuid.UUID) -> User:  
+    async def get_user_by_id(self, user_id: UUID) -> User:  
         logger.info(f"📥 Fetching user with id {user_id}")
         return self.user_repository.get_user_by_id(user_id)
+    
+    async def get_website_for_user(self, user_id: UUID) -> Website:
+        logger.info(f"📥 Fetching website for user with id {user_id}")
+        website = self.user_repository.get_website_by_user_id(user_id)
+        if not website:
+            raise HTTPException(status_code=404, detail="Website not found for this user")
+        return website
+    
+    async def check_is_owner(self, user_id: UUID) -> Website:
+        logger.info(f"📥 Fetching website for user with id {user_id}")
+        website = self.user_repository.get_website_by_user_id(user_id)
+        return website
 
-    async def update_verified_status(self, user_id: uuid.UUID, update_fields: Dict) -> User: 
-        logger.info(f"🔃 Updating user with id {user_id}")
-        return self.user_repository.update_user(user_id, update_fields)
-
-    async def update_user(self, user_id: uuid.UUID, update_fields: Dict) -> User:
-        logger.info(f"🔃 Updating user with id {user_id}")
-
-        if 'password' in update_fields:
-            if update_fields['password'] != update_fields['confirm_password']:
-                logger.info(f"❌ Password confirmation does not match")
-                raise HTTPException(status_code=400, detail='Password confirmation does not match')
-        update_fields['password'] = self.hash_service.hash_password(update_fields['password'])
-        update_fields.pop('confirm_password')
-        
-        update_fields = {key: value for key, value in update_fields.items() if value != ""}  
-
-        return self.user_repository.update_user(user_id, update_fields)  
-
-    async def update_can_change_status(self, user_id: uuid.UUID, update_fields: Dict) -> User: 
-        logger.info(f"🔃 Updating user with id {user_id}")
-        return self.user_repository.update_user(user_id, update_fields)
-
-    async def change_user_password(self, email:str, update_fields: Dict) -> User:
-        logger.info(f"🔃 Changing password user with id {email}")
-
-        if update_fields['password'] != update_fields['confirm_password']:
-            logger.info(f"❌ Password confirmation does not match")
-            raise HTTPException(status_code=400, detail='Password confirmation does not match')
-        update_fields['password'] = self.hash_service.hash_password(update_fields['password'])
-        update_fields.pop('confirm_password')
-
-        user = self.user_repository.get_user_by_email(email)
-        if user.can_reset_password != True:
-            raise HTTPException(status_code=400, detail='You need to verify the otp first')
-
-        self.user_repository.update_user(user.user_id, {"can_reset_password": False})    
-        return self.user_repository.update_user(user.user_id, update_fields)
