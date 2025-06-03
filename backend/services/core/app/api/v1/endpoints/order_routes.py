@@ -9,7 +9,7 @@ from loguru import logger
 
 order_router = APIRouter()
 
-@order_router.post("/create_order", response_model=List[OrderResponseSchema], status_code=status.HTTP_201_CREATED)
+@order_router.post("/create_order", response_model=OrderResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_order(
     website_id: UUID,
     current_buyer: Annotated[TokenDataSchema, Depends(get_current_buyer)],

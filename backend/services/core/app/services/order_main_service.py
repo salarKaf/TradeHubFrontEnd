@@ -13,13 +13,13 @@ class OrderMainService(BaseService):
         order_service : Annotated[OrderService, Depends()]):
         super().__init__()
         self.order_service = order_service
-
-    async def create_order(self, buyer_id: UUID, website_id: UUID) -> List[OrderResponseSchema]:
+    #TODO Fix this 
+    async def create_order(self, buyer_id: UUID, website_id: UUID) -> OrderResponseSchema:
         
         logger.info(f"Creating order for buyer...")
         order = await self.order_service.create_order_from_cart(buyer_id, website_id)
         
-        return OrderResponseSchema.from_orm(order)
+        return OrderResponseSchema.from_orm(order) 
 
 
 
@@ -37,6 +37,7 @@ class OrderMainService(BaseService):
                 created_at=order.created_at,
                 order_items=[
                     OrderItemResponseSchema(
+                        order_item_id= item.order_item_id,
                         item_id=item.item_id,
                         quantity=item.quantity,
                         price=item.price,

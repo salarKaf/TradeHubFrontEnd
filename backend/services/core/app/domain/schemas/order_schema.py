@@ -10,12 +10,13 @@ class OrderCreateSchema(BaseModel):
 
 
 class OrderItemResponseSchema(BaseModel):
+    order_item_id: UUID
     item_id: UUID
     quantity: int
     price: Decimal
 
     class Config:
-        from_attributes = True
+        from_attributes=True
 
 class OrderResponseSchema(BaseModel):
     order_id: UUID
@@ -27,4 +28,4 @@ class OrderResponseSchema(BaseModel):
     order_items: List[OrderItemResponseSchema]
 
     class Config:
-        from_attributes = True
+        from_attributes=True

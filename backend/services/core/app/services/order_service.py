@@ -16,7 +16,7 @@ class OrderService:
         self.order_repository = order_repository
         self.cart_repository = cart_repository
 
-    async def create_order_from_cart(self, buyer_id: UUID, website_id: UUID) -> Order:
+    async def create_order_from_cart(self, buyer_id: UUID, website_id: UUID) ->Order:
         logger.info(f"Creating order for buyer {buyer_id} on website {website_id}...")
         order = self.order_repository.create_order_from_cart(buyer_id, website_id)
         self.cart_repository.clear_cart(buyer_id)
