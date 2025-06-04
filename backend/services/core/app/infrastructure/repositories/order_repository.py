@@ -65,7 +65,21 @@ class OrderRepository:
     def get_order_by_id(self, order_id: UUID) -> Order:
      return self.db.query(Order).filter(Order.order_id == order_id).first()
 
-
-
     def get_orders_by_website_id(self, website_id:UUID)-> List[Order]:
         return self.db.query(Order).filter(Order.website_id == website_id).all()
+    
+
+    def update_order_status(self, order_id: UUID, new_status: str) -> None:
+        order = self.get_order_by_id(order_id)
+        
+        if order:
+            order.status = new_status
+            self.db.commit()
+            self.db.refresh(order)  
+        else:
+            raise Exception(f"Order with ID {order_id} not found.")
+        
+
+
+    def get_pending_order(self, buyer_id: UUID) -> List[Order]:
+        return self.db.query(Order).filter(Order.buyer_id == buyer_id, Order.status == "Pending").first()    

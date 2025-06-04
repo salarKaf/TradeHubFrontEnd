@@ -35,3 +35,12 @@ class OrderService:
     async def get_orders_by_website_id(self, website_id: UUID) -> List[Order]:
         logger.info(f"Getting order for website: {website_id}")
         return self.order_repository.get_orders_by_website_id(website_id)
+    
+
+    async def update_order_status(self, order_id: UUID, new_status: str) -> None:
+        logger.info(f"Updating order with id: {order_id}")
+        return self.order_repository.update_order_status(order_id, new_status)
+
+    async def get_pending_order(self, buyer_id: UUID) -> Order:
+        logger.info(f"Getting pending order with id buyer: {buyer_id}")
+        return self.order_repository.get_pending_order(buyer_id)
