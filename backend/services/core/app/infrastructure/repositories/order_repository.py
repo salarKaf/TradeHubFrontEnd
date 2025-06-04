@@ -60,3 +60,12 @@ class OrderRepository:
 
     def get_orders_by_buyer(self, buyer_id: UUID) -> List[Order]:
      return self.db.query(Order).filter(Order.buyer_id == buyer_id).all()
+    
+
+    def get_order_by_id(self, order_id: UUID) -> Order:
+     return self.db.query(Order).filter(Order.order_id == order_id).first()
+
+
+
+    def get_orders_by_website_id(self, website_id:UUID)-> List[Order]:
+        return self.db.query(Order).filter(Order.website_id == website_id).all()

@@ -23,5 +23,15 @@ class OrderService:
         return order
 
     async def get_orders_by_buyer(self, buyer_id: UUID) -> List[Order]:
-     logger.info(f"Getting order for buyer: {buyer_id}")
-     return self.order_repository.get_orders_by_buyer(buyer_id)
+        logger.info(f"Getting order for buyer: {buyer_id}")
+        return self.order_repository.get_orders_by_buyer(buyer_id)
+    
+
+    async def get_order_by_id(self, order_id: UUID) -> Order:
+        logger.info(f"Getting order with id buyer: {order_id}")
+        return self.order_repository.get_order_by_id(order_id)
+    
+
+    async def get_orders_by_website_id(self, website_id: UUID) -> List[Order]:
+        logger.info(f"Getting order for website: {website_id}")
+        return self.order_repository.get_orders_by_website_id(website_id)
