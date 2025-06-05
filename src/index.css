@@ -1,6 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Krona+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Vazirmatn:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet');
+
+@font-face {
+  font-family: 'Modam';
+  src: 
+
+  url('/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-Regular.woff') format(woff);
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; 
+}
+@font-face {
+  font-family: 'Modam';
+  src: 
+
+  url('/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-Medium.woff') format(woff);
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap; 
+}
+@font-face {
+  font-family: 'Modam';
+  src: 
+
+  url('/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-ExtraBold.woff') format(woff);
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap; 
+}
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

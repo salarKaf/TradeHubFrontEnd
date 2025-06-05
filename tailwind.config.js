@@ -11,6 +11,8 @@ module.exports = {
         krona: ['"Krona One"', 'sans-serif'],
         rubik: ['Rubik', 'sans-serif'],
         jua: ["Jua", "sans-serif"],
+        fredoka: ['Fredoka', 'cursive'],
+        modam: ['Modam', 'sans-serif'],
       },
 
       animation: {
