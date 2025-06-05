@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Edit, Trash2, Eye, Plus, Filter, Grid, List, ArrowUpDown, X, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa'
-
+import {Link} from 'react-router-dom'
 // کامپوننت ProductC (فرضی)
 const ProductC = ({ product, onBack }) => {
     return (
@@ -316,11 +316,12 @@ const ShopifyAdminInterface = () => {
                             </button>
                         </div>
 
-                        <button
-                            className="mr-auto bg-[#1e202d] font-modam font-medium text-lg w-64 h-4/5 text-white py-4 px-6 rounded-full shadow-md"
+                        <Link
+                            to='/AddProduct'
+                            className="mr-auto pr-8 bg-[#1e202d] font-modam font-medium text-lg w-64 h-4/5 text-white py-4 rounded-full shadow-md"
                         >
-                            + افزودن دسته بندی جدید
-                        </button>
+                            + افزودن محصــول جدید
+                        </Link>
 
                         <div className="absolute bottom-0 left-8 right-0 h-[0.8px] bg-black bg-opacity-20 shadow-[0_2px_6px_rgba(0,0,0,0.3)]"></div>
                     </div>
