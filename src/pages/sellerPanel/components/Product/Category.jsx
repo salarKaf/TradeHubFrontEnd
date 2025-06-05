@@ -534,7 +534,7 @@ const Category = () => {
 
                     <button
                         onClick={addCategory}
-                        className="mr-auto bg-[#1e202d] font-modam font-medium text-lg w-64 h-4/5  text-white py-4 px-6 rounded-full shadow-md"
+                        className="mr-auto  bg-[#1e202d] font-modam font-medium text-lg w-64 h-4/5  text-white py-4 px-6 rounded-full shadow-md"
                     >
                         + افزودن دسته بندی جدید
                     </button>

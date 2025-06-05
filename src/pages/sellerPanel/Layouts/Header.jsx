@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // برای هدایت به صفحه‌ی login
 
 const Header = () => {
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false); // وضعیت باز و بسته بودن نوار نوتیفیکیشن
     const [isProfileOpen, setIsProfileOpen] = useState(false); // وضعیت باز و بسته بودن منوی پروفایل
     const [isLogoutConfirmationOpen, setIsLogoutConfirmationOpen] = useState(false); // وضعیت نمایش دیالوگ تایید خروج
     const [notificationsCount, setNotificationsCount] = useState(50); // تعداد نوتیفیکیشن‌ها
-
-    const navigate = useNavigate(); // برای هدایت به صفحه‌ی login
 
     // تابع برای باز و بسته کردن نوار نوتیفیکیشن
     const toggleNotifications = () => {
@@ -28,8 +25,8 @@ const Header = () => {
     // تابع برای تایید خروج و هدایت به صفحه login
     const confirmLogout = () => {
         // اینجا می‌توانید منطق خروج از حساب را بنویسید (مثل پاک کردن sessionStorage یا logout از API)
-        
-        navigate("/login"); // هدایت به صفحه login
+        console.log("Logout confirmed");
+        // navigate("/login"); // هدایت به صفحه login
     };
 
     // تابع برای لغو خروج
@@ -38,7 +35,7 @@ const Header = () => {
     };
 
     return (
-        <div className="bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] text-white flex items-center justify-between p-4">
+        <div className="bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] text-white flex items-center justify-between p-4 relative z-50">
             {/* بخش چپ: پیام خوش آمد */}
             <div className="flex flex-col text-right">
                 <div className="flex gap-1">
@@ -74,7 +71,7 @@ const Header = () => {
 
                     {/* نوار نوتیفیکیشن */}
                     {isNotificationsOpen && (
-                        <div className="absolute left-0 mt-2 w-96 bg-white text-black rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        <div className="absolute left-0 mt-2 w-96 bg-white text-black rounded-lg shadow-lg max-h-60 overflow-y-auto z-[60]">
                             <h3 className="font-semibold my-5 mr-7">آخرین نوتیفیکیشن‌ها</h3>
                             <ul>
                                 <li className="py-5 px-4 border-b border-gray-200">سفارش جدید از فروشگاه 1</li>
@@ -96,7 +93,7 @@ const Header = () => {
 
                     {/* منوی پروفایل */}
                     {isProfileOpen && (
-                        <div className="absolute left-0 mt-2 w-64 bg-white text-black rounded-lg shadow-lg p-4">
+                        <div className="absolute left-0 mt-2 w-64 bg-white text-black rounded-lg shadow-lg p-4 z-[60]">
                             <div className="font-semibold mb-2">ایمیل فروشنده:</div>
                             <div className="text-sm text-gray-700 mb-4">seller@example.com</div> {/* ایمیل فروشنده */}
                             <button
@@ -112,7 +109,7 @@ const Header = () => {
 
             {/* دیالوگ تایید خروج */}
             {isLogoutConfirmationOpen && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-[70]">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
                         <h2 className="font-semibold text-black mb-4 font-krona">آیا از خروج اطمینان دارید؟</h2>
                         <div className="flex justify-center gap-4">
