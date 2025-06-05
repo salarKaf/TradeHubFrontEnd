@@ -2,6 +2,10 @@ import React from 'react'
 import HomeContent from '../components/HomeContent'
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
+import ShopifyAdminInterface from '../components/Product/productContent'
+import Category from '../components/Product/Category'
+
+
 
 
 const Products = () => {
@@ -20,6 +24,9 @@ const Products = () => {
 
                     {/* Main Content */}
                     <div className="p-6  bg-[#FAF3E0] flex-1 overflow-auto">
+                        <Category></Category>
+                        <ShopifyAdminInterface />
+
                     </div>
                 </div>
             </div>

@@ -15,6 +15,8 @@ import Profile from "./pages/sellerPanel/Pages/Profile";
 import Orders from "./pages/sellerPanel/Pages/Orders";
 import Products from "./pages/sellerPanel/Pages/Products";
 import Customers from "./pages/sellerPanel/Pages/Customers";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import ShowProduct from "./pages/sellerPanel/ShowProduct";
 
 export default function App() {
   const location = useLocation();
@@ -46,6 +48,7 @@ export default function App() {
         <Route path='/customers' element={<Customers></Customers>} />
         <Route path='/orders' element={<Orders></Orders>} />
         <Route path='/products' element={<Products></Products>} />
+        <Route path='/showProduct' element={<ShowProduct></ShowProduct>}></Route>
       </Routes>
     </>
   );
