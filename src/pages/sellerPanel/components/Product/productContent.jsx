@@ -435,12 +435,12 @@ const ShopifyAdminInterface = () => {
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
-                                                    <button
-                                                        onClick={() => handleEdit(product)}
+                                                    <Link
+                                                        to='./detailProduct'
                                                         className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                                                     >
                                                         <Edit size={16} />
-                                                    </button>
+                                                    </Link>
                                                     <button
                                                         onClick={() => handleView(product)}
                                                         className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"

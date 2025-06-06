@@ -16,6 +16,7 @@ import Orders from "./pages/sellerPanel/Pages/Orders";
 import Products from "./pages/sellerPanel/Pages/Products";
 import Customers from "./pages/sellerPanel/Pages/Customers";
 import AddProductaPage from './pages/sellerPanel/Pages/AddProductaPage';
+import ShowProductaPage from './pages/sellerPanel/Pages/ShowProductPage';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
         <Route path='/orders' element={<Orders></Orders>} />
         <Route path='/products' element={<Products></Products>} />
         <Route path='/AddProduct' element={<AddProductaPage></AddProductaPage>}></Route>
+        <Route path='/detailProduct' element={<ShowProductaPage></ShowProductaPage>}></Route>
       </Routes>
     </>
   );
