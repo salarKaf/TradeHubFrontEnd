@@ -436,7 +436,7 @@ const ShopifyAdminInterface = () => {
                                                         <Trash2 size={16} />
                                                     </button>
                                                     <Link
-                                                        to='./detailProduct'
+                                                        to='/detailProduct'
                                                         className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                                                     >
                                                         <Edit size={16} />

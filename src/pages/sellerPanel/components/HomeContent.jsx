@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-
+import InfoCard from '../Layouts/cart';
 import { FiBell } from 'react-icons/fi'; // آیکن نوتیفیکیشن
 import { Line } from 'react-chartjs-2';
 import {
@@ -95,15 +95,12 @@ const HomeContent = () => {
         </div>
 
         {/* دومین کارت */}
-        <div className="flex font-modam justify-around items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full max-w-[380px] flex-grow">
-          <div>
-            <h2 className="text-3xl font-medium">{data.totalProducts}</h2>
-            <p className="text-lg text-opacity-5 font-extralight">تعداد محصولات</p>
-          </div>
-          <div className="bg-[#7d97ff5c] rounded-lg p-1">
-            <img src='/SellerPanel/Home/icons8-package-64(1).png' alt="products" />
-          </div>
-        </div>
+        <InfoCard
+          title="120"
+          subtitle="محصولات"
+          logo="/public/SellerPanel/Home/icons8-package-64(1).png"
+          titleColor="text-black"
+        />
 
         {/* سومین کارت (کوچکترین) */}
         <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full max-w-[300px] flex-grow">
