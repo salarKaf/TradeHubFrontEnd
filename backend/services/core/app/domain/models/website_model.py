@@ -38,9 +38,10 @@ class WebsiteCategory(Base):
     website_id = Column(UUID(as_uuid=True), ForeignKey("websites.website_id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
-
+    is_active = Column(Boolean, default=True)
     website = relationship("Website", back_populates="website_categories")   
     subcategories = relationship("WebsiteSubcategory", back_populates="parent_category", cascade="all, delete-orphan")
+     
  
 
 
@@ -70,6 +71,7 @@ class WebsiteSubcategory(Base):
     parent_category_id = Column(UUID(as_uuid=True), ForeignKey("website_categories.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
+    is_active = Column(Boolean, default=True)
 
     parent_category = relationship("WebsiteCategory", back_populates="subcategories")
 
@@ -118,3 +120,9 @@ class WebsitePlan(Base):
     is_active = Column(Boolean, default=True) 
 
     plan = relationship("SubscriptionPlan", backref="website_plans")   
+
+
+
+
+
+
