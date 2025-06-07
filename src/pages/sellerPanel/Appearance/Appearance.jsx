@@ -1,10 +1,12 @@
-import React from 'react';
+import React from 'react'
+import HomeContent from '../Home/HomeContent'
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
 
 
-const Customers = () => {
-  return (
+const Appearance = () => {
+    return (
+
         <div>
 
             <Header />
@@ -18,12 +20,19 @@ const Customers = () => {
 
                     {/* Main Content */}
                     <div className="p-6  bg-[#FAF3E0] flex-1 overflow-auto">
-                        
                     </div>
                 </div>
             </div>
         </div>
-  );
+    );
+
+
 };
 
-export default Customers;
+
+export default Appearance;
+
+
+
+
+

@@ -1,6 +1,6 @@
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
-import ShowProduct from '../components/ShowProduct';
+import ShowProduct from './InfoProduct';
 
 const ShowProductaPage = () => {
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import InfoCard from '../Layouts/cart';
+import InfoCard from '../Layouts/card';
 import { FiBell } from 'react-icons/fi'; // آیکن نوتیفیکیشن
 import { Line } from 'react-chartjs-2';
 import {

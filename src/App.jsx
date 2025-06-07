@@ -9,14 +9,14 @@ import Navbar from "./pages/TradePages/components/Navbar";
 import CreateStore from "./pages/TradePages/CreateStore";
 import ChooseSellerType from "./pages/TradePages/ChooseSellerType";
 import RulesTrade from "./pages/TradePages/rulesTrade";
-import HomeSeller from "./pages/sellerPanel/Pages/Home";
-import Appearance from "./pages/sellerPanel/Pages/Appearance";
-import Profile from "./pages/sellerPanel/Pages/Profile";
-import Orders from "./pages/sellerPanel/Pages/Orders";
-import Products from "./pages/sellerPanel/Pages/Products";
-import Customers from "./pages/sellerPanel/Pages/Customers";
-import AddProductaPage from './pages/sellerPanel/Pages/AddProductaPage';
-import ShowProductaPage from './pages/sellerPanel/Pages/ShowProductPage';
+import HomeSeller from "./pages/sellerPanel/Home/Home";
+import Appearance from "./pages/sellerPanel/Appearance/Appearance";
+import Profile from "./pages/sellerPanel/Profile/Profile";
+import Orders from "./pages/sellerPanel/Orders/Orders";
+import Products from "./pages/sellerPanel/Product/Products";
+import Customers from "./pages/sellerPanel/Customers/Customers";
+import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
+import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function App() {

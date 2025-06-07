@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaPencilAlt, FaTrashAlt, FaPlus, FaArrowLeft, FaSave, FaChevronLeft, FaChevronRight, FaExpand, FaTimes, FaCheck, FaAsterisk, FaChevronDown, FaStar, FaRegStar, FaFire } from "react-icons/fa";
-import InfoCard from '../Layouts/cart'
-import ProductQuestions from "./Product/question";
-import ProductReviews from "./Product/Comment";
+import InfoCard from '../Layouts/card'
+import ProductQuestions from "./question";
+import ProductReviews from "./Comment";
 const ShowProduct = ({ productId }) => {
 
 
@@ -994,11 +994,6 @@ const ShowProduct = ({ productId }) => {
 
 
 export default ShowProduct;
-
-
-
-
-
 
 
 

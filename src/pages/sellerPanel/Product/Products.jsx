@@ -1,10 +1,8 @@
 import React from 'react'
-import HomeContent from '../components/HomeContent'
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
-import ShopifyAdminInterface from '../components/Product/productContent'
-import Category from '../components/Product/Category'
-
+import Category from './Category'
+import ShopifyAdminInterface from './ShopifyAdminInterface'
 
 
 

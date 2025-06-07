@@ -2,7 +2,7 @@ import React from 'react'
 
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
-import AddProduct from '../components/AddProduct';
+import AddProduct from './AddProduct';
 
 const AddProductaPage = () => {
   return (

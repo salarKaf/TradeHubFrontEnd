@@ -1,17 +1,17 @@
 import React from 'react'
-import HomeContent from '../components/HomeContent'
+import HomeContent from './HomeContent'
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
 
 
-const Appearance = () => {
+const Home = () => {
     return (
 
         <div>
 
             <Header />
 
-            <div className="flex h-screen ">
+            <div className="flex h-screen">
 
                 <div className="flex-1 flex ">
                     <div className="w-64 bg-[#EABF9F] ">
@@ -20,6 +20,7 @@ const Appearance = () => {
 
                     {/* Main Content */}
                     <div className="p-6  bg-[#FAF3E0] flex-1 overflow-auto">
+                        <HomeContent />
                     </div>
                 </div>
             </div>
@@ -30,7 +31,7 @@ const Appearance = () => {
 };
 
 
-export default Appearance;
+export default Home;
 
 
 
