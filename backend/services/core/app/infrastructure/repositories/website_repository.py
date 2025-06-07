@@ -71,9 +71,11 @@ class WebsiteRepository:
             logger.info(f"✅ category found with id: {category_id}")
     
         return category
+    
+
     def delete_category(self, category_id: UUID) -> None:
-        category = self.db.query(WebsiteCategory).filter(WebsiteCategory.id == category_id).first()
-        self.db.delete(category)
+        self.db.query(WebsiteCategory).filter(WebsiteCategory.id == category_id).update({WebsiteCategory.is_active: False})
+        self.db.query(WebsiteSubcategory).filter(WebsiteSubcategory.parent_category_id == category_id).update({WebsiteSubcategory.is_active: False})
         self.db.commit()
         logger.info(f"✅ Deleted category with ID {category_id} from database.")
        
@@ -96,3 +98,9 @@ class WebsiteRepository:
             WebsiteOwner.user_id == user_id,
             WebsiteOwner.website_id == website_id
         ).first()
+
+    def update_category(self, category: WebsiteCategory) -> None:
+        self.db.add(category)
+        self.db.commit()
+        self.db.refresh(category)
+        logger.info(f"✅ Category with ID {category.id} successfully updated in the database.")
