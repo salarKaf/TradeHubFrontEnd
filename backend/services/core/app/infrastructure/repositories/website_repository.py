@@ -72,12 +72,28 @@ class WebsiteRepository:
     
         return category
     
+    def get_subcategory_by_id(self, subcategory_id: UUID) -> WebsiteCategory:
+        subcategory = self.db.query(WebsiteSubcategory).filter(WebsiteSubcategory.id == subcategory_id).first()
+        
+        if not subcategory :
+            logger.warning(f"⚠️ No subcategory found with id: {subcategory_id}")
+        else:
+            logger.info(f"✅ subcategory found with id: {subcategory_id}")
+    
+        return subcategory
+    
 
     def delete_category(self, category_id: UUID) -> None:
         self.db.query(WebsiteCategory).filter(WebsiteCategory.id == category_id).update({WebsiteCategory.is_active: False})
         self.db.query(WebsiteSubcategory).filter(WebsiteSubcategory.parent_category_id == category_id).update({WebsiteSubcategory.is_active: False})
         self.db.commit()
         logger.info(f"✅ Deleted category with ID {category_id} from database.")
+
+
+    def delete_subcategory(self, subcategory_id: UUID) -> None:
+        self.db.query(WebsiteSubcategory).filter(WebsiteSubcategory.id == subcategory_id).update({WebsiteSubcategory.is_active: False})
+        self.db.commit()
+        logger.info(f"✅ Deleted subcategory with ID {subcategory_id} from database.")    
        
     # def get_website_by_name(self, website_name: str) -> Website:
     #     website = self.db.query(Website).filter(Website.custom_domain == website_name).first()
