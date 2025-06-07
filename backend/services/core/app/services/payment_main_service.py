@@ -35,6 +35,7 @@ class PaymentMainService:
 
         if is_successful:
             await self.order_service.update_order_status(order_id, "Paid")
+            await self.order_service.reduce_stock(order_id)
             return "success"
         else:
             await self.order_service.update_order_status(order_id, "Canceled")
