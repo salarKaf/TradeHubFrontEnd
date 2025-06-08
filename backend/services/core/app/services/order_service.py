@@ -5,7 +5,7 @@ from loguru import logger
 from app.services.item_service import ItemService
 from app.infrastructure.repositories.order_repository import OrderRepository
 from app.services.cart_service import CartService
-from app.domain.models.order_model import Order
+from app.domain.models.order_model import Order, OrderItem
 from app.domain.schemas.item_schema import ItemUpdateSchema
 class OrderService:
     def __init__(
@@ -62,3 +62,9 @@ class OrderService:
                     item.is_available = False
                 item_data = ItemUpdateSchema(stock=item.stock, is_available=item.is_available)
                 await self.item_service.edit_item(item.item_id, item_data)
+
+
+    async def get_order_item_by_buyer_and_item(self, buyer_id: UUID, item_id: UUID) -> bool:
+        logger.info("Checking if buyer bought the item")
+        Order_item = self.order_repository.get_order_item_by_buyer_and_item(buyer_id,item_id)
+        return Order_item       

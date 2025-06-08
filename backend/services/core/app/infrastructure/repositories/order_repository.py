@@ -1,8 +1,7 @@
-from typing import Annotated, Dict
-from loguru import logger
+from typing import Annotated
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import Optional, List
+from typing import List
 from  app.core.postgres_db.database import get_db
 from uuid import UUID
 from  app.domain.models.order_model import Order, OrderItem
@@ -79,7 +78,19 @@ class OrderRepository:
         else:
             raise Exception(f"Order with ID {order_id} not found.")
         
-
+    async def get_order_items(self, order_id: UUID):
+        return self.db.query(OrderItem).filter(OrderItem.order_id == order_id).all()
 
     def get_pending_order(self, buyer_id: UUID) -> List[Order]:
-        return self.db.query(Order).filter(Order.buyer_id == buyer_id, Order.status == "Pending").first()    
+        return self.db.query(Order).filter(Order.buyer_id == buyer_id, Order.status == "Pending").first()  
+
+
+    def get_order_item_by_buyer_and_item(self, buyer_id:UUID, item_id:UUID)-> OrderItem:
+        order_item = self.db.query(OrderItem).join(Order).filter(
+            Order.buyer_id == buyer_id,         
+            OrderItem.item_id == item_id,      
+            Order.status == 'Paid'               
+        ).first()   
+        print("OI", order_item)
+
+        return order_item        

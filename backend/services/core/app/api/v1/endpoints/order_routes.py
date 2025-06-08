@@ -51,12 +51,22 @@ async def get_orders_by_website_id(
     logger.info(f"Fetching order with ID: {website_id}")
     return await order_main_service.get_orders_by_website_id(website_id)
 
-@order_router.get("/all-orders", response_model=List[OrderResponseSchema], status_code=status.HTTP_201_CREATED)
-async def get_all_orders(
-    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
-    order_main_service: Annotated[OrderMainService, Depends()]
+# @order_router.get("/all-orders", response_model=List[OrderResponseSchema], status_code=status.HTTP_201_CREATED)
+# async def get_all_orders(
+#     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+#     order_main_service: Annotated[OrderMainService, Depends()]
+# ):
+    
+#     logger.info(f"Fetching all orders")
+#     return await order_main_service.get_all_orders(current_user.user_id)
+
+
+@order_router.get("/download_link/{item_id}", status_code=status.HTTP_200_OK)
+async def get_download_link(
+    item_id: UUID,
+    current_buyer: Annotated[TokenDataSchema, Depends(get_current_buyer)],
+    order_main_service: Annotated[OrderMainService, Depends()],
 ):
+    url = await order_main_service.get_item_delivery_url(current_buyer.buyer_id, item_id)
     
-    logger.info(f"Fetching all orders")
-    return await order_main_service.get_all_orders(current_user.user_id)
-    
+    return {"download_link": url}
