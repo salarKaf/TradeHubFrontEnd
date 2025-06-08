@@ -1,8 +1,8 @@
 import React from 'react';
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
-
-
+import CustomersContent from './CustomersContent'
+import ReportOrder from './ReportOrder';
 const Customers = () => {
     return (
         <div>
@@ -18,6 +18,8 @@ const Customers = () => {
 
                     {/* Main Content */}
                     <div className="p-6  bg-[#FAF3E0] flex-1 overflow-auto">
+                        <ReportOrder></ReportOrder>
+                        <CustomersContent></CustomersContent>
 
                     </div>
                 </div>
