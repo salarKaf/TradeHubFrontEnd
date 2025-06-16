@@ -120,3 +120,21 @@ class WebsiteRepository:
         self.db.commit()
         self.db.refresh(category)
         logger.info(f"✅ Category with ID {category.id} successfully updated in the database.")
+
+    def update_subcategory(self, subcategory: WebsiteSubcategory) -> None:
+        self.db.add(subcategory)
+        self.db.commit()
+        self.db.refresh(subcategory)
+        logger.info(f"✅ Subcategory with ID {subcategory.id} successfully updated in the database.") 
+
+    def update_website(self,website: Website) -> Website:
+
+        updated_website = self.get_website_by_id(website.website_id)
+        self.db.add(website)
+        self.db.commit()
+        self.db.refresh(website)
+        logger.info(f"✅ website with ID {website.website_id} successfully updated in the database.")   
+        return updated_website        
+    
+
+    
