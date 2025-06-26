@@ -182,7 +182,8 @@ class WebsiteMainService(BaseService):
                 id=subcat.id,
                 parent_category_id=subcat.parent_category_id,
                 name=subcat.name,
-                created_at=subcat.created_at
+                created_at=subcat.created_at,
+                is_active=subcat.is_active
             ) for subcat in subcategories
         ]
     
@@ -298,3 +299,6 @@ class WebsiteMainService(BaseService):
     
     async def get_total_buyers_count(self, website_id: UUID) -> int:
         return await self.website_service.get_total_buyers_count(website_id)
+
+    async def get_latest_announcements(self, website_id: UUID) -> list:
+        return await self.website_service.get_latest_announcements(website_id)

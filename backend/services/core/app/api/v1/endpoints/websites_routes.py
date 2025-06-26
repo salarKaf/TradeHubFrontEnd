@@ -268,3 +268,12 @@ async def get_average_order_per_buyer(
 ):
     avg = await website_service.get_average_order_per_buyer(website_id)
     return {"average_order_per_buyer": avg}
+
+
+@website_router.get("/announcements/latest/{website_id}")
+async def get_latest_announcements(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    return await website_service.get_latest_announcements(website_id)

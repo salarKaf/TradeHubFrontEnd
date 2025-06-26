@@ -1,4 +1,4 @@
-from app.domain.models.website_model import Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory
+from app.domain.models.website_model import Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory, Announcement
 from app.domain.models.buyer_model import Buyer
 from sqlalchemy.orm import Session
 from loguru import logger
@@ -143,3 +143,18 @@ class WebsiteRepository:
             Buyer.website_id == website_id
         ).scalar() or 0
         return count
+
+
+    def get_latest_announcements(self, website_id: UUID) -> list:
+        announcements = self.db.query(Announcement).filter(
+            Announcement.website_id == website_id
+        ).order_by(Announcement.created_at.desc()).all()
+
+        return [
+            {
+                "text": a.text,
+                "date": a.created_at.strftime("%Y-%m-%d"),
+                "type": a.type
+            }
+            for a in announcements
+        ]
