@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import Depends
 from typing import List, Optional
 from sqlalchemy import func
-
+from app.utils.date_utils import to_jalali_str
 class WebsiteRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
         self.db = db
@@ -153,7 +153,7 @@ class WebsiteRepository:
         return [
             {
                 "text": a.text,
-                "date": a.created_at.strftime("%Y-%m-%d"),
+                "date": to_jalali_str(a.created_at),
                 "type": a.type
             }
             for a in announcements

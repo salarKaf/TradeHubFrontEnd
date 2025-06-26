@@ -11,7 +11,7 @@ from app.infrastructure.repositories.cart_repository import CartRepository
 from datetime import datetime
 from datetime import date
 from sqlalchemy import extract, func
-
+from app.utils.date_utils import to_jalali_str
 class OrderRepository:
     def __init__(self,
     db: Annotated[Session, Depends(get_db)],
@@ -187,7 +187,7 @@ class OrderRepository:
                     result.append({
                         "item_name": item_obj.name,         
                         "amount": order_item.price,             
-                        "date": order.created_at.strftime("%Y-%m-%d")
+                        "date": to_jalali_str(order.created_at)
                     })
         return result
 
