@@ -272,3 +272,10 @@ class WebsiteMainService(BaseService):
         active_buyers_count = await self.website_service.get_active_buyers_count_by_website_id(website_id)
 
         return active_buyers_count
+    
+
+    async def get_sales_summary(self, website_id: UUID, mode: str) -> dict:
+        return await self.website_service.get_sales_summary(website_id, mode)
+
+    async def get_last_6_months_sales(self, website_id: UUID) -> List[dict]:
+        return await self.website_service.get_last_6_months_sales(website_id)

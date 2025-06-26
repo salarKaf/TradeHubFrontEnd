@@ -8,6 +8,9 @@ from  app.domain.models.order_model import Order, OrderItem
 from app.infrastructure.repositories.item_repository import ItemRepository
 from app.infrastructure.repositories.cart_repository import CartRepository
 from datetime import datetime
+from datetime import date
+from sqlalchemy import extract
+from sqlalchemy import func, extract
 
 class OrderRepository:
     def __init__(self,
@@ -91,6 +94,64 @@ class OrderRepository:
             OrderItem.item_id == item_id,      
             Order.status == 'Paid'               
         ).first()   
-        print("OI", order_item)
 
         return order_item        
+    
+
+    def get_active_buyers_count_by_website(self, website_id: UUID) -> int:
+        return self.db.query(func.count(func.distinct(Order.buyer_id))) \
+            .filter(Order.website_id == website_id) \
+            .filter(Order.status == 'Paid') \
+            .scalar()
+    
+
+
+    def get_sales_by_day(self, website_id: UUID, day: date) -> dict:
+        result = self.db.query(
+            func.count(Order.order_id),
+            func.coalesce(func.sum(Order.total_price), 0)
+        ).filter(
+            Order.website_id == website_id,
+            func.date(Order.created_at) == day,
+            Order.status == 'Paid'
+        ).first()
+
+        return {"count": result[0], "revenue": result[1]}
+
+    def get_sales_by_month(self, website_id: UUID, year: int, month: int) -> dict:
+        result = self.db.query(
+            func.count(Order.order_id),
+            func.coalesce(func.sum(Order.total_price), 0)
+        ).filter(
+            Order.website_id == website_id,
+            extract("year", Order.created_at) == year,
+            extract("month", Order.created_at) == month,
+            Order.status == 'Paid'
+        ).first()
+
+        return {"count": result[0], "revenue": result[1]}
+
+    def get_sales_by_year(self, website_id: UUID, year: int) -> dict:
+        result = self.db.query(
+            func.count(Order.order_id),
+            func.coalesce(func.sum(Order.total_price), 0)
+        ).filter(
+            Order.website_id == website_id,
+            extract("year", Order.created_at) == year,
+            Order.status == 'Paid'
+        ).first()
+
+        return {"count": result[0], "revenue": result[1]}
+    
+
+    def get_total_revenue_for_month(self, website_id: UUID, year: int, month: int) -> int:
+        result = self.db.query(
+            func.coalesce(func.sum(Order.total_price), 0)
+        ).filter(
+            Order.website_id == website_id,
+            extract("year", Order.created_at) == year,
+            extract("month", Order.created_at) == month,
+            Order.status == 'Paid'
+        ).scalar()
+
+        return result or 0

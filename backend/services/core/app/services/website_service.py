@@ -13,6 +13,13 @@ from fastapi.encoders import jsonable_encoder
 from typing import List
 from app.domain.models.buyer_model import Buyer
 from app.infrastructure.repositories.order_repository import OrderRepository
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
+MONTH_NAMES = {
+    1: "فروردین", 2: "اردیبهشت", 3: "خرداد", 4: "تیر", 5: "مرداد", 6: "شهریور",
+    7: "مهر", 8: "آبان", 9: "آذر", 10: "دی", 11: "بهمن", 12: "اسفند"
+}
 
 class WebsiteService(BaseService):
     def __init__(
@@ -278,5 +285,36 @@ class WebsiteService(BaseService):
     async def get_active_buyers_count_by_website_id(self, website_id: UUID) -> int:
         website = self.website_repository.get_website_by_id(website_id)
         return self.order_repository.get_active_buyers_count_by_website(website_id)
-
     
+
+    async def get_sales_summary(self, website_id: UUID, mode: str) -> dict:
+        today = date.today()
+
+        if mode == "daily":
+            return self.order_repository.get_sales_by_day(website_id, today)
+
+        elif mode == "monthly":
+            return self.order_repository.get_sales_by_month(website_id, today.year, today.month)
+
+        elif mode == "yearly":
+            return self.order_repository.get_sales_by_year(website_id, today.year)
+
+        else:
+            raise ValueError("Invalid mode")
+        
+
+
+    async def get_last_6_months_sales(self, website_id: UUID) -> List[dict]:
+        today = date.today()
+        months = []
+
+        for i in range(5, -1, -1):
+            target = today - relativedelta(months=i)
+            year, month = target.year, target.month
+            total = self.order_repository.get_total_revenue_for_month(website_id, year, month)
+            months.append({
+                "month": MONTH_NAMES.get(month, str(month)),
+                "revenue": total
+            })
+
+        return months

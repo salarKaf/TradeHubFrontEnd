@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status, Query
 from app.services.website_main_service import WebsiteMainService
 from app.domain.schemas.website_schema import (WebsiteCreateSchema, WebsiteResponseSchema, WebsiteCategoryCreateSchema,
 WebsiteCategoryResponseSchema, WebsiteCategoryResponseSchema,CategoryUpdateSchema,SubCategoryUpdateSchema,
@@ -7,7 +7,7 @@ from app.domain.schemas.buyer_schema import BuyerResponseSchema
 from app.services.auth_services.auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
-from typing import Annotated, List
+from typing import Annotated, List, Literal
 from uuid import UUID
 
 
@@ -188,4 +188,25 @@ async def get_active_buyers_count(
 ):
    
     active_buyers_count = await website_service.get_active_buyers_count_by_website_id(website_id)
-    return {"website_id": website_id, "active_buyers_count": active_buyers_count}
+    return {"active_buyers_count": active_buyers_count}
+
+
+@website_router.get("/sales/summary/{website_id}")
+async def get_sales_summary(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+    mode: Literal["daily", "monthly", "yearly"] = Query("daily"),
+):
+
+    return await website_service.get_sales_summary(website_id, mode)
+
+
+
+@website_router.get("/sales/last-6-months/{website_id}")
+async def get_last_6_months_sales(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()]
+):
+    return await website_service.get_last_6_months_sales(website_id)
