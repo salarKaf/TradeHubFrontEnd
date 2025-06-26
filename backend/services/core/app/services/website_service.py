@@ -318,3 +318,19 @@ class WebsiteService(BaseService):
             })
 
         return months
+
+
+    async def get_total_revenue(self, website_id: UUID) -> dict:
+        return self.order_repository.get_total_revenue(website_id)
+    
+
+    async def get_total_sales_count(self, website_id: UUID) -> int:
+        return self.order_repository.get_total_sales_count(website_id)
+
+
+    async def get_latest_orders(self, website_id: UUID, limit: int) -> list:
+     return self.order_repository.get_latest_orders(website_id, limit)
+
+
+    async def get_best_selling_items(self, website_id: UUID, limit: int) -> list:
+        return self.order_repository.get_best_selling_items(website_id, limit)

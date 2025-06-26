@@ -210,3 +210,41 @@ async def get_last_6_months_sales(
     website_service: Annotated[WebsiteMainService, Depends()]
 ):
     return await website_service.get_last_6_months_sales(website_id)
+
+
+@website_router.get("/sales/total-revenue/{website_id}")
+async def get_total_revenue(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    return await website_service.get_total_revenue(website_id)
+
+
+@website_router.get("/sales/total-count/{website_id}")
+async def get_total_sales_count(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    count = await website_service.get_total_sales_count(website_id)
+    return {"total_sales_count": count}
+
+
+@website_router.get("/orders/latest/{website_id}")
+async def get_latest_orders(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    orders = await website_service.get_latest_orders(website_id, limit=3)
+    return orders
+
+
+@website_router.get("/products/best-selling/{website_id}")
+async def best_selling_products(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    return await website_service.get_best_selling_items(website_id, limit=4)

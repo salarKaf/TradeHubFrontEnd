@@ -279,3 +279,15 @@ class WebsiteMainService(BaseService):
 
     async def get_last_6_months_sales(self, website_id: UUID) -> List[dict]:
         return await self.website_service.get_last_6_months_sales(website_id)
+    
+    async def get_total_revenue(self, website_id: UUID) -> dict:
+        return await self.website_service.get_total_revenue(website_id)
+
+    async def get_total_sales_count(self, website_id: UUID) -> int:
+        return await self.website_service.get_total_sales_count(website_id)
+    
+    async def get_latest_orders(self, website_id: UUID, limit: int) -> list:
+        return await self.website_service.get_latest_orders(website_id, limit)
+
+    async def get_best_selling_items(self, website_id: UUID, limit: int) -> list:
+        return await self.website_service.get_best_selling_items(website_id, limit)

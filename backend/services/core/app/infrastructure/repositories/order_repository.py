@@ -5,6 +5,7 @@ from typing import List
 from  app.core.postgres_db.database import get_db
 from uuid import UUID
 from  app.domain.models.order_model import Order, OrderItem
+from app.domain.models.website_model import Item
 from app.infrastructure.repositories.item_repository import ItemRepository
 from app.infrastructure.repositories.cart_repository import CartRepository
 from datetime import datetime
@@ -105,7 +106,6 @@ class OrderRepository:
             .scalar()
     
 
-
     def get_sales_by_day(self, website_id: UUID, day: date) -> dict:
         result = self.db.query(
             func.count(Order.order_id),
@@ -155,3 +155,65 @@ class OrderRepository:
         ).scalar()
 
         return result or 0
+    
+
+    def get_total_revenue(self, website_id: UUID) -> dict:
+        total = self.db.query(func.sum(Order.total_price)) \
+            .filter(Order.website_id == website_id, Order.status == 'Paid') \
+            .scalar() or 0
+
+        return {"total_revenue": total}
+
+    def get_total_sales_count(self, website_id: UUID) -> int:
+        count = self.db.query(func.count(Order.order_id)).filter(
+            Order.website_id == website_id,
+            Order.status == 'Paid'
+        ).scalar() or 0
+        return count
+
+
+    def get_latest_orders(self, website_id: UUID, limit: int = 5) -> list:
+        orders = self.db.query(Order).filter(
+            Order.website_id == website_id,
+            Order.status == 'Paid'
+        ).order_by(Order.created_at.desc()).limit(limit).all()
+
+        result = []
+
+        for order in orders:
+            order_items = self.db.query(OrderItem).filter(OrderItem.order_id == order.order_id).all()
+            for order_item in order_items:
+                item_obj = self.db.query(Item).filter(Item.item_id == order_item.item_id).first()
+                if item_obj:
+                    result.append({
+                        "item_name": item_obj.name,         
+                        "amount": order_item.price,             
+                        "date": order.created_at.strftime("%Y-%m-%d")
+                    })
+        return result
+
+    def get_best_selling_items(self, website_id: UUID, limit: int = 5) -> list:
+        from sqlalchemy import func
+        results = self.db.query(
+            Item.name,
+            func.sum(OrderItem.price).label("total_amount"),
+            func.count(OrderItem.item_id).label("sales_count")
+        ).join(
+            OrderItem, OrderItem.item_id == Item.item_id
+        ).join(
+            Order, Order.order_id == OrderItem.order_id
+        ).filter(
+            Order.website_id == website_id,
+            Order.status == 'Paid'
+        ).group_by(Item.item_id, Item.name
+        ).order_by(func.count(OrderItem.item_id).desc()
+        ).limit(limit).all()
+
+        return [
+            {
+                "product_name": result.name,
+                "total_amount": result.total_amount,
+                "sales_count": result.sales_count
+            }
+            for result in results
+        ]
