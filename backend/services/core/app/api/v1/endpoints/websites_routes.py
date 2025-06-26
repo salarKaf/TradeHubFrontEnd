@@ -248,3 +248,23 @@ async def best_selling_products(
     website_service: Annotated[WebsiteMainService, Depends()],
 ):
     return await website_service.get_best_selling_items(website_id, limit=4)
+
+
+@website_router.get("/buyers/count/{website_id}")
+async def get_total_buyers_count(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    count = await website_service.get_total_buyers_count(website_id)
+    return {"buyers_count": count}
+
+
+@website_router.get("/buyers/average-order/{website_id}")
+async def get_average_order_per_buyer(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    avg = await website_service.get_average_order_per_buyer(website_id)
+    return {"average_order_per_buyer": avg}

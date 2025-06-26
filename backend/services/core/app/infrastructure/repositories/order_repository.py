@@ -2,16 +2,15 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from  app.core.postgres_db.database import get_db
+from app.core.postgres_db.database import get_db
 from uuid import UUID
-from  app.domain.models.order_model import Order, OrderItem
+from app.domain.models.order_model import Order, OrderItem
 from app.domain.models.website_model import Item
 from app.infrastructure.repositories.item_repository import ItemRepository
 from app.infrastructure.repositories.cart_repository import CartRepository
 from datetime import datetime
 from datetime import date
-from sqlalchemy import extract
-from sqlalchemy import func, extract
+from sqlalchemy import extract, func
 
 class OrderRepository:
     def __init__(self,
@@ -217,3 +216,15 @@ class OrderRepository:
             }
             for result in results
         ]
+
+
+    def get_average_order_per_buyer(self, website_id: UUID, buyers_count: int) -> int:
+        total = self.db.query(func.sum(Order.total_price)).filter(
+            Order.website_id == website_id,
+            Order.status == 'Paid'
+        ).scalar() or 0
+
+        if buyers_count == 0:
+            return 0
+
+        return int(total / buyers_count)

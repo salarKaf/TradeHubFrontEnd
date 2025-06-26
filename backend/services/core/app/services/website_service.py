@@ -334,3 +334,11 @@ class WebsiteService(BaseService):
 
     async def get_best_selling_items(self, website_id: UUID, limit: int) -> list:
         return self.order_repository.get_best_selling_items(website_id, limit)
+
+    async def get_total_buyers_count(self, website_id: UUID) -> int:
+        return self.website_repository.get_total_buyers_count(website_id)
+    
+
+    async def get_average_order_per_buyer(self, website_id: UUID) -> int:
+        buyers_count = await self.get_total_buyers_count(website_id)
+        return self.order_repository.get_average_order_per_buyer(website_id, buyers_count)

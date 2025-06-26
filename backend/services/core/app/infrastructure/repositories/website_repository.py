@@ -1,4 +1,5 @@
 from app.domain.models.website_model import Website, WebsiteOwner, WebsiteCategory, WebsiteSubcategory
+from app.domain.models.buyer_model import Buyer
 from sqlalchemy.orm import Session
 from loguru import logger
 from uuid import UUID
@@ -6,6 +7,7 @@ from app.core.postgres_db.database import get_db
 from typing import Annotated
 from fastapi import Depends
 from typing import List, Optional
+from sqlalchemy import func
 
 class WebsiteRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -136,5 +138,8 @@ class WebsiteRepository:
         logger.info(f"✅ website with ID {website.website_id} successfully updated in the database.")   
         return updated_website        
     
-
-    
+    def get_total_buyers_count(self, website_id: UUID) -> int:
+        count = self.db.query(func.count(Buyer.buyer_id)).filter(
+            Buyer.website_id == website_id
+        ).scalar() or 0
+        return count
