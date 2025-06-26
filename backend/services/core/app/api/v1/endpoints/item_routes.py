@@ -74,3 +74,14 @@ async def delete_item(
 @item_router.get("/newest_items", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
 async def get_newest_items(website_id: UUID, limit:int, item_main_service: ItemMainService = Depends()):
     return await item_main_service.get_newest_items(website_id, limit)
+
+
+@item_router.get("/products/count/{website_id}")
+async def get_items_count(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    item_service: Annotated[ItemMainService, Depends()],
+):
+    count = await item_service.get_items_count(website_id)
+    return {"items_count": count}
+

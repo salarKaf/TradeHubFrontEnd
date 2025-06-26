@@ -182,3 +182,6 @@ class ItemMainService(BaseService):
         )
         for item in items
     ]
+
+    async def get_items_count(self, website_id: UUID) -> int:
+        return await self.item_service.get_items_count(website_id)

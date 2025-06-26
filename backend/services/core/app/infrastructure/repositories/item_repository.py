@@ -5,6 +5,7 @@ from uuid import UUID
 from app.core.postgres_db.database import get_db
 from typing import Annotated, Optional, List
 from fastapi import Depends
+from sqlalchemy import func
 
 
 class ItemRepository:
@@ -58,3 +59,9 @@ class ItemRepository:
 
     def count_items_by_website_id(self, website_id: UUID) -> int:
         return self.db.query(Item).filter(Item.website_id == website_id).count()
+
+    def get_items_count(self, website_id: UUID) -> int:
+        count = self.db.query(func.count(Item.item_id)).filter(
+            Item.website_id == website_id
+        ).scalar() or 0
+        return count
