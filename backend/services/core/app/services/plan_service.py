@@ -40,5 +40,29 @@ class PlanService:
 
         if item_count >= active_plan.plan.item_limit:
             raise HTTPException(status_code=403, detail="Item limit exceeded for this plan.")
+        
+
+    async def check_discount_permission(self, website_id: UUID) -> bool:
+        active_plan = self.plan_repository.get_active_plan_by_website_id(website_id)
+        if not active_plan:
+            raise HTTPException(status_code=403, detail="No active plan for this website.")
+        if not active_plan.plan.allow_discount :
+            raise HTTPException(status_code=403, detail="Your plan does not allow discount features.")
+    
+
+    async def get_plan_by_id(self, plan_id: UUID):
+        plan = self.plan_repository.get_plan_by_id(plan_id)
+        if not plan:
+            raise  HTTPException(status_code=404, detail="Plan not found")
+        return plan
 
 
+
+    async def activate_plan_for_website(self, website_id, plan_id, price):
+            self.plan_repository.deactivate_all_website_plans(website_id)
+            self.plan_repository.create_website_plan(
+                website_id=website_id,
+                plan_id=plan_id,
+                price=price,
+            )
+            return True

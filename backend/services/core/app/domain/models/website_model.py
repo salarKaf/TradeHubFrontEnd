@@ -106,7 +106,8 @@ class SubscriptionPlan(Base):
     allow_discount = Column(Boolean, default=False)
     allow_cart_save = Column(Boolean, default=False)
     allow_file_upload = Column(Boolean, default=False)
-    allow_analytics = Column(Boolean, default=False)    
+    allow_analytics = Column(Boolean, default=False) 
+    price = Column(DECIMAL(10, 2), nullable=False)  
 
 
 class WebsitePlan(Base):
