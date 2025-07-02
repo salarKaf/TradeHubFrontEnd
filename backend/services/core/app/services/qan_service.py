@@ -8,15 +8,23 @@ from app.domain.schemas.qan_schema import QuestionCreateSchema, QuestionAnswerSc
 from app.domain.models.qan_model import ItemQuestion
 from app.services.user_service import UserService
 from uuid import UUID
-
+from app.services.plan_service import PlanService
 class QuestionService:
     def __init__(self,
                   question_epository: Annotated[QuestionRepository, Depends()],
-                  user_service: Annotated[UserService, Depends()]):
+                  user_service: Annotated[UserService, Depends()],
+                  plan_service: Annotated[PlanService, Depends()]
+                  ):
         self.question_epository = question_epository
         self.user_service = user_service
+        self.plan_service = plan_service
+
 
     async def create_question(self, buyer_id: UUID, data: QuestionCreateSchema) -> ItemQuestion:
+        plan = self.plan_service.get_active_plan_by_website_id(data.website_id)
+        if plan != 'Pro':
+            raise HTTPException(status_code=403, detail="Asking questions is only available in pro plan.")
+
         return self.question_epository.create_question(buyer_id, data)
 
     async def answer_question(self,user_id:UUID, question_id: UUID, data: QuestionAnswerSchema) -> ItemQuestion:
