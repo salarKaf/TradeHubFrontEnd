@@ -4,29 +4,32 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     force=True,
 )
-
+from app.infrastructure.repositories.cart_repository import CartRepository
 logger = logging.getLogger(__name__)
 logger.info("Custom logging is configured.")
-import smtplib
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from fastapi.security import OAuth2PasswordBearer
 from app.api.v1.endpoints.websites_routes import website_router
 from app.api.v1.endpoints.item_routes import item_router
-from app.infrastructure.scheduler.scheduler import SchedulerService
-from contextlib import asynccontextmanager
-
+from app.api.v1.endpoints.order_routes import order_router
+from app.infrastructure.scheduler.scheduler import SchedulerService, CartCleanupScheduler
+from app.api.v1.endpoints.cart_routes import cart_router
+from app.api.v1.endpoints.payment_routes import payment_router
+from app.api.v1.endpoints.review_routes import review_router
 app = FastAPI()
 
 from app.core.postgres_db.database import get_db
 from app.infrastructure.repositories.plan_repository import PlanRepository
 
-@app.on_event("startup")
-async def start_scheduler():
-    db = next(get_db()) 
-    plan_repo = PlanRepository(db)
-    scheduler = SchedulerService(plan_repo)
-    scheduler.start()
+# @app.on_event("startup")
+# async def start_scheduler():
+#     db = next(get_db()) 
+#     plan_repo = PlanRepository(db)
+#     cart_repo = CartRepository(db)
+#     check_plan_scheduler = SchedulerService(plan_repo)
+#     expire_cart_scheduler = CartCleanupScheduler(cart_repo)
+#     check_plan_scheduler.start()
+#     expire_cart_scheduler.start()
 
 
 app.add_middleware(
@@ -40,6 +43,10 @@ app.add_middleware(
 logging.info("Core Service Started")
 app.include_router(website_router, prefix="/api/v1/websites", tags=["websites"])
 app.include_router(item_router, prefix="/api/v1/items", tags=["items"])
+app.include_router(cart_router, prefix="/api/v1/carts", tags=["carts"])
+app.include_router(order_router, prefix="/api/v1/order", tags=["orders"])
+app.include_router(payment_router, prefix="/api/v1/payment", tags=["payments"])
+app.include_router(review_router, prefix="/api/v1/review", tags=["reviews"])
 
 
 @app.get("/")
