@@ -21,3 +21,6 @@ class ReviewRepository:
         self.db.commit()
         self.db.refresh(review)
         return review
+    
+    def get_review_by_id(self, review_id):
+        return self.db.query(Review).filter(Review.review_id == review_id).first()

@@ -15,4 +15,11 @@ class ReviewService:
         created_review = self.review_repository.create_review(buyer_id, website_id, item_id, rating, text)
         logger.info(f"Review created for item {created_review.item_id} by buyer {created_review.buyer_id}")
         return created_review
+    
+
+    async def get_review_by_id(self, review_id):
+        review = self.review_repository.get_review_by_id(review_id)
+        if not review:
+            raise HTTPException(status_code=404, detail="Review not found")
+        return review
 

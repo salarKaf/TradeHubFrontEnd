@@ -23,3 +23,17 @@ class ReviewMainService:
             text= new_review.text, 
             created_at= new_review.created_at
         )
+    
+
+    async def get_review_by_id(self, review_id) -> ReviewResponseSchema:
+        review = await self.review_service.get_review_by_id(review_id)
+        return ReviewResponseSchema(
+            review_id= review.review_id, 
+            item_id= review.item_id, 
+            buyer_id= review.buyer_id, 
+            website_id= review.website_id, 
+            rating= review.rating, 
+            text= review.text, 
+            created_at= review.created_at
+        )
+    
