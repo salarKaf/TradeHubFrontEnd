@@ -3,7 +3,7 @@ from app.domain.schemas.review_schema import ReviewCreateSchema, ReviewResponseS
 from loguru import logger
 from app.services.review_service import ReviewService
 from fastapi import HTTPException, Depends
-from typing import Annotated
+from typing import Annotated, List
 
 
 class ReviewMainService:
@@ -25,7 +25,7 @@ class ReviewMainService:
         )
     
 
-    async def get_review_by_id(self, review_id) -> ReviewResponseSchema:
+    async def get_review_by_id(self, review_id:UUID) -> ReviewResponseSchema:
         review = await self.review_service.get_review_by_id(review_id)
         return ReviewResponseSchema(
             review_id= review.review_id, 
@@ -37,3 +37,18 @@ class ReviewMainService:
             created_at= review.created_at
         )
     
+
+    async def get_reviews_for_item(self, item_id:UUID) -> List[ReviewResponseSchema]:
+        reviews =  await self.review_service.get_item_reviews(item_id)
+        return [
+        ReviewResponseSchema(
+            review_id=review.review_id,
+            item_id=review.item_id,
+            buyer_id=review.buyer_id,
+            website_id=review.website_id,
+            rating=review.rating,
+            text=review.text,
+            created_at=review.created_at
+        )
+        for review in reviews
+    ]

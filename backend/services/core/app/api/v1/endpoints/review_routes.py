@@ -32,3 +32,12 @@ async def get_review(
     review_main_service: Annotated[ReviewMainService, Depends()]
 ):
     return await review_main_service.get_review_by_id(review_id)
+
+
+
+@review_router.get("/items/{item_id}/reviews", response_model=List[ReviewResponseSchema])
+async def get_item_reviews(
+    item_id: UUID,
+    review_main_service: Annotated[ReviewMainService, Depends()]
+):
+    return await review_main_service.get_reviews_for_item(item_id)
