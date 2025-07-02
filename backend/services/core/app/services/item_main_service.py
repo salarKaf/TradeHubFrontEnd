@@ -177,6 +177,7 @@ class ItemMainService(BaseService):
             delivery_url=item.delivery_url,
             post_purchase_note=item.post_purchase_note,
             stock=item.stock,
+            is_available= item.is_available,
             image_url=item.image_url,
             created_at=item.created_at
         )
@@ -185,3 +186,5 @@ class ItemMainService(BaseService):
 
     async def get_items_count(self, website_id: UUID) -> int:
         return await self.item_service.get_items_count(website_id)
+
+
