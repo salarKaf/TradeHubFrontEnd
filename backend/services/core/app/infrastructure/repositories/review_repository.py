@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.core.postgres_db.database import get_db
@@ -27,3 +27,11 @@ class ReviewRepository:
     
     def get_reviews_by_item(self, item_id:UUID):
         return self.db.query(Review).filter(Review.item_id == item_id).order_by(Review.created_at.desc()).all()
+    
+
+    async def get_review_by_buyer_and_item(self, buyer_id: UUID, item_id: UUID) -> Optional[Review]:
+      return (
+          self.db.query(Review)
+          .filter(Review.buyer_id == buyer_id, Review.item_id == item_id)
+          .first()
+      )
