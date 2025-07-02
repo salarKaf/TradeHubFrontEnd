@@ -25,3 +25,14 @@ class QuestionRepository:
         self.db.commit()
         self.db.refresh(question)
         return question
+
+    def answer_question(self, question_id: UUID, answer_text: str) -> ItemQuestion:
+      question = self.db.query(ItemQuestion).get(question_id)
+      question.answer_text = answer_text
+      question.answered_at = datetime.utcnow()
+      self.db.commit()
+      self.db.refresh(question)
+      return question
+    
+    def get_question_by_id(self, question_id: UUID) -> ItemQuestion:
+        return self.db.query(ItemQuestion).get(question_id)
