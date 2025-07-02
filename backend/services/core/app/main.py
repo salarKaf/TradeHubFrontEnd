@@ -16,6 +16,8 @@ from app.infrastructure.scheduler.scheduler import SchedulerService, CartCleanup
 from app.api.v1.endpoints.cart_routes import cart_router
 from app.api.v1.endpoints.payment_routes import payment_router
 from app.api.v1.endpoints.review_routes import review_router
+from app.api.v1.endpoints.qan_routes import qan_router
+
 app = FastAPI()
 
 from app.core.postgres_db.database import get_db
@@ -47,6 +49,7 @@ app.include_router(cart_router, prefix="/api/v1/carts", tags=["carts"])
 app.include_router(order_router, prefix="/api/v1/order", tags=["orders"])
 app.include_router(payment_router, prefix="/api/v1/payment", tags=["payments"])
 app.include_router(review_router, prefix="/api/v1/review", tags=["reviews"])
+app.include_router(qan_router, prefix="/api/v1/question", tags=["questions"])
 
 
 @app.get("/")
