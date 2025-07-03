@@ -1,0 +1,1 @@
+ALLOWED_DOMAINS = ["gmail.com", "yahoo.com", "email.com"]

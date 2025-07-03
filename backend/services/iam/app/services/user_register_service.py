@@ -1,7 +1,6 @@
 from typing import Annotated
 from loguru import logger
 from fastapi import Depends, HTTPException, status
-
 from app.domain.schemas.user_schema import (
     UserCreateSchema,
     UserResponseSchema,
@@ -14,8 +13,8 @@ from app.services.auth_services.auth_service import AuthService
 from app.services.auth_services.otp_service import OTPService
 from app.services.base_service import BaseService
 from app.services.user_service import UserService
+from app.utils import helper
 
-#TODO check pass strength
 class RegisterService(BaseService):
     def __init__(
         self,
@@ -40,7 +39,14 @@ class RegisterService(BaseService):
         
         if user.password != user.confirm_password:
             raise HTTPException(status_code=400, detail='Password confirmation does not match')
-       
+        
+        domain = user.email.split("@")[-1]
+        if domain not in helper.ALLOWED_DOMAINS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Only emails from {', '.join(helper.ALLOWED_DOMAINS)} are allowed"
+            )
+        
 
         new_user = await self.user_service.create_user(user)
         otp = self.otp_service.send_otp(new_user.email)
@@ -86,11 +92,11 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist"
             )
 
-        if existing_user.is_verified:
-            logger.error(f"User with email {resend_otp_schema.email} already verified")
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="User already verified"
-            )
+        # if existing_user.is_verified:
+        #     logger.error(f"User with email {resend_otp_schema.email} already verified")
+        #     raise HTTPException(
+        #         status_code=status.HTTP_400_BAD_REQUEST, detail="User already verified"
+        #     )
 
         if self.otp_service.check_exist(resend_otp_schema.email):
             logger.error(f"OTP for email {resend_otp_schema.email} already exists")

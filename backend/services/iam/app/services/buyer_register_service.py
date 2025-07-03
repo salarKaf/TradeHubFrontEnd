@@ -14,6 +14,7 @@ from app.services.auth_services.auth_service import AuthService
 from app.services.auth_services.otp_service import OTPService
 from app.services.base_service import BaseService
 from app.services.buyer_service import BuyerService
+from app.utils import helper
 
 
 class RegisterService(BaseService):
@@ -38,6 +39,12 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer already exists"
             )
         
+        domain = buyer.email.split("@")[-1]
+        if domain not in helper.ALLOWED_DOMAINS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Only emails from {', '.join(helper.ALLOWED_DOMAINS)} are allowed"
+            )
         if buyer.password != buyer.confirm_password:
             raise HTTPException(status_code=400, detail='Password confirmation does not match')
 
@@ -75,7 +82,7 @@ class RegisterService(BaseService):
     async def resend_otp(
         self, resend_otp_schema: ResendOTPSchema
     ) -> ResendOTPResponseSchema:
-        existing_buyer = await self.buyer_service.get_buyer_by_email(resend_otp_schema.email)
+        existing_buyer = await self.buyer_service.get_buyer_by_email(resend_otp_schema.website_id,resend_otp_schema.email)
         
         if not existing_buyer:
             logger.error(f"Buyer with email {resend_otp_schema.email} does not exist")
@@ -83,11 +90,11 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer does not exist"
             )
 
-        if existing_buyer.is_verified:
-            logger.error(f"Buyer with email {resend_otp_schema.email} already verified")
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer already verified"
-            )
+        # if existing_buyer.is_verified:
+        #     logger.error(f"Buyer with email {resend_otp_schema.email} already verified")
+        #     raise HTTPException(
+        #         status_code=status.HTTP_400_BAD_REQUEST, detail="Buyer already verified"
+        #     )
 
         if self.otp_service.check_exist(resend_otp_schema.email):
             logger.error(f"OTP for email {resend_otp_schema.email} already exists")
@@ -115,7 +122,7 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid OTP❌"
             )
 
-        buyer = await self.buyer_service.get_buyer_by_email(verify_buyer_schema.email)
+        buyer = await self.buyer_service.get_buyer_by_email(verify_buyer_schema.website_id, verify_buyer_schema.email)
         await self.buyer_service.update_verified_status(buyer.buyer_id, {"can_reset_password": True})
 
         logger.info(f"Buyer with email {verify_buyer_schema.email} requested for password reset")
