@@ -1,7 +1,8 @@
 from typing import Annotated
 from loguru import logger
-from fastapi import APIRouter, Depends, UploadFile, status, Form
+from fastapi import APIRouter, Depends, UploadFile, status, Form, HTTPException
 from fastapi.responses import StreamingResponse
+from bson import ObjectId
 
 from app.domain.schemas.media_schema import MediaGetSchema, MediaSchema
 from app.domain.schemas.token_schema import TokenDataSchema
@@ -46,6 +47,37 @@ async def upload_banner(
     return output
 
 
+@media_router.get(
+    "/get_banner/{website_id}",
+    response_class=StreamingResponse,
+    status_code=status.HTTP_200_OK
+)
+async def get_banner(
+    website_id: UUID,
+    media_service: Annotated[MediaService, Depends()],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    logger.info(f"Getting website info for website: {website_id}")
+
+    website = await website_service.get_website_by_id(website_id)
+
+    if not website.banner_image:
+        raise HTTPException(status_code=404, detail="No banner image set for this website")
+
+    mongo_id = ObjectId(website.banner_image)
+    logger.info(f"Mongo id for banner: {mongo_id}")
+
+    media_schema, file_stream = await media_service.get_public_media(mongo_id)
+
+    logger.info(f"Retrieving banner file {media_schema.filename}")
+
+    return StreamingResponse(
+        content=file_stream(),
+        media_type=media_schema.content_type,
+        headers={
+            "Content-Disposition": f"inline; filename={media_schema.filename}"
+        },
+    )
 
 
 
