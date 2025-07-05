@@ -81,3 +81,62 @@ async def get_banner(
 
 
 
+@media_router.put(
+    "/upload_logo/{website_id}",
+    response_model=MediaSchema,
+    status_code=status.HTTP_201_CREATED
+)
+async def upload_logo(
+    website_id: UUID,
+    file: UploadFile,
+    media_service: Annotated[MediaService, Depends()],
+    website_service: Annotated[WebsiteMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+):
+    logger.info("Validating logo file")
+    validate_image_file(file)
+
+    logger.info(f"Uploading logo for website {website_id} {file.filename}")
+    output = await media_service.create_media(file, str(current_user.user_id))
+
+    update_data = WebsiteUpdateSchema(
+        website_id=website_id,
+        logo_url=str(output.mongo_id)
+    )
+    logger.info(f"Saving media id in website logo field with id: {website_id}")
+    await website_service.update_website(update_data, current_user.user_id)
+
+    return output
+
+
+@media_router.get(
+    "/get_logo/{website_id}",
+    response_class=StreamingResponse,
+    status_code=status.HTTP_200_OK
+)
+async def get_logo(
+    website_id: UUID,
+    media_service: Annotated[MediaService, Depends()],
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    logger.info(f"Getting website info for website: {website_id}")
+
+    website = await website_service.get_website_by_id(website_id)
+
+    if not website.logo_url:
+        raise HTTPException(status_code=404, detail="No logo set for this website")
+
+    mongo_id = ObjectId(website.logo_url)
+    logger.info(f"Mongo id for logo: {mongo_id}")
+
+    media_schema, file_stream = await media_service.get_public_media(mongo_id)
+
+    logger.info(f"Retrieving logo file {media_schema.filename}")
+
+    return StreamingResponse(
+        content=file_stream(),
+        media_type=media_schema.content_type,
+        headers={
+            "Content-Disposition": f"inline; filename={media_schema.filename}"
+        },
+    )
