@@ -7,6 +7,7 @@ from datetime import datetime
 from uuid import UUID
 from sqlalchemy.orm import joinedload
 from dateutil.relativedelta import relativedelta
+from sqlalchemy import func
 
 class PlanRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -63,3 +64,40 @@ class PlanRepository:
         self.db.commit()
         self.db.refresh(website_plan)
         return website_plan
+    
+
+
+    def get_active_plan_counts(self):
+        result = (
+            self.db.query(SubscriptionPlan.name, func.count())
+            .select_from(WebsitePlan)
+            .join(SubscriptionPlan, SubscriptionPlan.plan_id == WebsitePlan.plan_id)
+            .filter(WebsitePlan.is_active == True)
+            .group_by(SubscriptionPlan.name)
+            .all()
+    )
+
+        return {name: count for name, count in result}
+    
+
+    def get_total_earned_amount(self):
+        total = (
+            self.db.query(func.sum(SubscriptionPlan.price))
+            .select_from(WebsitePlan)
+            .join(SubscriptionPlan, WebsitePlan.plan_id == SubscriptionPlan.plan_id)
+            .scalar()
+        )
+
+        return total or 0
+    
+
+
+    def get_active_and_inactive_websites(self):
+        active_count = self.db.query(func.count()).select_from(WebsitePlan).filter(WebsitePlan.is_active == True).scalar()
+        inactive_count = self.db.query(func.count()).select_from(WebsitePlan).filter(WebsitePlan.is_active == False).scalar()
+
+        return {
+            "active": active_count,
+            "inactive": inactive_count
+        }
+ 
