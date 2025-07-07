@@ -1,12 +1,14 @@
 from app.infrastructure.repositories.plan_repository import PlanRepository
 from app.infrastructure.repositories.item_repository import ItemRepository
-from app.domain.models.website_model import WebsitePlan
+from app.domain.models.website_model import WebsitePlan, Website
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from app.services.base_service import BaseService
-from typing import Annotated
-from loguru import logger
 
+from typing import Annotated, List
+from loguru import logger
+from datetime import datetime
+from decimal import Decimal
 
 
 
@@ -66,3 +68,26 @@ class PlanService:
                 price=price,
             )
             return True
+    
+
+    async def get_all_websites(self) -> list[Website]:
+        return self.plan_repository.get_all_active_websites_with_plans()
+    
+    async def get_total_earned_amount(self) -> Decimal:
+        return self.plan_repository.get_total_earned_amount()
+
+    async def get_earned_amount_by_month(self, start: datetime, end: datetime) -> Decimal:
+        return self.plan_repository.get_earned_amount_by_month(start, end)
+
+    async def get_earned_amount_by_year(self, year: int) -> Decimal:
+        return self.plan_repository.get_earned_amount_by_year(year)
+
+
+    async def get_revenue_by_plan_type(self) -> dict:
+        return self.plan_repository.get_revenue_by_plan_type()
+
+
+
+    async def get_plan_purchase_stats(self) -> List[dict]:
+        return self.plan_repository.get_website_plan_counts()
+    

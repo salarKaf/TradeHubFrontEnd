@@ -1,13 +1,13 @@
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.postgres_db.database import get_db
-from app.domain.models.website_model import WebsitePlan, SubscriptionPlan
+from app.domain.models.website_model import WebsitePlan, SubscriptionPlan, Website
 from datetime import datetime
 from uuid import UUID
 from sqlalchemy.orm import joinedload
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import func
+from sqlalchemy import func, extract
 
 class PlanRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -101,3 +101,62 @@ class PlanRepository:
             "inactive": inactive_count
         }
  
+
+    def get_all_active_websites_with_plans(self) -> list[Website]:
+        return (
+            self.db.query(Website)
+            .join(WebsitePlan, WebsitePlan.website_id == Website.website_id)
+            .join(SubscriptionPlan, SubscriptionPlan.plan_id == WebsitePlan.plan_id)
+        ).all()
+
+
+
+    def get_total_earned_amount(self):
+            return (
+                self.db.query(func.sum(SubscriptionPlan.price))
+                .join(WebsitePlan, WebsitePlan.plan_id == SubscriptionPlan.plan_id)
+                .scalar()
+            ) or 0
+
+    def get_earned_amount_by_month(self, start: datetime, end: datetime):
+        return (
+            self.db.query(func.sum(SubscriptionPlan.price))
+            .join(WebsitePlan, WebsitePlan.plan_id == SubscriptionPlan.plan_id)
+            .filter(WebsitePlan.activated_at >= start, WebsitePlan.activated_at < end)
+            .scalar()
+        ) or 0
+
+    def get_earned_amount_by_year(self, year: int):
+        return (
+            self.db.query(func.sum(SubscriptionPlan.price))
+            .join(WebsitePlan, WebsitePlan.plan_id == SubscriptionPlan.plan_id)
+            .filter(extract("year", WebsitePlan.activated_at) == year)
+            .scalar()
+        ) or 0
+    
+
+    def get_revenue_by_plan_type(self) -> dict:
+        result = (
+            self.db.query(SubscriptionPlan.name, func.sum(SubscriptionPlan.price))
+            .join(WebsitePlan, WebsitePlan.plan_id == SubscriptionPlan.plan_id)
+            .group_by(SubscriptionPlan.name)
+            .all()
+        )
+        return {plan: amount for plan, amount in result}
+    
+
+    def get_website_plan_counts(self) -> List[tuple]:
+        return (
+            self.db.query(
+                WebsitePlan.website_id,
+                Website.business_name,
+                SubscriptionPlan.name,
+                func.count(),                   
+                (func.count() * SubscriptionPlan.price).label("total_revenue")
+            )
+            .join(SubscriptionPlan, WebsitePlan.plan_id == SubscriptionPlan.plan_id)
+            .join(Website, Website.website_id == WebsitePlan.website_id)
+            .group_by(WebsitePlan.website_id, Website.business_name, SubscriptionPlan.name, SubscriptionPlan.price)
+            .order_by(func.count().desc())
+            .all()
+        )

@@ -5,6 +5,9 @@ from app.services.website_service import WebsiteService
 from app.domain.schemas.admin_schema import ShopPlanStatsSchema, TopWebsiteSchema, WebsiteListSchema 
 from typing import Annotated, List
 from fastapi import Depends
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
 
 class AdminMainService:
     def __init__(self,
@@ -97,3 +100,77 @@ class AdminMainService:
                 result.sort(key=lambda x: x.created_at, reverse=True)
 
             return result
+    
+
+    async def get_revenue_stats(self) -> dict:
+        now = datetime.utcnow()
+        start_of_month = now.replace(day=1)
+        start_of_prev_month = (start_of_month - timedelta(days=1)).replace(day=1)
+        start_of_next_month = (start_of_month + timedelta(days=32)).replace(day=1)
+
+        this_year = now.year
+        last_year = this_year - 1
+
+        total = await self.plan_service.get_total_earned_amount()
+        monthly = await self.plan_service.get_earned_amount_by_month(start_of_month, start_of_next_month)
+        prev_month = await self.plan_service.get_earned_amount_by_month(start_of_prev_month, start_of_month)
+        this_year_total = await self.plan_service.get_earned_amount_by_year(this_year)
+        last_year_total = await self.plan_service.get_earned_amount_by_year(last_year)
+
+        monthly_growth = ((monthly - prev_month) / prev_month * 100) if prev_month else 0
+        yearly_growth = ((this_year_total - last_year_total) / last_year_total * 100) if last_year_total else 0
+
+        return {
+            "total_revenue": total,
+            "monthly_revenue": monthly,
+            "monthly_growth": round(monthly_growth),
+            "yearly_revenue": this_year_total,
+            "yearly_growth": round(yearly_growth)
+        }
+    
+
+    async def get_last_6_months_revenue_trend(self):
+        now = datetime.utcnow().replace(day=1)
+        months = [(now - relativedelta(months=i)) for i in reversed(range(6))]
+
+        result = {"labels": [], "values": []}
+
+        for m in months:
+            start = m
+            end = (m + relativedelta(months=1))
+
+            revenue = await self.plan_service.get_earned_amount_by_month(start, end)
+            label = f"{start.year}/{start.month:02d}"  
+
+            result["labels"].append(label)
+            result["values"].append(revenue or 0)
+
+        return result
+    
+
+    async def get_plan_revenue_breakdown(self) -> dict:
+        return await self.plan_service.get_revenue_by_plan_type()
+    
+
+    async def get_plan_purchase_stats(self) -> List[dict]:
+        raw_data = await self.plan_service.get_plan_purchase_stats()
+        result = []
+
+        for row in raw_data:
+            website_id = row[0]
+            website_name = row[1]
+            plan_type = row[2]
+            plan_count = row[3]
+            total_revenue = row[4]
+
+            result.append({
+                "website_id": website_id,
+                "website_name": website_name,
+                "plan_type": plan_type,
+                "plan_count": plan_count,
+                "total_revenue": total_revenue
+            })
+
+        return result
+
+

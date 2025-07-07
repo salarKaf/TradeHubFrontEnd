@@ -43,3 +43,7 @@ class RevenueStatsSchema(BaseModel):
     monthly_growth: int
     yearly_revenue: int
     yearly_growth: int
+
+class RevenueTrendSchema(BaseModel):
+    labels: List[str]
+    values: List[int]   
