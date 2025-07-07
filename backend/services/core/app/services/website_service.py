@@ -346,3 +346,10 @@ class WebsiteService(BaseService):
 
     async def get_latest_announcements(self, website_id: UUID) -> list:
         return self.website_repository.get_latest_announcements(website_id)
+    
+    async def get_website_owner_email(self, website_id:UUID) :
+        return self.website_repository.get_website_owner_email(website_id)
+    
+
+    async def get_all_websites(self) -> list[Website]:
+        return self.website_repository.get_all_websites()

@@ -1,9 +1,8 @@
 
-from fastapi import APIRouter, Depends 
+from fastapi import APIRouter, Depends,Query 
 from app.services.admin_main_service import AdminMainService
-from app.domain.schemas.admin_schema import ShopPlanStatsSchema
+from app.domain.schemas.admin_schema import ShopPlanStatsSchema, TopWebsiteSchema, WebsiteListSchema
 from typing import Annotated, List
-from uuid import UUID
 from app.services.auth_services.auth_service import get_current_admin
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
@@ -40,3 +39,24 @@ async def get_website_activity_stats(
      current_admin: Annotated[TokenDataSchema,Depends(get_current_admin)]
 ):
     return await admin_main_service.get_website_activity_stats()
+
+
+@admin_router.get("/dashboard/top-websites", response_model=List[TopWebsiteSchema])
+async def get_top_websites(
+    admin_main_service: Annotated[AdminMainService, Depends()],
+    sort_by: str = Query("income", enum=["income", "sales"]),
+    limit: int = Query(5, gt=0, le=20)
+):
+    return await admin_main_service.get_top_websites(sort_by=sort_by, limit=limit)
+
+
+
+@admin_router.get("/dashboard/websites", response_model=List[WebsiteListSchema])
+async def get_websites_table(
+    admin_main_service: Annotated[AdminMainService, Depends()],
+    current_admin: Annotated[TokenDataSchema,Depends(get_current_admin)],
+    sort_by: str = Query("created_at", enum=["created_at", "revenue"]),
+):
+    return await admin_main_service.get_website_table(sort_by)
+
+
