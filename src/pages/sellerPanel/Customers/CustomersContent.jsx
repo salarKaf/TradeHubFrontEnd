@@ -217,7 +217,7 @@ const CustomersContent = () => {
                 <CustomersHeader
                     isOpenTable={isOpenTable}
                     setIsOpenTable={setIsOpenTable}
-                    title="آمار مشتریان"
+                    title="جزئیات "
                     logo="/public/SellerPanel/Customers/icons8-detail-64 1.png"
                 />
 
