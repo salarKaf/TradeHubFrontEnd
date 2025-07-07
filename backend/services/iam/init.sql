@@ -92,19 +92,17 @@ delivery_expires_at TIMESTAMP,
 download_token TEXT,
 post_purchase_note TEXT,
 stock INTEGER CHECK (stock >= 0),
-image_url VARCHAR(255),
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 9. Product Attributes
-CREATE TABLE item_attributes (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
-key VARCHAR(100) NOT NULL,
-value TEXT NOT NULL,
-type VARCHAR(50),
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE item_images (
+    image_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
+    image_url VARCHAR(255) NOT NULL,
+    is_main BOOLEAN DEFAULT FALSE,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- 10. Orders
 CREATE TABLE orders (
@@ -131,10 +129,11 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 -- 12. Reviews
 CREATE TABLE reviews (
 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+website_id  UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
 item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
 buyer_id UUID REFERENCES buyers(buyer_id) ON DELETE SET NULL,
 rating INTEGER CHECK (rating >= 1 AND rating <= 5),
-comment TEXT,
+text TEXT,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -190,6 +189,24 @@ CREATE TABLE order_items (
     item_id UUID NOT NULL REFERENCES items(item_id),
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     price DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE admins (
+    admin_id IUUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+
+CREATE TABLE item_questions (
+    question_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
+    buyer_id UUID NOT NULL REFERENCES buyers(buyer_id) ON DELETE CASCADE,
+    website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
+    question_text TEXT NOT NULL,
+    answer_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    answered_at TIMESTAMP
 );
 -- ✅ Indexes
 CREATE UNIQUE INDEX idx_buyers_website_email ON buyers (website_id, email);
