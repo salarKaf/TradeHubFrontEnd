@@ -277,3 +277,11 @@ async def get_latest_announcements(
     website_service: Annotated[WebsiteMainService, Depends()],
 ):
     return await website_service.get_latest_announcements(website_id)
+
+
+@website_router.get("/plans/active_plan/{website_id}")
+async def get_active_plan(
+    website_id: UUID,
+    website_service: Annotated[WebsiteMainService, Depends()],
+):
+    return await website_service.get_active_plan(website_id)

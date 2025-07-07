@@ -11,17 +11,19 @@ from typing import Annotated
 from fastapi.encoders import jsonable_encoder
 from typing import List
 from app.domain.schemas.buyer_schema import BuyerResponseSchema
-
+from app.services.plan_service import PlanService
 
 class WebsiteMainService(BaseService):
     def __init__(
         self,
         website_service: Annotated[WebsiteService, Depends()],
         user_service: Annotated[UserService, Depends()],
+        plan_service: Annotated[PlanService, Depends()],
     ) -> None:
         super().__init__()
         self.website_service = website_service
         self.user_service = user_service
+        self.plan_service = plan_service
 
 
     async def create_website(self, user_id: UUID, website_data: WebsiteCreateSchema) -> WebsiteResponseSchema:
@@ -293,7 +295,6 @@ class WebsiteMainService(BaseService):
     async def get_best_selling_items(self, website_id: UUID, limit: int) -> list:
         return await self.website_service.get_best_selling_items(website_id, limit)
 
-
     async def get_average_order_per_buyer(self, website_id: UUID) -> int:
         return await self.website_service.get_average_order_per_buyer(website_id)
     
@@ -302,3 +303,7 @@ class WebsiteMainService(BaseService):
 
     async def get_latest_announcements(self, website_id: UUID) -> list:
         return await self.website_service.get_latest_announcements(website_id)
+    
+
+    async def get_active_plan(self, website_id:UUID):
+        return await self.plan_service.get_active_plan_by_website_id(website_id)

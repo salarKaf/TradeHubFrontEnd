@@ -25,11 +25,15 @@ class PlanRepository:
         return expired_plans
 
     def get_active_plan_by_website_id(self, website_id: UUID) -> WebsitePlan:
-        return (
+        plan =  (
             self.db.query(WebsitePlan).options(joinedload(WebsitePlan.plan))
             .filter(WebsitePlan.website_id == website_id, WebsitePlan.is_active == True)
             .first()
         )
+
+        if not plan:
+            return "Inactive"
+        return plan
 
     def get_plan_price(self, name: UUID) -> float:
         plan = self.db.query(SubscriptionPlan).filter(
