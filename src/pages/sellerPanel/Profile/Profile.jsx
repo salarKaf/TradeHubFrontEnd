@@ -2,7 +2,7 @@ import React from 'react'
 
 import Header from '../Layouts/Header'
 import Sidebar from '../Layouts/SideBar'
-
+import ProfileContent from './ProfileContent'
 
 const Profile = () => {
     return (
@@ -20,6 +20,7 @@ const Profile = () => {
 
                     {/* Main Content */}
                     <div className="p-6  bg-[#FAF3E0] flex-1 overflow-auto">
+                        <ProfileContent></ProfileContent>
                     </div>
                 </div>
             </div>

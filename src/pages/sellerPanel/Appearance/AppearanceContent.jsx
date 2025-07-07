@@ -2,7 +2,8 @@ import { Import } from 'lucide-react';
 import StoreHeaderSettings from './StoreHeaderSetting'
 import EditableList from './EditableList';
 import { ScrollText, HelpCircle } from "lucide-react";
-
+import ShopDescriptionCard from './ShopDescriptionCard';
+import ContactInfo from './ShopContactCard';
 // داده‌ها
 const faqList = [
     { 
@@ -84,6 +85,9 @@ const AppearanceContent = () => {
                 editIcon={<img src="/public/SellerPanel/Settings/icons8-edit-48.png" alt="ویرایش" className="w-35 h-35" />}
                 deleteIcon={<img src="/public/SellerPanel/Settings/icons8-delete-64 1.png" alt="حذف" className="w-35 h-35" />}
             />
+
+            <ShopDescriptionCard></ShopDescriptionCard>
+            <ContactInfo/>
         </div>
     );
 }

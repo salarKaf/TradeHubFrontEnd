@@ -219,7 +219,7 @@ const EditableList = ({ title, icon, items = [], viewText, onSave, editIcon, del
           <div className="flex justify-start font-modam">
             <button
               onClick={addNewRow}
-              className="bg-[#fff0d9] hover:bg-[#f7e5cc] px-4 py-2 rounded-md text-sm border border-[#d6c2aa] flex items-center gap-2 transition-colors"
+              className="mx-4 mt-2 font-modam bg-[#fff0d9] hover:bg-[#f7e5cc] px-4 py-4 rounded-lg text-base border border-[#d6c2aa] flex items-center gap-2 transition-colors"
             >
               <Plus size={16} />
               افزودن ردیف جدید

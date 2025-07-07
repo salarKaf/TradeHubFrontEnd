@@ -104,7 +104,7 @@ const StoreHeaderSettings = () => {
 
       {/* Title */}
       <div onClick={toggleOpen} className="flex items-center gap-2 cursor-pointer w-fit font-modam">
-        <Settings className="text-[#1E212D]" />
+        <Settings className="text-[#1E212D] w-7 h-7" />
         <h1 className="font-bold text-[#1E212D] opacity-80 text-2xl">تنظیمات سر صفحه</h1>
         {open ? (
           <FaChevronDown className="w-5 h-5 text-[#1E212D]" />
