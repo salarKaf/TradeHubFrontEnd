@@ -30,12 +30,11 @@ async def payment_callback(payment_main_service: Annotated[PaymentMainService, D
 @payment_router.post("/plan_payment_request/{plan_id}")
 async def request_plan_payment(
     plan_id: UUID,
-    website_id: UUID,
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
     payment_main_service: Annotated[PaymentMainService, Depends()],
 ):
     logger.info(f"user {current_user.user_id} is starting plan payment for plan {plan_id}...")
-    payment_url = await payment_main_service.initiate_plan_payment(website_id, plan_id)
+    payment_url = await payment_main_service.initiate_plan_payment(current_user.user_id, plan_id)
     return {"payment_url": payment_url}
 
 

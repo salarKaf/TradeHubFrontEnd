@@ -50,14 +50,14 @@ class PaymentMainService:
         
 
 
-    async def initiate_plan_payment(self, website_id: UUID, plan_id: UUID) -> str:
-        logger.info(f"Initiating plan payment for website: {website_id}, plan: {plan_id}")
-
+    async def initiate_plan_payment(self, user_id: UUID, plan_id: UUID) -> str:
+        logger.info(f"Initiating plan payment for website: {user_id}, plan: {plan_id}")
+        website = await self.user_service.get_website_for_user(user_id)
         plan = await self.plan_service.get_plan_by_id(plan_id)
         if not plan:
             raise HTTPException(status_code=404, detail="Plan not found")
 
-        payment_url = await self.payment_service.request_plan_payment(website_id, plan_id, plan.price)
+        payment_url = await self.payment_service.request_plan_payment(website.website_id, plan_id, plan.price)
         return payment_url
 
 
