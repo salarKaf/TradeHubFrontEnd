@@ -21,7 +21,7 @@ const OrderContent = () => {
             date: '1403/03/15', // تاریخ سفارش (شمسی)
             product: 'لپ تاپ ایسوس',
             amount: '3,000,000',
-            customer: 'علی احمدی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-06-05') // تاریخ اضافه شدن به سیستم (میلادی)
         },
@@ -31,7 +31,7 @@ const OrderContent = () => {
             date: '1403/03/14',
             product: 'گوشی سامسونگ',
             amount: '2,500,000',
-            customer: 'فاطمه کریمی',
+            customer: 'customer@gmail.com',
             status: 'لغو شده',
             dateAdded: new Date('2024-06-04')
         },
@@ -41,7 +41,7 @@ const OrderContent = () => {
             date: '1403/03/13',
             product: 'هدفون بلوتوث',
             amount: '450,000',
-            customer: 'محمد رضایی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-06-03')
         },
@@ -51,7 +51,7 @@ const OrderContent = () => {
             date: '1403/03/12',
             product: 'ماوس بی‌سیم',
             amount: '120,000',
-            customer: 'زهرا حسینی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-06-02')
         },
@@ -61,7 +61,7 @@ const OrderContent = () => {
             date: '1403/03/11',
             product: 'کیبورد گیمینگ',
             amount: '890,000',
-            customer: 'حسن مرادی',
+            customer: 'customer@gmail.com',
             status: 'لغو شده',
             dateAdded: new Date('2024-06-01')
         },
@@ -71,7 +71,7 @@ const OrderContent = () => {
             date: '1403/03/10',
             product: 'تبلت اپل',
             amount: '4,500,000',
-            customer: 'مریم جعفری',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-05-31')
         },
@@ -81,7 +81,7 @@ const OrderContent = () => {
             date: '1403/03/09',
             product: 'ساعت هوشمند',
             amount: '1,200,000',
-            customer: 'رضا نوری',
+            customer: 'customer@gmail.com',
             status: 'لغو شده',
             dateAdded: new Date('2024-05-30')
         },
@@ -91,7 +91,7 @@ const OrderContent = () => {
             date: '1403/03/08',
             product: 'دوربین دیجیتال',
             amount: '2,800,000',
-            customer: 'سارا خانی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-05-29')
         },
@@ -101,7 +101,7 @@ const OrderContent = () => {
             date: '1403/03/07',
             product: 'اسپیکر بلوتوث',
             amount: '650,000',
-            customer: 'امیر صادقی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-05-28')
         },
@@ -111,7 +111,7 @@ const OrderContent = () => {
             date: '1403/03/06',
             product: 'پاور بانک',
             amount: '300,000',
-            customer: 'نگار رحیمی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-05-27')
         },
@@ -121,7 +121,7 @@ const OrderContent = () => {
             date: '1403/03/05',
             product: 'چراغ مطالعه LED',
             amount: '180,000',
-            customer: 'کیوان پور حسن',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-05-26')
         },
@@ -131,7 +131,7 @@ const OrderContent = () => {
             date: '1403/03/04',
             product: 'کارت حافظه',
             amount: '85,000',
-            customer: 'الهام قاسمی',
+            customer: 'customer@gmail.com',
             status: 'لغو شده',
             dateAdded: new Date('2024-05-25')
         },
@@ -141,7 +141,7 @@ const OrderContent = () => {
             date: '1403/03/03',
             product: 'لپ تاپ ایسوس',
             amount: '3,000,000',
-            customer: 'بهروز شریفی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-05-24')
         },
@@ -151,7 +151,7 @@ const OrderContent = () => {
             date: '1403/03/02',
             product: 'هدفون بلوتوث',
             amount: '450,000',
-            customer: 'نسرین باقری',
+            customer: 'customer@gmail.com',
             status: 'لغو شده',
             dateAdded: new Date('2024-05-23')
         },
@@ -161,7 +161,7 @@ const OrderContent = () => {
             date: '1403/03/01',
             product: 'گوشی سامسونگ',
             amount: '2,500,000',
-            customer: 'داود محمدی',
+            customer: 'customer@gmail.com',
             status: 'تکمیل شده',
             dateAdded: new Date('2024-05-22')
         }

@@ -16,7 +16,7 @@ const CustomersToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleS
                             : 'text-gray-700'
                             }`}
                     >
-                        بیشترین خرید
+                        بیشترین مبلغ خرید
                     </button>
                     <button
                         onClick={() => handleSort('most_orders')}
@@ -36,15 +36,7 @@ const CustomersToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleS
                     >
                         جدیدترین
                     </button>
-                    <button
-                        onClick={() => handleSort('alphabetical')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${sortBy === 'alphabetical'
-                            ? 'text-orange-600 font-medium'
-                            : 'text-gray-700'
-                            }`}
-                    >
-                        الفبایی
-                    </button>
+
                     <h1 className="px-4 py-2 text-gray-700 font-semibold rounded-lg transition-colors">
                         :مرتب سازی
                     </h1>

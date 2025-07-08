@@ -17,6 +17,8 @@ import Products from "./pages/sellerPanel/Product/Products";
 import Customers from "./pages/sellerPanel/Customers/Customers";
 import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
+import ShowCustomer from './pages/sellerPanel/Customers/CustomerDetails/ShowCustomer';
+
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function App() {
@@ -51,6 +53,7 @@ export default function App() {
         <Route path='/products' element={<Products></Products>} />
         <Route path='/AddProduct' element={<AddProductaPage></AddProductaPage>}></Route>
         <Route path='/detailProduct' element={<ShowProductaPage></ShowProductaPage>}></Route>
+        <Route path="/customer-details/:id" element={<ShowCustomer />} />
       </Routes>
     </>
   );

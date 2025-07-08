@@ -21,26 +21,28 @@ const CustomersContent = () => {
             orderCount: 23,
             itemsCount: 67,
             monthlyPurchase: 2100000,
+            monthlyOrderCount:50,
+
             isLoyalCustomer: true,
             joinDate: '1402/03/15',
             dateAdded: '2024-06-15' // تاریخ عضویت برای مرتب‌سازی
         },
         {
             id: 2,
-            name: 'فاطمه رضایی',
             email: 'fateme.rezaei@example.com',
             phone: '09987654321',
             totalPurchases: 8750000,
             orderCount: 15,
             itemsCount: 42,
             monthlyPurchase: 1500000,
+            monthlyOrderCount:50,
+
             isLoyalCustomer: true,
             joinDate: '1402/05/22',
             dateAdded: '2024-08-22'
         },
         {
             id: 3,
-            name: 'محمد حسینی',
             email: 'mohammad.hosseini@example.com',
             phone: '09112233445',
             totalPurchases: 3200000,
@@ -48,57 +50,60 @@ const CustomersContent = () => {
             itemsCount: 18,
             monthlyPurchase: 650000,
             isLoyalCustomer: false,
+            monthlyOrderCount:50,
+
             joinDate: '1403/02/10',
             dateAdded: '2024-05-10'
         },
         {
             id: 4,
-            name: 'زهرا کریمی',
             email: 'zahra.karimi@example.com',
             phone: '09334455667',
             totalPurchases: 15800000,
             orderCount: 31,
             itemsCount: 89,
             monthlyPurchase: 2800000,
+            monthlyOrderCount:50,
+
             isLoyalCustomer: true,
             joinDate: '1401/12/05',
             dateAdded: '2024-03-05'
         },
         {
             id: 5,
-            name: 'امیر نوری',
             email: 'amir.nouri@example.com',
             phone: '09556677889',
             totalPurchases: 5400000,
-            orderCount: 12,
+            orderCount: 1200,
             itemsCount: 28,
             monthlyPurchase: 900000,
+            monthlyOrderCount: 50,
             isLoyalCustomer: false,
             joinDate: '1403/01/18',
             dateAdded: '2024-04-18'
         },
         {
             id: 6,
-            name: 'مریم اکبری',
             email: 'maryam.akbari@example.com',
             phone: '09111222333',
             totalPurchases: 22300000,
             orderCount: 45,
             itemsCount: 120,
             monthlyPurchase: 3500000,
+            monthlyOrderCount: 50,
             isLoyalCustomer: true,
             joinDate: '1401/08/12',
             dateAdded: '2024-11-12'
         },
         {
             id: 7,
-            name: 'حسن محمدی',
             email: 'hasan.mohammadi@example.com',
             phone: '09333444555',
             totalPurchases: 1800000,
             orderCount: 6,
             itemsCount: 12,
             monthlyPurchase: 400000,
+            monthlyOrderCount:50,
             isLoyalCustomer: false,
             joinDate: '1403/03/25',
             dateAdded: '2024-12-25'
@@ -152,7 +157,6 @@ const CustomersContent = () => {
     // فیلتر و مرتب‌سازی مشتریان
     const filteredAndSortedCustomers = useMemo(() => {
         let filtered = Customers.filter(customer =>
-            customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             customer.phone.includes(searchTerm)
         );
