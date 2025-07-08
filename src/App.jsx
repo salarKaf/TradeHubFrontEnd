@@ -9,6 +9,10 @@ import Navbar from "./pages/TradePages/components/Navbar";
 import CreateStore from "./pages/TradePages/CreateStore";
 import ChooseSellerType from "./pages/TradePages/ChooseSellerType";
 import RulesTrade from "./pages/TradePages/rulesTrade";
+import PricingPlans from "./pages/TradePages/Plans";
+import OTPForm from "./pages/TradePages/OTPForm"
+
+
 import HomeSeller from "./pages/sellerPanel/Home/Home";
 import Appearance from "./pages/sellerPanel/Appearance/Appearance";
 import Profile from "./pages/sellerPanel/Profile/Profile";
@@ -18,6 +22,7 @@ import Customers from "./pages/sellerPanel/Customers/Customers";
 import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
 import ShowCustomer from './pages/sellerPanel/Customers/CustomerDetails/ShowCustomer';
+
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -41,6 +46,8 @@ export default function App() {
         <Route path="/storeForm" element={<CreateStore></CreateStore>} />
         <Route path="/choose-seller-types" element={<ChooseSellerType></ChooseSellerType>} />
         <Route path="/rules" element={<RulesTrade></RulesTrade>}></Route>
+        <Route path="/PricingPlans" element={<PricingPlans/>}/>
+        <Route path="/OTPForm" element={<OTPForm/>}/>
 
 
 

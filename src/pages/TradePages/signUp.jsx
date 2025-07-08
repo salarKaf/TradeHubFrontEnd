@@ -36,7 +36,7 @@ export default function SignupForm() {
 
             // اگر موفق بود
             alert("ثبت‌نام موفقیت‌آمیز بود!");
-            navigate("/storeForm");
+            navigate("/OTPForm");
 
         } catch (error) {
             // اگر خطایی از سمت سرور اومد
