@@ -186,21 +186,20 @@ const PricingPlans = () => {
                     {plans.map((plan) => (
                         <div 
                             key={plan.id}
-                            className={`relative bg-white rounded-3xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 ${
+                            className={`relative bg-white rounded-3xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 flex flex-col ${
                                 plan.popular ? 'ring-2 ring-purple-500' : ''
                             }`}
-                            style={{ height: '100%' }}
                         >
                             {/* Popular Badge */}
                             {plan.popular && (
-                                <div className="absolute top-0 right-0 bg-gradient-to-l from-purple-600 to-pink-600 text-white px-8 py-3 rounded-bl-3xl shadow-lg">
+                                <div className="absolute top-0 right-0 bg-gradient-to-l from-purple-600 to-pink-600 text-white px-8 py-3 rounded-bl-3xl shadow-lg z-10">
                                     <span className="text-sm font-bold">{plan.badge}</span>
                                 </div>
                             )}
 
                             {/* Badge */}
                             {!plan.popular && (
-                                <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                                <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg z-10">
                                     {plan.badge}
                                 </div>
                             )}
@@ -231,9 +230,9 @@ const PricingPlans = () => {
                                 </div>
                             </div>
 
-                            {/* Features */}
-                            <div className="p-6">
-                                <div className="mb-6">
+                            {/* Features - This will grow to fill available space */}
+                            <div className="p-6 flex-1 flex flex-col">
+                                <div className="flex-1">
                                     <h4 className="font-bold text-lg text-gray-800 mb-4">✨ امکانات شامل:</h4>
                                     <ul className="space-y-3">
                                         {plan.features.map((feature, index) => (
@@ -249,8 +248,8 @@ const PricingPlans = () => {
                                     </ul>
                                 </div>
 
-                                {/* CTA Button */}
-                                <div className="mt-auto pt-4">
+                                {/* CTA Button - This will stick to bottom */}
+                                <div className="mt-6 pt-4">
                                     <button
                                         onClick={() => handlePlanSelect(plan.id)}
                                         disabled={isProcessingPayment && selectedPlan === plan.id}
