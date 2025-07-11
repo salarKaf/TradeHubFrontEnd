@@ -17,3 +17,8 @@ class ReviewResponseSchema(BaseModel):
     rating: int
     text: str
     created_at: datetime
+
+
+class RatingResponseSchema(BaseModel):
+    item_id: UUID
+    rating: int

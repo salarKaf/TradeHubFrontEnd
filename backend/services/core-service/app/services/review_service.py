@@ -5,7 +5,7 @@ from app.infrastructure.repositories.review_repository import ReviewRepository
 from typing import Annotated, List, Optional
 from fastapi import HTTPException, Depends
 from uuid import UUID
-
+from decimal import Decimal
 
 class ReviewService:
     def __init__(self,
@@ -37,4 +37,9 @@ class ReviewService:
         return reviews
 
     async def get_review_by_buyer_and_item(self, buyer_id: UUID, item_id: UUID) -> Optional[Review]:
-        return await self.review_repository.get_review_by_buyer_and_item(buyer_id, item_id)
+        return self.review_repository.get_review_by_buyer_and_item(buyer_id, item_id)
+
+    async def get_rating_for_item(self, item_id: UUID) -> Decimal:
+        return self.review_repository.get_rating_for_item(item_id)
+    
+

@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from app.core.postgres_db.database import get_db
 from app.domain.models.review_model import Review
 from uuid import UUID
-
+from sqlalchemy import func
+from decimal import Decimal
 class ReviewRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
         self.db = db
@@ -29,9 +30,12 @@ class ReviewRepository:
         return self.db.query(Review).filter(Review.item_id == item_id).order_by(Review.created_at.desc()).all()
     
 
-    async def get_review_by_buyer_and_item(self, buyer_id: UUID, item_id: UUID) -> Optional[Review]:
+    def get_review_by_buyer_and_item(self, buyer_id: UUID, item_id: UUID) -> Optional[Review]:
       return (
           self.db.query(Review)
           .filter(Review.buyer_id == buyer_id, Review.item_id == item_id)
           .first()
       )
+    
+    def get_rating_for_item(self, item_id:UUID)->Decimal:
+       return self.db.query(func.avg(Review.rating)).filter(Review.item_id == item_id).scalar()

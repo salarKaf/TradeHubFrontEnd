@@ -178,7 +178,6 @@ class ItemMainService(BaseService):
             post_purchase_note=item.post_purchase_note,
             stock=item.stock,
             is_available= item.is_available,
-            image_url=item.image_url,
             created_at=item.created_at
         )
         for item in items

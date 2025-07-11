@@ -62,6 +62,7 @@ CREATE TABLE website_categories (
 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
 name VARCHAR(255) NOT NULL,
+is_active BOOLEAN NOT NULL DEFAULT TRUE,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -70,7 +71,7 @@ CREATE TABLE website_subcategories (
 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 parent_category_id UUID NOT NULL REFERENCES website_categories(id) ON DELETE CASCADE,
 name VARCHAR(255) NOT NULL,
-description TEXT,
+is_active BOOLEAN NOT NULL DEFAULT TRUE,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -87,10 +88,9 @@ discount_price DECIMAL(10,2) CHECK (discount_price >= 0),
 discount_active BOOLEAN DEFAULT FALSE,
 discount_expires_at TIMESTAMP,
 delivery_url VARCHAR(255),
-delivery_expires_at TIMESTAMP,
-download_token TEXT,
 post_purchase_note TEXT,
 stock INTEGER CHECK (stock >= 0),
+is_available BOOLEAN DEFAULT TRUE,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -142,12 +142,11 @@ CREATE TABLE subscription_plans (
   name VARCHAR(50) UNIQUE NOT NULL,
   item_limit INTEGER NOT NULL,
   allow_discount BOOLEAN DEFAULT FALSE,
-  allow_cart_save BOOLEAN DEFAULT FALSE,
-  allow_file_upload BOOLEAN DEFAULT FALSE,
-  allow_analytics BOOLEAN DEFAULT FALSE
+  allow_analytics BOOLEAN DEFAULT FALSE,
+  price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
 );
-
-
+insert into public.subscription_plans (name,item_limit,allow_discount,allow_analytics) values('Basic',100,False,False,500000)
+insert into public.subscription_plans (name,item_limit,allow_discount,allow_analytics) values('Pro',500,True,True,1500000)
 -- 14. Website plans
 CREATE TABLE website_plans (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
