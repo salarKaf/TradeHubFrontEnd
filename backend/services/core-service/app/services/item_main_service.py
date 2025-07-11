@@ -39,7 +39,6 @@ class ItemMainService(BaseService):
                 post_purchase_note=created_item.post_purchase_note,
                 stock=created_item.stock,
                 is_available=created_item.is_available,
-                image_url=created_item.image_url,
                 created_at=created_item.created_at,
             )    
         
@@ -65,7 +64,6 @@ class ItemMainService(BaseService):
             post_purchase_note=item.post_purchase_note,
             stock=item.stock,
             is_available=item.is_available,
-            image_url=item.image_url,
             created_at=item.created_at,
         )
     
@@ -91,7 +89,6 @@ class ItemMainService(BaseService):
                 post_purchase_note=item.post_purchase_note,
                 stock=item.stock,
                 is_available=item.is_available,
-                image_url=item.image_url,
                 created_at=item.created_at,
             )
             for item in items
@@ -118,7 +115,6 @@ class ItemMainService(BaseService):
                 post_purchase_note=item.post_purchase_note,
                 stock=item.stock,
                 is_available=item.is_available,
-                image_url=item.image_url,
                 created_at=item.created_at,
             )
             for item in items
@@ -146,7 +142,6 @@ class ItemMainService(BaseService):
             post_purchase_note=updated_item.post_purchase_note,
             stock=updated_item.stock,
             is_available=updated_item.is_available,
-            image_url=updated_item.image_url,
             created_at=updated_item.created_at,
         )
     
