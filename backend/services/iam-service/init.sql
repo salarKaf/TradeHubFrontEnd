@@ -39,7 +39,7 @@ CREATE TABLE buyers (
   website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
-  password_hash TEXT NOT NULL,
+  password TEXT NOT NULL,
   is_verified BOOLEAN NOT NULL DEFAULT FALSE,
   address TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -57,8 +57,6 @@ class UpdateBuyerInfoSchema(BaseModel):
     confirm_password: Optional[str]
     name: Optional[str]
     email: Optional[str]
-    phone_number: Optional[str]
-    address: Optional[str]
 
 
 class ResetPasswordSchema(BaseModel):
