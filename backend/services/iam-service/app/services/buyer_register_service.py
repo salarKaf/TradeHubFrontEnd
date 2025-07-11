@@ -71,7 +71,7 @@ class RegisterService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid OTP❌"
             )
 
-        buyer = await self.buyer_service.get_buyer_by_email(verify_buyer_schema.email)
+        buyer = await self.buyer_service.get_buyer_by_email(verify_buyer_schema.website_id,verify_buyer_schema.email)
         await self.buyer_service.update_verified_status(buyer.buyer_id, {"is_verified": True})
 
         logger.info(f"Buyer with email {verify_buyer_schema.email} verified✅")
