@@ -1,5 +1,5 @@
 from uuid import UUID
-from app.domain.schemas.review_schema import RatingResponseSchema, ReviewResponseSchema
+from app.domain.schemas.review_schema import  ReviewResponseSchema
 from loguru import logger
 from app.services.review_service import ReviewService
 from fastapi import HTTPException, Depends
@@ -53,10 +53,7 @@ class ReviewMainService:
         for review in reviews
     ]
 
-    async def get_rating_for_item(self, item_id:UUID) -> RatingResponseSchema:
+    async def get_rating_for_item(self, item_id:UUID) :
 
-        avg_rating = await self.review_service.get_rating_for_item(item_id)
-        return RatingResponseSchema(
-            item_id=item_id,
-            rating=avg_rating
-        )
+        return await self.review_service.get_rating_for_item(item_id)
+        

@@ -43,9 +43,10 @@ async def get_item_reviews(
     return await review_main_service.get_reviews_for_item(item_id)
 
 
-@review_router.get("/items/get-rating/{item_id}", response_model=List[ReviewResponseSchema])
+@review_router.get("/items/get-rating/{item_id}")
 async def get_rating(
     item_id: UUID,
     review_main_service: Annotated[ReviewMainService, Depends()]
 ):
-    return await review_main_service.get_rating_for_item(item_id)
+    rate = await review_main_service.get_rating_for_item(item_id)
+    return {"rating": rate}
