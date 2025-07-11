@@ -10,6 +10,7 @@ class FAQSchema(BaseModel):
 
 
 class SocialLinksSchema(BaseModel):
+    phone:Optional[str]
     telegram: Optional[HttpUrl]
     instagram: Optional[HttpUrl]
 
@@ -17,6 +18,8 @@ class WebsiteCreateSchema(BaseModel):
     business_name: str
     welcome_text: Optional[str] = None
     guide_page: Optional[str] = None
+    store_policy: Optional[str] = None
+    store_slogan: Optional[str] = None
     social_links: Optional[ SocialLinksSchema] = None
     faqs: Optional[List[FAQSchema]]  
 
@@ -25,11 +28,8 @@ class WebsiteCreateSchema(BaseModel):
 
 class WebsiteUpdateSchema(BaseModel):
     website_id:UUID
-    business_name: Optional[str] = None
-    website_url: Optional[str] = None
-    custom_domain: Optional[str] = None
-    logo_url: Optional[str] = None
-    banner_image: Optional[str] = None
+    guide_page: Optional[str] = None
+    store_policy: Optional[str] = None
     welcome_text: Optional[str] = None
     guide_page: Optional[str] = None
     social_links: Optional[SocialLinksSchema] = None
@@ -43,10 +43,10 @@ class WebsiteResponseSchema(BaseModel):
     business_name: str
     welcome_text: Optional[str] = None
     guide_page: Optional[str] = None
+    store_policy: Optional[str] = None
+    store_slogan: Optional[str] = None
     social_links: Optional[SocialLinksSchema] = None
     faqs: Optional[List[FAQSchema]] = None
-    website_url: Optional[str] = None
-    custom_domain: Optional[str] = None
     logo_url: Optional[str] = None
     banner_image: Optional[str] = None
     created_at: Optional[datetime] = None
