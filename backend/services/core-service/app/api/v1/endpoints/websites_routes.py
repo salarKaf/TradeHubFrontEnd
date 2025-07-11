@@ -149,7 +149,7 @@ async def add_website_owner(
     return await website_main_service.add_new_owner(current_user.user_id, owner_data)
 
 
-@website_router.put("/website/{website_id}", status_code=200)
+@website_router.put("/update-website/{website_id}/", status_code=200)
 async def edit_website(
     updated_data: WebsiteUpdateSchema,  
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],   
