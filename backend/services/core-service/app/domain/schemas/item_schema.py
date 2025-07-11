@@ -34,7 +34,6 @@ class ItemResponseSchema(BaseModel):
     post_purchase_note: Optional[str] = None
     stock: int
     is_available: bool
-    image_url: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -59,12 +58,3 @@ class ItemUpdateSchema(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str        
-
-class ItemImageInput(BaseModel):
-    url: str
-    is_main: Optional[bool] = False
-
-class ItemCreateSchema(BaseModel):
-    name: str
-    price: float
-    images: List[ItemImageInput] = []    

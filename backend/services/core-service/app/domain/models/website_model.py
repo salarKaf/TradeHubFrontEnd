@@ -92,7 +92,6 @@ class Item(Base):
     post_purchase_note = Column(Text, nullable=True)
     stock = Column(Integer, nullable=True)
     is_available = Column(Boolean, default=True)
-    image_url = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)    
 
 
