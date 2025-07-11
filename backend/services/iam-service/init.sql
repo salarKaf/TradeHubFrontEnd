@@ -127,7 +127,7 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 -- 12. Reviews
 CREATE TABLE reviews (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+review_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 website_id  UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
 item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
 buyer_id UUID REFERENCES buyers(buyer_id) ON DELETE SET NULL,

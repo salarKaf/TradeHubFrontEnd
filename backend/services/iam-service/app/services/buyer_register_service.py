@@ -31,7 +31,7 @@ class RegisterService(BaseService):
         self.auth_service = auth_service
 
     async def register_buyer(self, buyer: BuyerCreateSchema) -> BuyerResponseSchema:
-        existing_email = await self.buyer_service.get_buyer_by_email(buyer.email)
+        existing_email = await self.buyer_service.get_buyer_by_email(buyer.website_id,buyer.email)
 
         if existing_email:
             logger.error(f"Buyer with email {buyer.email} already exists")

@@ -54,6 +54,9 @@ class ReviewMainService:
     ]
 
     async def get_rating_for_item(self, item_id:UUID) -> RatingResponseSchema:
-        
+
         avg_rating = await self.review_service.get_rating_for_item(item_id)
-        return RatingResponseSchema()
+        return RatingResponseSchema(
+            item_id=item_id,
+            rating=avg_rating
+        )

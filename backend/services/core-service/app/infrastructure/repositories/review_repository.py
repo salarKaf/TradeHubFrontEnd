@@ -38,4 +38,5 @@ class ReviewRepository:
       )
     
     def get_rating_for_item(self, item_id:UUID)->Decimal:
-       return self.db.query(func.avg(Review.rating)).filter(Review.item_id == item_id).scalar()
+       rate = self.db.query(func.avg(Review.rating)).filter(Review.item_id == item_id).scalar() or 0
+       return rate
