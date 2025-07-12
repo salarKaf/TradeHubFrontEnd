@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from typing import Annotated, List
 from app.domain.schemas.review_schema import ReviewCreateSchema, ReviewResponseSchema
-from app.services.auth_services.auth_service import get_current_buyer
+from app.services.auth_services.auth_service import get_current_buyer, get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from app.services.review_main_service import ReviewMainService
 from uuid import UUID
@@ -46,7 +46,9 @@ async def get_item_reviews(
 @review_router.get("/items/get-rating/{item_id}")
 async def get_rating(
     item_id: UUID,
-    review_main_service: Annotated[ReviewMainService, Depends()]
+    review_main_service: Annotated[ReviewMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+
 ):
     rate = await review_main_service.get_rating_for_item(item_id)
     return {"rating": rate}

@@ -68,3 +68,6 @@ class OrderService:
         logger.info("Checking if buyer bought the item")
         Order_item = self.order_repository.get_order_item_by_buyer_and_item(buyer_id,item_id)
         return Order_item       
+    
+    async def get_sales_count(self, item_id:UUID) -> int:
+        return self.order_repository.get_sales_count(item_id)

@@ -70,3 +70,13 @@ async def get_download_link(
     url = await order_main_service.get_item_delivery_url(current_buyer.buyer_id, item_id)
     
     return {"download_link": url}
+
+
+@order_router.get("/items/{item_id}/sales")
+async def get_item_sales(
+    item_id: UUID,
+    order_main_service: Annotated[OrderMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+):
+    total = await order_main_service.get_sales_count(item_id)
+    return {"total_sold": total}

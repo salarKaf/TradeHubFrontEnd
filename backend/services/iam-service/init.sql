@@ -107,7 +107,6 @@ CREATE TABLE item_images (
 CREATE TABLE orders (
 order_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
-item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
 buyer_id UUID NOT NULL REFERENCES buyers(buyer_id) ON DELETE CASCADE,
 status VARCHAR(20) CHECK (status IN ('Pending', 'Paid', 'Canceled')) NOT NULL DEFAULT 'Pending',
 total_price DECIMAL(10,2) CHECK (total_price >= 0) NOT NULL,

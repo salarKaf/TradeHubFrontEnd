@@ -229,3 +229,13 @@ class OrderRepository:
             return 0
 
         return int(total / buyers_count)
+
+
+    def get_sales_count(self, item_id: UUID) -> int:
+        total_quantity = (
+            self.db.query(func.sum(OrderItem.quantity))
+            .join(Order, OrderItem.order_id == Order.order_id)
+            .filter(OrderItem.item_id == item_id, Order.status == "paid")
+            .scalar()
+        )
+        return total_quantity or 0

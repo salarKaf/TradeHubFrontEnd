@@ -24,7 +24,7 @@ class PaymentService:
         payload = {
             "merchant_id": self.merchant_id,
             "amount": float(amount)*1000,
-            "callback_url": self.create_callback_url(order_id),
+            "callback_url": self.create_order_callback_url(order_id),
             "description": f"پرداخت برای سفارش {order_id}",
             "metadata": {}
         }
