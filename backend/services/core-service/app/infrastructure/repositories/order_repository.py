@@ -239,3 +239,12 @@ class OrderRepository:
             .scalar()
         )
         return total_quantity or 0
+
+    def get_item_revenue(self, item_id: UUID) -> int:
+        total_quantity = (
+            self.db.query(func.sum(OrderItem.price))
+            .join(Order, OrderItem.order_id == Order.order_id)
+            .filter(OrderItem.item_id == item_id, Order.status == "Paid")
+            .scalar()
+        )
+        return total_quantity or 0

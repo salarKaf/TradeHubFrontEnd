@@ -7,6 +7,7 @@ from app.infrastructure.repositories.order_repository import OrderRepository
 from app.services.cart_service import CartService
 from app.domain.models.order_model import Order, OrderItem
 from app.domain.schemas.item_schema import ItemUpdateSchema
+from decimal import Decimal
 class OrderService:
     def __init__(
         self,
@@ -71,3 +72,6 @@ class OrderService:
     
     async def get_sales_count(self, item_id:UUID) -> int:
         return self.order_repository.get_sales_count(item_id)
+    
+    async def get_item_revenue(self, item_id:UUID) -> Decimal:
+        return self.order_repository.get_item_revenue(item_id)

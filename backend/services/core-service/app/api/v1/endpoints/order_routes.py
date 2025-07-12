@@ -80,3 +80,12 @@ async def get_item_sales(
 ):
     total = await order_main_service.get_sales_count(item_id)
     return {"total_sold": total}
+
+@order_router.get("/items/{item_id}/revenue")
+async def get_item_sales(
+    item_id: UUID,
+    order_main_service: Annotated[OrderMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+):
+    revenue = await order_main_service.get_item_revenue(item_id)
+    return {"revenue": revenue}

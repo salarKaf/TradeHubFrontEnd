@@ -154,3 +154,6 @@ class OrderMainService(BaseService):
     
     async def get_sales_count(self, item_id: UUID) -> int:
         return await self.order_service.get_sales_count(item_id)
+    
+    async def get_item_revenue(self, item_id: UUID) -> int:
+        return await self.order_service.get_item_revenue(item_id)
