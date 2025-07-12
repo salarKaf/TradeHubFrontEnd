@@ -24,6 +24,7 @@ async def payment_callback(payment_main_service: Annotated[PaymentMainService, D
     authority: str = Query(..., alias="Authority"),  
     status: str = Query(..., alias="Status")   
 ):
+    logger.info("Got heer")
     return await payment_main_service.confirm_order_payment(order_id, authority, status)
 
 
