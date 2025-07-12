@@ -35,7 +35,7 @@ class PaymentMainService:
             await self.order_service.update_order_status(order_id, "Canceled")
             return "Canceled"
 
-        is_successful = await self.payment_service.verify_payment(
+        is_successful = await self.payment_service.verify_order_payment(
             amount=float(order.total_price),  
             authority=authority 
         )

@@ -23,7 +23,7 @@ class PaymentService:
 
         payload = {
             "merchant_id": self.merchant_id,
-            "amount": float(amount)*1000,
+            "amount": float(amount),
             "callback_url": self.create_order_callback_url(order_id),
             "description": f"پرداخت برای سفارش {order_id}",
             "metadata": {}
@@ -44,7 +44,7 @@ class PaymentService:
 
         payload = {
             "merchant_id": self.merchant_id,
-            "amount": amount *1000,
+            "amount": amount ,
             "authority": authority
         }
         async with httpx.AsyncClient() as client:
