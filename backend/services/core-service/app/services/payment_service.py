@@ -16,7 +16,7 @@ class PaymentService:
         This method constructs the Callback URL based on the order_id.
         You can modify this URL depending on your server's structure.
         """
-        base_url = "http:tradehub.localhost/api/v1/payment/order_payment/callback"
+        base_url = "ttp://tradehub.localhost/api/v1/payment/order_payment/callback"
         return f"{base_url}/{order_id}"
 
     async def request_order_payment(self, order_id: UUID, amount: Decimal) -> str:
