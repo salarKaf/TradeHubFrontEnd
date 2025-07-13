@@ -195,7 +195,7 @@ CREATE TABLE item_questions (
 );
 
 CREATE TABLE announcements (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -203,7 +203,7 @@ CREATE TABLE announcements (
 
 
 CREATE TABLE coupons (
-    coupon_id UUID PRIMARY KEY,
+    coupon_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
     code VARCHAR(100) UNIQUE NOT NULL,
     discount_amount NUMERIC(10, 2) NOT NULL,
