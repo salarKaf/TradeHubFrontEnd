@@ -62,6 +62,19 @@ class Website(Base):
 
     website_categories = relationship("WebsiteCategory", back_populates="website", cascade="all, delete-orphan")
 
+class Coupon(Base):
+    __tablename__ = "coupons"
+
+    coupon_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    website_id = Column(UUID(as_uuid=True), ForeignKey("websites.website_id"), nullable=False)
+    code = Column(String, unique=True, nullable=False)  
+    discount_amount = Column(DECIMAL, nullable=False)  
+    expiration_date = Column(TIMESTAMP, nullable=True)
+    usage_limit = Column(Integer, nullable=True) 
+    times_used = Column(Integer, default=0) 
+    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
+    updated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
 
 class WebsiteSubcategory(Base):
     __tablename__ = "website_subcategories"
@@ -87,6 +100,7 @@ class Item(Base):
     price = Column(DECIMAL(10, 2), nullable=False)
     discount_price = Column(DECIMAL(10, 2), nullable=True)
     discount_active = Column(Boolean, default=False)
+    discount_percent = Column(Integer, default=False)
     discount_expires_at = Column(TIMESTAMP, nullable=True)
     delivery_url = Column(String(255), nullable=False)
     post_purchase_note = Column(Text, nullable=True)
