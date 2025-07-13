@@ -1,12 +1,15 @@
 from uuid import UUID
 from typing import List, Annotated
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from loguru import logger
 from app.services.item_service import ItemService
 from app.infrastructure.repositories.order_repository import OrderRepository
 from app.services.cart_service import CartService
 from app.domain.models.order_model import Order, OrderItem
+from app.domain.models.website_model import Coupon
 from app.domain.schemas.item_schema import ItemUpdateSchema
+from app.infrastructure.repositories.coupon_repository import CouponRepository
+from datetime import datetime
 from decimal import Decimal
 class OrderService:
     def __init__(
@@ -14,11 +17,13 @@ class OrderService:
         order_repository: Annotated[OrderRepository, Depends()],
         cart_service: Annotated[CartService, Depends()],
         item_service:Annotated[ItemService, Depends()],
+        coupon_repository:Annotated[CouponRepository, Depends()],
 
     ):
         self.order_repository = order_repository
         self.cart_service = cart_service
         self.item_service = item_service
+        self.coupon_repository = coupon_repository
 
 
     async def create_order_from_cart(self, buyer_id: UUID, website_id: UUID) ->Order:
@@ -75,3 +80,22 @@ class OrderService:
     
     async def get_item_revenue(self, item_id:UUID) -> Decimal:
         return self.order_repository.get_item_revenue(item_id)
+    
+    
+    async def apply_coupon_to_order(self, order: Order, coupon: Coupon) -> Order:
+        if order.status != "Pending":
+            raise HTTPException(status_code=400, detail="Impossible operation")
+
+        if coupon.expiration_date and coupon.expiration_date < datetime.utcnow():
+            raise HTTPException(status_code=400, detail="Coupon expired")
+        
+        if coupon.usage_limit is not None and coupon.times_used >= coupon.usage_limit:
+            raise HTTPException(status_code=400, detail="Coupon usage limit reached")
+
+        discounted_price = max(order.total_price - coupon.discount_amount, 0)
+        order.total_price = discounted_price
+        coupon.times_used += 1
+        self.order_repository.update_order(order)
+        self.coupon_repository.update_coupon(coupon)
+
+        return order

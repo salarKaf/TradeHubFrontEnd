@@ -48,3 +48,6 @@ class CouponMainService:
             times_used=created.times_used,
             created_at=created.created_at,
         )
+
+    async def get_coupon_by_code(self, coupon_code:str) ->Coupon:
+        return self.coupon_repository.get_coupon_by_code(coupon_code)

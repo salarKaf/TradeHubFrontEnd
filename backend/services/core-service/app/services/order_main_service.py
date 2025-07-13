@@ -9,17 +9,19 @@ from app.domain.schemas.order_schema import OrderResponseSchema, OrderItemRespon
 from app.domain.models.order_model import Order
 from loguru import logger
 from typing import Annotated
-
+from app.services.coupon_main_service import CouponMainService
 class OrderMainService(BaseService):
     def __init__(self,  
         order_service : Annotated[OrderService, Depends()],
         user_service : Annotated[UserService, Depends()],
         item_service : Annotated[ItemService, Depends()],
+        coupon_service : Annotated[CouponMainService, Depends()],
         ):
         super().__init__()
         self.order_service = order_service
         self.user_service = user_service
         self.item_service = item_service
+        self.coupon_service = coupon_service
 
     async def create_order(self, buyer_id: UUID, website_id: UUID) -> OrderResponseSchema:
         
@@ -157,3 +159,17 @@ class OrderMainService(BaseService):
     
     async def get_item_revenue(self, item_id: UUID) -> int:
         return await self.order_service.get_item_revenue(item_id)
+
+    async def apply_coupon_to_order(self,order_id: UUID, coupon_code: str)-> OrderResponseSchema:
+        order = await self.order_service.get_order_by_id(order_id)
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        coupon = await self.coupon_service.get_coupon_by_code(coupon_code)
+        if not coupon:
+            raise HTTPException(status_code=404, detail="Coupon not found")
+
+
+        updated_order = await self.order_service.apply_coupon_to_order(order, coupon)
+
+        return OrderResponseSchema.from_orm(updated_order) 

@@ -290,3 +290,10 @@ class OrderRepository:
             })
 
         return result
+    
+
+    def update_order(self, order: Order) -> Order:
+        self.db.add(order)
+        self.db.commit()
+        self.db.refresh(order)
+        return order
