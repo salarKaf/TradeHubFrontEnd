@@ -143,7 +143,7 @@ CREATE TABLE subscription_plans (
   item_limit INTEGER NOT NULL,
   allow_discount BOOLEAN DEFAULT FALSE,
   allow_analytics BOOLEAN DEFAULT FALSE,
-  price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+  price DECIMAL(10,2) NOT NULL CHECK (price >= 0)
 );
 insert into public.subscription_plans (name,item_limit,allow_discount,allow_analytics) values('Basic',100,False,False,500000)
 insert into public.subscription_plans (name,item_limit,allow_discount,allow_analytics) values('Pro',500,True,True,1500000)
