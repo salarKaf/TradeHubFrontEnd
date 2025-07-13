@@ -1,15 +1,14 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Dict
 from app.core.postgres_db.database import get_db
 from uuid import UUID
-from app.domain.models.order_model import Order, OrderItem
+from app.domain.models.order_model import Order, OrderItem, Buyer
 from app.domain.models.website_model import Item
 from app.infrastructure.repositories.item_repository import ItemRepository
 from app.infrastructure.repositories.cart_repository import CartRepository
-from datetime import datetime
-from datetime import date
+from datetime import datetime, timedelta,date
 from sqlalchemy import extract, func
 from app.utils.date_utils import to_jalali_str
 
@@ -248,3 +247,46 @@ class OrderRepository:
             .scalar()
         )
         return total_quantity or 0
+
+
+
+    def delete_expired_pending_orders(self,current_time: datetime) -> int:
+        expiration_time = current_time - timedelta(minutes=30)
+
+        expired_orders = (
+            self.db.query(Order)
+            .filter(Order.status == "Pending", Order.created_at < expiration_time)
+            .all()
+        )
+
+        for order in expired_orders:
+            self.db.delete(order)
+
+        self.db.commit()
+
+
+    def get_buyers_by_website_id(self, website_id: UUID) :
+        buyers = self.db.query(Buyer).filter(Buyer.website_id == website_id).all()
+
+        if not buyers:
+            # raise HTTPException(status_code=404, detail="No buyers found")
+            return []
+        result = []
+        for buyer in buyers:
+            paid_orders = (
+                self.db.query(Order)
+                .filter(Order.buyer_id == buyer.buyer_id, Order.status == 'Paid')
+                .all()
+            )
+
+            total_orders = len(paid_orders)
+            total_price = sum(order.total_price or 0 for order in paid_orders)
+
+            result.append({
+                "name": buyer.name,
+                "email": buyer.email,
+                "total_orders": total_orders,
+                "total_price": float(total_price)
+            })
+
+        return result

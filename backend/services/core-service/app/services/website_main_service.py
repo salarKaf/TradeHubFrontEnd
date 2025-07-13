@@ -9,7 +9,7 @@ from loguru import logger
 from app.services.base_service import BaseService
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
-from typing import List
+from typing import List, Dict
 from app.domain.schemas.buyer_schema import BuyerResponseSchema
 from app.services.plan_service import PlanService
 
@@ -254,15 +254,9 @@ class WebsiteMainService(BaseService):
                 created_at=updated_website.created_at,
                 message="Website fetched successfully ✅"
             )
-    async def get_buyers_by_website_id(self, website_id: UUID) -> List[BuyerResponseSchema]:
-        buyers = await self.website_service.get_buyers_by_website_id(website_id)
-
-        return [BuyerResponseSchema(
-            name=buyer.name,
-            email=buyer.email,
-            message="Buyers fetched successfully ✅"
-        ) for buyer in buyers]
-    
+    async def get_buyers_by_website_id(self, website_id: UUID) :
+        return await self.website_service.get_buyers_by_website_id(website_id)
+        
 
     async def get_buyers_count_by_website_id(self, website_id: UUID) -> int:
         buyers_count = await self.website_service.get_buyers_count_by_website_id(website_id)

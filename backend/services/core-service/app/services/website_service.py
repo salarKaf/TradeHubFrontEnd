@@ -10,8 +10,7 @@ from app.services.base_service import BaseService
 from typing import Annotated
 from loguru import logger
 from fastapi.encoders import jsonable_encoder
-from typing import List
-from app.domain.models.buyer_model import Buyer
+from typing import List, Dict
 from app.infrastructure.repositories.order_repository import OrderRepository
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -264,12 +263,12 @@ class WebsiteService(BaseService):
             logger.error(f"Error updating Website with ID {updated_data.website_id}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error updating Website: {str(e)}")
         
-    async def get_buyers_by_website_id(self, website_id: UUID) -> List[Buyer]:
+    async def get_buyers_by_website_id(self, website_id: UUID) -> List[Dict]:
         logger.info(f"Starting to fetch website with ID: {website_id}")
 
         try:
             website = self.website_repository.get_website_by_id(website_id)
-            buyers = self.buyer_repository.get_buyers_by_website_id(website.website_id)
+            buyers = self.order_repository.get_buyers_by_website_id(website.website_id)
             return buyers
         
         except Exception as e:
