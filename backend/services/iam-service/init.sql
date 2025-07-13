@@ -84,6 +84,7 @@ subcategory_id UUID REFERENCES website_subcategories(id) ON DELETE SET NULL,
 name VARCHAR(255) NOT NULL,
 description TEXT,
 price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+discount_percent INTEGER,
 discount_price DECIMAL(10,2) CHECK (discount_price >= 0),
 discount_active BOOLEAN DEFAULT FALSE,
 discount_expires_at TIMESTAMP,
@@ -199,6 +200,20 @@ CREATE TABLE announcements (
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+CREATE TABLE coupons (
+    coupon_id UUID PRIMARY KEY,
+    website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
+    code VARCHAR(100) UNIQUE NOT NULL,
+    discount_amount NUMERIC(10, 2) NOT NULL,
+    expiration_date TIMESTAMP NULL,
+    usage_limit INTEGER NULL,
+    times_used INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 CREATE OR REPLACE FUNCTION notify_new_review()
 RETURNS TRIGGER AS $$
