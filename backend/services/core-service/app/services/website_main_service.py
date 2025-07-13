@@ -264,15 +264,23 @@ class WebsiteMainService(BaseService):
     
 
     async def get_active_buyers_count_by_website_id(self, website_id: UUID) -> int:
+        plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        if plan != 'Pro':
+            raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
         active_buyers_count = await self.website_service.get_active_buyers_count_by_website_id(website_id)
 
         return active_buyers_count
     
-
     async def get_sales_summary(self, website_id: UUID, mode: str) -> dict:
+        plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        if plan != 'Pro':
+            raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
         return await self.website_service.get_sales_summary(website_id, mode)
 
     async def get_last_6_months_sales(self, website_id: UUID) -> List[dict]:
+        plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        if plan != 'Pro':
+            raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
         return await self.website_service.get_last_6_months_sales(website_id)
     
     async def get_total_revenue(self, website_id: UUID) -> dict:
@@ -288,12 +296,18 @@ class WebsiteMainService(BaseService):
         return await self.website_service.get_best_selling_items(website_id, limit)
 
     async def get_average_order_per_buyer(self, website_id: UUID) -> int:
+        plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        if plan != 'Pro':
+            raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
         return await self.website_service.get_average_order_per_buyer(website_id)
     
     async def get_total_buyers_count(self, website_id: UUID) -> int:
         return await self.website_service.get_total_buyers_count(website_id)
 
     async def get_latest_announcements(self, website_id: UUID) -> list:
+        plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        if plan != 'Pro':
+            raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
         return await self.website_service.get_latest_announcements(website_id)
     
 
