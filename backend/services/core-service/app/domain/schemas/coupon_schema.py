@@ -11,7 +11,7 @@ class CouponCreateSchema(BaseModel):
     usage_limit: Optional[int] = None
 
 class CouponResponseSchema(BaseModel):
-    id: UUID
+    coupon_id: UUID
     website_id: UUID
     code: str
     discount_amount: Decimal
@@ -19,3 +19,6 @@ class CouponResponseSchema(BaseModel):
     usage_limit: Optional[int]
     times_used: int
     created_at: datetime
+
+    class Config:
+        from_attributes = True

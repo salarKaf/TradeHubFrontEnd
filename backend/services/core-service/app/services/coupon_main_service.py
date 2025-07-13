@@ -2,9 +2,9 @@ from fastapi import HTTPException, Depends
 from app.domain.schemas.coupon_schema import CouponCreateSchema, CouponResponseSchema
 from app.domain.models.website_model import Coupon
 from app.infrastructure.repositories.coupon_repository import CouponRepository
-from datetime import datetime
-from app.services.website_service import WebsiteService
-from typing import Annotated
+from uuid import UUID
+from app.infrastructure.repositories.website_repository import WebsiteRepository
+from typing import Annotated, List
 from loguru import logger
 
 
@@ -12,10 +12,10 @@ class CouponMainService:
     def __init__(
         self,
         coupon_repository: Annotated[CouponRepository, Depends()],
-        website_service: Annotated[WebsiteService, Depends()],
+        website_repository: Annotated[WebsiteRepository, Depends()],
     ):
         self.coupon_repository = coupon_repository
-        self.website_service = website_service
+        self.website_repository = website_repository
 
     async def create_coupon(
         self,
@@ -23,7 +23,7 @@ class CouponMainService:
     ) -> CouponResponseSchema:
         logger.info(f"Starting create_coupon with data: {coupon_data.dict()}")
 
-        website = self.website_service.get_website_by_id(coupon_data.website_id)
+        website = self.website_repository.get_website_by_id(coupon_data.website_id)
         if not website:
             raise HTTPException(status_code=404, detail="Website not found")
 
@@ -51,3 +51,12 @@ class CouponMainService:
 
     async def get_coupon_by_code(self, coupon_code:str) ->Coupon:
         return self.coupon_repository.get_coupon_by_code(coupon_code)
+    
+
+    async def get_coupons_by_website_id(self, website_id: UUID) -> List[CouponResponseSchema]:
+        website = self.website_repository.get_website_by_id(website_id)
+        if not website:
+            raise HTTPException(status_code=404, detail="Website not found")
+
+        coupons = self.coupon_repository.get_coupons_by_website_id(website_id)
+        return [CouponResponseSchema.from_orm(c) for c in coupons]
