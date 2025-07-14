@@ -240,7 +240,7 @@ class WebsiteMainService(BaseService):
     
 
     async def get_active_buyers_count_by_website_id(self, website_id: UUID) -> int:
-        website_plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        website_plan = await self.plan_service.get_active_plan_by_website_id(website_id)
         plan = await self.plan_service.get_plan_by_id(website_plan.plan_id)
         if plan.name != 'Pro':
             raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
@@ -276,7 +276,7 @@ class WebsiteMainService(BaseService):
         return await self.website_service.get_best_selling_items(website_id, limit)
 
     async def get_average_order_per_buyer(self, website_id: UUID) -> int:
-        website_plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        website_plan = await self.plan_service.get_active_plan_by_website_id(website_id)
         plan = await self.plan_service.get_plan_by_id(website_plan.plan_id)
         if plan.name != 'Pro':
             raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
@@ -286,7 +286,7 @@ class WebsiteMainService(BaseService):
         return await self.website_service.get_total_buyers_count(website_id)
 
     async def get_latest_announcements(self, website_id: UUID) -> list:
-        website_plan = self.plan_service.get_active_plan_by_website_id(website_id)
+        website_plan = await self.plan_service.get_active_plan_by_website_id(website_id)
         plan = await self.plan_service.get_plan_by_id(website_plan.plan_id)
         if plan.name != 'Pro':
             raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
