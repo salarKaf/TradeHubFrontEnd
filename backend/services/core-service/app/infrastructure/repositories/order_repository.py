@@ -330,3 +330,39 @@ class OrderRepository:
             })
 
         return result
+
+
+    def get_website_buyers_summary(
+        self,
+        website_id: UUID,
+        sort_by: str = "latest"
+    ) -> list:
+        query = (
+            self.db.query(
+                Buyer.email.label("buyer_email"),
+                func.count(Order.order_id).label("total_orders"),
+                func.sum(Order.total_price).label("total_amount")
+            )
+            .join(Order, Order.buyer_id == Buyer.buyer_id)
+            .filter(Order.website_id == website_id, Order.status == "Paid")
+            .group_by(Buyer.email)
+        )
+
+        if sort_by == "amount":
+            query = query.order_by(func.sum(Order.total_price).desc())
+        elif sort_by == "count":
+            query = query.order_by(func.count(Order.order_id).desc())
+        else:  # latest
+            query = query.order_by(func.max(Order.created_at).desc())
+
+        rows = query.all()
+
+        result = []
+        for row in rows:
+            result.append({
+                "buyer_email": row.buyer_email,
+                "total_orders": row.total_orders,
+                "total_amount":row.total_amount
+            })
+
+        return result

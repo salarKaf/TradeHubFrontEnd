@@ -298,3 +298,7 @@ class WebsiteMainService(BaseService):
 
     async def get_order_invoice_table(self, website_id: UUID, sort_by:str) -> list:
         return await self.website_service.get_order_invoice_table(website_id, sort_by)
+
+
+    async def get_website_buyers_summary(self, website_id: UUID, sort_by: str) -> list:
+        return await self.website_service.get_website_buyers_summary(website_id, sort_by)

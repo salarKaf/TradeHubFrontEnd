@@ -183,6 +183,18 @@ async def get_active_buyers_count(
     return {"active_buyers_count": active_buyers_count}
 
 
+@website_router.get("/buyers/summary/{website_id}")
+async def get_buyers_summary(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()], 
+    sort_by: Optional[str] = Query("latest", enum=["latest", "amount", "count"]),
+
+):
+    return await website_service.get_website_buyers_summary(website_id, sort_by)
+
+
+
 @website_router.get("/sales/summary/{website_id}")
 async def get_sales_summary(
     website_id: UUID,
