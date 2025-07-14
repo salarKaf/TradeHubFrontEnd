@@ -1,13 +1,15 @@
 from fastapi import APIRouter, Depends, status, Query
 from app.services.website_main_service import WebsiteMainService
-from app.domain.schemas.website_schema import (WebsiteCreateSchema, WebsiteResponseSchema, WebsiteCategoryCreateSchema,
-WebsiteCategoryResponseSchema, WebsiteCategoryResponseSchema,CategoryUpdateSchema,SubCategoryUpdateSchema,
-WebsiteSubcategoryResponseSchema, WebsiteSubcategoryCreateSchema,WebsiteUpdateSchema ,AddWebsiteOwnerSchema)
-from app.domain.schemas.buyer_schema import BuyerResponseSchema
+from app.domain.schemas.website_schema import (WebsiteCreateSchema, WebsiteResponseSchema,
+                                                WebsiteCategoryCreateSchema,WebsiteCategoryResponseSchema,
+                                                  WebsiteCategoryResponseSchema,CategoryUpdateSchema,
+                                                  SubCategoryUpdateSchema,OrderInvoiceSchema,
+                                                  WebsiteSubcategoryResponseSchema, WebsiteSubcategoryCreateSchema,
+                                                  WebsiteUpdateSchema ,AddWebsiteOwnerSchema)
 from app.services.auth_services.auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
-from typing import Annotated, List, Literal, Dict
+from typing import Annotated, List, Literal, Dict, Optional
 from uuid import UUID
 
 
@@ -38,16 +40,6 @@ async def get_website(
     logger.info(f"Requesting website details with website_id: {website_id}.")
     
     return await website_service.get_website_by_id(website_id)
-
-# @website_router.get("/get_website_by_name/{website_name}", response_model=WebsiteResponseSchema, status_code=status.HTTP_200_OK)
-# async def get_website_by_name(
-#     website_name: str,
-#     website_service: Annotated[WebsiteMainService, Depends()]
-# ):
-#     logger.info(f"Requesting website details with website_name: {website_name}.")
-    
-#     return await website_service.get_website_by_name(website_name)
-
 
 @website_router.post("/create_website_category", response_model=WebsiteCategoryResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_website_category(
@@ -285,3 +277,14 @@ async def get_active_plan(
     website_service: Annotated[WebsiteMainService, Depends()],
 ):
     return await website_service.get_active_plan(website_id)
+
+
+@website_router.get("/orders/invoice-table/{website_id}")
+async def get_invoice_table(
+    website_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    website_service: Annotated[WebsiteMainService, Depends()],
+    sort_by: Optional[str] = Query("latest", enum=["latest", "amount"]),
+    
+):
+    return await website_service.get_order_invoice_table(website_id, sort_by)

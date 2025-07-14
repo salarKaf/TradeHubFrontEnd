@@ -1,8 +1,11 @@
 from app.services.website_service import WebsiteService
 from app.services.user_service import UserService
-from app.domain.schemas.website_schema import (WebsiteResponseSchema, WebsiteCreateSchema, WebsiteCategoryCreateSchema,
-WebsiteCategoryResponseSchema, WebsiteSubcategoryCreateSchema,CategoryUpdateSchema,WebsiteUpdateSchema,SubCategoryUpdateSchema,
-WebsiteSubcategoryResponseSchema, MessageResponse, AddWebsiteOwnerSchema)
+from app.domain.schemas.website_schema import (WebsiteResponseSchema, WebsiteCreateSchema,
+                                                WebsiteCategoryCreateSchema,WebsiteCategoryResponseSchema,
+                                                  WebsiteSubcategoryCreateSchema,CategoryUpdateSchema,WebsiteUpdateSchema,
+                                                  SubCategoryUpdateSchema,
+WebsiteSubcategoryResponseSchema, MessageResponse,
+OrderInvoiceSchema,AddWebsiteOwnerSchema)
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
@@ -49,8 +52,6 @@ class WebsiteMainService(BaseService):
                 message="Website fetched successfully ✅"
             )
         
-        except HTTPException as http_exc:
-            raise http_exc   
 
         except Exception as e:
             logger.error(f"Error occurred while creating website for user {user_id}: {str(e)}")
@@ -151,27 +152,6 @@ class WebsiteMainService(BaseService):
         return {"message": "Subcategory deleted successfully"}
 
 
-    # async def get_website_by_name(self, website_name: str) -> WebsiteResponseSchema:
-    #     logger.info(f"Fetching website by name: {website_name}")
-
-    #     website = await self.website_service.get_website_by_name(website_name)
-
-    #     return WebsiteResponseSchema(
-    #         id=website.website_id,
-    #         business_name=website.business_name,
-    #         welcome_text=website.welcome_text,
-    #         guide_page=website.guide_page,
-    #         social_links=jsonable_encoder(website.social_links),
-    #         faqs=jsonable_encoder(website.faqs),
-    #         website_url=website.website_url,
-    #         custom_domain=website.custom_domain,
-    #         logo_url=website.logo_url,
-    #         banner_image=website.banner_image,
-    #         created_at=website.created_at,
-    #         message="Website fetched successfully ✅"
-    #     )
-
-
     async def get_subcategories_by_category_id(self, category_id: UUID) -> List[WebsiteSubcategoryResponseSchema]:
         logger.info(f"Fetching subcategories for category ID: {category_id}")
         
@@ -254,6 +234,7 @@ class WebsiteMainService(BaseService):
                 created_at=updated_website.created_at,
                 message="Website fetched successfully ✅"
             )
+    
     async def get_buyers_by_website_id(self, website_id: UUID) :
         return await self.website_service.get_buyers_by_website_id(website_id)
         
@@ -313,3 +294,7 @@ class WebsiteMainService(BaseService):
 
     async def get_active_plan(self, website_id:UUID):
         return await self.plan_service.get_active_plan_by_website_id(website_id)
+
+
+    async def get_order_invoice_table(self, website_id: UUID, sort_by:str) -> list:
+        return await self.website_service.get_order_invoice_table(website_id, sort_by)

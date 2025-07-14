@@ -352,3 +352,7 @@ class WebsiteService(BaseService):
 
     async def get_all_websites(self) -> list[Website]:
         return self.website_repository.get_all_websites()
+
+
+    async def get_order_invoice_table(self, website_id: UUID, sort_by:str) -> list:
+        return self.order_repository.get_order_invoice_table(website_id, sort_by)

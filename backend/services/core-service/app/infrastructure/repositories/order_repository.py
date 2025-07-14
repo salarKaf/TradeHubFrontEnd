@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from typing import List, Dict
 from app.core.postgres_db.database import get_db
 from uuid import UUID
@@ -297,3 +297,36 @@ class OrderRepository:
         self.db.commit()
         self.db.refresh(order)
         return order
+    
+
+    def get_order_invoice_table(self, website_id: UUID, sort_by: str) -> list:
+        query = (
+            self.db.query(Order)
+            .filter(Order.website_id == website_id, Order.status == 'Paid')
+            .options(joinedload(Order.buyer))
+        )
+
+        if sort_by == "latest":
+            query = query.order_by(Order.created_at.desc())
+        elif sort_by == "amount":
+            query = query.order_by(Order.total_price.desc())
+
+        orders = query.all()
+
+        result = []
+        for order in orders:
+            buyer = order.buyer
+            if not buyer:
+                continue
+
+            email = buyer.email
+            order_number = f"{order.created_at.strftime('%Y%m%d')}-{email.split('@')[0]}-{int(order.total_price)}"
+
+            result.append({
+                "order_number": order_number,
+                "buyer_email": email,
+                "total_price": int(order.total_price),
+                "created_at": to_jalali_str(order.created_at)
+            })
+
+        return result
