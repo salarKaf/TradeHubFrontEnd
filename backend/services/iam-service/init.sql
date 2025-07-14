@@ -219,18 +219,21 @@ CREATE OR REPLACE FUNCTION notify_new_review()
 RETURNS TRIGGER AS $$
 DECLARE
     _website_id UUID;
+    _item_name TEXT;
 BEGIN
-    SELECT website_id INTO _website_id
+    -- گرفتن website_id و نام محصول از جدول items
+    SELECT website_id, name INTO _website_id, _item_name
     FROM items
     WHERE item_id = NEW.item_id;
 
-    -- درج پیام
+    -- درج پیام با نام محصول
     INSERT INTO announcements (website_id, message)
     VALUES (
         _website_id,
-        'مشتری جدید دیدگاهی راجع به محصول ثبت کرد.'
+        format('مشتری جدید دیدگاهی راجع به محصول "%s" ثبت کرد.', _item_name)
     );
 
+    -- فقط 5 اعلان آخر برای هر سایت نگه داشته شود
     DELETE FROM announcements
     WHERE website_id = _website_id
       AND id NOT IN (
@@ -243,6 +246,8 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+
 CREATE TRIGGER trigger_notify_review
 AFTER INSERT ON reviews
 FOR EACH ROW
