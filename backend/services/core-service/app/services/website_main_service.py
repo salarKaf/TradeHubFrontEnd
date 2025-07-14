@@ -249,11 +249,12 @@ class WebsiteMainService(BaseService):
         return active_buyers_count
     
     async def get_sales_summary(self, website_id: UUID, mode: str) -> dict:
-        website_plan = self.plan_service.get_active_plan_by_website_id(website_id)
-        plan = await self.plan_service.get_plan_by_id(website_plan.plan_id)
-        if plan.name != 'Pro':
-            raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
-        return await self.website_service.get_sales_summary(website_id, mode)
+        website_plan = await self.plan_service.get_active_plan_by_website_id(website_id)
+        if website_plan:
+            plan = await self.plan_service.get_plan_by_id(website_plan.plan_id)
+            if plan.name != 'Pro':
+                raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
+            return await self.website_service.get_sales_summary(website_id, mode)
 
     async def get_last_6_months_sales(self, website_id: UUID) -> List[dict]:
         website_plan = await self.plan_service.get_active_plan_by_website_id(website_id)
