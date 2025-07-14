@@ -2,7 +2,7 @@ from pydantic import BaseModel, HttpUrl, Field
 from uuid import UUID
 from typing import Optional, Dict, List
 from datetime import datetime
-
+from decimal import Decimal
 
 class FAQSchema(BaseModel):
     question: str
@@ -30,6 +30,7 @@ class WebsiteUpdateSchema(BaseModel):
     website_id:UUID
     guide_page: Optional[str] = None
     store_policy: Optional[str] = None
+    store_slogan: Optional[str] = None
     welcome_text: Optional[str] = None
     guide_page: Optional[str] = None
     social_links: Optional[SocialLinksSchema] = None
@@ -128,6 +129,16 @@ class SubCategoryResponseSchema(BaseModel):
     subcategory_id: UUID
     name: str
     is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class OrderInvoiceSchema(BaseModel):
+    order_number: str
+    buyer_email: str
+    total_price: Decimal
+    created_at: datetime
 
     class Config:
         from_attributes = True

@@ -26,3 +26,13 @@ async def get_coupons_by_website(
     coupon_main_service: Annotated[CouponMainService, Depends()]
 ):
     return await coupon_main_service.get_coupons_by_website_id(website_id)
+
+
+@coupon_router.delete("/coupon/{coupon_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_coupon(
+    coupon_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    coupon_main_service: Annotated[CouponMainService, Depends()]
+):
+    await coupon_main_service.delete_coupon(coupon_id)
+    return {}

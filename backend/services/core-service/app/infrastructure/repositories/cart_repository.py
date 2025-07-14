@@ -1,12 +1,11 @@
 from sqlalchemy.orm import Session
-from typing import Annotated 
 from app.domain.models.buyer_model import CartItem
 from app.core.postgres_db.database import get_db
 from fastapi import Depends
 from uuid import UUID
 import datetime
 from loguru import logger
-from typing import List, Optional
+from typing import List, Optional,Annotated
 from fastapi import HTTPException
 
 

@@ -45,12 +45,12 @@ class BuyerRepository:
             return None
 
 
-    def get_buyers_by_website_id(self, website_id: UUID) -> List[Buyer]:
-        buyers =  self.db.query(Buyer).filter(Buyer.website_id == website_id).all()
-        if not buyers:
-            logger.warning(f"⚠️ No Buyer found for website {website_id}")
-            return None
-        return buyers
+    # def get_buyers_by_website_id(self, website_id: UUID) -> List[Buyer]:
+    #     buyers =  self.db.query(Buyer).filter(Buyer.website_id == website_id).all()
+    #     if not buyers:
+    #         logger.warning(f"⚠️ No Buyer found for website {website_id}")
+    #         return None
+    #     return buyers
     
     def get_buyers_count_by_website_id(self, website_id: UUID) -> int:
         return self.db.query(Buyer).filter(Buyer.website_id == website_id).count()

@@ -11,7 +11,6 @@ from fastapi import FastAPI
 from app.api.v1.endpoints.websites_routes import website_router
 from app.api.v1.endpoints.item_routes import item_router
 from app.api.v1.endpoints.order_routes import order_router
-from app.infrastructure.scheduler.scheduler import SchedulerService
 from app.api.v1.endpoints.cart_routes import cart_router
 from app.api.v1.endpoints.payment_routes import payment_router
 from app.api.v1.endpoints.review_routes import review_router

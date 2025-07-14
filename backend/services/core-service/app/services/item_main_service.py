@@ -5,7 +5,7 @@ from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
 from app.services.base_service import BaseService
-from typing import Annotated, List
+from typing import Annotated, List, Dict
 
 class ItemMainService(BaseService):
     def __init__(
@@ -110,6 +110,7 @@ class ItemMainService(BaseService):
                 price=item.price,
                 discount_price=item.discount_price,
                 discount_active=item.discount_active,
+                discount_percent=item.discount_percent,
                 discount_expires_at=item.discount_expires_at,
                 delivery_url=item.delivery_url,
                 post_purchase_note=item.post_purchase_note,
@@ -122,7 +123,7 @@ class ItemMainService(BaseService):
 
 
 
-    async def edit_item(self, item_id: UUID, item_data: ItemUpdateSchema) -> ItemResponseSchema:
+    async def edit_item(self, item_id: UUID, item_data: Dict) -> ItemResponseSchema:
         logger.info(f"Editing item with ID: {item_id}")
 
         updated_item = await self.item_service.edit_item(item_id, item_data)
@@ -135,8 +136,8 @@ class ItemMainService(BaseService):
             name=updated_item.name,
             description=updated_item.description,
             price=updated_item.price,
-            discount_price=updated_item.discount_price,
             discount_active=updated_item.discount_active,
+            discount_percent=updated_item.discount_percent,
             discount_expires_at=updated_item.discount_expires_at,
             delivery_url=updated_item.delivery_url,
             post_purchase_note=updated_item.post_purchase_note,

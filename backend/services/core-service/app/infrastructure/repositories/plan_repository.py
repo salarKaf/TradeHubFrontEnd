@@ -30,9 +30,6 @@ class PlanRepository:
             .filter(WebsitePlan.website_id == website_id, WebsitePlan.is_active == True)
             .first()
         )
-
-        if not plan:
-            return "Inactive"
         return plan
 
     def get_plan_price(self, name: UUID) -> float:

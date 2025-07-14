@@ -60,3 +60,11 @@ class CouponMainService:
 
         coupons = self.coupon_repository.get_coupons_by_website_id(website_id)
         return [CouponResponseSchema.from_orm(c) for c in coupons]
+
+
+    async def delete_coupon(self, coupon_id: UUID) -> None:
+        coupon = self.coupon_repository.get_coupon_by_id(coupon_id)
+        if not coupon:
+            raise HTTPException(status_code=404, detail="Coupon not found")
+
+        self.coupon_repository.delete_coupon(coupon_id)

@@ -29,6 +29,7 @@ class ItemResponseSchema(BaseModel):
     price: Decimal
     discount_price: Optional[Decimal] = None
     discount_active: bool
+    discount_percent: Optional[int] = None
     discount_expires_at: Optional[datetime] = None
     delivery_url: str = None
     post_purchase_note: Optional[str] = None
@@ -44,8 +45,8 @@ class ItemUpdateSchema(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     price: Optional[Decimal] = None
-    discount_price: Optional[Decimal] = None
     discount_active: Optional[bool] = None
+    discount_percent: Optional[int] = None
     discount_expires_at: Optional[datetime] = None
     delivery_url: Optional[str] = None
     post_purchase_note: Optional[str] = None

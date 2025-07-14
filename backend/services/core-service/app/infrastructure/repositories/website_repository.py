@@ -154,9 +154,8 @@ class WebsiteRepository:
 
         return [
             {
-                "text": a.text,
+                "text": a.message,
                 "date": to_jalali_str(a.created_at),
-                "type": a.type
             }
             for a in announcements
         ]
