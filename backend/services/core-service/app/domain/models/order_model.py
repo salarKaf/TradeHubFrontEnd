@@ -41,6 +41,9 @@ class Buyer(Base):
     can_reset_password = Column(Boolean, default=False, nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp(), nullable=False)
 
+    orders = relationship("Order", back_populates="buyer")
+
+
 class Item(Base):
     __tablename__ = 'items'
 
@@ -88,6 +91,8 @@ class Order(Base):
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
     order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+    buyer = relationship("Buyer", back_populates="orders")
+
 
 
 class OrderItem(Base):
