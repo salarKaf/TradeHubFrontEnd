@@ -150,16 +150,6 @@ async def edit_website(
 
     return await website_service.update_website(updated_data, current_user.user_id)
 
-@website_router.get("/buyers/{website_id}", response_model=List[Dict], status_code=status.HTTP_200_OK)
-async def get_buyers_by_website_id(
-    website_id: UUID,   
-    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
-    website_service: Annotated[WebsiteMainService, Depends()],
-):
-    buyers = await website_service.get_buyers_by_website_id(website_id)
-    return buyers
-
-
 
 @website_router.get("/buyers/count/{website_id}", status_code=status.HTTP_200_OK)
 async def get_buyers_count_by_website_id(
