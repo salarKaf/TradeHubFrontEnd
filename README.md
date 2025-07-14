@@ -1,66 +1,76 @@
-# 🛍️ Shopify-Style SaaS Platform for Selling Digital Products
+# 🛍️ TradeHub – Digital Product Store Builder Platform
 
-A robust, scalable PostgreSQL database schema for a SaaS platform enabling creators and sellers to launch their own customizable storefronts for selling **digital products** (courses, files, videos, etc.) — with no need for admin intervention.
-
----
-
-## 🚀 Overview
-
-This platform is designed to empower **content creators**, especially those active on platforms like **Instagram** and **Telegram**, to seamlessly:
-
-- Create a personal storefront
-- Upload and manage digital products
-- Accept online payments
-- Deliver secure, time-limited download links to buyers
-- Eliminate the need for manual DMs, admins, or custom websites
+**TradeHub** is a scalable, cleanly architected microservice platform that enables users to launch and manage their own digital product storefronts with ease.  
+Each user can create a website, manage digital products, track customer orders, offer discounts, and receive payments through secure gateways.
 
 ---
 
-## 🧱 Key Features
+## 🚀 Features
 
-✅ Multi-vendor store architecture (like Digikala)  
-✅ Secure delivery of digital content (video, PDF, zip, etc.)  
-✅ Time-based and tokenized download links  
-✅ Built-in discount system per product  
-✅ Categorization (global + per-store)  
-✅ Review & rating system for verified buyers  
-✅ Order management & archive system for scale  
-✅ Seller/buyer authentication separation  
-✅ Ready for FastAPI + Traefik microservices architecture
-
----
-
-## 🗂️ Main Tables
-
-| Table             | Description                                                  |
-|------------------|--------------------------------------------------------------|
-| `users`          | Sellers (store creators/managers)                            |
-| `buyers`         | End-users/customers                                          |
-| `categories`     | Global business categories                                   |
-| `websites`       | Storefronts created by users                                 |
-| `store_owners`   | Many-to-many link between users and websites (multi-vendor)  |
-| `store_categories` | Per-store product categories                              |
-| `items`          | Digital products (with secure delivery fields)               |
-| `orders`         | Live purchase tracking                                       |
-| `orders_archive` | Archived orders (performance optimization)                   |
-| `reviews`        | Buyer reviews and ratings                                    |
+✅ Build your own digital product storefront in minutes  
+✅ OTP-based phone number authentication  
+✅ Zarinpal payment gateway integration  
+✅ Smart analytics dashboard (revenue, orders, customers)  
+✅ Discount coupons and order management  
+✅ Subscription-based plan system  
+✅ Clean architecture & microservice pattern  
+✅ JWT-based authentication
 
 ---
 
-## 🔐 Secure Download Support
+## 💼 Subscription Plans
 
-The schema supports:
-- `delivery_url`: direct or external download URL
-- `download_token`: per-order token for secure access
-- `delivery_expires_at`: expiration timestamp
-
-This enables you to implement **JWT-based signed URLs**, **HMAC links**, or server-authenticated download routes in FastAPI.
+| Plan   | Product Limit | Discount Support | Analytics Dashboard | Price (IRR)   |
+|--------|----------------|------------------|----------------------|----------------|
+| Basic  | 100 products   | ❌ No             | ❌ No                 | 500,000        |
+| Pro    | 500 products   | ✅ Yes            | ✅ Yes                | 1,500,000      |
 
 ---
 
-## 💸 Discounts
+## 💳 Payments & Authentication
 
-Each product supports optional, manual discounts:
-- `discount_price`
-- `discount_active`
-- `discount_expires_at`
+- 🔐 Secure payment integration via **Zarinpal**
+- 📱 User login with **OTP-based SMS authentication**
+- 🔑 Session & token management using **JWT**
+
+---
+
+## 📊 Seller Dashboard
+
+- Recent orders preview
+- Detailed buyer summaries (total purchases, order count)
+- Advanced sorting: by latest, highest amount, or most orders
+- Invoice-style order overview (order number, amount, date, buyer email)
+
+---
+
+## 🧠 Architecture
+
+TradeHub is built with:
+
+- **Microservice structure**
+- **Clean Architecture principles**
+- Easy-to-scale and testable components
+
+## 🔐 Security
+Scoped JWT tokens for all authenticated access
+
+Each user is allowed to own exactly one website
+
+OTP tokens stored securely (e.g., via Redis)
+
+Clean handling of coupon usage and ownership
+
+## 📈 Tech Stack
+🌀 FastAPI + Pydantic
+
+🧮 PostgreSQL + SQLAlchemy
+
+🔐 Zarinpal for payments
+
+☁️ Redis for OTP & caching
+
+🌐 Jalali date handling for local Persian UX
+
+🧱 Microservice-ready modular codebase
+
