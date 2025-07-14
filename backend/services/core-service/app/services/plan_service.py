@@ -89,3 +89,6 @@ class PlanService:
     async def get_plan_purchase_stats(self) -> List[dict]:
         return self.plan_repository.get_website_plan_counts()
     
+
+    async def get_all_plans(self):
+        return self.plan_repository.get_all_plans()

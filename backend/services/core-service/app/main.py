@@ -17,6 +17,8 @@ from app.api.v1.endpoints.review_routes import review_router
 from app.api.v1.endpoints.qan_routes import qan_router
 from app.api.v1.endpoints.admin_routes import admin_router
 from app.api.v1.endpoints.coupon_routes import coupon_router
+from app.api.v1.endpoints.plan_routes import plan_router
+
 app = FastAPI()
 
 from app.utils.scheduler_starter import starter
@@ -44,6 +46,7 @@ app.include_router(review_router, prefix="/api/v1/review", tags=["reviews"])
 app.include_router(qan_router, prefix="/api/v1/question", tags=["questions"])
 app.include_router(admin_router, prefix="/api/v1/admin", tags=["admins"])
 app.include_router(coupon_router, prefix="/api/v1/coupon", tags=["coupons"])
+app.include_router(plan_router, prefix="/api/v1/plan", tags=["plans"])
 
 @app.get("/")
 async def root():

@@ -46,10 +46,10 @@ class PlanRepository:
 
 
     def deactivate_all_website_plans(self, website_id):
-            self.db.query(WebsitePlan)\
+        self.db.query(WebsitePlan)\
                 .filter(WebsitePlan.website_id == website_id, WebsitePlan.is_active == True)\
                 .update({WebsitePlan.is_active: False})
-            self.db.commit()
+        self.db.commit()
 
     def create_website_plan(self, website_id, plan_id, price):
         activated_at=datetime.utcnow()
@@ -161,3 +161,16 @@ class PlanRepository:
             .order_by(func.count().desc())
             .all()
         )
+
+
+    def get_all_plans(self):
+        plans = self.db.query(SubscriptionPlan).all()
+
+        return [
+            {
+                "id": p.plan_id,
+                "name": p.name,
+                "price": p.price
+            }
+            for p in plans
+        ]
