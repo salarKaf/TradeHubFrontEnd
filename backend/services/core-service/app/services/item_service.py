@@ -70,7 +70,7 @@ class ItemService(BaseService):
 
         if "discount_active" in item_data :
             if item_data["discount_active"]  and item_data["discount_percent"] is not None:
-                # await self.plan_service.check_discount_permission(item.website_id)
+                await self.plan_service.check_discount_permission(item.website_id)
                 self.item_repository.activate_discount(item_id,item_data["discount_percent"])
 
             else:
