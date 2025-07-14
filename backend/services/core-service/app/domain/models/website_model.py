@@ -135,11 +135,9 @@ class WebsitePlan(Base):
 
 
 class Announcement(Base):
-    __tablename__ = "announcement"
+    __tablename__ = "announcements"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     website_id = Column(UUID(as_uuid=True), ForeignKey("website.id"), nullable=False)
-    text = Column(String(512), nullable=False)
-    type = Column(String(32))
-    related_id = Column(UUID(as_uuid=True), nullable=True)
+    message = Column(String(512), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, nullable=False)

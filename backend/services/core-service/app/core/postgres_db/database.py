@@ -7,16 +7,15 @@ from app.core.configs.config import get_settings
 
 config = get_settings()
 
-# DATABASE_URL = "postgresql://postgres:admin@postgres_container:5432/shopify"
-DATABASE_URL = "postgresql://postgres:admin@localhost:5432/shopify"
-# DATABASE_URL = (
-#     f"{config.DATABASE_DIALECT}://"
-#     f"{config.DATABASE_USERNAME}:"
-#     f"{config.DATABASE_PASSWORD}@"
-#     f"{config.DATABASE_HOSTNAME}:"
-#     f"{config.DATABASE_PORT}/"
-#     f"{config.DATABASE_NAME}"
-# )
+# DATABASE_URL = "postgresql://postgres:admin@localhost:5432/shopify"
+DATABASE_URL = (
+    f"{config.DATABASE_DIALECT}://"
+    f"{config.DATABASE_USERNAME}:"
+    f"{config.DATABASE_PASSWORD}@"
+    f"{config.DATABASE_HOSTNAME}:"
+    f"{config.DATABASE_PORT}/"
+    f"{config.DATABASE_NAME}"
+)
 
 engine = create_engine(DATABASE_URL, future=True)
 session_local = sessionmaker(autoflush=False, autocommit=False, bind=engine)

@@ -11,4 +11,3 @@ class Admin(Base):
     admin_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     password = Column(Text, nullable=False)
-    can_reset_password = Column(Boolean, default=False, nullable=False)
