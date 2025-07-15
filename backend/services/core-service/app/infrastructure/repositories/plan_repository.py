@@ -66,6 +66,20 @@ class PlanRepository:
         self.db.refresh(website_plan)
         return website_plan
     
+    def create_free_website_plan(self, website_id, plan_id):
+        activated_at=datetime.utcnow()
+        expires_at = activated_at + relativedelta(days=7)
+        website_plan = WebsitePlan(
+            website_id=website_id,
+            plan_id=plan_id,
+            activated_at=activated_at,
+            expires_at=expires_at,
+            is_active=True
+        )
+        self.db.add(website_plan)
+        self.db.commit()
+        self.db.refresh(website_plan)
+        return website_plan
 
 
     def get_active_plan_counts(self):
@@ -162,10 +176,11 @@ class PlanRepository:
             .all()
         )
 
+    def get_basic_plan(self):
+        return self.db.query(SubscriptionPlan).filter(SubscriptionPlan.name == 'Basic').first()
 
     def get_all_plans(self):
         plans = self.db.query(SubscriptionPlan).all()
-
         return [
             {
                 "id": p.plan_id,
