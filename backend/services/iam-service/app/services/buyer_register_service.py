@@ -15,7 +15,7 @@ from app.services.auth_services.otp_service import OTPService
 from app.services.base_service import BaseService
 from app.services.buyer_service import BuyerService
 from app.utils import helper
-
+from app.domain.schemas.token_schema import TokenSchema
 
 class RegisterService(BaseService):
     def __init__(
@@ -62,7 +62,7 @@ class RegisterService(BaseService):
 
     async def verify_buyer(
         self, verify_buyer_schema: VerifyOTPSchema
-    ) -> VerifyOTPResponseSchema:
+    ) -> TokenSchema:
         if not self.otp_service.verify_otp(
             verify_buyer_schema.email, verify_buyer_schema.otp
         ):
@@ -75,13 +75,12 @@ class RegisterService(BaseService):
         await self.buyer_service.update_verified_status(buyer.buyer_id, {"is_verified": True})
 
         logger.info(f"Buyer with email {verify_buyer_schema.email} verified✅")
-        return VerifyOTPResponseSchema(
-            verified=True, message="Buyer Verified Successfully"
-        )
+        token = self.auth_service.create_access_token(data={"sub": str(buyer.buyer_id), "role": "buyer"})
+        return {"access_token": token, "token_type": "bearer"} 
 
     async def resend_otp(
         self, resend_otp_schema: ResendOTPSchema
-    ) -> ResendOTPResponseSchema:
+    ) -> TokenSchema:
         existing_buyer = await self.buyer_service.get_buyer_by_email(resend_otp_schema.website_id,resend_otp_schema.email)
         
         if not existing_buyer:
@@ -105,11 +104,12 @@ class RegisterService(BaseService):
         otp = self.otp_service.send_otp(resend_otp_schema.email)
 
         logger.info(f"OTP resent to email {resend_otp_schema.email}")
-        return ResendOTPResponseSchema(
-            email=resend_otp_schema.email,
-            OTP=otp,
-            message="OTP sent to email",
-        )
+        # return ResendOTPResponseSchema(
+        #     email=resend_otp_schema.email,
+        #     OTP=otp,
+        #     message="OTP sent to email",
+        # )
+
 
     async def verify_otp_forget_password(
         self, verify_buyer_schema: VerifyOTPSchema

@@ -38,12 +38,12 @@ async def register(
 
 
 @buyer_router.post(
-    "/VerifyOTP", response_model=VerifyOTPResponseSchema, status_code=status.HTTP_200_OK
+    "/VerifyOTP", response_model=TokenSchema, status_code=status.HTTP_200_OK
 )
 async def verify_otp(
     verify_buyer_schema: VerifyOTPSchema,
     register_service: Annotated[RegisterService, Depends()],
-) -> VerifyOTPResponseSchema:
+) -> TokenSchema:
     logger.info(f"Verifying OTP for buyer with email {verify_buyer_schema.email}")
     return await register_service.verify_buyer(verify_buyer_schema)
 

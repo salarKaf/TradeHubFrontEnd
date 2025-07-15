@@ -9,6 +9,7 @@ from app.domain.schemas.user_schema import (
     ResendOTPResponseSchema,
     ResendOTPSchema
 )
+from app.domain.schemas.token_schema import TokenSchema
 from app.services.auth_services.auth_service import AuthService
 from app.services.auth_services.otp_service import OTPService
 from app.services.base_service import BaseService
@@ -60,7 +61,7 @@ class RegisterService(BaseService):
         )
     async def verify_user(
         self, verify_user_schema: VerifyOTPSchema
-    ) -> VerifyOTPResponseSchema:
+    ) -> TokenSchema:
         if not self.otp_service.verify_otp(
             verify_user_schema.email, verify_user_schema.otp
         ):
@@ -76,10 +77,14 @@ class RegisterService(BaseService):
         await self.user_service.update_verified_status(user.user_id, {"is_verified": True})
 
         logger.info(f"User with email{verify_user_schema.email} verified✅")
-        return VerifyOTPResponseSchema(
-            verified=True, message="User Verified Successfully"
-        )
+        # return VerifyOTPResponseSchema(
+        #     verified=True, message="User Verified Successfully"
+        # )
 
+        token = self.auth_service.create_access_token(data={"sub": str(user.user_id), "role": "user"})
+        return {"access_token": token, "token_type": "bearer"} 
+    
+    
     async def resend_otp(
         self, resend_otp_schema: ResendOTPSchema
     ) -> ResendOTPResponseSchema:
