@@ -9,6 +9,8 @@ import Navbar from "./pages/TradePages/components/Navbar";
 import CreateStore from "./pages/TradePages/CreateStore";
 import RulesTrade from "./pages/TradePages/rulesTrade";
 import PricingPlans from "./pages/TradePages/Plans/Plans";
+import PaymentCallback from './pages/TradePages/Plans/components/PaymentCallback';
+import PaymentResult from './pages/TradePages/Plans/components/PaymentResult.jsx';
 import OTPForm from "./pages/TradePages/OTPForm"
 
 
@@ -48,8 +50,8 @@ export default function App() {
         <Route path="/login" element={<LoginForm></LoginForm>} />
         <Route path="/storeForm" element={<CreateStore></CreateStore>} />
         <Route path="/rules/:websiteId" element={<RulesTrade></RulesTrade>}></Route>
-        <Route path="/PricingPlans/:websiteId" element={<PricingPlans/>}/>
-        <Route path="/OTPForm" element={<OTPForm/>}/>
+        <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
+        <Route path="/OTPForm" element={<OTPForm />} />
 
 
 
@@ -71,6 +73,17 @@ export default function App() {
         <Route path="/about-website" element={<AboutWebsite />} />
         <Route path="/shop-website" element={<ShopWebsite />} />
         <Route path="/rules-website" element={<RulesWebsite />} />
+
+
+
+
+        <Route path="/pricing/:websiteId" element={<PricingPlans />} />
+
+        {/* 🔥 route جدید برای callback پرداخت */}
+        <Route path="/payment/callback" element={<PaymentCallback />} />
+
+        {/* route برای نمایش نتایج پرداخت (اختیاری) */}
+        <Route path="/payment-result" element={<PaymentResult />} />
       </Routes>
     </>
   );

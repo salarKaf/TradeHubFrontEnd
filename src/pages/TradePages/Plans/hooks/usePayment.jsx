@@ -4,15 +4,19 @@ import axios from 'axios';
 const usePayment = () => {
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
-    const callPaymentApi = async (planId) => {
+    // درخواست پرداخت برای پلن های پولی
+    const callPaymentApi = async (planId, websiteId) => {
         try {
+            setIsProcessingPayment(true);
             const token = localStorage.getItem("token");
 
-            console.log('Sending payment request for plan:', planId);
+            console.log('🔥 Sending payment request for plan:', planId, 'website:', websiteId);
 
             const response = await axios.post(
                 `http://tradehub.localhost/api/v1/payment/plan_payment_request/${planId}`,
-                {},
+                {
+                    website_id: websiteId // 🔥 اضافه کردن website_id در body
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -21,16 +25,25 @@ const usePayment = () => {
                 }
             );
 
+            console.log('✅ Payment response:', response.data);
             const paymentUrl = response.data?.payment_url;
 
             if (paymentUrl) {
+                // 🔥 ذخیره اطلاعات پرداخت در localStorage برای callback
+                localStorage.setItem('payment_info', JSON.stringify({
+                    planId: planId,
+                    websiteId: websiteId,
+                    timestamp: Date.now()
+                }));
+
+                // هدایت به درگاه پرداخت
                 window.location.href = paymentUrl;
                 return { success: true };
             } else {
-                throw new Error("آدرس درگاه دریافت نشد!");
+                throw new Error("آدرس درگاه پرداخت دریافت نشد!");
             }
         } catch (error) {
-            console.error('Payment API Error:', error);
+            console.error('❌ Payment API Error:', error);
 
             if (error.response) {
                 console.error('Response data:', error.response.data);
@@ -40,6 +53,57 @@ const usePayment = () => {
                     alert('داده‌های ارسالی نامعتبر است. لطفاً دوباره تلاش کنید.');
                 } else if (error.response.status === 404) {
                     alert('پلن مورد نظر یافت نشد.');
+                } else if (error.response.status === 401) {
+                    alert('احراز هویت شما منقضی شده. لطفاً مجدداً وارد شوید.');
+                } else {
+                    alert('خطا در پردازش درخواست پرداخت. لطفاً دوباره تلاش کنید.');
+                }
+            } else if (error.request) {
+                alert('خطا در اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید.');
+            } else {
+                alert('خطا در ارسال درخواست. لطفاً دوباره تلاش کنید.');
+            }
+
+            throw error;
+        } finally {
+            setIsProcessingPayment(false);
+        }
+    };
+
+    // درخواست تست رایگان (اگر نیاز باشه)
+    const callFreeTrialApi = async (websiteId) => {
+        try {
+            setIsProcessingPayment(true);
+            const token = localStorage.getItem("token");
+
+            console.log('🔥 Sending free trial request for website:', websiteId);
+
+            const response = await axios.post(
+                `http://tradehub.localhost/api/v1/payment/order_request`,
+                {
+                    website_id: websiteId
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            console.log('✅ Free trial response:', response.data);
+            return { success: true, data: response.data };
+        } catch (error) {
+            console.error('❌ Free trial API Error:', error);
+
+            if (error.response) {
+                console.error('Response data:', error.response.data);
+                console.error('Response status:', error.response.status);
+
+                if (error.response.status === 422) {
+                    alert('داده‌های ارسالی نامعتبر است. لطفاً دوباره تلاش کنید.');
+                } else if (error.response.status === 401) {
+                    alert('احراز هویت شما منقضی شده. لطفاً مجدداً وارد شوید.');
                 } else {
                     alert('خطا در پردازش درخواست. لطفاً دوباره تلاش کنید.');
                 }
@@ -48,17 +112,21 @@ const usePayment = () => {
             }
 
             throw error;
+        } finally {
+            setIsProcessingPayment(false);
         }
     };
 
-    const callFreeTrialApi = async () => {
+    // فعال‌سازی پلن رایگان
+    const activateFreePlan = async (websiteId) => {
         try {
+            setIsProcessingPayment(true);
             const token = localStorage.getItem("token");
 
-            console.log('Sending free trial request');
+            console.log('🔥 Activating free plan for website:', websiteId);
 
             const response = await axios.post(
-                `http://tradehub.localhost/api/v1/payment/order_request`,
+                `http://tradehub.localhost/api/v1/plan/activate-free-plan?website_id=${websiteId}`,
                 {},
                 {
                     headers: {
@@ -68,63 +136,75 @@ const usePayment = () => {
                 }
             );
 
-            console.log('Free trial response:', response.data);
-
-            return { success: true };
-        } catch (error) {
-            console.error('Free trial API Error:', error);
-
-            if (error.response) {
-                console.error('Response data:', error.response.data);
-                console.error('Response status:', error.response.status);
-
-                if (error.response.status === 422) {
-                    alert('داده‌های ارسالی نامعتبر است. لطفاً دوباره تلاش کنید.');
-                } else {
-                    alert('خطا در پردازش درخواست. لطفاً دوباره تلاش کنید.');
-                }
-            } else {
-                alert('خطا در اتصال به سرور. لطفاً دوباره تلاش کنید.');
-            }
-
-            throw error;
-        }
-    };
-
-    // 🔥 اصلاح شده: website_id به عنوان query parameter ارسال می‌شود
-    const activateFreePlan = async (websiteId) => {
-        try {
-            const token = localStorage.getItem("token");
-
-            // 🔥 تغییر اصلی: website_id در URL به عنوان query parameter
-            const response = await axios.post(
-                `http://tradehub.localhost/api/v1/plan/activate-free-plan?website_id=${websiteId}`,
-                {}, // body خالی
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-
             console.log("✅ Free plan activated:", response.data);
-            return { success: true };
+            return { success: true, data: response.data };
         } catch (error) {
             console.error("❌ Error activating free plan:", error);
+            
             if (error.response) {
                 console.error("Response data:", error.response.data);
                 console.error("Response status:", error.response.status);
                 
-                // بهتر است پیام‌های خطا را بر اساس status code مدیریت کنید
                 if (error.response.status === 422) {
-                    console.error("Validation error - check if websiteId is valid UUID");
+                    alert('داده‌های ارسالی نامعتبر است. لطفاً دوباره تلاش کنید.');
                 } else if (error.response.status === 404) {
-                    console.error("Website not found");
+                    alert('وب‌سایت مورد نظر یافت نشد.');
                 } else if (error.response.status === 400) {
-                    console.error("Bad request - check API parameters");
+                    alert('درخواست نامعتبر است.');
+                } else if (error.response.status === 401) {
+                    alert('احراز هویت شما منقضی شده. لطفاً مجدداً وارد شوید.');
+                } else {
+                    alert('خطا در فعال‌سازی پلن رایگان. لطفاً دوباره تلاش کنید.');
                 }
+            } else {
+                alert('خطا در اتصال به سرور. لطفاً دوباره تلاش کنید.');
             }
+            
+            return { success: false, error: error.response?.data };
+        } finally {
+            setIsProcessingPayment(false);
+        }
+    };
+
+    // بررسی وضعیت callback پرداخت
+    const checkPaymentCallback = async (authority, status, websiteId, planId) => {
+        try {
+            const token = localStorage.getItem("token");
+
+            console.log('🔥 Checking payment callback:', {
+                authority,
+                status,
+                websiteId,
+                planId
+            });
+
+            const response = await axios.get(
+                `http://tradehub.localhost/api/v1/payment/plan_payment/callback`,
+                {
+                    params: {
+                        website_id: websiteId,
+                        plan_id: planId,
+                        Authority: authority,
+                        Status: status
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('✅ Payment callback response:', response.data);
+            
+            // پاک کردن اطلاعات پرداخت از localStorage
+            localStorage.removeItem('payment_info');
+            
+            return { success: true, data: response.data };
+        } catch (error) {
+            console.error('❌ Payment callback error:', error);
+            
+            // پاک کردن اطلاعات پرداخت از localStorage
+            localStorage.removeItem('payment_info');
+            
             return { success: false, error: error.response?.data };
         }
     };
@@ -135,6 +215,7 @@ const usePayment = () => {
         callPaymentApi,
         callFreeTrialApi,
         activateFreePlan,
+        checkPaymentCallback,
     };
 };
 

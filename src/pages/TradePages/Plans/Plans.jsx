@@ -11,11 +11,11 @@ import usePayment from './hooks/usePayment';
 import usePlans from './hooks/usePlans';
 
 const PricingPlans = () => {
-    const { websiteId } = useParams(); // ✅ درست گرفتیم
+    const { websiteId } = useParams();
     const navigate = useNavigate();
 
-    const { plans, loading } = usePlans(websiteId); // ✅ پاس می‌دیم به usePlans
-    const { isProcessingPayment, setIsProcessingPayment, callPaymentApi, callFreeTrialApi, activateFreePlan } = usePayment();
+    const { plans, loading } = usePlans(websiteId);
+    const { isProcessingPayment, setIsProcessingPayment, callPaymentApi, activateFreePlan } = usePayment();
 
     const [selectedPlan, setSelectedPlan] = useState(null);
     const [showPaymentResult, setShowPaymentResult] = useState(false);
@@ -36,37 +36,48 @@ const PricingPlans = () => {
             return;
         }
 
+        // جلوگیری از کلیک مجدد
+        if (isProcessingPayment) {
+            console.log('Payment already in progress...');
+            return;
+        }
+
         setSelectedPlan(planId);
-        setIsProcessingPayment(true);
 
         try {
             if (selectedPlanData.isFree) {
+                console.log('🔥 Processing free plan activation...');
+                
                 const response = await activateFreePlan(websiteId);
                 if (response.success) {
-                    // 🔥 تغییر: بعد از موفقیت به /rules/:websiteId برو
+                    console.log('✅ Free plan activated successfully');
                     navigate(`/rules/${websiteId}`);
                 } else {
+                    console.error('❌ Failed to activate free plan');
                     setPaymentSuccess(false);
                     setShowPaymentResult(true);
                 }
             } else {
-                const paymentResponse = await callPaymentApi(selectedPlanData.apiId);
-                if (paymentResponse.success) {
-                    window.location.href = `/payment-result?status=success&plan=${planId}`;
-                } else {
-                    window.location.href = `/payment-result?status=failed&plan=${planId}`;
-                }
+                console.log('🔥 Processing paid plan payment...');
+                
+                // برای پلن های پولی، callPaymentApi خودش کاربر رو به درگاه هدایت می‌کنه
+                await callPaymentApi(selectedPlanData.apiId, websiteId);
+                
+                // اگر به اینجا رسیدیم، یعنی مشکلی پیش اومده
+                // چون اگر موفق بود، کاربر به درگاه هدایت میشه
             }
         } catch (error) {
-            console.error('Payment error:', error);
+            console.error('❌ Payment error:', error);
+            
             if (selectedPlanData.isFree) {
                 setPaymentSuccess(false);
                 setShowPaymentResult(true);
             } else {
-                window.location.href = `/payment-result?status=failed&plan=${planId}`;
+                // برای پلن های پولی، error handling در usePayment انجام میشه
+                alert('خطا در پردازش پرداخت. لطفاً دوباره تلاش کنید.');
             }
         } finally {
-            setIsProcessingPayment(false);
+            setSelectedPlan(null);
         }
     };
 
