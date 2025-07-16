@@ -8,7 +8,7 @@ import LoginForm from "./pages/TradePages/login"
 import Navbar from "./pages/TradePages/components/Navbar";
 import CreateStore from "./pages/TradePages/CreateStore";
 import RulesTrade from "./pages/TradePages/rulesTrade";
-import PricingPlans from "./pages/TradePages/Plans";
+import PricingPlans from "./pages/TradePages/Plans/Plans";
 import OTPForm from "./pages/TradePages/OTPForm"
 
 

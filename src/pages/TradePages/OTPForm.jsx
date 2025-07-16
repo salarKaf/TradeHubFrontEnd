@@ -118,6 +118,8 @@ export default function OTPForm() {
             console.log(data);
 
             setShowSuccessModal(true); // ✅ پیام موفقیت‌آمیز رو نمایش بده
+            localStorage.setItem("token", data.access_token);
+
 
             setTimeout(() => {
                 window.location.href = "/storeForm";

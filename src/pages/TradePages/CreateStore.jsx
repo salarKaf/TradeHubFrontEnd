@@ -139,28 +139,28 @@ export default function CreateStore() {
 
           {/* دکمه‌ها */}
           <div className="flex justify-between pt-6">
-  <button
-    onClick={handleCreateStore}
-    disabled={isCreating}
-    className={`relative flex items-center justify-center bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold transition-all duration-200 hover:bg-[#e7b78e] hover:scale-105 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed`}
-  >
-    {isCreating ? (
-      <div className="w-5 h-5 border-2 border-t-transparent border-[#1E1E1E] rounded-full animate-spin"></div>
-    ) : (
-      "ساخت فروشگاه"
-    )}
-  </button>
+            <button
+              onClick={handleCreateStore}
+              disabled={isCreating}
+              className={`relative flex items-center justify-center bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold transition-all duration-200 hover:bg-[#e7b78e] hover:scale-105 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed`}
+            >
+              {isCreating ? (
+                <div className="w-5 h-5 border-2 border-t-transparent border-[#1E1E1E] rounded-full animate-spin"></div>
+              ) : (
+                "ساخت فروشگاه"
+              )}
+            </button>
 
-  <button
-    onClick={() => {
-      localStorage.removeItem("token");
-      window.location.href = "/";
-    }}
-    className="bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold transition-all duration-200 hover:bg-[#e7b78e] hover:scale-105 hover:shadow-lg"
-  >
-    خروج
-  </button>
-</div>
+            <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+              }}
+              className="bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold transition-all duration-200 hover:bg-[#e7b78e] hover:scale-105 hover:shadow-lg"
+            >
+              خروج
+            </button>
+          </div>
 
 
         </div>

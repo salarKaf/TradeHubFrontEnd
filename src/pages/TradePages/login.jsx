@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "/src/API/auth.jsx";
+import { getMyWebsite } from "/src/API/website"; // ⬅️ اضافه کن بالا
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
     const navigate = useNavigate();
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,11 +17,20 @@ export default function LoginForm() {
         try {
             const data = await login({
                 email: formData.email,
-                password: formData.password
+                password: formData.password,
             });
 
             localStorage.setItem("token", data.access_token);
-            navigate("/StoreForm");
+
+            // بعد از ورود، بررسی می‌کنیم آیا فروشگاه وجود دارد یا نه
+            const website = await getMyWebsite();
+
+            if (website?.id) {
+                localStorage.setItem("website_id", website.id);
+                navigate(`/PricingPlans/${website.id}`);
+            } else {
+                navigate("/StoreForm");
+            }
         } catch (error) {
             const detail = error.response?.data?.detail;
 
@@ -27,14 +38,15 @@ export default function LoginForm() {
                 setErrorMsg("حساب شما هنوز تأیید نشده است. لطفاً ایمیل‌تان را تأیید کنید.");
                 setTimeout(() => {
                     navigate("/OTPForm", { state: { email: formData.email, fromLogin: true } });
-                }, 1500); // مثلاً بعد 1.5 ثانیه ببرش به OTP
-            }
-
-            else {
+                }, 1500);
+            } else {
                 setErrorMsg(detail || "خطا در ورود. لطفاً اطلاعات را بررسی کنید.");
             }
         }
     };
+
+
+
 
     return (
         <>

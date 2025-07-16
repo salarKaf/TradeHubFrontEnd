@@ -72,3 +72,27 @@ export const uploadLogo = async (websiteId, file) => {
 
     return response.data;
 };
+
+
+
+
+// بررسی وجود فروشگاه کاربر
+export const getMyWebsite = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://tradehub.localhost/api/v1/websites/my_website", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        if (response.status === 404) {
+            return null; // یعنی فروشگاهی وجود نداره
+        }
+        throw new Error("خطا در دریافت فروشگاه کاربر");
+    }
+
+    const data = await response.json();
+    return data; // اطلاعات فروشگاه
+};
