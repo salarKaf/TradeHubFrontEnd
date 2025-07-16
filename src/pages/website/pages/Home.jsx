@@ -1,18 +1,15 @@
-import Navbar from '../components/Navbar'
-import Header from '../components/Header';
+
+// HomeWebsite.js
+import Navbar from "../components/Navbar";
+import Header from "../components/Header";
 
 const HomeWebsite = () => {
-
-
-    return (
-        <div>
-            <Navbar></Navbar>
-
-            <Header></Header>
-        </div>
-
-    )
-
-}
+  return (
+    <div className="relative h-screen overflow-hidden">
+      <Navbar />
+      <Header />
+    </div>
+  );
+};
 
 export default HomeWebsite;

@@ -21,7 +21,11 @@ import Customers from "./pages/sellerPanel/Customers/Customers";
 import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
 import ShowCustomer from './pages/sellerPanel/Customers/CustomerDetails/ShowCustomer';
+
 import HomeWebsite from '../src/pages/website/pages/Home';
+import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
+import ShopWebsite from '../src/pages/website/pages/ShopWebsite';
+import RulesWebsite from '../src/pages/website/pages/RulesWebsite';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -63,7 +67,10 @@ export default function App() {
 
 
 
-        <Route path="/Home" element={<HomeWebsite></HomeWebsite>}></Route>
+        <Route path="/Home-website" element={<HomeWebsite></HomeWebsite>}></Route>
+        <Route path="/about-website" element={<AboutWebsite />} />
+        <Route path="/shop-website" element={<ShopWebsite />} />
+        <Route path="/rules-website" element={<RulesWebsite />} />
       </Routes>
     </>
   );
