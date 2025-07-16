@@ -1,10 +1,21 @@
 import { useState, useEffect } from "react";
+import { verifyOtp, resendOtp } from '/src/API/auth.jsx';
+import { useLocation } from "react-router-dom";
+
+
 
 export default function OTPForm() {
+    const location = useLocation(); // ✅ این باید قبل از هر استفاده باشه
+
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const fromSignup = location.state?.fromSignup;
+
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [timer, setTimer] = useState(120); // 2 minutes in seconds
     const [canResend, setCanResend] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
+
+    const [email, setEmail] = useState(location.state?.email || localStorage.getItem("pendingEmail"));
 
     // Timer effect
     useEffect(() => {
@@ -17,6 +28,29 @@ export default function OTPForm() {
             setCanResend(true);
         }
     }, [timer]);
+
+
+    useEffect(() => {
+        if (email) {
+            localStorage.setItem("pendingEmail", email);
+        } else {
+            window.location.href = "/signup";
+        }
+
+        if (!fromSignup) {
+            resendOtp(email)
+                .then(() => console.log("✅ OTP resent to:", email))
+                .catch((err) => {
+                    console.error("❌ خطا در ارسال مجدد OTP:", err);
+                    alert("خطا در ارسال مجدد کد تأیید");
+                });
+        }
+    }, []);
+
+
+
+
+
 
     // Format timer to MM:SS
     const formatTime = (seconds) => {
@@ -60,14 +94,14 @@ export default function OTPForm() {
         e.preventDefault();
         const paste = e.clipboardData.getData('text');
         const digits = paste.replace(/\D/g, '').slice(0, 6);
-        
+
         if (digits.length > 0) {
             const newOtp = [...otp];
             for (let i = 0; i < digits.length && i < 6; i++) {
                 newOtp[i] = digits[i];
             }
             setOtp(newOtp);
-            
+
             // Focus the next empty input or the last one
             const nextIndex = Math.min(digits.length, 5);
             const nextInput = document.getElementById(`otp-${nextIndex}`);
@@ -75,41 +109,48 @@ export default function OTPForm() {
         }
     };
 
-    const handleSubmit = () => {
-        try {
-            // Replace with your actual API call for verification
-            const otpCode = otp.join('');
-            console.log("Verifying OTP:", otpCode);
-            
-            alert("تایید کد موفقیت‌آمیز بود!");
-            // navigate("/dashboard");
 
-        } catch (error) {
-            alert("خطا در تایید کد");
+
+    const handleSubmit = async () => {
+        try {
+            const otpCode = otp.join('');
+            const data = await verifyOtp({ otp: otpCode, email });
+            console.log(data);
+
+            setShowSuccessModal(true); // ✅ پیام موفقیت‌آمیز رو نمایش بده
+
+            setTimeout(() => {
+                window.location.href = "/storeForm";
+            }, 2500); // ⏱ بعد از 2.5 ثانیه برو به PricingPlans
+
+        } catch (err) {
+            alert(err.message);
         }
     };
 
-    const handleResendCode = () => {
+
+    const handleResendCode = async () => {
+        console.log("📩 Trying to resend to:", email);
+
         if (!canResend) {
             alert("لطفاً تا پایان زمان صبر کنید!");
             return;
         }
 
         try {
-            // Replace with your actual API call for resending code
-            console.log("Resending OTP code");
-            
-            // Reset timer
+            const data = await resendOtp(email);
+            console.log(data);
             setTimer(120);
             setCanResend(false);
             setOtp(['', '', '', '', '', '']);
-            
             alert("کد مجدداً ارسال شد!");
-
-        } catch (error) {
-            alert("خطا در ارسال مجدد کد");
+        } catch (err) {
+            alert(err.message);
         }
     };
+
+
+
 
     const handleMainButton = () => {
         if (canResend) {
@@ -205,23 +246,22 @@ export default function OTPForm() {
                         <div className="text-center space-y-4">
                             <div className="flex items-center justify-center gap-2 text-[#EABF9F] font-rubik text-lg font-bold">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12,6 12,12 16,14"/>
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12,6 12,12 16,14" />
                                 </svg>
                                 {formatTime(timer)}
                             </div>
-                            
+
                             <div className="space-y-3">
                                 <button
                                     type="button"
                                     onClick={handleMainButton}
-                                    className={`font-rubik font-bold w-64 py-3 rounded-full transition-all duration-300 transform hover:scale-105 border-2 ${
-                                        canResend 
-                                            ? 'bg-[#EABF9F] text-[#1E212D] hover:bg-[#d4a374] border-[#EABF9F]' 
-                                            : isCodeComplete
-                                                ? 'bg-[#EABF9F] text-[#1E212D] hover:bg-[#d4a374] border-[#EABF9F]'
-                                                : 'bg-transparent text-[#EABF9F] hover:bg-[#EABF9F] hover:text-[#1E212D] border-[#EABF9F]'
-                                    }`}
+                                    className={`font-rubik font-bold w-64 py-3 rounded-full transition-all duration-300 transform hover:scale-105 border-2 ${canResend
+                                        ? 'bg-[#EABF9F] text-[#1E212D] hover:bg-[#d4a374] border-[#EABF9F]'
+                                        : isCodeComplete
+                                            ? 'bg-[#EABF9F] text-[#1E212D] hover:bg-[#d4a374] border-[#EABF9F]'
+                                            : 'bg-transparent text-[#EABF9F] hover:bg-[#EABF9F] hover:text-[#1E212D] border-[#EABF9F]'
+                                        }`}
                                 >
                                     {canResend ? 'ارسال مجدد کد تایید' : 'تایید کد'}
                                 </button>
@@ -230,12 +270,14 @@ export default function OTPForm() {
                     </div>
 
                     <div className="text-center pt-8 border-t border-gray-700 border-opacity-30">
-                        <button 
-                            onClick={() => console.log("Navigate to signup")}
-                            className="bg-gray-700 bg-opacity-50 text-gray-300 font-rubik px-6 py-2 rounded-full 
+                        <button
+                            onClick={() => {
+                                localStorage.removeItem("pendingEmail");
+                                window.location.href = "/login";
+                            }} className="bg-gray-700 bg-opacity-50 text-gray-300 font-rubik px-6 py-2 rounded-full 
                             hover:bg-gray-600 hover:text-[#EABF9F] transition-all duration-300 border border-gray-600"
                         >
-                            بازگشت به ثبت‌نام
+                            بازگشت به ورود
                         </button>
                     </div>
                 </div>
@@ -254,9 +296,9 @@ export default function OTPForm() {
                         <div className="text-center space-y-4">
                             <div className="w-16 h-16 mx-auto bg-red-500 rounded-full flex items-center justify-center">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <line x1="15" y1="9" x2="9" y2="15"/>
-                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
                                 </svg>
                             </div>
                             <h3 className="text-xl font-rubik font-bold text-[#EABF9F]">خطا!</h3>
@@ -271,6 +313,24 @@ export default function OTPForm() {
                     </div>
                 </div>
             )}
+
+
+            {showSuccessModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                    <div className="bg-[#1E212D] rounded-2xl p-8 max-w-md mx-4 border border-[#EABF9F] shadow-2xl text-center">
+                        <div className="w-16 h-16 mx-auto bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M16 12l-4 4-2-2" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-rubik font-bold text-[#EABF9F] mt-4">تبریک!</h3>
+                        <p className="text-[#FAF3E0] font-rubik">کد با موفقیت تأیید شد. ثبت‌نام شما کامل شد.</p>
+                        <p className="text-sm text-gray-400 mt-2">در حال انتقال به صفحه انتخاب پلن‌ها...</p>
+                    </div>
+                </div>
+            )}
+
         </>
     );
 }

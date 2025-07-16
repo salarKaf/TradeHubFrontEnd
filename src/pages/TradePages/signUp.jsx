@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-export default function SignupForm() {
 
+export default function SignupForm() {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -13,19 +13,28 @@ export default function SignupForm() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [alert, setAlert] = useState(null);
     const navigate = useNavigate();
+
+    const showAlert = (message, type = 'error') => {
+        setAlert({ message, type });
+        setTimeout(() => setAlert(null), 5000);
+    };
+
     const handleSubmit = async (e) => {
-        e.preventDefault(); // جلو گیری از reload شدن صفحه
+        e.preventDefault();
 
         // بررسی اینکه پسوردها یکی هستن
         if (formData.password !== formData.confirmPassword) {
-            alert("رمز عبور و تکرار آن یکسان نیست.");
+            showAlert("رمز عبور و تکرار آن یکسان نیست.", 'error');
             return;
         }
 
+        setIsLoading(true);
+
         try {
-            // اینجا axios اطلاعات رو می‌فرسته
-            const response = await axios.post("http://10.14.18.74:8000/api/v1/users/Register", {
+            const response = await axios.post("http://iam.localhost/api/v1/users/Register", {
                 first_name: formData.firstName,
                 last_name: formData.lastName,
                 email: formData.email,
@@ -33,18 +42,18 @@ export default function SignupForm() {
                 confirm_password: formData.confirmPassword
             });
 
-
-            // اگر موفق بود
-            alert("ثبت‌نام موفقیت‌آمیز بود!");
-            navigate("/OTPForm");
+            showAlert("ثبت‌نام موفقیت‌آمیز بود!", 'success');
+            setTimeout(() => {
+                navigate("/OTPForm", { state: { email: formData.email, fromSignup: true } });
+            }, 1000);
 
         } catch (error) {
-            // اگر خطایی از سمت سرور اومد
             const message = error.response?.data?.message || "خطا در ثبت‌نام";
-            alert(message);
+            showAlert(message, 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
-
 
     return (
         <>
@@ -56,8 +65,39 @@ export default function SignupForm() {
                 <a href="/" className="text-[#FAF3E0] text-lg font-rubik hover:underline">خانه</a>
             </div>
 
-            <Link to='/storeForm'>meweeeeeeeeeeeeeeeeeeeeeeee</Link>
-
+            {/* Alert Component */}
+            {alert && (
+                <div className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 ${
+                    alert.type === 'success' 
+                        ? 'bg-green-500 text-white' 
+                        : 'bg-red-500 text-white'
+                }`}>
+                    <div className="flex items-center gap-3">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                            alert.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+                        }`}>
+                            {alert.type === 'success' ? (
+                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                            ) : (
+                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            )}
+                        </div>
+                        <span className="font-rubik">{alert.message}</span>
+                        <button 
+                            onClick={() => setAlert(null)}
+                            className="ml-4 text-white hover:text-gray-200"
+                        >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div
                 className="min-h-screen relative flex items-center justify-start px-8"
@@ -132,16 +172,16 @@ export default function SignupForm() {
                         <div className="flex gap-4">
                             <PasswordInput
                                 placeholder="رمز عبور"
-                                show={showConfirmPassword}
-                                toggle={() => setShowConfirmPassword(!showConfirmPassword)}
-                                value={setFormData.password}
+                                show={showPassword}
+                                toggle={() => setShowPassword(!showPassword)}
+                                value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             />
                             <PasswordInput
                                 placeholder="تکرار رمز عبور"
-                                show={showPassword}
-                                toggle={() => setShowPassword(!showPassword)}
-                                value={setFormData.confirmPassword}
+                                show={showConfirmPassword}
+                                toggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                                value={formData.confirmPassword}
                                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                             />
                         </div>
@@ -149,9 +189,25 @@ export default function SignupForm() {
                         <div className="flex justify-center pt-4">
                             <button
                                 type="submit"
-                                className="w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full hover:bg-[#EABF9F] hover:text-[#1E1E1E] transition-all"
+                                disabled={isLoading}
+                                className={`w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full 
+                                    transition-all duration-300 flex items-center justify-center gap-2 
+                                    ${isLoading 
+                                        ? 'opacity-70 cursor-not-allowed' 
+                                        : 'hover:bg-[#EABF9F] hover:text-[#1E1E1E]'
+                                    }`}
                             >
-                                ایجاد حساب
+                                {isLoading ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>ارسال کد تایید</span>
+                                    </>
+                                ) : (
+                                    'ایجاد حساب'
+                                )}
                             </button>
                         </div>
                     </form>
