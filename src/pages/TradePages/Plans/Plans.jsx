@@ -1,5 +1,3 @@
-
-// Main PricingPlans.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -13,12 +11,12 @@ import usePayment from './hooks/usePayment';
 import usePlans from './hooks/usePlans';
 
 const PricingPlans = () => {
-    const { id: websiteId } = useParams();
+    const { websiteId } = useParams(); // ✅ درست گرفتیم
     const navigate = useNavigate();
-    
-    const { plans, loading } = usePlans();
-    const { isProcessingPayment, setIsProcessingPayment, callPaymentApi } = usePayment();
-    
+
+    const { plans, loading } = usePlans(websiteId); // ✅ پاس می‌دیم به usePlans
+    const { isProcessingPayment, setIsProcessingPayment, callPaymentApi, callFreeTrialApi, activateFreePlan } = usePayment();
+
     const [selectedPlan, setSelectedPlan] = useState(null);
     const [showPaymentResult, setShowPaymentResult] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -42,16 +40,35 @@ const PricingPlans = () => {
         setIsProcessingPayment(true);
 
         try {
-            const paymentResponse = await callPaymentApi(selectedPlanData.apiId);
 
-            if (paymentResponse.success) {
-                window.location.href = `/payment-result?status=success&plan=${planId}`;
-            } else {
-                window.location.href = `/payment-result?status=failed&plan=${planId}`;
+            if (selectedPlanData.isFree) {
+                const response = await activateFreePlan(websiteId);
+                if (response.success) {
+                    setPaymentSuccess(true);
+                    setShowPaymentResult(true);
+                } else {
+                    setPaymentSuccess(false);
+                    setShowPaymentResult(true);
+                }
+            }
+
+
+            else {
+                const paymentResponse = await callPaymentApi(selectedPlanData.apiId);
+                if (paymentResponse.success) {
+                    window.location.href = `/payment-result?status=success&plan=${planId}`;
+                } else {
+                    window.location.href = `/payment-result?status=failed&plan=${planId}`;
+                }
             }
         } catch (error) {
             console.error('Payment error:', error);
-            window.location.href = `/payment-result?status=failed&plan=${planId}`;
+            if (selectedPlanData.isFree) {
+                setPaymentSuccess(false);
+                setShowPaymentResult(true);
+            } else {
+                window.location.href = `/payment-result?status=failed&plan=${planId}`;
+            }
         } finally {
             setIsProcessingPayment(false);
         }
@@ -62,9 +79,7 @@ const PricingPlans = () => {
         setSelectedPlan(null);
     };
 
-    if (loading) {
-        return <LoadingSpinner />;
-    }
+    if (loading) return <LoadingSpinner />;
 
     if (showPaymentResult) {
         return (
@@ -80,13 +95,10 @@ const PricingPlans = () => {
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden" dir="rtl">
             <PricingBackground />
-            
             <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
                 <div className="max-w-7xl mx-auto w-full">
                     <PricingHeader />
-                    
-                    {/* Pricing Cards */}
-                    <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+                    <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
                         {plans.map((plan) => (
                             <PricingCard
                                 key={plan.id}
@@ -97,7 +109,6 @@ const PricingPlans = () => {
                             />
                         ))}
                     </div>
-                    
                     <FAQ />
                 </div>
             </div>

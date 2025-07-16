@@ -1,15 +1,27 @@
-
-// hooks/usePlans.js
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const usePlans = () => {
+const usePlans = (websiteId) => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchPlans = async () => {
         try {
             const token = localStorage.getItem("token");
+
+            // چک می‌کنیم آیا پلنی قبلاً خریداری شده یا نه
+            const checkRes = await axios.get(
+                `http://tradehub.localhost/api/v1/plan/check-plan-history/?website_id=${websiteId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const hasBoughtPlan = checkRes.data?.has_bought;
+
+            // گرفتن لیست پلن‌ها
             const response = await axios.get(
                 'http://tradehub.localhost/api/v1/plan/get-all-plans/',
                 {
@@ -50,17 +62,47 @@ const usePlans = () => {
                 badge: plan.name === 'Pro' ? '⭐ محبوب ترین' : 'پلن پایه'
             }));
 
-            setPlans(formattedPlans);
-            setLoading(false);
+            if (!hasBoughtPlan) {
+                const freeTrialPlan = {
+                    id: 'free-trial',
+                    apiId: null,
+                    name: 'تست رایگان',
+                    price: 0,
+                    dailyPrice: 0,
+                    features: [
+                        'آنالیز های محدود',
+                        'امکان اضافه کردن محصول',
+                        'دسته بندی محصولات',
+                        'مشاهده فاکتور',
+                        'مشاهده سفارشات مشتری ها',
+                        'تنظیم فیچر های ظاهری سایت',
+                        'تنظیم لوگو و سر صفحه'
+                    ],
+                    popular: false,
+                    color: 'green',
+                    subtitle: 'هفت روز رایگان برای تست',
+                    badge: '🎁 رایگان',
+                    isFree: true
+                };
+
+                setPlans([freeTrialPlan, ...formattedPlans]);
+            } else {
+                setPlans(formattedPlans);
+            }
+
         } catch (error) {
             console.error('Error fetching plans:', error);
+        } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchPlans();
-    }, []);
+        if (websiteId) fetchPlans();
+    }, [websiteId]);
+
+    console.log("websiteId:", websiteId);
+
 
     return { plans, loading, fetchPlans };
 };

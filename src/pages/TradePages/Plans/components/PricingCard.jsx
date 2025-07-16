@@ -1,5 +1,3 @@
-
-// components/PricingCard.jsx
 import React from 'react';
 
 const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
@@ -11,6 +9,8 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
             <div className={`absolute inset-0 rounded-3xl ${
                 plan.popular
                     ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20'
+                    : plan.isFree
+                    ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20'
                     : 'bg-gradient-to-r from-blue-500/10 to-purple-500/10'
             } blur-xl group-hover:blur-2xl transition-all duration-300`}></div>
 
@@ -18,6 +18,8 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
             <div className={`relative bg-white/10 backdrop-blur-xl rounded-3xl border ${
                 plan.popular
                     ? 'border-purple-500/30 shadow-purple-500/20'
+                    : plan.isFree
+                    ? 'border-green-500/30 shadow-green-500/20'
                     : 'border-white/20'
             } shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 flex flex-col`}>
 
@@ -28,8 +30,15 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                     </div>
                 )}
 
-                {/* Badge */}
-                {!plan.popular && (
+                {/* Free Badge */}
+                {plan.isFree && (
+                    <div className="absolute top-0 right-0 bg-gradient-to-l from-green-500 to-emerald-500 text-white px-8 py-3 rounded-bl-3xl shadow-lg z-10">
+                        <span className="text-sm font-bold">{plan.badge}</span>
+                    </div>
+                )}
+
+                {/* Regular Badge */}
+                {!plan.popular && !plan.isFree && (
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg z-10">
                         {plan.badge}
                     </div>
@@ -44,14 +53,23 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
 
                         {/* Price Section */}
                         <div className="mb-4">
-                            <div className="flex items-center justify-center gap-1">
-                                <span className="text-4xl font-bold text-white">
-                                    {new Intl.NumberFormat('fa-IR').format(plan.price)}
-                                </span>
-                                <span className="text-xl text-gray-300">تومان</span>
-                            </div>
+                            {plan.isFree ? (
+                                <div className="flex items-center justify-center gap-1">
+                                    <span className="text-4xl font-bold text-green-400">رایگان</span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-center gap-1">
+                                    <span className="text-4xl font-bold text-white">
+                                        {new Intl.NumberFormat('fa-IR').format(plan.price)}
+                                    </span>
+                                    <span className="text-xl text-gray-300">تومان</span>
+                                </div>
+                            )}
                             <p className="text-gray-400 mt-2">
-                                فقط {new Intl.NumberFormat('fa-IR').format(plan.dailyPrice)} تومان در روز!
+                                {plan.isFree 
+                                    ? 'هفت روز تست کامل رایگان!' 
+                                    : `فقط ${new Intl.NumberFormat('fa-IR').format(plan.dailyPrice)} تومان در روز!`
+                                }
                             </p>
                         </div>
                     </div>
@@ -83,7 +101,9 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                             className={`w-full py-3 px-6 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl ${
                                 isCurrentlyProcessing
                                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                                    : plan.color === 'gradient'
+                                    : plan.isFree
+                                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 hover:scale-105'
+                                        : plan.color === 'gradient'
                                         ? 'bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 text-white hover:from-purple-600 hover:via-blue-600 hover:to-pink-600 hover:scale-105'
                                         : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-105'
                             }`}
@@ -94,11 +114,15 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    <span>در حال اتصال به درگاه پرداخت...</span>
+                                    <span>
+                                        {plan.isFree ? 'در حال فعال‌سازی...' : 'در حال اتصال به درگاه پرداخت...'}
+                                    </span>
                                 </div>
                             ) : (
                                 <div className="flex items-center justify-center gap-2">
-                                    <span>خرید پلن</span>
+                                    <span>
+                                        {plan.isFree ? 'شروع تست رایگان' : 'خرید پلن'}
+                                    </span>
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                     </svg>
@@ -112,7 +136,7 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"></path>
                                 </svg>
-                                <span>پرداخت امن</span>
+                                <span>{plan.isFree ? 'بدون نیاز کارت' : 'پرداخت امن'}</span>
                             </div>
                             <div className="flex items-center gap-1">
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
