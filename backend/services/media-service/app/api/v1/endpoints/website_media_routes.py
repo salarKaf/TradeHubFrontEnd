@@ -29,6 +29,7 @@ async def upload_banner(
     website_service: Annotated[WebsiteMainService, Depends()],
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
 ):
+    
     logger.info(f"Validating banner file")
     validate_image_file(file) 
 
@@ -43,8 +44,8 @@ async def upload_banner(
     await website_service.update_website(update_data, current_user.user_id)
     
     await website_service.update_website(update_data, current_user.user_id)
-
     return output
+
 
 
 @media_router.get(
