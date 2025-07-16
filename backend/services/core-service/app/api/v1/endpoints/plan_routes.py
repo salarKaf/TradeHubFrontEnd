@@ -27,7 +27,7 @@ async def activate_free_plan(
 
 
 @plan_router.get("/check-plan-history/")
-async def get_all_plans(
+async def check_plan_history(
     website_id:UUID,
     plan_service: Annotated[PlanService, Depends()]
 ):
