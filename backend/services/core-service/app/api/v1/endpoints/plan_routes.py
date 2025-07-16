@@ -24,3 +24,12 @@ async def activate_free_plan(
 ):
     await plan_service.activate_free_plan(website_id)
     return {"free plan activated successfuly"}
+
+
+@plan_router.get("/check-plan-history/")
+async def get_all_plans(
+    website_id:UUID,
+    plan_service: Annotated[PlanService, Depends()]
+):
+    return await plan_service.check_had_plan(website_id)
+

@@ -189,3 +189,8 @@ class PlanRepository:
             }
             for p in plans
         ]
+    
+    def check_had_paln(self, website_id:UUID):
+        return self.db.query(WebsitePlan).filter(WebsitePlan.website_id == website_id).first()
+
+        

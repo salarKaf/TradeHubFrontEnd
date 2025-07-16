@@ -103,3 +103,11 @@ class PlanService:
             raise HTTPException(status_code=400, detail="This website already has an active plan.")
         basic_plan = self.plan_repository.get_basic_plan()
         self.plan_repository.create_free_website_plan(website_id, basic_plan.plan_id)
+
+
+    async def check_had_plan(self, website_id:UUID): 
+        plan = self.plan_repository.check_had_paln(website_id)  
+        if plan:
+            return True
+        else:
+            return False 
