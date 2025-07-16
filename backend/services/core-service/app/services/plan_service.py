@@ -99,8 +99,8 @@ class PlanService:
         if not website:
             raise HTTPException(status_code=404, detail="Website not found.")
         active_plan = self.get_active_plan_by_website_id(website_id)
-        if active_plan:
-            raise HTTPException(status_code=400, detail="This website already has an active plan.")
+        # if active_plan:
+        #     raise HTTPException(status_code=400, detail="This website already has an active plan.")
         basic_plan = self.plan_repository.get_basic_plan()
         self.plan_repository.create_free_website_plan(website_id, basic_plan.plan_id)
 
