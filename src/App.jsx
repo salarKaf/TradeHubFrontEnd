@@ -47,7 +47,7 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/login" element={<LoginForm></LoginForm>} />
         <Route path="/storeForm" element={<CreateStore></CreateStore>} />
-        <Route path="/rules" element={<RulesTrade></RulesTrade>}></Route>
+        <Route path="/rules/:websiteId" element={<RulesTrade></RulesTrade>}></Route>
         <Route path="/PricingPlans/:websiteId" element={<PricingPlans/>}/>
         <Route path="/OTPForm" element={<OTPForm/>}/>
 

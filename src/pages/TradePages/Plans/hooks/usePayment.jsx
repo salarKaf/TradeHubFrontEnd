@@ -91,14 +91,15 @@ const usePayment = () => {
         }
     };
 
-
+    // 🔥 اصلاح شده: website_id به عنوان query parameter ارسال می‌شود
     const activateFreePlan = async (websiteId) => {
         try {
             const token = localStorage.getItem("token");
 
+            // 🔥 تغییر اصلی: website_id در URL به عنوان query parameter
             const response = await axios.post(
-                "http://tradehub.localhost/api/v1/plan/activate-free-plan",
-                { website_id: websiteId }, // 👈 اینجا نیازی به stringify نیست
+                `http://tradehub.localhost/api/v1/plan/activate-free-plan?website_id=${websiteId}`,
+                {}, // body خالی
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -113,24 +114,28 @@ const usePayment = () => {
             console.error("❌ Error activating free plan:", error);
             if (error.response) {
                 console.error("Response data:", error.response.data);
+                console.error("Response status:", error.response.status);
+                
+                // بهتر است پیام‌های خطا را بر اساس status code مدیریت کنید
+                if (error.response.status === 422) {
+                    console.error("Validation error - check if websiteId is valid UUID");
+                } else if (error.response.status === 404) {
+                    console.error("Website not found");
+                } else if (error.response.status === 400) {
+                    console.error("Bad request - check API parameters");
+                }
             }
-            return { success: false };
+            return { success: false, error: error.response?.data };
         }
     };
-
-
-
-
 
     return {
         isProcessingPayment,
         setIsProcessingPayment,
         callPaymentApi,
         callFreeTrialApi,
-        activateFreePlan, // 🔥 اضافه کن اینجا
+        activateFreePlan,
     };
-
-
 };
 
 export default usePayment;

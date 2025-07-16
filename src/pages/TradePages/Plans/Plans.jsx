@@ -40,20 +40,16 @@ const PricingPlans = () => {
         setIsProcessingPayment(true);
 
         try {
-
             if (selectedPlanData.isFree) {
                 const response = await activateFreePlan(websiteId);
                 if (response.success) {
-                    setPaymentSuccess(true);
-                    setShowPaymentResult(true);
+                    // 🔥 تغییر: بعد از موفقیت به /rules/:websiteId برو
+                    navigate(`/rules/${websiteId}`);
                 } else {
                     setPaymentSuccess(false);
                     setShowPaymentResult(true);
                 }
-            }
-
-
-            else {
+            } else {
                 const paymentResponse = await callPaymentApi(selectedPlanData.apiId);
                 if (paymentResponse.success) {
                     window.location.href = `/payment-result?status=success&plan=${planId}`;

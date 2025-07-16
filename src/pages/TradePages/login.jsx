@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "/src/API/auth.jsx";
-import { getMyWebsite } from "/src/API/website"; // ⬅️ اضافه کن بالا
+import { getMyWebsite, getActivePlan } from "/src/API/website"; // ⬅️ اضافه کردن getActivePlan
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
     const navigate = useNavigate();
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,8 +26,25 @@ export default function LoginForm() {
 
             if (website?.id) {
                 localStorage.setItem("website_id", website.id);
-                navigate(`/PricingPlans/${website.id}`);
+                
+                // چک کردن پلن فعال
+                try {
+                    const activePlan = await getActivePlan(website.id);
+                    
+                    if (activePlan === null) {
+                        // هیچ پلن فعالی نداره، بره صفحه قیمت‌گذاری
+                        navigate(`/PricingPlans/${website.id}`);
+                    } else {
+                        // پلن فعال داره (basic یا pro)، بره داشبورد
+                        navigate(`/HomeSeller/${website.id}`);
+                    }
+                } catch (planError) {
+                    console.error('Error checking active plan:', planError);
+                    // در صورت خطا، بره صفحه قیمت‌گذاری
+                    navigate(`/PricingPlans/${website.id}`);
+                }
             } else {
+                // فروشگاه نداره، بره صفحه ساخت فروشگاه
                 navigate("/StoreForm");
             }
         } catch (error) {
@@ -44,9 +60,6 @@ export default function LoginForm() {
             }
         }
     };
-
-
-
 
     return (
         <>

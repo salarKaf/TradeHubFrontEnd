@@ -1,10 +1,17 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
+
 export default function RulesTrade() {
   const [accepted, setAccepted] = useState(false);
-
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  
+  // اگر websiteId از URL parameter می‌آید
+  const { websiteId } = useParams();
+  
+  // یا اگر از جای دیگری می‌آید، می‌توانید آن را دریافت کنید
+  // const websiteId = localStorage.getItem('websiteId'); // مثال
+  // const websiteId = 'your-website-id'; // مثال ثابت
 
   const handleNextClick = (e) => {
     e.preventDefault();
@@ -12,7 +19,7 @@ export default function RulesTrade() {
       setError("شما باید قوانین را بپذیرید.");
     } else {
       setError("");
-      navigate("/");  // مسیر بعدی
+      navigate(`/HomeSeller/${websiteId}`);
     }
   };
 
@@ -91,11 +98,6 @@ export default function RulesTrade() {
             </ol>
           </div>
 
-
-
-
-
-
           <div className="flex items-center space-x-3 mb-6">
             <input
               type="checkbox"
@@ -108,54 +110,28 @@ export default function RulesTrade() {
               تمامی قوانین را می‌پذیرم.
             </label>
           </div>
+          
           {/* پیام خطا */}
           {error && (
             <p className="text-red-500 text-sm mb-4 text-right">{error}</p>
           )}
-          <div className="flex justify-between pt-6">
+          
+          {/* دکمه وسط */}
+          <div className="flex justify-center pt-6">
             <button
               onClick={handleNextClick}
-              className="bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold hover:bg-[#e7b78e] transition"
+              className="bg-[#EABF9F] text-[#1E1E1E] px-8 py-3 rounded-full font-bold text-base
+                         hover:bg-[#e7b78e] hover:scale-105 hover:shadow-lg 
+                         active:scale-95 active:bg-[#d4a584]
+                         transition-all duration-200 ease-in-out
+                         focus:outline-none focus:ring-4 focus:ring-[#EABF9F] focus:ring-opacity-50"
+              disabled={!accepted}
             >
-              بعدی
+              ورود به داشبورد فروشندگان
             </button>
-            <Link
-              to="/storeForm"
-              className="bg-[#EABF9F] text-[#1E1E1E] px-6 py-2 rounded-full font-bold hover:bg-[#e7b78e] transition"
-            >
-              قبلی
-            </Link>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

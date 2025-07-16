@@ -76,23 +76,45 @@ export const uploadLogo = async (websiteId, file) => {
 
 
 
-// بررسی وجود فروشگاه کاربر
+
 export const getMyWebsite = async () => {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://tradehub.localhost/api/v1/websites/my_website", {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
 
-    if (!response.ok) {
-        if (response.status === 404) {
+    try {
+        const response = await axios.get(`${coreBaseURL}/websites/my_website`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+        return response.data; // اطلاعات فروشگاه
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
             return null; // یعنی فروشگاهی وجود نداره
         }
         throw new Error("خطا در دریافت فروشگاه کاربر");
     }
+};
 
-    const data = await response.json();
-    return data; // اطلاعات فروشگاه
+
+
+
+// src/API/website.js (اضافه کردن به فایل موجود)
+
+
+// تابع جدید برای چک کردن پلن فعال
+export const getActivePlan = async (websiteId) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${coreBaseURL}/websites/plans/active_plan/${websiteId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching active plan:', error);
+        throw error;
+    }
 };
