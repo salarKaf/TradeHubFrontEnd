@@ -3,6 +3,11 @@ import { Link } from "react-router-dom";
 import InfoCard from '../Layouts/card';
 import { FiBell } from 'react-icons/fi'; // آیکن نوتیفیکیشن
 import { Line } from 'react-chartjs-2';
+import { useParams } from 'react-router-dom';
+
+
+import { getTotalRevenue, getTotalSalesCount, getProductCount } from '../../../API/dashboard';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +18,8 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+
+
 
 // Registering the required components of Chart.js
 ChartJS.register(
@@ -40,38 +47,53 @@ const chartData = {
 
 
 const HomeContent = () => {
+
+
+  const { websiteId } = useParams();
+
   const [data, setData] = useState({
-    totalSales: 45000000,
-    totalProducts: 120,
-    totalOrders: 50,
-    recentOrders: [
-      { date: "1404/04/04", product: "محصول اول", name: "نام محصول", amount: "250,000" },
-      { date: "1404/04/04", product: "محصول اول", name: "نام محصول", amount: "250,000" },
-      { date: "1404/04/04", product: "محصول اول", name: "نام محصول", amount: "250,000" },
-      { date: "1404/04/04", product: "محصول اول", name: "نام محصول", amount: "250,000" },
-
-    ],
-    announcements: [
-      { message: "محصول یک از دسته بندی یک فروش رفت.", date: "24 فروردین 1404" },
-      { message: "مشتری اول دیدگاهی راجع به محصول اول منتشر کرد.", date: "24 فروردین 1404" },
-      { message: "محصول اول به دسته بندی اول اضافه شد.", date: "24 فروردین 1404" },
-    ],
-    bestProducts: [
-
-      { product: "محصول اول", name: "نام محصول", amount: "250,000", Numsale: "50" },
-      { product: "محصول اول", name: "نام محصول", amount: "250,000", Numsale: "50" },
-      { product: "محصول اول", name: "نام محصول", amount: "250,000", Numsale: "50" },
-      { product: "محصول اول", name: "نام محصول", amount: "250,000", Numsale: "50" },
-
-
-
-    ]
+    totalSales: 0,
+    totalProducts: 0,
+    totalOrders: 0,
+    recentOrders: [],
+    announcements: [],
+    bestProducts: [],
   });
 
+
   useEffect(() => {
-    // فرض کنید اینجا داده‌ها از بک‌اند بارگذاری می‌شود
-    // fetchData();
-  }, []);
+    const fetchDashboardData = async () => {
+      try {
+        const website_Id = websiteId;
+
+        const [revenue, salesCount, productCount] = await Promise.all([
+          getTotalRevenue(website_Id),
+          getTotalSalesCount(website_Id),
+          getProductCount(website_Id),
+        ]);
+
+        setData(prevData => ({
+          ...prevData,
+          totalSales: revenue?.total_revenue || 0,
+          totalOrders: salesCount?.total_sales_count || 0,
+          totalProducts: productCount?.product_count || 0,
+        }));
+
+
+
+        console.log("✅ داده‌های داشبورد با موفقیت دریافت شد:");
+        console.log("درآمد:", revenue?.total_revenue);
+        console.log("تعداد سفارش:", salesCount?.total_sales_count);
+
+      } catch (error) {
+        console.error("❌ خطا در دریافت اطلاعات داشبورد:", error);
+      }
+    };
+
+    if (websiteId) fetchDashboardData();
+  }, [websiteId]);
+
+
 
   return (
     <div>
@@ -96,11 +118,12 @@ const HomeContent = () => {
 
         {/* دومین کارت */}
         <InfoCard
-          title="120"
+          title={data.totalProducts.toLocaleString()}
           subtitle="محصولات"
           logo="/public/SellerPanel/Home/icons8-package-64(1).png"
           titleColor="text-black"
         />
+
 
         {/* سومین کارت (کوچکترین) */}
         <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full max-w-[300px] flex-grow">
@@ -221,7 +244,7 @@ const HomeContent = () => {
 
       <div className='flex h-24 mx-4 border-2 border-black border-opacity-20 rounded-lg items-center justify-between'>
         <h1 className="text-lg pr-5 my-4 font-modam"> برای اضافــه کردن محصول جدید به فروشگاه خود روی دکمه رو به رو کلیک کنید.</h1>
-        <Link to='/products' className="bg-[#1e202d] font-modam font-medium text-lg w-64 h-3/5 ml-32 text-white py-2 px-6 rounded-3xl shadow-md pt-3">
+        <Link to={`/products/${websiteId}`} className="bg-[#1e202d] font-modam font-medium text-lg w-64 h-3/5 ml-32 text-white py-2 px-6 rounded-3xl shadow-md pt-3">
           افــزودن مـحـصول جـدیـد +
         </Link>
 

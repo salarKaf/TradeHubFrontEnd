@@ -56,13 +56,13 @@ export default function App() {
 
 
         <Route path='/HomeSeller/:websiteId' element={<HomeSeller />}></Route>
-        <Route path='/appearance' element={<Appearance></Appearance>}></Route>
-        <Route path='/profile' element={<Profile></Profile>} />
-        <Route path='/customers' element={<Customers></Customers>} />
-        <Route path='/orders' element={<Orders></Orders>} />
-        <Route path='/products' element={<Products></Products>} />
-        <Route path='/AddProduct' element={<AddProductaPage></AddProductaPage>}></Route>
-        <Route path='/detailProduct' element={<ShowProductaPage></ShowProductaPage>}></Route>
+        <Route path='/appearance/:websiteId' element={<Appearance></Appearance>}></Route>
+        <Route path='/profile/:websiteId' element={<Profile></Profile>} />
+        <Route path='/customers/:websiteId' element={<Customers></Customers>} />
+        <Route path='/orders/:websiteId' element={<Orders></Orders>} />
+        <Route path='/products/:websiteId' element={<Products></Products>} />
+        <Route path='/AddProduct/:websiteId' element={<AddProductaPage></AddProductaPage>}></Route>
+        <Route path='/detailProduct/:websiteId' element={<ShowProductaPage></ShowProductaPage>}></Route>
 
 
 

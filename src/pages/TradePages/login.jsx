@@ -21,16 +21,17 @@ export default function LoginForm() {
 
             localStorage.setItem("token", data.access_token);
 
+
             // بعد از ورود، بررسی می‌کنیم آیا فروشگاه وجود دارد یا نه
             const website = await getMyWebsite();
 
             if (website?.id) {
                 localStorage.setItem("website_id", website.id);
-                
+
                 // چک کردن پلن فعال
                 try {
                     const activePlan = await getActivePlan(website.id);
-                    
+
                     if (activePlan === null) {
                         // هیچ پلن فعالی نداره، بره صفحه قیمت‌گذاری
                         navigate(`/PricingPlans/${website.id}`);
