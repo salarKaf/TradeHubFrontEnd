@@ -34,7 +34,6 @@ async def check_plan_history(
     return await plan_service.check_had_plan(website_id)
 
 
-
 @plan_router.get("/get-left-days")
 async def get_left_days(
     website_id:UUID,
