@@ -7,7 +7,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 logger.info("Custom logging is configured.")
-import smtplib
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer

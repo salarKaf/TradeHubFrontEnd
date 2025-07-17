@@ -10,6 +10,7 @@ config = get_settings()
 
 # DATABASE_URL = "postgresql://postgres:admin@postgres_container:5432/shopify"
 # DATABASE_URL = "postgresql://postgres:admin@localhost:5432/shopify"
+
 DATABASE_URL = (
     f"{config.DATABASE_DIALECT}://"
     f"{config.DATABASE_USERNAME}:"

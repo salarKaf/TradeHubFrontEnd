@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     OTP_EXPIRE_TIME: int = 3600
     # DATABASE_URL: str =  "7" 
-    MEDIA_URL: str = "http://127.0.0.1:8004"
+    # MEDIA_URL: str = "http://127.0.0.1:8004"
 
 @logger.catch
 def get_settings():

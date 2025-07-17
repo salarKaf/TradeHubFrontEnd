@@ -5,14 +5,19 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.domain.models.user_model import User
 from app.infrastructure.clients.iam_client import IAMClient
-from fastapi.security import OAuth2PasswordBearer
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://iam.localhost/api/v1/users/login")
+http_bearer = HTTPBearer() 
 
 async def get_current_user(
     client: Annotated[IAMClient, Depends()],
-    token: Annotated[str, Depends(oauth2_scheme)]
+    token: HTTPAuthorizationCredentials = Depends(http_bearer), 
+
 ) -> User:
+        credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
         if not token:
             logger.error("No token provided")
             raise HTTPException(
@@ -22,3 +27,5 @@ async def get_current_user(
 
         logger.info(f"Validating token {token}")
         return await client.validate_token(token)
+
+

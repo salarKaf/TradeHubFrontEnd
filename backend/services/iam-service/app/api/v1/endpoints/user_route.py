@@ -82,6 +82,7 @@ async def update_profile(
     logger.info(f'🔃 Changing user info for user {current_user.user_id}')
     return await user_service.update_user(current_user.user_id, dict(user_data))   
 
+
 @user_router.get("/Me", response_model=UserInfoSchema, status_code=status.HTTP_200_OK)
 async def read_me(current_user: User = Depends(get_current_user)) -> UserInfoSchema:
     logger.info(f"📥 Getting user with email {current_user.email}")
