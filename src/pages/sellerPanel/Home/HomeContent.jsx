@@ -5,7 +5,8 @@ import { FiBell } from 'react-icons/fi'; // آیکن نوتیفیکیشن
 import { Line } from 'react-chartjs-2';
 import { useParams } from 'react-router-dom';
 import { getActivePlan } from '../../../API/website';
-
+import { getLatestOrders } from '../../../API/orders'; // آدرس مناسب پروژه‌ت رو بزن
+import { getNewestItems } from "../../../API/Items";
 
 import { getTotalRevenue, getTotalSalesCount, getProductCount } from '../../../API/dashboard';
 
@@ -68,11 +69,13 @@ const HomeContent = () => {
       try {
         const website_Id = websiteId;
 
-        const [revenue, salesCount, productCount, activePlan] = await Promise.all([
+        const [revenue, salesCount, productCount, activePlan, latestOrders, newestItems] = await Promise.all([
           getTotalRevenue(website_Id),
           getTotalSalesCount(website_Id),
           getProductCount(website_Id),
           getActivePlan(website_Id),
+          getLatestOrders(website_Id),
+          getNewestItems(website_Id, 3),
         ]);
 
         setData(prevData => ({
@@ -80,7 +83,10 @@ const HomeContent = () => {
           totalSales: revenue?.total_revenue || 0,
           totalOrders: salesCount?.total_sales_count || 0,
           totalProducts: productCount?.product_count || 0,
+          recentOrders: latestOrders || [],
+          bestProducts: newestItems || [],
         }));
+
 
         setPlanType(activePlan?.plan?.name || null);
 
@@ -90,6 +96,10 @@ const HomeContent = () => {
         console.log("✅ داده‌های داشبورد با موفقیت دریافت شد:");
         console.log("درآمد:", revenue?.total_revenue);
         console.log("تعداد سفارش:", salesCount?.total_sales_count);
+        console.log("📦 آخرین سفارشات:", latestOrders);
+        console.log("🆕 آخرین محصولات:", newestItems);
+
+
 
       } catch (error) {
         console.error("❌ خطا در دریافت اطلاعات داشبورد:", error);
@@ -157,9 +167,9 @@ const HomeContent = () => {
               {data.recentOrders.length > 0 ? (
                 data.recentOrders.map((order, index) => (
                   <tr key={index} className="border-t border-black border-opacity-10 text-center">
-                    <td className="py-3">{order.date}</td>
-                    <td className="py-3">{order.name}</td>
-                    <td className="py-3">{order.amount} تومان</td>
+                    <td className="py-3">{new Date(order.date).toLocaleDateString('fa-IR')}</td>
+                    <td className="py-3">{order.id}</td>
+                    <td className="py-3">{order.total_price.toLocaleString()} تومان</td>
                   </tr>
                 ))
               ) : (
@@ -169,6 +179,7 @@ const HomeContent = () => {
                   </td>
                 </tr>
               )}
+
             </tbody>
           </table>
           <a className='p-10 text-cyan-700' href={`/orders/${websiteId}`} > مشاهده کل سفارشات   &gt; </a>
