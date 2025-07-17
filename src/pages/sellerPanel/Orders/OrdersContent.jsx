@@ -4,205 +4,170 @@ import OrdersHeader from './OrdersHeader';
 import OrdersTable from './OrdersTable';
 import OrdersToolbar from './OrdersToolbar';
 
-
 const OrderContent = () => {
-
     const [isOpenTable, setIsOpenTable] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('newest');
+    const [expandedOrders, setExpandedOrders] = useState(new Set());
 
-
-    // نمونه داده‌های سفارشات
+    // نمونه داده‌های سفارشات - حالا هر سفارش می‌تونه چندین محصول داشته باشه
     const [orders, setOrders] = useState([
         {
             id: 1,
             orderNumber: 'ORD-2024-001',
-            date: '1403/03/15', // تاریخ سفارش (شمسی)
-            product: 'لپ تاپ ایسوس',
-            amount: '3,000,000',
+            date: '1403/03/15',
+            products: [
+                { name: 'لپ تاپ ایسوس', amount: '3,000,000' },
+                { name: 'ماوس بی‌سیم', amount: '120,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
-            dateAdded: new Date('2024-06-05') // تاریخ اضافه شدن به سیستم (میلادی)
+            totalAmount: '3,120,000',
+            dateAdded: new Date('2024-06-05')
         },
         {
             id: 2,
             orderNumber: 'ORD-2024-002',
             date: '1403/03/14',
-            product: 'گوشی سامسونگ',
-            amount: '2,500,000',
+            products: [
+                { name: 'گوشی سامسونگ', amount: '2,500,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'لغو شده',
+            totalAmount: '2,500,000',
             dateAdded: new Date('2024-06-04')
         },
         {
             id: 3,
             orderNumber: 'ORD-2024-003',
             date: '1403/03/13',
-            product: 'هدفون بلوتوث',
-            amount: '450,000',
+            products: [
+                { name: 'هدفون بلوتوث', amount: '450,000' },
+                { name: 'کیس محافظ', amount: '80,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
+            totalAmount: '530,000',
             dateAdded: new Date('2024-06-03')
         },
         {
             id: 4,
             orderNumber: 'ORD-2024-004',
             date: '1403/03/12',
-            product: 'ماوس بی‌سیم',
-            amount: '120,000',
+            products: [
+                { name: 'ماوس بی‌سیم', amount: '120,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
+            totalAmount: '120,000',
             dateAdded: new Date('2024-06-02')
         },
         {
             id: 5,
             orderNumber: 'ORD-2024-005',
             date: '1403/03/11',
-            product: 'کیبورد گیمینگ',
-            amount: '890,000',
+            products: [
+                { name: 'کیبورد گیمینگ', amount: '890,000' },
+                { name: 'پد ماوس', amount: '45,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'لغو شده',
+            totalAmount: '935,000',
             dateAdded: new Date('2024-06-01')
         },
         {
             id: 6,
             orderNumber: 'ORD-2024-006',
             date: '1403/03/10',
-            product: 'تبلت اپل',
-            amount: '4,500,000',
+            products: [
+                { name: 'تبلت اپل', amount: '4,500,000' },
+                { name: 'قلم لمسی', amount: '250,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
+            totalAmount: '4,750,000',
             dateAdded: new Date('2024-05-31')
         },
         {
             id: 7,
             orderNumber: 'ORD-2024-007',
             date: '1403/03/09',
-            product: 'ساعت هوشمند',
-            amount: '1,200,000',
+            products: [
+                { name: 'ساعت هوشمند', amount: '1,200,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'لغو شده',
+            totalAmount: '1,200,000',
             dateAdded: new Date('2024-05-30')
         },
         {
             id: 8,
             orderNumber: 'ORD-2024-008',
             date: '1403/03/08',
-            product: 'دوربین دیجیتال',
-            amount: '2,800,000',
+            products: [
+                { name: 'دوربین دیجیتال', amount: '2,800,000' },
+                { name: 'کارت حافظه', amount: '150,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
+            totalAmount: '2,950,000',
             dateAdded: new Date('2024-05-29')
         },
         {
             id: 9,
             orderNumber: 'ORD-2024-009',
             date: '1403/03/07',
-            product: 'اسپیکر بلوتوث',
-            amount: '650,000',
+            products: [
+                { name: 'اسپیکر بلوتوث', amount: '650,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
+            totalAmount: '650,000',
             dateAdded: new Date('2024-05-28')
         },
         {
             id: 10,
             orderNumber: 'ORD-2024-010',
             date: '1403/03/06',
-            product: 'پاور بانک',
-            amount: '300,000',
+            products: [
+                { name: 'پاور بانک', amount: '300,000' },
+                { name: 'کابل شارژ', amount: '35,000' }
+            ],
             customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
+            totalAmount: '335,000',
             dateAdded: new Date('2024-05-27')
-        },
-        {
-            id: 11,
-            orderNumber: 'ORD-2024-011',
-            date: '1403/03/05',
-            product: 'چراغ مطالعه LED',
-            amount: '180,000',
-            customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
-            dateAdded: new Date('2024-05-26')
-        },
-        {
-            id: 12,
-            orderNumber: 'ORD-2024-012',
-            date: '1403/03/04',
-            product: 'کارت حافظه',
-            amount: '85,000',
-            customer: 'customer@gmail.com',
-            status: 'لغو شده',
-            dateAdded: new Date('2024-05-25')
-        },
-        {
-            id: 13,
-            orderNumber: 'ORD-2024-013',
-            date: '1403/03/03',
-            product: 'لپ تاپ ایسوس',
-            amount: '3,000,000',
-            customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
-            dateAdded: new Date('2024-05-24')
-        },
-        {
-            id: 14,
-            orderNumber: 'ORD-2024-014',
-            date: '1403/03/02',
-            product: 'هدفون بلوتوث',
-            amount: '450,000',
-            customer: 'customer@gmail.com',
-            status: 'لغو شده',
-            dateAdded: new Date('2024-05-23')
-        },
-        {
-            id: 15,
-            orderNumber: 'ORD-2024-015',
-            date: '1403/03/01',
-            product: 'گوشی سامسونگ',
-            amount: '2,500,000',
-            customer: 'customer@gmail.com',
-            status: 'تکمیل شده',
-            dateAdded: new Date('2024-05-22')
         }
     ]);
 
-
     const itemsPerPage = 5;
 
-    // فیلتر و مرتب‌سازی محصولات
+    // فیلتر و مرتب‌سازی سفارشات
     const filteredAndSortedOrders = useMemo(() => {
-        let filtered = orders.filter(order =>
-            order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        let filtered = orders;
+
+        // اگر سرچ شده، سفارشات رو به محصولات فردی تبدیل کن
+        if (searchTerm) {
+            const expandedResults = [];
+            orders.forEach(order => {
+                order.products.forEach(product => {
+                    if (product.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        expandedResults.push({
+                            id: `${order.id}-${product.name}`,
+                            orderNumber: order.orderNumber,
+                            date: order.date,
+                            product: product.name,
+                            amount: product.amount,
+                            customer: order.customer,
+                            dateAdded: order.dateAdded,
+                            isExpandedView: true
+                        });
+                    }
+                });
+            });
+            filtered = expandedResults;
+        }
 
         // مرتب‌سازی
         if (sortBy === 'bestselling') {
-            // مرتب‌سازی بر اساس مبلغ (بالاترین اول)
             filtered = filtered.sort((a, b) => {
-                const amountA = parseInt(a.amount.replace(/,/g, ''));
-                const amountB = parseInt(b.amount.replace(/,/g, ''));
+                const amountA = parseInt((a.totalAmount || a.amount).replace(/,/g, ''));
+                const amountB = parseInt((b.totalAmount || b.amount).replace(/,/g, ''));
                 return amountB - amountA;
             });
         } else if (sortBy === 'newest') {
-            // مرتب‌سازی بر اساس جدیدترین (بر اساس dateAdded)
             filtered = filtered.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
-        } else if (sortBy === 'complete') {
-            // مرتب‌سازی بر اساس وضعیت: ابتدا تکمیل شده‌ها، سپس لغو شده‌ها
-            filtered = filtered.sort((a, b) => {
-                // اگر هر دو تکمیل شده یا هر دو لغو شده باشند، بر اساس تاریخ مرتب می‌کنیم
-                if (a.status === b.status) {
-                    return new Date(b.dateAdded) - new Date(a.dateAdded);
-                }
-                // تکمیل شده‌ها اول، لغو شده‌ها بعد
-                if (a.status === 'تکمیل شده' && b.status === 'لغو شده') {
-                    return -1;
-                }
-                if (a.status === 'لغو شده' && b.status === 'تکمیل شده') {
-                    return 1;
-                }
-                return 0;
-            });
         }
 
         return filtered;
@@ -227,6 +192,17 @@ const OrderContent = () => {
         setSortBy(sortType);
     };
 
+    const toggleOrderExpansion = (orderId) => {
+        setExpandedOrders(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(orderId)) {
+                newSet.delete(orderId);
+            } else {
+                newSet.add(orderId);
+            }
+            return newSet;
+        });
+    };
 
     // فانکشن‌های صفحه‌بندی
     const goToPage = (page) => {
@@ -247,7 +223,6 @@ const OrderContent = () => {
 
     return (
         <>
-
             <div className="min-h-screen rtl" dir="rtl">
                 <OrdersHeader
                     isOpenTable={isOpenTable}
@@ -263,13 +238,15 @@ const OrderContent = () => {
                     searchTerm={searchTerm}
                     handleSearch={handleSearch}
                     totalItems={filteredAndSortedOrders.length}
-
                 />
 
                 {isOpenTable && (
                     <div className="p-6">
                         <OrdersTable
                             orders={currentOrders}
+                            expandedOrders={expandedOrders}
+                            onToggleExpansion={toggleOrderExpansion}
+                            isSearchMode={!!searchTerm}
                         />
 
                         <Pagination
@@ -288,8 +265,5 @@ const OrderContent = () => {
         </>
     );
 };
-
-
-
 
 export default OrderContent;
