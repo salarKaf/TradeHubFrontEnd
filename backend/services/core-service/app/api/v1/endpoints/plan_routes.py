@@ -9,7 +9,7 @@ plan_router = APIRouter()
 
 
 
-@plan_router.get("/get-all-plans/")
+@plan_router.get("/get-all-plans")
 async def get_all_plans(
     plan_service: Annotated[PlanService, Depends()]
 ):
@@ -26,7 +26,7 @@ async def activate_free_plan(
     return {"free plan activated successfuly"}
 
 
-@plan_router.get("/check-plan-history/")
+@plan_router.get("/check-plan-history")
 async def check_plan_history(
     website_id:UUID,
     plan_service: Annotated[PlanService, Depends()]
@@ -35,7 +35,7 @@ async def check_plan_history(
 
 
 
-@plan_router.get("/get-left-days/")
+@plan_router.get("/get-left-days")
 async def get_left_days(
     website_id:UUID,
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
