@@ -1,11 +1,42 @@
 import React, { useState } from "react";
-import { FaTrashAlt, FaEdit, FaEye, FaPlus, FaExclamationTriangle, FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { FaTrashAlt, FaEdit, FaEye, FaPlus, FaExclamationTriangle, FaChevronDown, FaChevronRight, FaTimes, FaBox, FaShoppingCart, FaTag } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 const Category = () => {
     // وضعیت برای نمایش یا مخفی کردن جدول
     const [isOpen, setIsOpen] = useState(true);
+    const navigate = useNavigate();
 
-    // وضعیت برای دسته‌بندی‌ها
+
+    // وضعیت برای مدال محصولات
+    const [showProductsModal, setShowProductsModal] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+
+    // محصولات نمونه برای هر دسته‌بندی
+    const mockProducts = {
+        1: [
+            { id: 1, name: 'لپ تاپ ایسوس', sales: 586, price: '3,000,000', status: 'فعال', category: 'الکترونیک' },
+            { id: 2, name: 'گوشی سامسونگ', sales: 342, price: '2,500,000', status: 'فعال', category: 'موبایل' },
+            { id: 3, name: 'هدفون بلوتوث', sales: 789, price: '450,000', status: 'فعال', category: 'صوتی و تصویری' },
+        ],
+        2: [
+            { id: 4, name: 'ماوس بی‌سیم', sales: 234, price: '120,000', status: 'فعال', category: 'کامپیوتر' },
+            { id: 5, name: 'کیبورد گیمینگ', sales: 456, price: '890,000', status: 'فعال', category: 'کامپیوتر' },
+        ],
+        3: [
+            { id: 6, name: 'تبلت اپل', sales: 321, price: '4,500,000', status: 'فعال', category: 'الکترونیک' },
+            { id: 7, name: 'ساعت هوشمند', sales: 678, price: '1,200,000', status: 'فعال', category: 'پوشیدنی' },
+        ],
+        4: [
+            { id: 8, name: 'دوربین دیجیتال', sales: 145, price: '2,800,000', status: 'غیرفعال', category: 'عکاسی' },
+        ],
+        5: [
+            { id: 9, name: 'اسپیکر بلوتوث', sales: 523, price: '650,000', status: 'فعال', category: 'صوتی و تصویری' },
+            { id: 10, name: 'پاور بانک', sales: 412, price: '300,000', status: 'فعال', category: 'لوازم جانبی' },
+        ],
+    };
+
+    // وضعیت‌های مربوط به دسته‌بندی‌ها
     const [categories, setCategories] = useState([
         {
             id: 1,
@@ -84,24 +115,138 @@ const Category = () => {
         },
     ]);
 
-    // وضعیت‌های مربوط به افزودن
+    // سایر state های موجود
     const [newCategory, setNewCategory] = useState("");
     const [newSubCategory, setNewSubCategory] = useState("");
     const [isAdding, setIsAdding] = useState(false);
     const [addingSubTo, setAddingSubTo] = useState(null);
     const [error, setError] = useState("");
-
-    // وضعیت‌های مربوط به ویرایش
     const [editingPath, setEditingPath] = useState(null);
     const [editingValue, setEditingValue] = useState("");
-
-    // وضعیت‌های مربوط به حذف
     const [deletingPath, setDeletingPath] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    // تابع برای نمایش محصولات دسته‌بندی
+    const viewCategoryProducts = (category) => {
+        setSelectedCategory(category);
+        setShowProductsModal(true);
+    };
 
+    // کامپوننت مدال محصولات
+    const ProductsModal = () => {
+        if (!showProductsModal || !selectedCategory) return null;
 
+        const products = mockProducts[selectedCategory.id] || [];
 
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 font-modam">
+                <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+                    {/* هدر مدال */}
+                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <FaBox className="text-2xl" />
+                            <div>
+                                <h2 className="text-2xl font-bold">محصولات {selectedCategory.name}</h2>
+                                <p className="text-blue-100 mt-1">مجموع {products.length} محصول</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setShowProductsModal(false)}
+                            className="text-white hover:text-gray-200 transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-20"
+                        >
+                            <FaTimes className="text-xl" />
+                        </button>
+                    </div>
+
+                    {/* محتوای مدال */}
+                    <div className="p-6 overflow-y-auto max-h-[60vh]">
+                        {products.length === 0 ? (
+                            <div className="text-center py-12">
+                                <FaBox className="text-6xl text-gray-300 mx-auto mb-4" />
+                                <p className="text-gray-500 text-lg">هیچ محصولی در این دسته‌بندی وجود ندارد</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {products.map((product) => (
+                                    <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                        <div className="grid grid-cols-12 gap-4 items-center">
+                                            {/* نام محصول */}
+                                            <div className="col-span-3 flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                                    <FaBox className="text-white" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-semibold text-gray-800">{product.name}</h3>
+                                                    <p className="text-sm text-gray-500">{product.category}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* فروش */}
+                                            <div className="col-span-2 flex items-center gap-2">
+                                                <FaShoppingCart className="text-green-500" />
+                                                <span className="text-gray-600">{product.sales} فروش</span>
+                                            </div>
+
+                                            {/* قیمت */}
+                                            <div className="col-span-2 flex items-center gap-2">
+                                                <FaTag className="text-orange-500" />
+                                                <span className="font-medium text-gray-900">{product.price} تومان</span>
+                                            </div>
+
+                                            {/* وضعیت */}
+                                            <div className="col-span-2">
+                                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${product.status === 'فعال'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
+                                                    }`}>
+                                                    {product.status}
+                                                </span>
+                                            </div>
+
+                                            {/* عملیات */}
+                                            <div className="col-span-3 flex items-center justify-end gap-2">
+
+                                                <button
+                                                    onClick={() => navigate('/detailProduct')}
+                                                    className="p-2 text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
+                                                >
+                                                    <FaEdit />
+                                                </button>
+
+                                                <button className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                                    <FaTrashAlt />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* فوتر مدال */}
+                    <div className="bg-gray-50 px-6 py-4 flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-1">
+                                <FaBox className="text-blue-500" />
+                                <span>تعداد محصولات: {products.length}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <FaShoppingCart className="text-green-500" />
+                                <span>مجموع فروش: {products.reduce((sum, p) => sum + p.sales, 0)}</span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setShowProductsModal(false)}
+                            className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                        >
+                            بستن
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     // تابع کمکی برای پیدا کردن و به‌روزرسانی یک دسته‌بندی بر اساس path
     const updateCategoryAtPath = (categories, path, updateFn) => {
@@ -190,8 +335,6 @@ const Category = () => {
         setError("");
     };
 
-
-
     // تابع برای جمع‌آوری تمام IDهای موجود در ساختار درختی دسته‌بندی‌ها
     const getAllIds = (categories) => {
         const ids = [];
@@ -241,6 +384,7 @@ const Category = () => {
         setAddingSubTo(null);
         setError("");
     };
+
     // تابع برای کنسل کردن افزودن زیردسته‌بندی
     const cancelAddSubCategory = () => {
         setNewSubCategory("");
@@ -314,8 +458,7 @@ const Category = () => {
 
     // تابع برای حذف دسته‌بندی با محصولات
     const deleteCategoryWithProducts = () => {
-        deleteCategory(); // در حال حاضر همان عملکرد حذف معمولی
-        // در آینده می‌توان منطق حذف محصولات را اضافه کرد
+        deleteCategory();
     };
 
     // تابع برای کنسل کردن حذف
@@ -340,12 +483,10 @@ const Category = () => {
 
                     <div className="pb-6 pt-2 flex gap-2">
                         <FaExclamationTriangle className="w-5 h-5 " />
-
                         <h2 className="" >توجه کنید که با حذف این دسته بندی تمام محصولات آن حذف خواهد شد!</h2>
                     </div>
 
                     <div className="flex flex-col gap-3">
-
                         <button
                             onClick={deleteCategoryWithProducts}
                             className="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
@@ -376,7 +517,7 @@ const Category = () => {
 
             // ردیف اصلی دسته‌بندی
             rows.push(
-                <tr key={`category-${category.id}`} className="border-b hover:bg-gray-50 font-modam shadow-sm ">
+                <tr key={`category-${category.id}`} className="border-b hover:bg-gray-50 transition-colors font-modam shadow-sm ">
                     <td className="py-2 px-4" style={{ paddingRight: `${paddingLeft + 16}px` }}>
                         {editingPath && JSON.stringify(editingPath) === JSON.stringify(currentPath) ? (
                             <div className="flex items-center gap-2">
@@ -449,7 +590,10 @@ const Category = () => {
                                 >
                                     <FaEdit />
                                 </button>
-                                <button className="text-blue-500 hover:text-blue-700 transition-colors">
+                                <button
+                                    onClick={() => viewCategoryProducts(category)}
+                                    className="text-blue-500 hover:text-blue-700 transition-colors"
+                                >
                                     <FaEye />
                                 </button>
                                 <button
@@ -599,12 +743,11 @@ const Category = () => {
 
             {/* مودال حذف */}
             <DeleteModal />
+
+            {/* مدال محصولات */}
+            <ProductsModal />
         </div>
     );
 };
 
 export default Category;
-
-
-
-

@@ -22,7 +22,6 @@ import Products from "./pages/sellerPanel/Product/Products";
 import Customers from "./pages/sellerPanel/Customers/Customers";
 import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
-import ShowCustomer from './pages/sellerPanel/Customers/CustomerDetails/ShowCustomer';
 
 import HomeWebsite from '../src/pages/website/pages/Home';
 import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
@@ -64,7 +63,6 @@ export default function App() {
         <Route path='/products' element={<Products></Products>} />
         <Route path='/AddProduct' element={<AddProductaPage></AddProductaPage>}></Route>
         <Route path='/detailProduct' element={<ShowProductaPage></ShowProductaPage>}></Route>
-        <Route path="/customer-details/:id" element={<ShowCustomer />} />
 
 
 
@@ -79,7 +77,7 @@ export default function App() {
 
         <Route path="/pricing/:websiteId" element={<PricingPlans />} />
 
-        {/* 🔥 route جدید برای callback پرداخت */}
+        {/*  route جدید برای callback پرداخت */}
         <Route path="/payment/callback" element={<PaymentCallback />} />
 
         {/* route برای نمایش نتایج پرداخت (اختیاری) */}
