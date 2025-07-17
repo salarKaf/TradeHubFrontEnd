@@ -7,11 +7,14 @@ export default function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
+        setIsLoading(true); // شروع لودینگ
 
         try {
             const data = await login({
@@ -21,31 +24,24 @@ export default function LoginForm() {
 
             localStorage.setItem("token", data.access_token);
 
-
-            // بعد از ورود، بررسی می‌کنیم آیا فروشگاه وجود دارد یا نه
             const website = await getMyWebsite();
 
             if (website?.id) {
                 localStorage.setItem("website_id", website.id);
 
-                // چک کردن پلن فعال
                 try {
                     const activePlan = await getActivePlan(website.id);
 
                     if (activePlan === null) {
-                        // هیچ پلن فعالی نداره، بره صفحه قیمت‌گذاری
                         navigate(`/PricingPlans/${website.id}`);
                     } else {
-                        // پلن فعال داره (basic یا pro)، بره داشبورد
                         navigate(`/HomeSeller/${website.id}`);
                     }
                 } catch (planError) {
                     console.error('Error checking active plan:', planError);
-                    // در صورت خطا، بره صفحه قیمت‌گذاری
                     navigate(`/PricingPlans/${website.id}`);
                 }
             } else {
-                // فروشگاه نداره، بره صفحه ساخت فروشگاه
                 navigate("/StoreForm");
             }
         } catch (error) {
@@ -59,8 +55,11 @@ export default function LoginForm() {
             } else {
                 setErrorMsg(detail || "خطا در ورود. لطفاً اطلاعات را بررسی کنید.");
             }
+        } finally {
+            setIsLoading(false); // پایان لودینگ
         }
     };
+
 
     return (
         <>
@@ -192,10 +191,20 @@ export default function LoginForm() {
                         <div className="flex justify-center pt-4">
                             <button
                                 type="submit"
-                                className="w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full hover:bg-[#EABF9F] hover:text-[#1E1E1E] transition-all"
+                                disabled={isLoading}
+                                className={`w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full transition-all flex justify-center items-center gap-2 
+        ${isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#EABF9F] hover:text-[#1E1E1E]'}`}
                             >
-                                وارد شوید
+                                {isLoading ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <span>در حال ورود...</span>
+                                    </>
+                                ) : (
+                                    "وارد شوید"
+                                )}
                             </button>
+ 
                         </div>
                     </form>
                 </div>
