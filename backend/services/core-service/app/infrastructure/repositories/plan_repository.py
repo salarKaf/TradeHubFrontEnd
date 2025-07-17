@@ -193,4 +193,8 @@ class PlanRepository:
     def check_had_paln(self, website_id:UUID):
         return self.db.query(WebsitePlan).filter(WebsitePlan.website_id == website_id).first()
 
-        
+    def get_left_days(self, website_id:UUID):
+        plan = self.get_active_plan_by_website_id(website_id)
+        now = datetime.utcnow()
+        expiration_time = plan.expires_at - now 
+        return expiration_time.days
