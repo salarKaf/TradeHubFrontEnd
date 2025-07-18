@@ -49,16 +49,12 @@ class ItemService(BaseService):
 
     async def get_items_by_subcategory_id(self, subcategory_id: UUID) -> List[Item]:
         items = self.item_repository.get_items_by_subcategory_id(subcategory_id)
-        if not items:
-            raise HTTPException(status_code=404, detail="No items found for this subcategory")
         return items
 
         
 
     async def get_items_by_category_id(self, category_id: UUID) -> List[Item]:
         items = self.item_repository.get_items_by_category_id(category_id)
-        if not items:
-                raise HTTPException(status_code=404, detail="No items found for this subcategory")
         return items
 
         
