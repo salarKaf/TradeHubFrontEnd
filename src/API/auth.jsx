@@ -87,12 +87,29 @@ export const getMe = async () => {
 
 // src/API/user.js
 
-export const changeUserPassword = async ({ password, confirm_password, first_name, last_name, token }) => {
+export const changeUserPassword = async ({ password, confirm_password, token }) => {
   const response = await axios.put(
     `${iamBaseURL}/users/UpdateProfile`,
     {
       password,
       confirm_password,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+
+
+export const changeUserProfile = async ({ first_name, last_name, token }) => {
+  const response = await axios.put(
+    `${iamBaseURL}/users/UpdateProfile`,
+    {
       first_name,
       last_name
     },

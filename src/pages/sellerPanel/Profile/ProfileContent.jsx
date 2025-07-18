@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaPen, FaSave, FaCog, FaChevronDown, FaChevronLeft } from 'react-icons/fa';
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { getMe, changeUserProfile } from "../../../API/auth";
 
 const ProfileContent = () => {
 
@@ -12,9 +13,9 @@ const ProfileContent = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const [userData, setUserData] = useState({
-    firstName: 'محمد',
-    lastName: 'علی',
-    email: 'example@mail.com',
+    firstName: '',
+    lastName: '',
+    email: '',
   });
 
   const handleEditClick = () => {
@@ -29,19 +30,48 @@ const ProfileContent = () => {
     }));
   };
 
-  const handleSave = () => {
-    // بررسی خالی نبودن فیلدها
+  const handleSave = async () => {
     if (!userData.firstName.trim() || !userData.lastName.trim()) {
       setShowAlert(true);
       return;
     }
-    setIsEditing(false);
-    // می‌توانید تغییرات را در اینجا ذخیره کنید
+
+    try {
+      const token = localStorage.getItem("token");
+      await changeUserProfile({
+        first_name: userData.firstName,
+        last_name: userData.lastName,
+        token,
+      });
+
+      setIsEditing(false);
+    } catch (err) {
+      console.error("❌ خطا در ذخیره اطلاعات:", err);
+    }
   };
+
 
   const handleEmailClick = () => {
     window.location.href = 'mailto:support@example.com';
   };
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await getMe();
+        setUserData({
+          firstName: user.first_name || "",
+          lastName: user.last_name || "",
+          email: user.email || "",
+        });
+      } catch (error) {
+        console.error("❌ خطا در دریافت اطلاعات کاربر:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <div className="p-4 font-modam">

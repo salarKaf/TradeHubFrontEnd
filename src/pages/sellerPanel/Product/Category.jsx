@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { FaTrashAlt, FaEdit, FaEye, FaPlus, FaExclamationTriangle, FaChevronDown, FaChevronRight, FaTimes, FaBox, FaShoppingCart, FaTag } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { getWebsiteCategories } from "../../../API/category";
 
 const Category = () => {
+
+
+    const { websiteId } = useParams();
+    
     // وضعیت برای نمایش یا مخفی کردن جدول
     const [isOpen, setIsOpen] = useState(true);
     const navigate = useNavigate();
@@ -131,7 +138,6 @@ const Category = () => {
         setSelectedCategory(category);
         setShowProductsModal(true);
     };
-
     // کامپوننت مدال محصولات
     const ProductsModal = () => {
         if (!showProductsModal || !selectedCategory) return null;
@@ -247,6 +253,8 @@ const Category = () => {
             </div>
         );
     };
+
+
 
     // تابع کمکی برای پیدا کردن و به‌روزرسانی یک دسته‌بندی بر اساس path
     const updateCategoryAtPath = (categories, path, updateFn) => {
@@ -653,6 +661,21 @@ const Category = () => {
 
         return rows;
     };
+
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getWebsiteCategories(websiteId);
+                setCategories(data); // فرض بر این است که API یک آرایه از دسته‌ها برمی‌گرداند
+            } catch (err) {
+                console.error("❌ خطا در دریافت دسته‌بندی‌ها:", err);
+            }
+        };
+
+        fetchCategories();
+    }, [websiteId]);
+
 
     return (
         <div>

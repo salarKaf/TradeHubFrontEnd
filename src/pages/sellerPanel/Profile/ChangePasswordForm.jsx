@@ -3,8 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { changeUserPassword } from "../../../API/auth";
 
 export default function ChangePasswordForm() {
-    const location = useLocation();
-    const { first_name, last_name } = location.state || {};
 
     const [formData, setFormData] = useState({
         newPassword: "",
@@ -40,8 +38,6 @@ export default function ChangePasswordForm() {
             await changeUserPassword({
                 password: formData.newPassword,
                 confirm_password: formData.confirmPassword,
-                first_name,
-                last_name,
                 token,
             });
 
