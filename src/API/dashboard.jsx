@@ -65,7 +65,7 @@ export const getLast6MonthsSales = async (websiteId) => {
 export const getProductCount  = async (websiteId) => {
   try {
     const response = await axios.get(
-      `${coreBaseURL}/items/products/count/${websiteId}`,
+      `${coreBaseURL}/items/items/count/${websiteId}`,
       getAuthHeader() // 🔥 باید این باشه!
     );
     console.log("📊 داده ۶ ماه اخیر:", response.data);

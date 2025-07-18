@@ -4,15 +4,50 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getWebsiteCategories } from "../../../API/category";
+import { getItemCountByCategoryId } from "../../../API/category";
+import { editSubCategory, editWebsiteCategory } from "../../../API/category";
+import { createWebsiteSubcategory, getSubcategoriesByCategoryId } from "../../../API/category"; // بالای فایل
+import { createMainCategory } from "../../../API/category"; // بالای فایل
+import { deleteWebsiteCategory, deleteWebsiteSubcategory } from "../../../API/category"; // بالای فایل
+
+// تابع بازگشتی برای گرفتن و آپدیت تعداد محصولات هر دسته
+const updateCategoryProductCounts = async (categories) => {
+
+    const updatedCategories = await Promise.all(
+        categories.map(async (category) => {
+            let productCount = 0;
+            try {
+                const countResponse = await getItemCountByCategoryId(category.id);
+                productCount = countResponse.count || 0;
+            } catch (err) {
+                console.error(`خطا در گرفتن تعداد محصولات دسته ${category.name}:`, err);
+            }
+
+            const updatedSubCategories = category.subCategories?.length
+                ? await updateCategoryProductCounts(category.subCategories)
+                : [];
+
+            return {
+                ...category,
+                productsCount: productCount,
+                subCategories: updatedSubCategories,
+            };
+        })
+    );
+
+    return updatedCategories;
+};
+
 
 const Category = () => {
 
 
     const { websiteId } = useParams();
-    
+
     // وضعیت برای نمایش یا مخفی کردن جدول
     const [isOpen, setIsOpen] = useState(true);
     const navigate = useNavigate();
+
 
 
     // وضعیت برای مدال محصولات
@@ -20,107 +55,10 @@ const Category = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
 
     // محصولات نمونه برای هر دسته‌بندی
-    const mockProducts = {
-        1: [
-            { id: 1, name: 'لپ تاپ ایسوس', sales: 586, price: '3,000,000', status: 'فعال', category: 'الکترونیک' },
-            { id: 2, name: 'گوشی سامسونگ', sales: 342, price: '2,500,000', status: 'فعال', category: 'موبایل' },
-            { id: 3, name: 'هدفون بلوتوث', sales: 789, price: '450,000', status: 'فعال', category: 'صوتی و تصویری' },
-        ],
-        2: [
-            { id: 4, name: 'ماوس بی‌سیم', sales: 234, price: '120,000', status: 'فعال', category: 'کامپیوتر' },
-            { id: 5, name: 'کیبورد گیمینگ', sales: 456, price: '890,000', status: 'فعال', category: 'کامپیوتر' },
-        ],
-        3: [
-            { id: 6, name: 'تبلت اپل', sales: 321, price: '4,500,000', status: 'فعال', category: 'الکترونیک' },
-            { id: 7, name: 'ساعت هوشمند', sales: 678, price: '1,200,000', status: 'فعال', category: 'پوشیدنی' },
-        ],
-        4: [
-            { id: 8, name: 'دوربین دیجیتال', sales: 145, price: '2,800,000', status: 'غیرفعال', category: 'عکاسی' },
-        ],
-        5: [
-            { id: 9, name: 'اسپیکر بلوتوث', sales: 523, price: '650,000', status: 'فعال', category: 'صوتی و تصویری' },
-            { id: 10, name: 'پاور بانک', sales: 412, price: '300,000', status: 'فعال', category: 'لوازم جانبی' },
-        ],
-    };
 
     // وضعیت‌های مربوط به دسته‌بندی‌ها
-    const [categories, setCategories] = useState([
-        {
-            id: 1,
-            name: "دسته بندی یک",
-            sales: 586,
-            productsCount: 57,
-            isExpanded: false,
-            subCategories: [
-                {
-                    id: 11,
-                    name: "زیردسته یک-یک",
-                    sales: 200,
-                    productsCount: 25,
-                    isExpanded: false,
-                    subCategories: [
-                        {
-                            id: 111,
-                            name: "زیردسته یک-یک-یک",
-                            sales: 100,
-                            productsCount: 10,
-                            isExpanded: false,
-                            subCategories: []
-                        }
-                    ]
-                },
-                {
-                    id: 12,
-                    name: "زیردسته یک-دو",
-                    sales: 150,
-                    productsCount: 15,
-                    isExpanded: false,
-                    subCategories: []
-                }
-            ]
-        },
-        {
-            id: 2,
-            name: "دسته بندی دو",
-            sales: 586,
-            productsCount: 57,
-            isExpanded: false,
-            subCategories: [
-                {
-                    id: 21,
-                    name: "زیردسته دو-یک",
-                    sales: 300,
-                    productsCount: 30,
-                    isExpanded: false,
-                    subCategories: []
-                }
-            ]
-        },
-        {
-            id: 3,
-            name: "دسته بندی سه",
-            sales: 586,
-            productsCount: 10,
-            isExpanded: false,
-            subCategories: []
-        },
-        {
-            id: 4,
-            name: "دسته بندی چهار",
-            sales: 586,
-            productsCount: 47,
-            isExpanded: false,
-            subCategories: []
-        },
-        {
-            id: 5,
-            name: "دسته بندی پنج",
-            sales: 586,
-            productsCount: 57,
-            isExpanded: false,
-            subCategories: []
-        },
-    ]);
+    const [categories, setCategories] = useState(null); // قبلاً [] بود
+
 
     // سایر state های موجود
     const [newCategory, setNewCategory] = useState("");
@@ -279,24 +217,61 @@ const Category = () => {
     // تابع کمکی برای پیدا کردن یک دسته‌بندی بر اساس path
     const findCategoryAtPath = (categories, path) => {
         let current = categories;
-        for (const index of path) {
-            current = current[index];
-            if (path.indexOf(index) < path.length - 1) {
-                current = current.subCategories;
-            }
+        for (let i = 0; i < path.length; i++) {
+            if (!current || !Array.isArray(current)) return null;
+
+            const index = path[i];
+            const category = current[index];
+            if (!category) return null;
+
+            if (i === path.length - 1) return category;
+
+            current = category.subCategories;
         }
-        return current;
+        return null;
     };
 
+
     // تابع برای toggle کردن وضعیت باز/بسته بودن دسته‌بندی
-    const toggleExpanded = (path) => {
-        setCategories(prevCategories =>
-            updateCategoryAtPath(prevCategories, path, (category) => ({
-                ...category,
-                isExpanded: !category.isExpanded
-            }))
-        );
+    const toggleExpanded = async (path) => {
+        const category = findCategoryAtPath(categories, path);
+
+        if (!category.isExpanded && (!category.subCategories || category.subCategories.length === 0)) {
+            try {
+                const allSubcategories = await getSubcategoriesByCategoryId(category.id);
+                const subcategories = allSubcategories.filter(sub => sub.is_active === true);
+                const updatedSubs = subcategories.map((sub) => ({
+                    ...sub,
+                    subCategories: [],
+                    isExpanded: false,
+                    productsCount: 0,
+                }));
+
+                console.log("✅ زیر‌دسته‌های دریافت‌شده:", updatedSubs);
+
+                setCategories((prev) =>
+                    updateCategoryAtPath(prev, path, (cat) => ({
+                        ...cat,
+                        isExpanded: true,
+                        subCategories: updatedSubs,
+                    }))
+                );
+            } catch (error) {
+                console.error("❌ خطا در گرفتن زیر‌دسته‌ها:", error);
+            }
+        } else {
+            // فقط باز و بسته کردن بدون نیاز به API
+            setCategories((prev) =>
+                updateCategoryAtPath(prev, path, (cat) => ({
+                    ...cat,
+                    isExpanded: !cat.isExpanded,
+                }))
+            );
+        }
     };
+
+
+
 
     // تابع برای افزودن دسته‌بندی اصلی
     const addCategory = () => {
@@ -306,28 +281,40 @@ const Category = () => {
     };
 
     // تابع برای ذخیره کردن دسته‌بندی اصلی
-    const saveCategory = () => {
+
+    const saveCategory = async () => {
         if (!newCategory.trim()) {
             setError("نام دسته‌بندی نمی‌تواند خالی باشد");
             return;
         }
 
-        const newId = Math.max(...categories.map(c => c.id)) + 1;
-        setCategories([
-            ...categories,
-            {
-                id: newId,
+        try {
+            const res = await createMainCategory({
+                website_id: websiteId,
                 name: newCategory,
+            });
+
+            const newCategoryObject = {
+                id: res.id, // فرض بر اینکه API این فیلد رو برمی‌گردونه
+                name: res.name,
                 sales: 0,
                 productsCount: 0,
                 isExpanded: false,
                 subCategories: []
-            },
-        ]);
-        setNewCategory("");
-        setIsAdding(false);
-        setError("");
+            };
+
+            setCategories([...categories, newCategoryObject]);
+            setNewCategory("");
+            setIsAdding(false);
+            setError("");
+            console.log("✅ دسته‌بندی جدید با موفقیت اضافه شد:", res);
+        } catch (err) {
+            console.error("❌ خطا در افزودن دسته‌بندی:", err);
+            setError("خطا در افزودن دسته‌بندی. لطفاً دوباره تلاش کنید.");
+        }
     };
+
+
 
     // تابع برای کنسل کردن افزودن دسته‌بندی اصلی
     const cancelAddCategory = () => {
@@ -361,37 +348,51 @@ const Category = () => {
     };
 
     // تابع برای ذخیره کردن زیردسته‌بندی
-    const saveSubCategory = (path) => {
+
+    // ...
+
+    const saveSubCategory = async (path) => {
         if (!newSubCategory.trim()) {
             setError("نام زیردسته‌بندی نمی‌تواند خالی باشد");
             return;
         }
 
-        setCategories(prevCategories => {
-            const allIds = getAllIds(prevCategories);
-            const maxId = allIds.length > 0 ? Math.max(...allIds) : 0;
-            const newId = maxId + 1;
+        try {
+            const parentCategory = findCategoryAtPath(categories, path);
 
-            return updateCategoryAtPath(prevCategories, path, (parentCategory) => ({
-                ...parentCategory,
-                subCategories: [
-                    ...parentCategory.subCategories,
-                    {
-                        id: newId,
-                        name: newSubCategory,
-                        sales: 0,
+            // ارسال به بک‌اند با آیدی دسته والد
+            const created = await createWebsiteSubcategory(parentCategory.id, newSubCategory);
+
+            // زیر‌دسته‌های جدید رو از بک بگیر
+            const allUpdatedSubcategories = await getSubcategoriesByCategoryId(parentCategory.id);
+            const updatedSubcategories = allUpdatedSubcategories.filter(sub => sub.is_active === true);
+            // به‌روزرسانی در UI
+            setCategories(prevCategories =>
+                updateCategoryAtPath(prevCategories, path, (cat) => ({
+                    ...cat,
+                    subCategories: updatedSubcategories.map(sub => ({
+                        id: sub.id,
+                        name: sub.name,
                         productsCount: 0,
+                        sales: 0,
+                        subCategories: [],
                         isExpanded: false,
-                        subCategories: []
-                    }
-                ]
-            }));
-        });
+                    })),
+                }))
+            );
 
-        setNewSubCategory("");
-        setAddingSubTo(null);
-        setError("");
+            setNewSubCategory("");
+            setAddingSubTo(null);
+            setError("");
+            console.log("✅ زیر‌دسته اضافه شد");
+
+        } catch (err) {
+            console.error("❌ خطا در افزودن زیر‌دسته:", err);
+            setError("افزودن زیردسته با خطا مواجه شد.");
+        }
     };
+
+
 
     // تابع برای کنسل کردن افزودن زیردسته‌بندی
     const cancelAddSubCategory = () => {
@@ -409,23 +410,52 @@ const Category = () => {
     };
 
     // تابع برای ذخیره ویرایش
-    const saveEdit = () => {
+    const saveEdit = async () => {
         if (!editingValue.trim()) {
             setError("نام دسته‌بندی نمی‌تواند خالی باشد");
             return;
         }
 
-        setCategories(prevCategories =>
-            updateCategoryAtPath(prevCategories, editingPath, (category) => ({
-                ...category,
-                name: editingValue
-            }))
-        );
+        const targetCategory = findCategoryAtPath(categories, editingPath);
+        const isSubCategory = editingPath.length > 1;
 
-        setEditingPath(null);
-        setEditingValue("");
-        setError("");
+        try {
+            if (isSubCategory) {
+                // زیر دسته‌بندی
+                await editSubCategory({
+                    subcategory_id: targetCategory.id,
+                    name: editingValue,
+                    website_id: websiteId,
+                });
+            } else {
+                // دسته‌بندی اصلی
+                await editWebsiteCategory({
+                    category_id: targetCategory.id, // این باید رشته باشه
+                    website_id: websiteId,
+                    name: editingValue,
+                });
+            }
+
+            // بروزرسانی در UI
+            setCategories((prevCategories) =>
+                updateCategoryAtPath(prevCategories, editingPath, (category) => ({
+                    ...category,
+                    name: editingValue,
+                }))
+            );
+
+            setEditingPath(null);
+            setEditingValue("");
+            setError("");
+            console.log("✅ ویرایش نام دسته‌بندی با موفقیت انجام شد");
+        } catch (err) {
+            console.error("❌ خطا در ویرایش نام دسته‌بندی:", err);
+            setError("خطا در ذخیره ویرایش. لطفاً دوباره تلاش کنید.");
+        }
     };
+
+
+
 
     // تابع برای کنسل کردن ویرایش
     const cancelEdit = () => {
@@ -434,72 +464,195 @@ const Category = () => {
         setError("");
     };
 
-    // تابع برای شروع فرآیند حذف
-    const startDelete = (path) => {
-        setDeletingPath(path);
-        setShowDeleteModal(true);
-    };
 
-    // تابع برای حذف دسته‌بندی (فقط دسته‌بندی)
-    const deleteCategory = () => {
-        if (deletingPath.length === 1) {
-            // حذف دسته‌بندی اصلی
-            setCategories(prevCategories =>
-                prevCategories.filter((_, index) => index !== deletingPath[0])
-            );
-        } else {
-            // حذف زیردسته‌بندی
-            const parentPath = deletingPath.slice(0, -1);
-            const indexToDelete = deletingPath[deletingPath.length - 1];
 
-            setCategories(prevCategories =>
-                updateCategoryAtPath(prevCategories, parentPath, (parentCategory) => ({
-                    ...parentCategory,
-                    subCategories: parentCategory.subCategories.filter((_, index) => index !== indexToDelete)
-                }))
-            );
+    // تابع حذف دسته‌بندی - تصحیح شده
+    const deleteCategoryWithProducts = async () => {
+        console.log("🔍 شروع عملیات حذف...");
+        console.log("📍 deletingPath:", deletingPath);
+        console.log("📍 categories:", categories);
+
+        // بررسی معتبر بودن deletingPath
+        if (!deletingPath || !Array.isArray(deletingPath) || deletingPath.length === 0) {
+            console.error("❌ مسیر حذف نامعتبر است!");
+            setError("خطا در تشخیص دسته‌بندی برای حذف");
+            return;
         }
 
-        setShowDeleteModal(false);
-        setDeletingPath(null);
+        // بررسی معتبر بودن categories
+        if (!categories || !Array.isArray(categories)) {
+            console.error("❌ لیست دسته‌بندی‌ها نامعتبر است!");
+            setError("خطا در دریافت اطلاعات دسته‌بندی‌ها");
+            return;
+        }
+
+        // پیدا کردن دسته‌بندی مورد نظر
+        const categoryToDelete = findCategoryAtPath(categories, deletingPath);
+
+        if (!categoryToDelete) {
+            console.error("❌ دسته‌بندی برای حذف پیدا نشد!");
+            setError("خطا در پیدا کردن دسته‌بندی");
+            return;
+        }
+
+        if (!categoryToDelete.id) {
+            console.error("❌ آی‌دی دسته‌بندی برای حذف پیدا نشد!", categoryToDelete);
+            setError("خطا در شناسایی دسته‌بندی");
+            return;
+        }
+
+        console.log("✅ دسته‌بندی برای حذف:", categoryToDelete);
+
+        try {
+            // تشخیص نوع دسته‌بندی (اصلی یا زیردسته)
+            const isMainCategory = deletingPath.length === 1;
+
+            console.log(`🔥 ${isMainCategory ? 'حذف دسته‌بندی اصلی' : 'حذف زیردسته‌بندی'} با ID: ${categoryToDelete.id}`);
+
+            // صدا زدن API مناسب
+            if (isMainCategory) {
+                await deleteWebsiteCategory(categoryToDelete.id);
+                console.log("✅ دسته‌بندی اصلی از سرور حذف شد");
+            } else {
+                await deleteWebsiteSubcategory(categoryToDelete.id);
+                console.log("✅ زیردسته‌بندی از سرور حذف شد");
+            }
+
+            // حذف از state محلی
+            if (isMainCategory) {
+                // حذف دسته‌بندی اصلی
+                setCategories(prevCategories => {
+                    const newCategories = prevCategories.filter((_, index) => index !== deletingPath[0]);
+                    console.log("✅ دسته‌بندی اصلی از state محلی حذف شد");
+                    return newCategories;
+                });
+            } else {
+                // حذف زیردسته‌بندی
+                const parentPath = deletingPath.slice(0, -1);
+                const indexToDelete = deletingPath[deletingPath.length - 1];
+
+                setCategories(prevCategories =>
+                    updateCategoryAtPath(prevCategories, parentPath, (parentCategory) => {
+                        const newSubCategories = parentCategory.subCategories.filter((_, index) => index !== indexToDelete);
+                        console.log("✅ زیردسته‌بندی از state محلی حذف شد");
+                        return {
+                            ...parentCategory,
+                            subCategories: newSubCategories
+                        };
+                    })
+                );
+            }
+
+            // بستن modal و پاک کردن state ها
+            setShowDeleteModal(false);
+            setDeletingPath(null);
+            setError("");
+
+            console.log("🎉 عملیات حذف با موفقیت انجام شد!");
+
+        } catch (err) {
+            console.error("❌ خطا در حذف دسته‌بندی:", err);
+
+            // نمایش پیام خطای مفصل
+            let errorMessage = "خطا در حذف دسته‌بندی. ";
+
+            if (err.response) {
+                // خطای HTTP
+                const status = err.response.status;
+                switch (status) {
+                    case 404:
+                        errorMessage += "دسته‌بندی یافت نشد.";
+                        break;
+                    case 403:
+                        errorMessage += "شما مجوز حذف این دسته‌بندی را ندارید.";
+                        break;
+                    case 409:
+                        errorMessage += "این دسته‌بندی شامل محصولات فعال است.";
+                        break;
+                    default:
+                        errorMessage += `خطای سرور (کد: ${status})`;
+                }
+            } else if (err.request) {
+                errorMessage += "مشکل در ارتباط با سرور.";
+            } else {
+                errorMessage += err.message || "خطای نامشخص.";
+            }
+
+            setError(errorMessage);
+
+            // modal را نبندید تا کاربر بتواند خطا را ببیند و دوباره تلاش کند
+        }
     };
 
-    // تابع برای حذف دسته‌بندی با محصولات
-    const deleteCategoryWithProducts = () => {
-        deleteCategory();
+    // تابع برای شروع فرآیند حذف - تصحیح شده
+    const startDelete = (path) => {
+        console.log("🎯 شروع فرآیند حذف برای مسیر:", path);
+
+        // بررسی معتبر بودن path
+        if (!path || !Array.isArray(path) || path.length === 0) {
+            console.error("❌ مسیر نامعتبر برای حذف:", path);
+            setError("خطا در تشخیص دسته‌بندی برای حذف");
+            return;
+        }
+
+        // بررسی وجود دسته‌بندی
+        const categoryToDelete = findCategoryAtPath(categories, path);
+        if (!categoryToDelete) {
+            console.error("❌ دسته‌بندی برای حذف پیدا نشد!");
+            setError("دسته‌بندی مورد نظر پیدا نشد");
+            return;
+        }
+
+        setDeletingPath(path);
+        setShowDeleteModal(true);
+        setError(""); // پاک کردن خطاهای قبلی
     };
 
-    // تابع برای کنسل کردن حذف
-    const cancelDelete = () => {
-        setShowDeleteModal(false);
-        setDeletingPath(null);
-    };
-
-    // کامپوننت مودال حذف
+    // مودال حذف - تصحیح شده
     const DeleteModal = () => {
         if (!showDeleteModal || !deletingPath) return null;
 
         const categoryToDelete = findCategoryAtPath(categories, deletingPath);
 
+        // اگر دسته‌بندی پیدا نشد، modal را نمایش نده
+        if (!categoryToDelete) {
+            console.error("❌ دسته‌بندی برای نمایش در modal پیدا نشد!");
+            setShowDeleteModal(false);
+            setDeletingPath(null);
+            return null;
+        }
+
+        const isMainCategory = deletingPath.length === 1;
+
         return (
             <div className="fixed inset-0 font-rubik bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
                     <h3 className="text-lg font-semibold mb-4 text-gray-800">تأیید حذف</h3>
-                    <p className="text-gray-600 mb-6">
-                        آیا می‌خواهید دسته‌بندی "{categoryToDelete.name}" را حذف کنید؟
+                    <p className="text-gray-600 mb-4">
+                        آیا می‌خواهید {isMainCategory ? 'دسته‌بندی' : 'زیردسته‌بندی'} "{categoryToDelete.name}" را حذف کنید؟
                     </p>
 
                     <div className="pb-6 pt-2 flex gap-2">
-                        <FaExclamationTriangle className="w-5 h-5 " />
-                        <h2 className="" >توجه کنید که با حذف این دسته بندی تمام محصولات آن حذف خواهد شد!</h2>
+                        <FaExclamationTriangle className="w-5 h-5 text-red-500" />
+                        <h2 className="text-red-600">
+                            توجه کنید که با حذف این {isMainCategory ? 'دسته‌بندی' : 'زیردسته‌بندی'} تمام محصولات آن حذف خواهد شد!
+                        </h2>
                     </div>
+
+                    {/* نمایش خطا در صورت وجود */}
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                            {error}
+                        </div>
+                    )}
 
                     <div className="flex flex-col gap-3">
                         <button
                             onClick={deleteCategoryWithProducts}
                             className="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
+                            disabled={!categoryToDelete.id} // غیرفعال کردن اگر ID نداشته باشد
                         >
-                            این دسته‌بندی را با تمام محصولاتش حذف کن
+                            این {isMainCategory ? 'دسته‌بندی' : 'زیردسته‌بندی'} را با تمام محصولاتش حذف کن
                         </button>
 
                         <button
@@ -513,6 +666,15 @@ const Category = () => {
             </div>
         );
     };
+
+
+    // تابع برای کنسل کردن حذف
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setDeletingPath(null);
+    };
+
+
 
     // تابع برای رندر کردن ردیف‌های جدول
     const renderCategoryRows = (categories, level = 0, parentPath = []) => {
@@ -566,7 +728,6 @@ const Category = () => {
                             <div className="text-red-500 text-sm mt-1">{error}</div>
                         )}
                     </td>
-                    <td className="py-5 px-10 text-right">{category.sales} فروش</td>
                     <td className="py-5 px-10 text-right">{category.productsCount} محصول</td>
                     <td className="py-5 px- text-right">
                         {editingPath && JSON.stringify(editingPath) === JSON.stringify(currentPath) ? (
@@ -632,7 +793,6 @@ const Category = () => {
                             {error && <div className="text-red-500 text-sm mt-1 font-modam">{error}</div>}
                         </td>
                         <td className="py-2 px-4">0 فروش</td>
-                        <td className="py-2 px-4">0 محصول</td>
                         <td className="py-2 px-4">
                             <div className="flex gap-2">
                                 <button
@@ -663,18 +823,45 @@ const Category = () => {
     };
 
 
+
+
+
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchCategoriesWithSubcategories = async () => {
             try {
-                const data = await getWebsiteCategories(websiteId);
-                setCategories(data); // فرض بر این است که API یک آرایه از دسته‌ها برمی‌گرداند
+                const allData = await getWebsiteCategories(websiteId);
+                const data = allData.filter(category => category.is_active === true);
+
+                const categoriesWithSubs = await Promise.all(
+                    data.map(async (category) => {
+                        try {
+                            const allSubCategories = await getSubcategoriesByCategoryId(category.id);
+                            const subCategories = allSubCategories.filter(sub => sub.is_active === true);
+                            return {
+                                ...category,
+                                subCategories: subCategories.map((sub) => ({
+                                    ...sub,
+                                    subCategories: [],
+                                    isExpanded: false,
+                                })),
+                            };
+                        } catch (err) {
+                            console.error(`❌ خطا در دریافت زیر‌دسته‌های ${category.name}:`, err);
+                            return { ...category, subCategories: [] };
+                        }
+                    })
+                );
+
+                setCategories(categoriesWithSubs);
             } catch (err) {
                 console.error("❌ خطا در دریافت دسته‌بندی‌ها:", err);
             }
         };
 
-        fetchCategories();
+        fetchCategoriesWithSubcategories();
     }, [websiteId]);
+
+
 
 
     return (
@@ -712,56 +899,68 @@ const Category = () => {
                 {/* نمایش یا مخفی کردن جدول */}
                 {isOpen && (
                     <div className="overflow-x-auto ml-1 rounded-lg shadow-inner border border-gray-800 border-opacity-30">
-                        <table className="min-w-full rounded-lg ">
-                            <thead className="bg-[#eac09fad]  font-modam text-lg">
-                                <tr className="shadow-inner">
-                                    <th className="py-5 px-8 text-right border-b text-gray-700">نام دسـتـه بـندی</th>
-                                    <th className="py-5 px-8 text-right border-b text-gray-700">مـیزان فـروش</th>
-                                    <th className="py-5 px-8 text-right border-b text-gray-700">تعـداد محـصولات</th>
-                                    <th className="py-5 px-8 text-right border-b text-gray-700">عمـلیـات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {renderCategoryRows(categories)}
-
-                                {/* سطر جدید برای وارد کردن دسته بندی اصلی */}
-                                {isAdding && (
-                                    <tr className="bg-green-50 font-modam">
-                                        <td className="py-2 px-4">
-                                            <input
-                                                type="text"
-                                                value={newCategory}
-                                                onChange={(e) => setNewCategory(e.target.value)}
-                                                className="px-2 py-1 border border-gray-300 rounded-md w-full"
-                                                placeholder="نام دسته بندی"
-                                                autoFocus
-                                            />
-                                            {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
-                                        </td>
-                                        <td className="py-3 px-4">0 فروش</td>
-                                        <td className="py-3 px-4">0 محصول</td>
-                                        <td className="py-3 px-4">
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={saveCategory}
-                                                    className="bg-green-700 font-modam text-white py-1 px-3 rounded-lg hover:bg-green-600 transition-colors"
-                                                >
-                                                    ذخیره
-                                                </button>
-                                                <button
-                                                    onClick={cancelAddCategory}
-                                                    className="bg-red-700 font-modam text-white py-1 px-3 rounded-lg hover:bg-red-600 transition-colors"
-                                                >
-                                                    انصراف
-                                                </button>
-                                            </div>
-                                        </td>
+                        {categories === null ? (
+                            <div className="p-6 text-center text-gray-600 font-modam">
+                                در حال دریافت اطلاعات دسته‌بندی‌ها...
+                            </div>
+                        ) : categories.length === 0 && !isAdding ? (
+                            <div className="p-6 text-center text-gray-600 font-modam">
+                                هیچ دسته‌بندی‌ای ثبت نشده است.
+                            </div>
+                        ) : (
+                            <table className="min-w-full rounded-lg">
+                                <thead className="bg-[#eac09fad] font-modam text-lg">
+                                    <tr className="shadow-inner">
+                                        <th className="py-5 px-8 text-right border-b text-gray-700">نام دسـتـه بـندی</th>
+                                        <th className="py-5 px-8 text-right border-b text-gray-700">تعـداد محـصولات</th>
+                                        <th className="py-5 px-8 text-right border-b text-gray-700">عمـلیـات</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {/* رندر دسته‌بندی‌ها */}
+                                    {categories.length > 0 && renderCategoryRows(categories)}
+
+                                    {/* رندر فرم افزودن حتی اگه دسته‌ای وجود نداره */}
+                                    {isAdding && (
+                                        <tr className="bg-green-50 font-modam">
+                                            <td className="py-2 px-4">
+                                                <input
+                                                    type="text"
+                                                    value={newCategory}
+                                                    onChange={(e) => setNewCategory(e.target.value)}
+                                                    className="px-2 py-1 border border-gray-300 rounded-md w-full"
+                                                    placeholder="نام دسته بندی"
+                                                    autoFocus
+                                                />
+                                                {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
+                                            </td>
+                                            <td className="py-3 px-4">0 محصول</td>
+                                            <td className="py-3 px-4">
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={saveCategory}
+                                                        className="bg-green-700 font-modam text-white py-1 px-3 rounded-lg hover:bg-green-600 transition-colors"
+                                                    >
+                                                        ذخیره
+                                                    </button>
+                                                    <button
+                                                        onClick={cancelAddCategory}
+                                                        className="bg-red-700 font-modam text-white py-1 px-3 rounded-lg hover:bg-red-600 transition-colors"
+                                                    >
+                                                        انصراف
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 )}
+
+
+
             </div>
 
             {/* مودال حذف */}
