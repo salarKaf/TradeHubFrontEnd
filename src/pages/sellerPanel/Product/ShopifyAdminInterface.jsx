@@ -1,11 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Pagination from './Pagination';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import ProductC from './ProductC';
 import ProductsHeader from './ProductsHeader';
 import ProductsTable from './ProductsTable';
 import ProductsToolbar from './ProductsToolbar';
-
+import { useParams } from 'react-router-dom';
+import { getActivePlan } from '../../../API/website'; // مسیر درست جایگزین شود
+import { getNewestItems } from '../../../API/Items'
 
 const ShopifyAdminInterface = () => {
     const [isOpenTable, setIsOpenTable] = useState(true);
@@ -15,6 +17,7 @@ const ShopifyAdminInterface = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [showProductC, setShowProductC] = useState(false);
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, productId: null, productName: '' });
+    const [loadingStatus, setLoadingStatus] = useState("loading");
 
     const [products, setProducts] = useState([
         {
@@ -154,6 +157,54 @@ const ShopifyAdminInterface = () => {
     React.useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, sortBy]);
+    const fetchLimitBasedOnPlan = async (websiteId) => {
+        try {
+            const planData = await getActivePlan(websiteId);
+            const planName = planData?.name?.toLowerCase();
+            return planName === 'pro' ? 500 : 100;
+        } catch (error) {
+            console.error("❌ Error fetching plan:", error);
+            return 100; // پیش‌فرض
+        }
+    };
+
+
+    const { websiteId } = useParams();
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoadingStatus("loading");
+
+            try {
+                const plan = await getActivePlan(websiteId);
+                const limit = plan.type === 'pro' ? 500 : 100;
+
+                const items = await getNewestItems(websiteId, limit);
+
+                const formatted = items
+                    .filter(item => item.is_active)
+                    .map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        sales: item.sales_count,
+                        status: item.category_name,
+                        category: item.is_active ? "فعال" : "غیرفعال",
+                        dateAdded: new Date(item.created_at)
+                    }));
+
+                setProducts(formatted);
+                setLoadingStatus("success");
+                console.log("✅ محصولات با موفقیت دریافت شدند");
+            } catch (err) {
+                console.error("❌ خطا در دریافت محصولات:", err);
+                setLoadingStatus("error");
+            }
+        };
+
+        fetchProducts();
+    }, [websiteId]);
+
 
     // عملکردها
     const handleSearch = (e) => {
@@ -216,11 +267,11 @@ const ShopifyAdminInterface = () => {
                 onConfirm={handleDeleteConfirm}
                 productName={deleteModal.productName}
             />
-            
+
             <div className="min-h-screen rtl" dir="rtl">
-                <ProductsHeader 
-                    isOpenTable={isOpenTable} 
-                    setIsOpenTable={setIsOpenTable} 
+                <ProductsHeader
+                    isOpenTable={isOpenTable}
+                    setIsOpenTable={setIsOpenTable}
                 />
 
                 <ProductsToolbar
@@ -236,7 +287,10 @@ const ShopifyAdminInterface = () => {
                         <ProductsTable
                             products={currentProducts}
                             onDelete={handleDeleteClick}
+                            loadingStatus={loadingStatus}
+                            totalCount={filteredAndSortedProducts.length}
                         />
+
 
                         <Pagination
                             currentPage={currentPage}
