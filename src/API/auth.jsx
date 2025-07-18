@@ -62,3 +62,24 @@ export async function login({ email, password }) {
 
   return response.data;
 }
+
+
+
+
+
+// تابع جدید برای چک کردن پلن فعال
+export const getMe = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${iamBaseURL}/users/Me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching Read user:', error);
+        throw error;
+    }
+};
