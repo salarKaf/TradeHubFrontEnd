@@ -46,23 +46,30 @@ class BuyerService(BaseService):
     async def update_buyer(self, buyer_id: uuid.UUID, update_fields: Dict) -> Buyer:
         logger.info(f"🔃 Updating buyer with id {buyer_id}")
 
-        if 'password' in update_fields:
-            if update_fields['password'] != update_fields['confirm_password']:
-                logger.info(f"❌ Password confirmation does not match")
-                raise HTTPException(status_code=400, detail='Password confirmation does not match')
+        password = update_fields.get("password")
+        confirm_password = update_fields.get("confirm_password")
+
+        if password is not None or confirm_password is not None:
+            if password != confirm_password:
+                raise HTTPException(status_code=400, detail="Password confirmation does not match")
+            
+            if not password:
+                raise HTTPException(status_code=400, detail="Password cannot be empty")
+
+            update_fields["password"] = self.hash_service.hash_password(password)
+
+        update_fields.pop("confirm_password", None)
+        
 
         if 'email' in update_fields:
             existing = self.buyer_repository.get_buyer_by_email(update_fields['email'], update_fields['website_id'])
             if existing and existing.buyer_id != buyer_id:
                 raise HTTPException(status_code=400, detail="Email already in use")    
-
-        #TODO add check double phone number          
-
-
-        update_fields['password'] = self.hash_service.hash_password(update_fields['password'])
-        update_fields.pop('confirm_password')
         
-        update_fields = {key: value for key, value in update_fields.items() if value != ""}  
+        update_fields = {
+            key: value for key, value in update_fields.items()
+            if value not in ("", None)
+        }
 
         return self.buyer_repository.update_buyer(buyer_id, update_fields)
 

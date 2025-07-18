@@ -44,15 +44,24 @@ class UserService(BaseService):
 
     async def update_user(self, user_id: uuid.UUID, update_fields: Dict) -> User:
         logger.info(f"🔃 Updating user with id {user_id}")
+        password = update_fields.get("password")
+        confirm_password = update_fields.get("confirm_password")
 
-        if 'password' in update_fields:
-            if update_fields['password'] != update_fields['confirm_password']:
-                logger.info(f"❌ Password confirmation does not match")
-                raise HTTPException(status_code=400, detail='Password confirmation does not match')
-        update_fields['password'] = self.hash_service.hash_password(update_fields['password'])
-        update_fields.pop('confirm_password')
+        if password is not None or confirm_password is not None:
+            if password != confirm_password:
+                raise HTTPException(status_code=400, detail="Password confirmation does not match")
+            
+            if not password:
+                raise HTTPException(status_code=400, detail="Password cannot be empty")
+
+            update_fields["password"] = self.hash_service.hash_password(password)
+
+        update_fields.pop("confirm_password", None)
         
-        update_fields = {key: value for key, value in update_fields.items() if value != ""}  
+        update_fields = {
+            key: value for key, value in update_fields.items()
+            if value not in ("", None)
+        }
 
         return self.user_repository.update_user(user_id, update_fields)  
 
