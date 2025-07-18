@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { FaPen, FaSave, FaCog, FaChevronDown, FaChevronLeft } from 'react-icons/fa';
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const ProfileContent = () => {
+
+
+  const { websiteId } = useParams();
+
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -88,7 +94,7 @@ const ProfileContent = () => {
             <div className="bg-transparent rounded-lg border-2 border-gray-300 overflow-hidden relative">
               {/* خط عمودی سراسری */}
               <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-300"></div>
-              
+
               {/* نام */}
               <div className="px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center">
@@ -147,9 +153,21 @@ const ProfileContent = () => {
 
             {/* دکمه تغییر رمز عبور - پایین سمت راست */}
             <div className="flex justify-end mt-4">
-              <button className="bg-gradient-to-r from-[#312c8fbd] to-[#1E212D] text-white py-3 px-8 rounded-full text-md  shadow-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+              <button
+                onClick={() =>
+                  navigate(`/ChangePassword/${websiteId}`, {
+                    state: {
+                      first_name: userData.firstName,
+                      last_name: userData.lastName,
+                      email: userData.email,
+                    },
+                  })
+                }
+                className="bg-gradient-to-r from-[#312c8fbd] to-[#1E212D] text-white py-3 px-8 rounded-full text-md  shadow-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+              >
                 تغییر رمز عبور
               </button>
+
             </div>
           </div>
         </div>
@@ -183,7 +201,7 @@ const ProfileContent = () => {
                   onClick={handleEmailClick}
                   className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
                 >
-                  support@example.com
+                  salarikosar5@gmail.com
                 </button>
               </div>
             </div>

@@ -22,6 +22,7 @@ import Products from "./pages/sellerPanel/Product/Products";
 import Customers from "./pages/sellerPanel/Customers/Customers";
 import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
+import ChangePasswordForm from "./pages/sellerPanel/Profile/ChangePasswordForm.jsx";
 
 import HomeWebsite from '../src/pages/website/pages/Home';
 import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
@@ -63,6 +64,7 @@ export default function App() {
         <Route path='/products/:websiteId' element={<Products></Products>} />
         <Route path='/AddProduct/:websiteId' element={<AddProductaPage></AddProductaPage>}></Route>
         <Route path='/detailProduct/:websiteId' element={<ShowProductaPage></ShowProductaPage>}></Route>
+        <Route path='/ChangePassword/:websiteId' element={<ChangePasswordForm></ChangePasswordForm>}></Route>
 
 
 

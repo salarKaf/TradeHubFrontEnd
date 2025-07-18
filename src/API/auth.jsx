@@ -83,3 +83,25 @@ export const getMe = async () => {
         throw error;
     }
 };
+
+
+// src/API/user.js
+
+export const changeUserPassword = async ({ password, confirm_password, first_name, last_name, token }) => {
+  const response = await axios.put(
+    `${iamBaseURL}/users/UpdateProfile`,
+    {
+      password,
+      confirm_password,
+      first_name,
+      last_name
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
