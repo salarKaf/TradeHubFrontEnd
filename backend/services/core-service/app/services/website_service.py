@@ -73,9 +73,6 @@ class WebsiteService(BaseService):
 
         try:
             categories = self.website_repository.get_website_categories_by_website_id(website_id)
-
-            if not categories:
-                raise HTTPException(status_code=404, detail="No categories found for this website")
             
             return categories
 
@@ -153,11 +150,7 @@ class WebsiteService(BaseService):
     async def get_subcategories_by_category_id(self, category_id: UUID) -> List[WebsiteSubcategory]:
         logger.info(f"Fetching subcategories for category ID: {category_id}")
         
-        subcategories = self.website_repository.get_subcategories_by_category_id(category_id)
-        
-        if not subcategories:
-            raise HTTPException(status_code=404, detail="No subcategories found for this category")
-        
+        subcategories = self.website_repository.get_subcategories_by_category_id(category_id)        
         return subcategories
     
 
