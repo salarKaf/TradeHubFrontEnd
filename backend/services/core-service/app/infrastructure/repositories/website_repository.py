@@ -58,12 +58,6 @@ class WebsiteRepository:
 
     def get_website_categories_by_website_id(self, website_id: UUID) -> List[WebsiteCategory]:
         categories = self.db.query(WebsiteCategory).filter(WebsiteCategory.website_id == website_id).all()
-
-        if not categories:
-            logger.warning(f"⚠️ No categories found for website id: {website_id}")
-        else:
-            logger.info(f"✅ Found {len(categories)} categories for website id: {website_id}")
-
         return categories    
 
     def get_category_by_id(self, category_id: UUID) -> WebsiteCategory:
@@ -78,12 +72,6 @@ class WebsiteRepository:
     
     def get_subcategory_by_id(self, subcategory_id: UUID) -> WebsiteCategory:
         subcategory = self.db.query(WebsiteSubcategory).filter(WebsiteSubcategory.id == subcategory_id).first()
-        
-        if not subcategory :
-            logger.warning(f"⚠️ No subcategory found with id: {subcategory_id}")
-        else:
-            logger.info(f"✅ subcategory found with id: {subcategory_id}")
-    
         return subcategory
     
 
