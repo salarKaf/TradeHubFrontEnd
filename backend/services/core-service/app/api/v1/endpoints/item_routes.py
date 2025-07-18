@@ -76,7 +76,7 @@ async def get_newest_items(website_id: UUID, limit:int, item_main_service: ItemM
     return await item_main_service.get_newest_items(website_id, limit)
 
 
-@item_router.get("/products/count/{website_id}")
+@item_router.get("/items/count/{website_id}")
 async def get_items_count(
     website_id: UUID,
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
@@ -85,3 +85,12 @@ async def get_items_count(
     count = await item_service.get_items_count(website_id)
     return {"items_count": count}
 
+
+
+@item_router.get("/items/item-count/{category_id}")
+async def get_item_count_by_category_id(
+    category_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    item_service: Annotated[ItemMainService, Depends()],
+):
+    return await item_service.get_item_count_by_category_id(category_id)

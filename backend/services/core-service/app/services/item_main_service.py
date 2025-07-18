@@ -1,4 +1,3 @@
-from app.infrastructure.repositories.item_repository import ItemRepository
 from app.services.item_service import ItemService
 from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse
 from uuid import UUID
@@ -183,3 +182,5 @@ class ItemMainService(BaseService):
         return await self.item_service.get_items_count(website_id)
 
 
+    async def get_item_count_by_category_id(self, category_id: UUID) -> int:
+        return await self.item_service.get_item_count_by_category_id(category_id)

@@ -98,4 +98,5 @@ class ItemService(BaseService):
     async def get_items_count(self, website_id: UUID) -> int:
         return self.item_repository.get_items_count(website_id)
 
- 
+    async def get_item_count_by_category_id(self, category_id: UUID) -> int:
+        return self.item_repository.get_item_count_by_category_id(category_id)

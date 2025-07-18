@@ -89,3 +89,9 @@ class ItemRepository:
         
         self.db.commit()
         self.db.refresh(item)
+
+    def get_item_count_by_category_id(self, category_id: UUID) -> int:
+        count = self.db.query(func.count(Item.item_id)).filter(
+            Item.category_id == category_id
+        ).scalar() or 0
+        return count
