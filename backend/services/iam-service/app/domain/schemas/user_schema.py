@@ -47,10 +47,10 @@ class ResendOTPResponseSchema(BaseModel):
 
 
 class UpdateUserInfoSchema(BaseModel):
-    password: Optional[str]
-    confirm_password: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
+    password: Optional[str] = None
+    confirm_password: Optional[str] = None
+    first_name: Optional[str] = None 
+    last_name: Optional[str] = None
 
 
 class ResetPasswordSchema(BaseModel):

@@ -58,11 +58,10 @@ class ResendOTPResponseSchema(BaseModel):
 
 
 class UpdateBuyerInfoSchema(BaseModel):
-    website_id: UUID
-    password: Optional[str]
-    confirm_password: Optional[str]
-    name: Optional[str]
-    email: Optional[str]
+    password: Optional[str] = None
+    confirm_password: Optional[str] = None
+    name: Optional[str] = None
+    email: Optional[str] = None
 
 
 class ResetPasswordSchema(BaseModel):

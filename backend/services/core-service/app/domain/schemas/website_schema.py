@@ -11,8 +11,8 @@ class FAQSchema(BaseModel):
 
 class SocialLinksSchema(BaseModel):
     phone:Optional[str]
-    telegram: Optional[HttpUrl]
-    instagram: Optional[HttpUrl]
+    telegram: Optional[str]
+    instagram: Optional[str]
 
 class WebsiteCreateSchema(BaseModel):
     business_name: str
@@ -21,7 +21,7 @@ class WebsiteCreateSchema(BaseModel):
     store_policy: Optional[str] = None
     store_slogan: Optional[str] = None
     social_links: Optional[ SocialLinksSchema] = None
-    faqs: Optional[List[FAQSchema]]  
+    faqs: Optional[List[FAQSchema]]  = None 
 
     class Config:
         from_attributes = True   
