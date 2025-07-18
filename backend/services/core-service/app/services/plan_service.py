@@ -106,11 +106,8 @@ class PlanService:
 
 
     async def check_had_plan(self, website_id:UUID): 
-        plan = self.plan_repository.check_had_paln(website_id)  
-        if plan:
-            return True
-        else:
-            return False 
+        return self.plan_repository.check_had_paln(website_id)  
+        
         
     async def get_left_days(self,website_id:UUID):
         return self.plan_repository.get_left_days(website_id)    
