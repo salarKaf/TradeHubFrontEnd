@@ -207,7 +207,7 @@ const Category = () => {
                                             <div className="col-span-3 flex items-center justify-end gap-2">
 
                                                 <button
-                                                    onClick={() => navigate('/detailProduct')}
+                                                    onClick={() => navigate('/detailProduct/:websiteId')}
                                                     className="p-2 text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
                                                 >
                                                     <FaEdit />
