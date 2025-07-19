@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
-import {  FaChevronDown, FaAsterisk, FaTimes, FaAngleLeft  , FaTrashAlt, FaPlus, FaArrowLeft, FaSave, FaChevronLeft, FaChevronRight, FaExpand, FaCheck, FaStar, FaRegStar } from "react-icons/fa";
+import { FaChevronDown, FaAsterisk, FaTimes, FaAngleLeft, FaTrashAlt, FaPlus, FaArrowLeft, FaSave, FaChevronLeft, FaChevronRight, FaExpand, FaCheck, FaStar, FaRegStar } from "react-icons/fa";
 import InfoCard from '../Layouts/card'
 import ProductQuestions from "./question";
 import ProductReviews from "./Comment";
+import { getProductById} from '../../../API/Items'
+
+
+
+import { useParams } from 'react-router-dom';
 
 
 
 
+const ShowProduct = () => {
 
 
-
-
-const ShowProduct = ({ productId }) => {
 
     const CategoryDropdown = ({ value, onChange, error, placeholder = 'دسته بندی محصول' }) => {
         const categories = {
@@ -537,42 +540,26 @@ const ShowProduct = ({ productId }) => {
     const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const [selectedPath, setSelectedPath] = useState([]);
 
+
+
+    const { productId, websiteId } = useParams();
+
+
     // شبیه‌سازی دریافت اطلاعات محصول از بک‌اند
     useEffect(() => {
-        // اینجا در واقع باید از API محصول را با productId دریافت کنید
-        // این فقط برای شبیه‌سازی است
         const fetchProductData = async () => {
-            // شبیه‌سازی delay دریافت داده
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // داده‌های نمونه
-            const mockProductData = {
-                name: 'پیراهن مردانه آستین کوتاه',
-                price: '250000',
-                category: 'لباس/مردانه/پیراهن',
-                link: 'https://example.com/product/123',
-                description: 'پیراهن مردانه با جنس کتان و دوخت با کیفیت',
-                additionalInfo: 'امکان مرجوعی تا ۷ روز پس از خرید',
-                images: [
-                    'https://via.placeholder.com/500x500?text=Product+Image+1',
-                    'https://via.placeholder.com/500x500?text=Product+Image+2',
-                    'https://via.placeholder.com/500x500?text=Product+Image+3'
-                ],
-                primaryImageIndex: 0,
-                discount: '15',
-                isActive: true,
-                rating: 4.2,
-                salesCount: 128,
-                totalSales: 32000000,
-                isBestSeller: true
-            };
-
-            setProductData(mockProductData);
-            setSelectedPath(mockProductData.category.split('/'));
+            try {
+                const data = await getProductById(productId);
+                setProductData(data);
+            } catch (err) {
+                console.error("❌ خطا در دریافت محصول:", err);
+            }
         };
 
         fetchProductData();
     }, [productId]);
+
+
 
     // تغییرات ورودی‌ها
     const handleChange = (e) => {

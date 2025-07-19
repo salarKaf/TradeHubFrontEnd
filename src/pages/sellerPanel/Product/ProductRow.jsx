@@ -1,8 +1,10 @@
-import { Edit, Trash2} from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Edit, Trash2 } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 
 
-const ProductRow = ({ product, onDelete }) => {
+const ProductRow = ({ product, onDelete, websiteId }) => {
+
+
     return (
         <div className="px-5 py-5 hover:bg-gray-50 transition-colors">
             <div className="grid grid-cols-12 gap-4 items-center">
@@ -41,8 +43,7 @@ const ProductRow = ({ product, onDelete }) => {
                     >
                         <Trash2 size={16} />
                     </button>
-                    <Link
-                        to='/detailProduct'
+                    <Link to={`/detailProduct/${websiteId}/${product.id}`}
                         className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                     >
                         <Edit size={16} />

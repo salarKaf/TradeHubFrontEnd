@@ -182,16 +182,17 @@ const ShopifyAdminInterface = () => {
                 const items = await getNewestItems(websiteId, limit);
 
                 const formatted = items
-                    .filter(item => item.is_active)
+                    .filter(item => item.is_available)
                     .map(item => ({
-                        id: item.id,
+                        id: item.item_id,
                         name: item.name,
                         price: item.price,
-                        sales: item.sales_count,
-                        status: item.category_name,
-                        category: item.is_active ? "فعال" : "غیرفعال",
+                        sales: item.sales_count || 0,
+                        status: item.category_name || "—",
+                        category: item.is_available ? "فعال" : "غیرفعال",
                         dateAdded: new Date(item.created_at)
                     }));
+
 
                 setProducts(formatted);
                 setLoadingStatus("success");

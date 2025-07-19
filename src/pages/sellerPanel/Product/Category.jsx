@@ -9,20 +9,27 @@ import { editSubCategory, editWebsiteCategory } from "../../../API/category";
 import { createWebsiteSubcategory, getSubcategoriesByCategoryId } from "../../../API/category"; // بالای فایل
 import { createMainCategory } from "../../../API/category"; // بالای فایل
 import { deleteWebsiteCategory, deleteWebsiteSubcategory } from "../../../API/category"; // بالای فایل
+import { getItemsByCategoryId , deleteItemById  } from "../../../API/Items"; // اضافه کن بالا
 
 // تابع بازگشتی برای گرفتن و آپدیت تعداد محصولات هر دسته
+// تابع بازگشتی برای گرفتن و آپدیت تعداد محصولات هر دسته
 const updateCategoryProductCounts = async (categories) => {
-
     const updatedCategories = await Promise.all(
         categories.map(async (category) => {
             let productCount = 0;
+
             try {
                 const countResponse = await getItemCountByCategoryId(category.id);
-                productCount = countResponse.count || 0;
+
+                console.log("📦 Count response for:", category.name, countResponse);
+
+                // بررسی دقیق‌تر برای ساختار ریسپانس
+                productCount = typeof countResponse === 'number' ? countResponse : (countResponse.count || 0);
             } catch (err) {
-                console.error(`خطا در گرفتن تعداد محصولات دسته ${category.name}:`, err);
+                console.error(`❌ خطا در گرفتن تعداد محصولات برای ${category.name}:`, err);
             }
 
+            // ادامه بازگشتی برای زیردسته‌ها
             const updatedSubCategories = category.subCategories?.length
                 ? await updateCategoryProductCounts(category.subCategories)
                 : [];
@@ -70,17 +77,38 @@ const Category = () => {
     const [editingValue, setEditingValue] = useState("");
     const [deletingPath, setDeletingPath] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
 
     // تابع برای نمایش محصولات دسته‌بندی
-    const viewCategoryProducts = (category) => {
-        setSelectedCategory(category);
-        setShowProductsModal(true);
+
+    const [categoryProducts, setCategoryProducts] = useState([]);
+
+    const viewCategoryProducts = async (category) => {
+        try {
+            const items = await getItemsByCategoryId(category.id);
+
+            const formatted = items.map(item => ({
+                id: item.item_id,
+                name: item.name,
+                price: item.price,
+                sales: item.sales_count || 0,
+                status: item.is_available ? "فعال" : "غیرفعال",
+                category: category.name,
+            }));
+
+            setCategoryProducts(formatted);
+            setSelectedCategory(category);
+            setShowProductsModal(true);
+        } catch (error) {
+            console.error("❌ خطا در گرفتن محصولات دسته:", error);
+        }
     };
+
     // کامپوننت مدال محصولات
     const ProductsModal = () => {
         if (!showProductsModal || !selectedCategory) return null;
 
-        const products = mockProducts[selectedCategory.id] || [];
+        const products = categoryProducts || [];
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 font-modam">
@@ -151,15 +179,19 @@ const Category = () => {
                                             <div className="col-span-3 flex items-center justify-end gap-2">
 
                                                 <button
-                                                    onClick={() => navigate('/detailProduct/:websiteId')}
+                                                    onClick={() => navigate(`/detailProduct/${websiteId}/${product.id}`)}
                                                     className="p-2 text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
                                                 >
                                                     <FaEdit />
                                                 </button>
 
-                                                <button className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                                <button
+                                                    onClick={() => setProductToDelete(product)}
+                                                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
                                                     <FaTrashAlt />
                                                 </button>
+
                                             </div>
                                         </div>
                                     </div>
@@ -852,7 +884,9 @@ const Category = () => {
                     })
                 );
 
-                setCategories(categoriesWithSubs);
+
+                const enrichedCategories = await updateCategoryProductCounts(categoriesWithSubs);
+                setCategories(enrichedCategories);
             } catch (err) {
                 console.error("❌ خطا در دریافت دسته‌بندی‌ها:", err);
             }
@@ -966,9 +1000,49 @@ const Category = () => {
             {/* مودال حذف */}
             <DeleteModal />
 
+
             {/* مدال محصولات */}
             <ProductsModal />
+
+
+            {/* مدال تأیید حذف محصول از دسته‌بندی */}
+            {productToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 font-modam">
+                    <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+                        <h2 className="text-xl font-bold mb-4 text-gray-800">تأیید حذف محصول</h2>
+                        <p className="text-gray-600 mb-6">
+                            آیا مطمئن هستید که می‌خواهید محصول "<strong>{productToDelete.name}</strong>" را حذف کنید؟
+                        </p>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={() => setProductToDelete(null)}
+                                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        await deleteItemById(productToDelete.id);
+                                        setCategoryProducts((prev) => prev.filter(p => p.id !== productToDelete.id));
+                                        setProductToDelete(null);
+                                        console.log("✅ محصول حذف شد");
+                                    } catch (err) {
+                                        console.error("❌ خطا در حذف محصول:", err);
+                                        alert("خطا در حذف محصول. لطفاً دوباره تلاش کنید.");
+                                    }
+                                }}
+                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                            >
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
+
     );
 };
 

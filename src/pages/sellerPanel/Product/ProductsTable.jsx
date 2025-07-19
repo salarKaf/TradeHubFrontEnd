@@ -1,8 +1,13 @@
 import ProductRow from './ProductRow';
 import TableHeader from './TableHeader';
+import { useParams } from 'react-router-dom';
+
 
 
 const ProductsTable = ({ products, onDelete, loadingStatus, totalCount }) => {
+
+    const { websiteId } = useParams();
+
     if (loadingStatus === "loading") {
         return (
             <div className="rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -52,11 +57,13 @@ const ProductsTable = ({ products, onDelete, loadingStatus, totalCount }) => {
             <TableHeader />
             <div className="divide-y divide-gray-200">
                 {products.map((product) => (
-                    <ProductRow 
-                        key={product.id} 
-                        product={product} 
+                    <ProductRow
+                        key={product.id}
+                        product={product}
                         onDelete={onDelete}
+                        websiteId={websiteId}
                     />
+
                 ))}
             </div>
         </div>

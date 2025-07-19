@@ -30,7 +30,7 @@ export const getWebsiteCategories = async (websiteId) => {
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      },
+      },  
     }
   );
 
@@ -48,6 +48,8 @@ export const getItemCountByCategoryId = async (categoryId) => {
       },
     }
   );
+    console.log("📥 getItemCountByCategoryId response:", response); // ← این خطو اضافه کن
+
   return response.data;
 };
 
