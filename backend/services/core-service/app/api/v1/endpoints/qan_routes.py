@@ -39,3 +39,10 @@ async def get_question_by_id(
     question_service: Annotated[QuestionMainService, Depends()]
 ):
     return await question_service.get_question_by_id(question_id)
+
+@qan_router.get("/items/{item_id}/questions", response_model=List[QuestionResponseSchema])
+async def get_question_by_item_id(
+    item_id: UUID,
+    question_service: Annotated[QuestionMainService, Depends()]
+):
+    return await question_service.get_question_by_item_id(item_id)

@@ -41,3 +41,7 @@ class QuestionService:
         if not question:
             raise HTTPException(status_code=404, detail="Question not found.")
         return question
+    
+
+    async def get_question_by_item_id(self, item_id: UUID) -> List[ItemQuestion]:
+        return self.question_epository.get_question_by_item_id(item_id)

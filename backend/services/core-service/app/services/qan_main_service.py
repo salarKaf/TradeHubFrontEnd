@@ -51,3 +51,22 @@ class QuestionMainService:
             created_at=question.created_at,
             answered_at=question.answered_at,
         )
+    
+
+    async def get_question_by_item_id(self, item_id: UUID) -> List[QuestionResponseSchema]:
+        questions = await self.question_service.get_question_by_item_id(item_id)
+
+
+        return [
+            QuestionResponseSchema(
+            question_id=question.question_id,
+            item_id=question.item_id,
+            buyer_id=question.buyer_id,
+            website_id=question.website_id,
+            question_text=question.question_text,
+            answer_text=question.answer_text,
+            created_at=question.created_at,
+            answered_at=question.answered_at,
+        )
+            for question in questions
+        ]
