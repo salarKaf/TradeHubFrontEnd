@@ -100,7 +100,7 @@ class Item(Base):
     price = Column(DECIMAL(10, 2), nullable=False)
     discount_price = Column(DECIMAL(10, 2), nullable=True)
     discount_active = Column(Boolean, default=False)
-    discount_percent = Column(Integer, default=False)
+    discount_percent = Column(Integer, default=0)
     discount_expires_at = Column(TIMESTAMP, nullable=True)
     delivery_url = Column(String(255), nullable=False)
     post_purchase_note = Column(Text, nullable=True)
