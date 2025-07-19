@@ -71,7 +71,7 @@ async def delete_item(
 
 
 
-@item_router.get("/newest_items", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
+@item_router.get("/newest_items", response_model=List[ItemResponseWithNameSchema], status_code=status.HTTP_200_OK)
 async def get_newest_items(website_id: UUID, limit:int, item_main_service: ItemMainService = Depends()):
     return await item_main_service.get_newest_items(website_id, limit)
 

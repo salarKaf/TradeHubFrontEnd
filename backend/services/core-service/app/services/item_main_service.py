@@ -55,8 +55,8 @@ class ItemMainService(BaseService):
             website_id=item.website_id,
             category_id=item.category_id,
             subcategory_id=item.subcategory_id,
-            category_name=category.name,
-            subcategory_name=subcategory.name,
+            category_name=category.name if category else 'null',
+            subcategory_name=subcategory.name if subcategory else 'null',
             name=item.name,
             description=item.description,
             price=item.price,
@@ -159,28 +159,37 @@ class ItemMainService(BaseService):
     
 
 
-    async def get_newest_items(self, website_id: UUID, limit: int) -> List[ItemResponseSchema]:
+    async def get_newest_items(self, website_id: UUID, limit: int) -> List[ItemResponseWithNameSchema]:
         items = await self.item_service.get_newest_items(website_id, limit)
-        return [
-        ItemResponseSchema(
-            item_id=item.item_id,
-            website_id=item.website_id,
-            category_id=item.category_id,
-            subcategory_id=item.subcategory_id,
-            name=item.name,
-            description=item.description,
-            price=item.price,
-            discount_price=item.discount_price,
-            discount_active=item.discount_active,
-            discount_expires_at=item.discount_expires_at,
-            delivery_url=item.delivery_url,
-            post_purchase_note=item.post_purchase_note,
-            stock=item.stock,
-            is_available= item.is_available,
-            created_at=item.created_at
-        )
-        for item in items
-    ]
+        result = []
+        for item in items:
+            category = await self.website_service.get_category_by_id(item.category_id)
+            subcategory = await self.website_service.get_subcategory_by_id(item.subcategory_id)
+
+            category_name = category.name if category else 'null'
+            subcategory_name = subcategory.name if subcategory else 'null'
+
+            result.append(ItemResponseWithNameSchema(
+                item_id=item.item_id,
+                website_id=item.website_id,
+                category_id=item.category_id,
+                subcategory_id=item.subcategory_id,
+                category_name=category_name,
+                subcategory_name=subcategory_name,
+                name=item.name,
+                description=item.description,
+                price=item.price,
+                discount_price=item.discount_price,
+                discount_active=item.discount_active,
+                discount_expires_at=item.discount_expires_at,
+                delivery_url=item.delivery_url,
+                post_purchase_note=item.post_purchase_note,
+                stock=item.stock,
+                is_available=item.is_available,
+                created_at=item.created_at,
+            ))
+
+        return result
 
     async def get_items_count(self, website_id: UUID) -> int:
         return await self.item_service.get_items_count(website_id)
