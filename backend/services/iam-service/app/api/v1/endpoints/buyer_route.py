@@ -19,8 +19,7 @@ from app.domain.schemas.buyer_schema import (
 )
 from app.domain.schemas.token_schema import TokenSchema, TokenDataSchema
 from app.services.auth_services.auth_service import AuthService
-from app.services.buyer_register_service import RegisterService
-from app.services.buyer_service import BuyerService
+from app.services.buyer_main_service import RegisterService
 from app.services.auth_services.auth_service import get_current_buyer
 
 buyer_router = APIRouter()
@@ -77,7 +76,7 @@ async def resend_otp(
 async def update_profile(
         current_user: Annotated[TokenDataSchema, Depends(get_current_buyer)],
         buyer_data: UpdateBuyerInfoSchema,
-        buyer_service: Annotated[BuyerService, Depends()]
+        buyer_service: Annotated[RegisterService, Depends()]
 ):
     logger.info(f'🔃 Changing buyer info for buyer {current_user.buyer_id}')
     return await buyer_service.update_buyer(current_user.buyer_id, dict(buyer_data))   
@@ -104,7 +103,7 @@ async def verify_otp_for_password(
     status_code=status.HTTP_200_OK)
 async def forget_password(
         buyer_data: ForgetPasswordSchema,
-        buyer_service: Annotated[BuyerService, Depends()]
+        buyer_service: Annotated[RegisterService, Depends()]
 ):
     logger.info(f'🔃 Changing buyer password for buyer {buyer_data.email}')
     return await buyer_service.change_buyer_password(buyer_data.email, dict(buyer_data))

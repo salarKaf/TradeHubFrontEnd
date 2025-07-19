@@ -18,13 +18,11 @@ from  app.domain.schemas.user_schema import (
         )
 from  app.domain.schemas.token_schema import TokenSchema, TokenDataSchema
 from  app.services.auth_services.auth_service import AuthService
-from  app.services.user_register_service import RegisterService
-from  app.services.user_service import UserService
+from  app.services.user_main_service import RegisterService
 from  app.services.auth_services.auth_service import get_current_user
 
 user_router = APIRouter()
 
-#TODO add check username password email
 @user_router.post(
     "/Register",
     response_model=UserResponseSchema,
@@ -77,7 +75,7 @@ async def resend_otp(
 async def update_profile(
         current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
         user_data: UpdateUserInfoSchema,
-        user_service: Annotated[UserService, Depends()]
+        user_service: Annotated[RegisterService, Depends()]
 ):
     logger.info(f'🔃 Changing user info for user {current_user.user_id}')
     return await user_service.update_user(current_user.user_id, dict(user_data))   
@@ -104,7 +102,7 @@ async def verify_otp_for_password(
     status_code=status.HTTP_200_OK)
 async def forget_password(
         user_data: ForgetPasswordSchema,
-        user_service: Annotated[UserService, Depends()]
+        user_service: Annotated[RegisterService, Depends()]
 ):
     logger.info(f'🔃 Changing user password for user {user_data.email}')
     return await user_service.change_user_password(user_data.email, dict(user_data))   
