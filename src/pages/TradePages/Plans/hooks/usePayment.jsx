@@ -117,7 +117,7 @@ const usePayment = () => {
         }
     };
 
-    // فعال‌سازی پلن رایگان
+    // فعال‌سازی پلن رایگان با نمایش پیام موفقیت و هدایت
     const activateFreePlan = async (websiteId) => {
         try {
             setIsProcessingPayment(true);
@@ -137,6 +137,13 @@ const usePayment = () => {
             );
 
             console.log("✅ Free plan activated:", response.data);
+            
+            // 🎉 نمایش پیام موفقیت
+            alert('🎉 تبریک! پلن رایگان شما با موفقیت فعال شد!\nهم‌اکنون می‌توانید از تمام امکانات به مدت ۷ روز استفاده کنید.');
+            
+            // ⏱️ هدایت کاربر بعد از یک ثانیه
+            setTimeout(() => 1000);
+            
             return { success: true, data: response.data };
         } catch (error) {
             console.error("❌ Error activating free plan:", error);

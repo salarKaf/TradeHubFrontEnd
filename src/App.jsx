@@ -52,6 +52,7 @@ export default function App() {
         <Route path="/rules/:websiteId" element={<RulesTrade></RulesTrade>}></Route>
         <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
         <Route path="/OTPForm" element={<OTPForm />} />
+        <Route path="/payment/callback" element={<PaymentCallback />} />
 
 
 

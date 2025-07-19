@@ -225,7 +225,7 @@ const HomeContent = () => {
 
 
         {/* اعلان‌های جدید - فقط برای Pro */}
-        {planType !== "Pro" && (
+        {planType === "Pro" && (
           <div className="mb-6 w-[42%] font-modam rounded-xl border-black border-opacity-20 border-2">
             <h2 className="text-2xl font-semibold mb-10 p-6 text-zinc-600">اعلان‌های جدید</h2>
             <div>
@@ -251,7 +251,7 @@ const HomeContent = () => {
           </div>
         )}
 
-        {planType !== "Pro" && (
+        {planType === "Pro" && (
           <div className='mb-6 pb-6 p-5 w-[55%] font-modam rounded-xl border-black border-opacity-20 border-2'>
             <h2>نگاهی به میزان فروش 6 ماه اخیر</h2>
             <Line data={chartData} />
