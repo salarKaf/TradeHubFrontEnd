@@ -7,7 +7,7 @@ from decimal import Decimal
 class ItemCreateSchema(BaseModel):
     website_id: UUID
     category_id: UUID
-    subcategory_id: UUID = None
+    subcategory_id: Optional[UUID] = None
     name: str
     description: Optional[str] = None
     price: Decimal
