@@ -152,7 +152,11 @@ class WebsiteService(BaseService):
         
         subcategories = self.website_repository.get_subcategories_by_category_id(category_id)        
         return subcategories
-    
+    async def get_subcategory_by_id(self, subcategory_id: UUID) -> WebsiteSubcategory:
+        return self.website_repository.get_subcategory_by_id(subcategory_id)
+            
+    async def get_category_by_id(self, category_id: UUID) -> WebsiteCategory:
+        return self.website_repository.get_category_by_id(category_id)
 
     async def add_new_owner(self,owner_id: UUID ,user_id: UUID, website_id: UUID) -> WebsiteOwner:
         website_owner = self.website_repository.get_owner_by_user_and_website(owner_id, website_id)

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.item_main_service import ItemMainService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
 from app.services.auth_services.auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
@@ -21,7 +21,7 @@ async def create_item(
     return created_item
 
 
-@item_router.get("/items/{item_id}", response_model=ItemResponseSchema, status_code=status.HTTP_200_OK)
+@item_router.get("/items/{item_id}", response_model=ItemResponseWithNameSchema, status_code=status.HTTP_200_OK)
 async def get_item_by_id(
     item_id: UUID,
     item_main_service: Annotated[ItemMainService, Depends()]

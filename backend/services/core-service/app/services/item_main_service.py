@@ -1,19 +1,20 @@
 from app.services.item_service import ItemService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
 from app.services.base_service import BaseService
 from typing import Annotated, List, Dict
-
+from app.services.website_service import WebsiteService
 class ItemMainService(BaseService):
     def __init__(
         self,
         item_service: Annotated[ItemService, Depends()],
+        website_service: Annotated[WebsiteService, Depends()],
     ) -> None:
         super().__init__()
         self.item_service = item_service
-
+        self.website_service = website_service
 
     async def create_item(self, item_data: ItemCreateSchema) -> ItemResponseSchema:
         logger.info(f"Starting to create item... ")
@@ -22,7 +23,7 @@ class ItemMainService(BaseService):
             raise HTTPException(status_code=400, detail="Stock must be greater than zero")
 
         created_item = await self.item_service.create_item(item_data)
-
+    
         return ItemResponseSchema(
                 item_id=created_item.item_id,
                 website_id=created_item.website_id,
@@ -43,16 +44,19 @@ class ItemMainService(BaseService):
         
 
         
-    async def get_item_by_id(self, item_id: UUID) -> ItemResponseSchema:
+    async def get_item_by_id(self, item_id: UUID) -> ItemResponseWithNameSchema:
         logger.info(f"Starting to fetch item with ID: {item_id}")
 
         item = await self.item_service.get_item_by_id(item_id)
-
-        return ItemResponseSchema(
+        category = await self.website_service.get_category_by_id(item.category_id)
+        subcategory = await self.website_service.get_subcategory_by_id(item.subcategory_id)
+        return ItemResponseWithNameSchema(
             item_id=item.item_id,
             website_id=item.website_id,
             category_id=item.category_id,
             subcategory_id=item.subcategory_id,
+            category_name=category.name,
+            subcategory_name=subcategory.name,
             name=item.name,
             description=item.description,
             price=item.price,
