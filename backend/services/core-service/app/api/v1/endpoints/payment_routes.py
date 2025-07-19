@@ -5,6 +5,7 @@ from uuid import UUID
 from app.services.auth_services.auth_service import get_current_buyer, get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
+from fastapi.responses import RedirectResponse
 
 payment_router = APIRouter()
 
@@ -49,4 +50,6 @@ async def plan_payment_callback(
     status: str = Query(..., alias="Status"),
 
 ):
-    return await payment_main_service.confirm_plan_payment(website_id, plan_id, authority, status)
+    result = await payment_main_service.confirm_plan_payment(website_id, plan_id, authority, status)
+    frontend_url = f"http://localhost:5173/payment/callback?status={result}"
+    return RedirectResponse(url=frontend_url)
