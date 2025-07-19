@@ -78,7 +78,7 @@ const Header = () => {
               <span className="opacity-60">|</span>
               <span>
                 {getDaysRemaining(planData.expires_at) > 0
-                  ? `${getDaysRemaining(planData.expires_at)} روز مونده`
+                  ? `${getDaysRemaining(planData.expires_at)} روز مانده`
                   : "منقضی شده"}
               </span>
             </>

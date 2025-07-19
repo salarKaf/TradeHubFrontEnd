@@ -1,5 +1,5 @@
 import axios from "axios";
-import { coreBaseURL } from './api';
+import { coreBaseURL , mediaBaseURL } from './api';
 
 export const getNewestItems = async (websiteId, limit = 3) => {
   const token = localStorage.getItem("token");
@@ -59,3 +59,70 @@ export const getProductById = async (productId) => {
     throw error;
   }
 };
+
+
+
+
+export const getItemRating = async (itemId) => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${coreBaseURL}/review/items/get-rating/${itemId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("❌ خطا در دریافت امتیاز:", error);
+        throw error;
+    }
+};
+
+
+
+
+export const getItemImages = async (itemId) => {
+  const token = localStorage.getItem("token");
+
+  const res = await axios.get(`${mediaBaseURL}/item/get_item_images/${itemId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data; // لیستی از image_id و is_main
+};
+
+export const getItemImageById = async (imageId) => {
+  const token = localStorage.getItem("token");
+
+  const res = await axios.get(`${mediaBaseURL}/item/get_item_image/${imageId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    responseType: "blob", // چون عکس معمولاً به صورت فایل برمی‌گرده
+  });
+
+  return URL.createObjectURL(res.data); // برای نمایش در <img>
+};
+
+
+export const editItem = async (itemId, data) => {
+  const token = localStorage.getItem('token');
+
+  const response = await fetch(`${coreBaseURL}/items/edit_item/${itemId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error('خطا در ویرایش محصول');
+  }
+
+  return await response.json();
+};
+
