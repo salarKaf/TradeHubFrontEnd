@@ -110,10 +110,23 @@ async def get_item_image(
 
 @item_media_router.put(
     "/update_main_flag/{image_id}",
-    response_class=StreamingResponse,
     status_code=status.HTTP_200_OK
 )
 async def update_main_flag(
     image_id: UUID,
-    item_image_service: Annotated[ItemImageMainService, Depends()]):
+    item_image_service: Annotated[ItemImageMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],):
     return await item_image_service.set_main(image_id)
+
+
+
+@item_media_router.delete(
+    "/delete/{image_id}",
+    status_code=status.HTTP_200_OK
+)
+async def update_main_flag(
+    image_id: UUID,
+    item_image_service: Annotated[ItemImageMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    ):
+    return await item_image_service.delete(image_id)
