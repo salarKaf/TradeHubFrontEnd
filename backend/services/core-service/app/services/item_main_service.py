@@ -126,9 +126,13 @@ class ItemMainService(BaseService):
 
 
 
-    async def edit_item(self, item_id: UUID, item_data: Dict) -> ItemResponseSchema:
+    async def edit_item(self, item_id: UUID, item_data: ItemUpdateSchema) -> ItemResponseSchema:
         logger.info(f"Editing item with ID: {item_id}")
 
+        item_data = {
+            key: value for key, value in item_data.items()
+            if value not in ("", None)
+        }
         updated_item = await self.item_service.edit_item(item_id, item_data)
 
         return ItemResponseSchema(

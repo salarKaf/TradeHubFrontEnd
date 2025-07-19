@@ -56,7 +56,7 @@ async def edit_item(
 ):
     logger.info(f"User with id: {current_user.user_id} is requesting to edit item with ID: {item_id}")
     
-    return await item_service.edit_item(item_id, dict(item_data))
+    return await item_service.edit_item(item_id, item_data)
 
 
 @item_router.delete("/delete_item/{item_id}", response_model=MessageResponse, status_code=status.HTTP_200_OK)
