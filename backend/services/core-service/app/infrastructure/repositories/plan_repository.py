@@ -8,6 +8,7 @@ from uuid import UUID
 from sqlalchemy.orm import joinedload
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import func, extract
+from datetime import datetime, timedelta
 
 class PlanRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -53,7 +54,7 @@ class PlanRepository:
 
     def create_website_plan(self, website_id, plan_id, price):
         activated_at=datetime.utcnow()
-        expires_at = activated_at + relativedelta(months=3)
+        expires_at = activated_at + timedelta(days=90)
         website_plan = WebsitePlan(
             website_id=website_id,
             plan_id=plan_id,
