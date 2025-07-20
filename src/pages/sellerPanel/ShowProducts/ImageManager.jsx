@@ -3,6 +3,8 @@ import { FaTimes, FaTrashAlt, FaPlus, FaChevronLeft, FaChevronRight, FaExpand, F
 import { getItemImages, getItemImageById } from '../../../API/Items';
 import axios from 'axios';
 import { deleteItemImage } from '../../../API/Items'; // بالای فایل
+import { setMainItemImage } from '../../../API/Items';
+
 
 const ImageManager = ({
     productId,
@@ -143,21 +145,39 @@ const ImageManager = ({
     };
 
     // تنظیم عکس اصلی
-    const setPrimaryImage = () => {
-        setPrimaryImageIndex(currentImageIndex);
-        setShowPrimarySetConfirm(true);
-        setTimeout(() => {
-            setShowPrimarySetConfirm(false);
-        }, 2000);
+    const setPrimaryImage = async () => {
+        const selected = images[currentImageIndex];
 
-        // اطلاع رسانی به والد
-        if (onImagesChange) {
-            onImagesChange({
-                images,
-                primaryImageIndex: currentImageIndex
-            });
+        if (!selected?.imageId) {
+            console.error("❌ تصویر انتخاب شده آیدی ندارد");
+            return;
+        }
+
+        try {
+            await setMainItemImage(selected.imageId);
+
+            const updatedImages = images.map((img, index) => ({
+                ...img,
+                isMain: index === currentImageIndex
+            }));
+
+            setImages(updatedImages);
+            setPrimaryImageIndex(currentImageIndex);
+            setShowPrimarySetConfirm(true);
+
+            if (onImagesChange) {
+                onImagesChange({
+                    images: updatedImages,
+                    primaryImageIndex: currentImageIndex
+                });
+            }
+
+            setTimeout(() => setShowPrimarySetConfirm(false), 2000);
+        } catch (err) {
+            // خطا در حال حاضر در API فایل لاگ شده، اگر بخوای می‌تونی نوتیفیکیشن هم بزاری
         }
     };
+
 
     // حذف تصویر
     const confirmDeleteImage = (index) => {

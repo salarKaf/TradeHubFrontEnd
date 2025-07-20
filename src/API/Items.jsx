@@ -167,3 +167,25 @@ export const deleteItemImage = async (imageId) => {
 
     return true;
 };
+
+
+
+export const setMainItemImage = async (imageId) => {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await axios.put(
+            `${mediaBaseURL}/item/update_main_flag/${imageId}`,
+            {},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("❌ خطا در تنظیم تصویر اصلی:", error);
+        throw error;
+    }
+};
