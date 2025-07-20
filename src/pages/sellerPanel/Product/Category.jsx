@@ -87,19 +87,20 @@ const Category = () => {
     const [categoryProducts, setCategoryProducts] = useState([]);
 
     const viewCategoryProducts = async (category) => {
+
         try {
             let items = [];
-            try {
-                if (category.subCategories && category.subCategories.length > 0) {
-                    // دسته اصلی
-                    items = await getItemsByCategoryId(category.id);
-                } else {
-                    // زیردسته
-                    items = await getItemsBySubcategoryId(category.id);
-                }
-            } catch (e) {
-                console.error("❌ خطا در گرفتن محصولات", e);
+
+            const isSubcategory = category.subCategories === undefined;
+
+            if (category.parent_category_id) {
+                // زیردسته
+                items = await getItemsBySubcategoryId(category.id);
+            } else {
+                // دسته اصلی
+                items = await getItemsByCategoryId(category.id);
             }
+
 
             const formatted = items.map(item => ({
                 id: item.item_id,
@@ -117,6 +118,8 @@ const Category = () => {
             console.error("❌ خطا در گرفتن محصولات دسته:", error);
         }
     };
+
+
 
     // کامپوننت مدال محصولات
     const ProductsModal = () => {
