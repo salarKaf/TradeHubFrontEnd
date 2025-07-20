@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { FaChevronDown, FaAsterisk, FaTimes, FaAngleLeft } from "react-icons/fa";
 import { getWebsiteCategories, getSubcategoriesByCategoryId } from '../../../API/category';
 
-const CategoryDropdown = ({ 
-    value, 
-    onChange, 
-    error, 
+const CategoryDropdown = ({
+    value,
+    onChange,
+    error,
     placeholder = 'دسته بندی محصول',
-    websiteId 
+    websiteId
 }) => {
     const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const [selectedPath, setSelectedPath] = useState(value ? value.split('/') : []);
@@ -17,14 +17,14 @@ const CategoryDropdown = ({
         const fetchCategories = async () => {
             try {
                 const mainCategories = await getWebsiteCategories(websiteId);
+                const activeMainCategories = mainCategories.filter(cat => cat.is_active);
                 const tree = {};
 
-                for (let category of mainCategories) {
-                    const subcategories = await getSubcategoriesByCategoryId(category.id);
+                for (let category of activeMainCategories) {
+                    const subcategories = (await getSubcategoriesByCategoryId(category.id)).filter(sub => sub.is_active);
                     tree[category.name] = {};
 
                     for (let sub of subcategories) {
-                        // اینجا فرض می‌کنیم هنوز زیر زیر دسته نداری. اگه داشتی هم می‌تونی باز API بزنی.
                         tree[category.name][sub.name] = {};
                     }
                 }
@@ -34,6 +34,7 @@ const CategoryDropdown = ({
                 console.error("❌ خطا در دریافت دسته‌بندی‌ها:", error);
             }
         };
+
 
         if (websiteId) {
             fetchCategories();
