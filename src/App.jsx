@@ -63,7 +63,7 @@ export default function App() {
         <Route path='/customers/:websiteId' element={<Customers></Customers>} />
         <Route path='/orders/:websiteId' element={<Orders></Orders>} />
         <Route path='/products/:websiteId' element={<Products></Products>} />
-        <Route path='/AddProduct/:websiteId' element={<AddProductaPage></AddProductaPage>}></Route>
+        <Route path='/seller/products/:websiteId/add' element={<AddProductaPage></AddProductaPage>}></Route>
         <Route path='/detailProduct/:websiteId/:productId' element={<ShowProductaPage></ShowProductaPage>}></Route>
 
         <Route path='/ChangePassword/:websiteId' element={<ChangePasswordForm></ChangePasswordForm>}></Route>

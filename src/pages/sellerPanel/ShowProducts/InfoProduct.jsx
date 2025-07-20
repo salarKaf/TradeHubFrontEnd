@@ -7,6 +7,7 @@ import { getProductById, getItemRating } from '../../../API/Items'
 import { getWebsiteCategories, getSubcategoriesByCategoryId } from '../../../API/category';
 import { useParams } from 'react-router-dom';
 import { getItemImages, getItemImageById } from '../../../API/Items';
+import { editItem } from '../../../API/Items';
 
 import axios from 'axios';
 
@@ -222,59 +223,6 @@ const ShowProduct = () => {
     // فرمت داده‌ای که کامپوننت ProductReviews باید دریافت کنه:
 
     const reviewsData = [
-        {
-            id: 1, // شناسه یکتا برای هر نظر
-            userName: "علی احمدی", // نام کاربر
-            isVerified: true, // آیا کاربر تایید شده است
-            rating: 5, // امتیاز از 1 تا 5
-            text: "محصول فوق‌العاده‌ای بود. کیفیت عالی و ارسال سریع. به همه پیشنهاد می‌کنم.", // متن نظر
-            createdAt: "2024-12-01T10:30:00Z", // تاریخ ایجاد نظر
-            likes: 12, // تعداد لایک
-            dislikes: 1, // تعداد دیسلایک
-            replies: [ // آرایه‌ای از پاسخ‌های خریداران به این نظر
-                {
-                    text: "من هم همین تجربه رو داشتم. واقعاً عالی بود.",
-                    createdAt: "2024-12-01T14:20:00Z",
-                    likes: 3,
-                    dislikes: 0
-                },
-                {
-                    text: "چه مدت طول کشید تا برسه؟",
-                    createdAt: "2024-12-01T16:45:00Z",
-                    likes: 1,
-                    dislikes: 0
-                }
-            ]
-        },
-        {
-            id: 2,
-            userName: "مریم کریمی",
-            isVerified: false,
-            rating: 4,
-            text: "محصول خوبی بود ولی بسته‌بندی می‌تونست بهتر باشه.",
-            createdAt: "2024-12-02T09:15:00Z",
-            likes: 5,
-            dislikes: 2,
-            replies: [
-                {
-                    text: "من هم همین مشکل رو داشتم با بسته‌بندی.",
-                    createdAt: "2024-12-02T11:30:00Z",
-                    likes: 2,
-                    dislikes: 0
-                }
-            ]
-        },
-        {
-            id: 3,
-            userName: "حسن موسوی",
-            isVerified: true,
-            rating: 3,
-            text: "محصول متوسطی بود. انتظار بیشتری داشتم.",
-            createdAt: "2024-12-03T16:00:00Z",
-            likes: 2,
-            dislikes: 5,
-            replies: [] // نظر بدون پاسخ
-        }
     ];
 
     // نحوه استفاده از کامپوننت در صفحه محصول:
@@ -354,47 +302,6 @@ const ShowProduct = () => {
     // فرمت داده‌ای که کامپوننت ProductQuestions باید دریافت کنه:
 
     const questionsData = [
-        {
-            id: 1, // شناسه یکتا برای هر پرسش
-            text: "آیا این محصول مناسب برای کودکان است؟", // متن پرسش
-            createdAt: "2024-12-01T10:30:00Z", // تاریخ ایجاد پرسش
-            answers: [ // آرایه‌ای از پاسخ‌ها
-                {
-                    text: "بله، این محصول کاملاً مناسب برای کودکان است و استانداردهای ایمنی رو داره.", // متن پاسخ
-                    type: "seller", // نوع پاسخ دهنده: "buyer" یا "seller"
-                    createdAt: "2024-12-01T11:15:00Z", // تاریخ ایجاد پاسخ
-                    likes: 5, // تعداد لایک
-                    dislikes: 1 // تعداد دیسلایک
-                },
-                {
-                    text: "من خریدم و بچه‌ام خیلی راضی بود.",
-                    type: "buyer",
-                    createdAt: "2024-12-01T14:20:00Z",
-                    likes: 3,
-                    dislikes: 0
-                }
-            ]
-        },
-        {
-            id: 2,
-            text: "چه مدت طول می‌کشه تا ارسال بشه؟",
-            createdAt: "2024-12-02T09:00:00Z",
-            answers: [
-                {
-                    text: "معمولاً 2-3 روز کاری طول می‌کشه.",
-                    type: "seller",
-                    createdAt: "2024-12-02T10:30:00Z",
-                    likes: 8,
-                    dislikes: 0
-                }
-            ]
-        },
-        {
-            id: 3,
-            text: "گارانتی این محصول چقدره؟",
-            createdAt: "2024-12-03T16:45:00Z",
-            answers: [] // پرسش بدون پاسخ
-        }
     ];
 
     // نحوه استفاده از کامپوننت در صفحه محصول:
@@ -463,48 +370,6 @@ const ShowProduct = () => {
     ];
     // دسته‌بندی‌های موجود
     const categories = {
-        "لباس": {
-            "مردانه": {
-                "پیراهن": {},
-                "شلوار": {},
-                "کت": {}
-            },
-            "زنانه": {
-                "مانتو": {},
-                "شلوار": {},
-                "بلوز": {}
-            },
-            "بچگانه": {
-                "دخترانه": {},
-                "پسرانه": {}
-            }
-        },
-        "الکترونیک": {
-            "موبایل": {
-                "اندروید": {},
-                "آیفون": {}
-            },
-            "لپ‌تاپ": {
-                "گیمینگ": {},
-                "اداری": {}
-            },
-            "لوازم جانبی": {}
-        },
-        "کتاب": {
-            "آموزشی": {
-                "ریاضی": {},
-                "علوم": {}
-            },
-            "داستان": {
-                "رمان": {},
-                "داستان کوتاه": {}
-            }
-        },
-        "خانه و آشپزخانه": {
-            "لوازم آشپزخانه": {},
-            "تزئینات": {},
-            "مبلمان": {}
-        }
     };
 
     // وضعیت برای فیلدها و تصاویر
@@ -860,12 +725,29 @@ const ShowProduct = () => {
     };
 
     // ذخیره تغییرات
-    const handleSave = () => {
-        if (validateFields()) {
-            console.log("Product data saved:", productData);
-            // اینجا می‌توانید عملیات ذخیره را انجام دهید
+    const handleSave = async () => {
+        if (!validateFields()) return;
+
+        const payload = {
+            name: productData.name,
+            price: Number(productData.price),
+            category_name: productData.category,
+            delivery_url: productData.link,
+            description: productData.description,
+            post_purchase_note: productData.additionalInfo,
+            is_available: productData.isActive,
+            discount_percent: Number(productData.discount) || 0
+        };
+
+        try {
+            await editItem(productId, payload);
+            alert("✅ تغییرات با موفقیت ذخیره شد");
+        } catch (error) {
+            console.error("❌ خطا در ذخیره محصول:", error);
+            alert("❌ خطا در ذخیره محصول");
         }
     };
+
 
     // رندر ستاره‌های امتیاز
     const renderRatingStars = () => {

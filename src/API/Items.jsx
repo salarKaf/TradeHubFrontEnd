@@ -126,3 +126,14 @@ export const editItem = async (itemId, data) => {
   return await response.json();
 };
 
+export const createItem = async (data) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.post(`${coreBaseURL}/items/create_item`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

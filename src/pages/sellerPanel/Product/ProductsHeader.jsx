@@ -1,8 +1,13 @@
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 
 const ProductsHeader = ({ isOpenTable, setIsOpenTable }) => {
+
+
+        const { websiteId } = useParams();
+    
     return (
         <div className="px-4 py-4">
             <div className="relative flex items-center mb-6 gap-3 font-modam">
@@ -15,8 +20,8 @@ const ProductsHeader = ({ isOpenTable, setIsOpenTable }) => {
 
                 {/* آیکون فلش برای باز و بسته کردن جدول */}
                 <div className="flex justify-between items-center mb-4 mt-5">
-                    <button 
-                        onClick={() => setIsOpenTable(!isOpenTable)} 
+                    <button
+                        onClick={() => setIsOpenTable(!isOpenTable)}
                         className="text-xl text-[#4D4D4D] hover:text-black transition-colors"
                     >
                         {isOpenTable ? (
@@ -28,7 +33,7 @@ const ProductsHeader = ({ isOpenTable, setIsOpenTable }) => {
                 </div>
 
                 <Link
-                    to='/AddProduct'
+                    to={`/seller/products/${websiteId}/add`} 
                     className="mr-auto pr-8 bg-[#1e202d] font-modam font-medium text-lg w-64 h-4/5 text-white py-4 rounded-full shadow-md"
                 >
                     + افزودن محصــول جدید

@@ -1,7 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaPencilAlt, FaTrashAlt, FaPlus, FaArrowLeft, FaSave, FaChevronLeft, FaChevronRight, FaExpand, FaTimes, FaCheck, FaAsterisk, FaChevronDown } from "react-icons/fa";
+import { createItem } from '../../../API/Items';
+import { getWebsiteCategories, getSubcategoriesByCategoryId } from '../../../API/category';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+
 
 const AddProduct = () => {
+
+
+
+
+    const { websiteId } = useParams();
+
+
+    
+
     // دسته‌بندی‌های موجود
     const categories = {
         "لباس": {
@@ -68,6 +82,43 @@ const AddProduct = () => {
     const [errors, setErrors] = useState({});
     const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const [selectedPath, setSelectedPath] = useState([]);
+
+
+
+
+
+
+    const [categoryTree, setCategoryTree] = useState({});
+    const [categoryIdMap, setCategoryIdMap] = useState({}); // اسم به آیدی
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const mainCategories = await getWebsiteCategories(websiteId);
+                const tree = {};
+                const nameToId = {};
+
+                for (let category of mainCategories) {
+                    const subcategories = await getSubcategoriesByCategoryId(category.id);
+                    tree[category.name] = {};
+                    nameToId[category.name] = category.id;
+
+                    for (let sub of subcategories) {
+                        tree[category.name][sub.name] = {};
+                        nameToId[`${category.name}/${sub.name}`] = sub.id;
+                    }
+                }
+
+                setCategoryTree(tree);
+                setCategoryIdMap(nameToId);
+            } catch (err) {
+                console.error("❌ خطا در دریافت دسته‌بندی:", err);
+            }
+        };
+
+        if (websiteId) fetchCategories();
+    }, [websiteId]);
+
 
     // تغییرات ورودی‌ها
     const handleChange = (e) => {
@@ -196,7 +247,6 @@ const AddProduct = () => {
             setShowCategoryDropdown(false);
         }
     };
-
     // رندر کردن گزینه‌های دسته‌بندی
     // جایگزین کن این فانکشن رو:
     const renderCategoryOptions = (categories, level = 0) => {
@@ -235,12 +285,51 @@ const AddProduct = () => {
     };
 
     // ذخیره تغییرات
-    const handleSave = () => {
-        if (validateFields()) {
-            console.log("Product data saved:", productData);
-            // اینجا می‌توانید عملیات ذخیره را انجام دهید
+
+    const handleSave = async () => {
+        if (!validateFields()) return;
+
+        const categoryId = categoryIdMap[productData.category];
+
+        const payload = {
+            website_id: websiteId,
+            category_id: categoryId,
+            name: productData.name,
+            description: productData.description,
+            price: Number(productData.price),
+            delivery_url: productData.link,
+            post_purchase_note: productData.additionalInfo,
+            stock: 1, // یا بفرست از فرم
+        };
+
+        try {
+            const createdItem = await createItem(payload);
+            const itemId = createdItem.id; // فرض بر اینه که بک آیدی برمی‌گردونه
+
+            // 📌 حالا اگر تصویر انتخاب شده بود، آپلود کن
+            if (productData.images.length > 0) {
+                const formData = new FormData();
+                for (let i = 0; i < productData.images.length; i++) {
+                    const imageBlob = await fetch(productData.images[i]).then(r => r.blob());
+                    formData.append("files", imageBlob, `image_${i}.png`);
+                    formData.append("is_main_flags", i === productData.primaryImageIndex ? "true" : "false");
+                }
+
+                await axios.post(`${mediaBaseURL}/item/upload_item_images/${itemId}`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            }
+
+            alert("✅ محصول با موفقیت ایجاد شد");
+        } catch (error) {
+            console.error("❌ خطا در ساخت محصول:", error);
+            alert("❌ خطا در ساخت محصول");
         }
     };
+
 
     return (
         <div className="p-6 min-h-screen">
