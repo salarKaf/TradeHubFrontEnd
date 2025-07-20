@@ -189,11 +189,23 @@ const ShowProduct = () => {
             try {
                 const data = await getProductById(productId);
 
-                // اینجا باید subcategory_name رو هم چک کنی
-                let fullCategoryPath = data.category_name || '';
-                if (data.subcategory_name) {
-                    fullCategoryPath += `/${data.subcategory_name}`;
-                }
+
+                console.log("🧪 category_name:", data.category_name);
+                console.log("🧪 subcategory_name:", data.subcategory_name, typeof data.subcategory_name);
+
+
+                const hasSubcategory =
+                    data.subcategory_name &&
+                    data.subcategory_name !== 'null' &&
+                    data.subcategory_name !== null;
+
+                const fullCategoryPath = data.category_name
+                    ? hasSubcategory
+                        ? `${data.category_name}/${data.subcategory_name}`
+                        : data.category_name
+                    : '';
+
+
 
                 setProductData({
                     name: data.name || '',
