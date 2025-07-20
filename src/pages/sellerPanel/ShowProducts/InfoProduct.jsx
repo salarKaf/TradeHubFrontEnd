@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaAsterisk, FaTimes, FaArrowLeft, FaSave, FaChevronLeft, FaChevronRight, FaExpand, FaCheck, FaStar, FaRegStar } from "react-icons/fa";
+import { FaAsterisk, FaTimes, FaArrowLeft, FaSave, FaStar, FaRegStar } from "react-icons/fa";
 import InfoCard from '../Layouts/card'
 import ProductQuestions from "./question";
 import ProductReviews from "./Comment";
@@ -7,7 +7,7 @@ import { getProductById, getItemRating } from '../../../API/Items'
 import { useParams } from 'react-router-dom';
 import { editItem } from '../../../API/Items';
 import CategoryDropdown from './CategoryDropdown';
-import ImageManager from './ImageManager'; // مسیر رو بر اساس ساختار پروژت تنظیم کن
+import ImageManager from './ImageManager';
 
 
 
@@ -15,7 +15,7 @@ import ImageManager from './ImageManager'; // مسیر رو بر اساس ساخ
 const ShowProduct = () => {
 
 
-        const { productId, websiteId } = useParams();
+    const { productId, websiteId } = useParams();
 
 
     const reviewsData = [
@@ -183,27 +183,33 @@ const ShowProduct = () => {
 
 
     // شبیه‌سازی دریافت اطلاعات محصول از بک‌اند
+    // تو useEffect اول، جایی که داده‌های محصول رو میگیری:
     useEffect(() => {
         const fetchProductData = async () => {
             try {
                 const data = await getProductById(productId);
 
-                // مپ کردن داده‌های بک‌اند به ساختار فرانت
+                // اینجا باید subcategory_name رو هم چک کنی
+                let fullCategoryPath = data.category_name || '';
+                if (data.subcategory_name) {
+                    fullCategoryPath += `/${data.subcategory_name}`;
+                }
+
                 setProductData({
                     name: data.name || '',
                     price: data.price || '',
-                    category: data.category_name || '', // توجه: category_name از بک میاد
-                    link: data.delivery_url || '', // delivery_url همون لینک محصوله
+                    category: fullCategoryPath, // حالا کامل مسیر رو ذخیره می‌کنه
+                    link: data.delivery_url || '',
                     description: data.description || '',
-                    additionalInfo: data.post_purchase_note || '', // پیام پس از خرید
-                    images: [], // چون تصویر از بک نمیاد، خالی بذار
+                    additionalInfo: data.post_purchase_note || '',
+                    images: [],
                     primaryImageIndex: 0,
                     discount: data.discount_percent || '',
                     isActive: data.is_available || true,
-                    rating: 0, // این رو از API جداگانه میگیری
-                    salesCount: 0, // این هم نیاز به API جداگانه داره
-                    totalSales: 0, // این هم همینطور
-                    isBestSeller: false // این رو بعداً تنظیم می‌کنی
+                    rating: 0,
+                    salesCount: 0,
+                    totalSales: 0,
+                    isBestSeller: false
                 });
             } catch (err) {
                 console.error("❌ خطا در دریافت محصول:", err);
@@ -292,10 +298,16 @@ const ShowProduct = () => {
     const handleSave = async () => {
         if (!validateFields()) return;
 
+        // تجزیه مسیر دسته‌بندی
+        const categoryParts = productData.category.split('/');
+        const categoryName = categoryParts[0];
+        const subcategoryName = categoryParts.length > 1 ? categoryParts[1] : null;
+
         const payload = {
             name: productData.name,
             price: Number(productData.price),
-            category_name: productData.category,
+            category_name: categoryName,
+            subcategory_name: subcategoryName, // این خط رو اضافه کن
             delivery_url: productData.link,
             description: productData.description,
             post_purchase_note: productData.additionalInfo,

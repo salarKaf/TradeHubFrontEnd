@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const ImageManager = ({ 
     productId, 
-    onImagesChange, // callback برای اطلاع رسانی تغییر تصاویر به کامپوننت والد
+    onImagesChange, 
     className = "" 
 }) => {
     const [images, setImages] = useState([]);
