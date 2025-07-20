@@ -8,6 +8,7 @@ import ProductsToolbar from './ProductsToolbar';
 import { useParams } from 'react-router-dom';
 import { getActivePlan } from '../../../API/website'; // مسیر درست جایگزین شود
 import { getNewestItems } from '../../../API/Items'
+import { deleteItemById } from '../../../API/Items';
 
 const ShopifyAdminInterface = () => {
     const [isOpenTable, setIsOpenTable] = useState(true);
@@ -224,10 +225,18 @@ const ShopifyAdminInterface = () => {
         });
     };
 
-    const handleDeleteConfirm = () => {
-        setProducts(products.filter(p => p.id !== deleteModal.productId));
-        setDeleteModal({ isOpen: false, productId: null, productName: '' });
+    const handleDeleteConfirm = async () => {
+        try {
+            await deleteItemById(deleteModal.productId); // حذف از سرور
+            setProducts((prev) => prev.filter(p => p.id !== deleteModal.productId)); // حذف از UI
+            setDeleteModal({ isOpen: false, productId: null, productName: '' });
+            console.log("✅ محصول با موفقیت حذف شد");
+        } catch (error) {
+            console.error("❌ خطا در حذف محصول:", error);
+            alert("خطا در حذف محصول. لطفاً دوباره تلاش کنید.");
+        }
     };
+
 
     const handleDeleteCancel = () => {
         setDeleteModal({ isOpen: false, productId: null, productName: '' });
