@@ -147,3 +147,23 @@ export const getItemsBySubcategoryId = async (subcategoryId) => {
     const data = await response.json();
     return data; // آرایه‌ای از محصولات
 };
+
+
+
+
+export const deleteItemImage = async (imageId) => {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`${mediaBaseURL}/item/delete/${imageId}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("خطا در حذف تصویر");
+    }
+
+    return true;
+};

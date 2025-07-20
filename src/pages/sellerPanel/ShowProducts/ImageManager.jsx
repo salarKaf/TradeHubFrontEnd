@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { FaTimes, FaTrashAlt, FaPlus, FaChevronLeft, FaChevronRight, FaExpand, FaCheck } from "react-icons/fa";
 import { getItemImages, getItemImageById } from '../../../API/Items';
 import axios from 'axios';
+import { deleteItemImage } from '../../../API/Items'; // بالای فایل
 
-const ImageManager = ({ 
-    productId, 
-    onImagesChange, 
-    className = "" 
+const ImageManager = ({
+    productId,
+    onImagesChange,
+    className = ""
 }) => {
     const [images, setImages] = useState([]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -14,10 +15,14 @@ const ImageManager = ({
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
     const [showPrimarySetConfirm, setShowPrimarySetConfirm] = useState(false);
-    
+
     const [selectedImageFile, setSelectedImageFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadStatus, setUploadStatus] = useState(null);
+
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteSuccess, setDeleteSuccess] = useState(false);
+
 
     // دریافت تصاویر از بک‌اند
     useEffect(() => {
@@ -29,18 +34,20 @@ const ImageManager = ({
                         const url = await getItemImageById(img.image_id);
                         return {
                             url,
-                            isMain: img.is_main
+                            isMain: img.is_main,
+                            imageId: img.image_id // این مهمه!
+
                         };
                     })
                 );
 
                 const sortedImages = imageUrls.sort((a, b) => b.isMain - a.isMain);
-                const imagesList = sortedImages.map(i => i.url);
+                const imagesList = sortedImages; // نگه داشتن کل اطلاعات (url + imageId + isMain)
                 const primaryIndex = imageUrls.findIndex(img => img.isMain) ?? 0;
 
                 setImages(imagesList);
                 setPrimaryImageIndex(primaryIndex);
-                
+
                 // اطلاع رسانی به کامپوننت والد
                 if (onImagesChange) {
                     onImagesChange({
@@ -108,7 +115,7 @@ const ImageManager = ({
 
             setImages(imagesList);
             setPrimaryImageIndex(primaryIndex);
-            
+
             // اطلاع رسانی به کامپوننت والد
             if (onImagesChange) {
                 onImagesChange({
@@ -142,7 +149,7 @@ const ImageManager = ({
         setTimeout(() => {
             setShowPrimarySetConfirm(false);
         }, 2000);
-        
+
         // اطلاع رسانی به والد
         if (onImagesChange) {
             onImagesChange({
@@ -157,34 +164,57 @@ const ImageManager = ({
         setShowDeleteConfirm(index);
     };
 
-    const deleteImage = () => {
-        const newImages = images.filter((_, i) => i !== showDeleteConfirm);
-        let newPrimaryIndex = primaryImageIndex;
 
-        if (showDeleteConfirm === primaryImageIndex) {
-            newPrimaryIndex = 0;
-        } else if (showDeleteConfirm < primaryImageIndex) {
-            newPrimaryIndex = primaryImageIndex - 1;
+    const deleteImage = async () => {
+        const targetImage = images[showDeleteConfirm];
+        if (!targetImage || !targetImage.imageId) {
+            console.error("❌ تصویر برای حذف پیدا نشد");
+            setShowDeleteConfirm(null);
+            return;
         }
 
-        if (showDeleteConfirm === currentImageIndex) {
-            setCurrentImageIndex(0);
-        } else if (showDeleteConfirm < currentImageIndex) {
-            setCurrentImageIndex(currentImageIndex - 1);
-        }
+        setIsDeleting(true); // شروع spinner
 
-        setImages(newImages);
-        setPrimaryImageIndex(newPrimaryIndex);
-        setShowDeleteConfirm(null);
-        
-        // اطلاع رسانی به والد
-        if (onImagesChange) {
-            onImagesChange({
-                images: newImages,
-                primaryImageIndex: newPrimaryIndex
-            });
+        try {
+            await deleteItemImage(targetImage.imageId); // حذف از سرور
+
+            // حذف از state
+            const newImages = images.filter((_, i) => i !== showDeleteConfirm);
+
+            let newPrimaryIndex = primaryImageIndex;
+            if (showDeleteConfirm === primaryImageIndex) {
+                newPrimaryIndex = 0;
+            } else if (showDeleteConfirm < primaryImageIndex) {
+                newPrimaryIndex = primaryImageIndex - 1;
+            }
+
+            if (showDeleteConfirm === currentImageIndex) {
+                setCurrentImageIndex(0);
+            } else if (showDeleteConfirm < currentImageIndex) {
+                setCurrentImageIndex(currentImageIndex - 1);
+            }
+
+            setImages(newImages);
+            setPrimaryImageIndex(newPrimaryIndex);
+            setShowDeleteConfirm(null);
+
+            if (onImagesChange) {
+                onImagesChange({
+                    images: newImages,
+                    primaryImageIndex: newPrimaryIndex
+                });
+            }
+
+            setDeleteSuccess(true);
+            setTimeout(() => setDeleteSuccess(false), 3000);
+        } catch (err) {
+            console.error("❌ خطا در حذف تصویر:", err);
+            // می‌تونی خطا رو تو یه نوتیفیکیشن جداگانه هم نشون بدی
+        } finally {
+            setIsDeleting(false);
         }
     };
+
 
     // ناوبری تصاویر
     const prevImage = () => {
@@ -203,7 +233,7 @@ const ImageManager = ({
                     {images.length > 0 ? (
                         <>
                             <img
-                                src={images[currentImageIndex]}
+                                src={images[currentImageIndex].url}
                                 alt={`تصویر ${currentImageIndex + 1}`}
                                 className="object-cover w-full h-full"
                             />
@@ -229,11 +259,10 @@ const ImageManager = ({
                             {/* دکمه تنظیم به عنوان اصلی */}
                             <button
                                 onClick={setPrimaryImage}
-                                className={`absolute bottom-2 left-2 px-3 py-1 text-xs rounded-md transition-all ${
-                                    currentImageIndex === primaryImageIndex
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                                }`}
+                                className={`absolute bottom-2 left-2 px-3 py-1 text-xs rounded-md transition-all ${currentImageIndex === primaryImageIndex
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                    }`}
                             >
                                 {currentImageIndex === primaryImageIndex ? (
                                     <span className="flex items-center gap-1">
@@ -265,13 +294,12 @@ const ImageManager = ({
                     {images.map((image, index) => (
                         <div key={index} className="relative group">
                             <img
-                                src={image}
+                                src={image.url}
                                 alt={`تصویر کوچک ${index + 1}`}
-                                className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${
-                                    index === currentImageIndex
-                                        ? 'border-blue-500 opacity-100'
-                                        : 'border-gray-300 opacity-70 hover:opacity-100'
-                                } ${index === primaryImageIndex ? 'ring-2 ring-green-400' : ''}`}
+                                className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${index === currentImageIndex
+                                    ? 'border-blue-500 opacity-100'
+                                    : 'border-gray-300 opacity-70 hover:opacity-100'
+                                    } ${index === primaryImageIndex ? 'ring-2 ring-green-400' : ''}`}
                                 onClick={() => setCurrentImageIndex(index)}
                             />
                             {/* دکمه حذف */}
@@ -343,7 +371,7 @@ const ImageManager = ({
                 <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
                     <div className="relative max-w-4xl max-h-4xl">
                         <img
-                            src={images[currentImageIndex]}
+                            src={images[currentImageIndex].url}
                             alt={`تصویر بزرگ ${currentImageIndex + 1}`}
                             className="max-w-full max-h-full object-contain"
                         />
@@ -387,12 +415,21 @@ const ImageManager = ({
                             >
                                 انصراف
                             </button>
+
+
                             <button
                                 onClick={deleteImage}
-                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                                disabled={isDeleting}
+                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex items-center justify-center gap-2 min-w-[80px]"
                             >
-                                حذف
+                                {isDeleting ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    "حذف"
+                                )}
                             </button>
+
+
                         </div>
                     </div>
                 </div>
@@ -420,6 +457,15 @@ const ImageManager = ({
                     <span>خطا در آپلود تصویر. دوباره تلاش کنید</span>
                 </div>
             )}
+
+
+            {deleteSuccess && (
+                <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2 shadow-lg">
+                    <FaCheck />
+                    <span>تصویر با موفقیت حذف شد</span>
+                </div>
+            )}
+
         </>
     );
 };
