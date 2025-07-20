@@ -183,7 +183,6 @@ const ShopifyAdminInterface = () => {
                 const items = await getNewestItems(websiteId, limit);
 
                 const formatted = items
-                    .filter(item => item.is_available)
                     .map(item => ({
                         id: item.item_id,
                         name: item.name,

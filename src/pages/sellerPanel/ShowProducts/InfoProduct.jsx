@@ -217,8 +217,8 @@ const ShowProduct = () => {
                     images: [],
                     primaryImageIndex: 0,
                     discount: data.discount_percent || '',
-                    isActive: data.is_available || true,
-                    rating: 0,
+                    isActive: data.stock > 0,  // این دقیق‌تر از فقط `is_available` هست
+                    stock: data.stock || 0,    // اضافه کن که همیشه موجودی داشته باشی                    rating: 0,
                     salesCount: 0,
                     totalSales: 0,
                     isBestSeller: false
@@ -266,10 +266,19 @@ const ShowProduct = () => {
     // تغییرات ورودی‌ها
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setProductData({
+
+        let newValue = type === 'checkbox' ? checked : value;
+        let updatedData = {
             ...productData,
-            [name]: type === 'checkbox' ? checked : value
-        });
+            [name]: newValue,
+        };
+
+        // اگر isActive تغییر کرده، مقدار stock را هم تنظیم کن
+        if (name === "isActive") {
+            updatedData.stock = newValue ? 10000 : 0;
+        }
+
+        setProductData(updatedData);
 
         // پاک کردن خطا وقتی کاربر شروع به تایپ می‌کند
         if (errors[name]) {
@@ -279,6 +288,7 @@ const ShowProduct = () => {
             });
         }
     };
+
 
     // اعتبارسنجی فیلدها
     const validateFields = () => {
@@ -312,20 +322,20 @@ const ShowProduct = () => {
 
         // تجزیه مسیر دسته‌بندی
         const categoryParts = productData.category.split('/');
-        const categoryName = categoryParts[0];
-        const subcategoryName = categoryParts.length > 1 ? categoryParts[1] : null;
+
 
         const payload = {
             name: productData.name,
-            price: Number(productData.price),
-            category_name: categoryName,
-            subcategory_name: subcategoryName, // این خط رو اضافه کن
-            delivery_url: productData.link,
             description: productData.description,
+            price: Number(productData.price),
+            discount_active: !!productData.discount, // true if there's a discount
+            discount_percent: Number(productData.discount) || 0,
+            delivery_url: productData.link,
             post_purchase_note: productData.additionalInfo,
             is_available: productData.isActive,
-            discount_percent: Number(productData.discount) || 0
+            stock: productData.stock ,
         };
+
 
         try {
             await editItem(productId, payload);
@@ -470,14 +480,14 @@ const ShowProduct = () => {
 
 
                                 <div className="w-[70%]">
-                                    <CategoryDropdown
+                                    <input
+                                        type="text"
                                         value={productData.category}
-                                        onChange={(category) => setProductData({ ...productData, category })}
-                                        error={errors.category}
-                                        placeholder="دسته بندی محصول"
-                                        websiteId={websiteId} // این خط رو اضافه کن
+                                        disabled
+                                        className="bg-gray-100 w-full px-4 py-2 border border-gray-300 rounded-3xl h-16 mt-2 text-gray-500 cursor-not-allowed"
                                     />
                                 </div>
+
 
                             </div>
 

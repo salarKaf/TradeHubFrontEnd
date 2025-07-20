@@ -1,9 +1,32 @@
 import { Edit, Trash2 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-
+import { editItem } from '../../../API/Items'; // اطمینان حاصل کن این مسیر درسته
+import { useState } from 'react';
 
 const ProductRow = ({ product, onDelete, websiteId }) => {
+    const [isToggling, setIsToggling] = useState(false);
+    const [isAvailable, setIsAvailable] = useState(product.category === "فعال");
 
+    const toggleAvailability = async () => {
+        try {
+            setIsToggling(true);
+
+            const newStatus = !isAvailable;
+            const newStock = newStatus ? 10000 : 0;
+
+            await editItem(product.id, {
+                is_available: newStatus,
+                stock: newStock
+            });
+
+            setIsAvailable(newStatus);
+        } catch (err) {
+            console.error("❌ خطا در تغییر وضعیت محصول:", err);
+            alert("خطا در تغییر وضعیت محصول");
+        } finally {
+            setIsToggling(false);
+        }
+    };
 
     return (
         <div className="px-5 py-5 hover:bg-gray-50 transition-colors">
@@ -28,11 +51,17 @@ const ProductRow = ({ product, onDelete, websiteId }) => {
                     {product.status}
                 </div>
 
-                {/* Status */}
+                {/* Status toggle */}
                 <div className="col-span-2">
-                    <span className={`font-medium ${product.category === 'فعال' ? 'text-green-600' : 'text-red-600'}`}>
-                        {product.category}
-                    </span>
+                    <button
+                        onClick={toggleAvailability}
+                        disabled={isToggling}
+                        className={`text-sm px-3 py-1 rounded-full transition-colors ${
+                            isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
+                        }`}
+                    >
+                        {isToggling ? "..." : isAvailable ? "فعال" : "غیرفعال"}
+                    </button>
                 </div>
 
                 {/* Actions */}
@@ -53,6 +82,5 @@ const ProductRow = ({ product, onDelete, websiteId }) => {
         </div>
     );
 };
-
 
 export default ProductRow;
