@@ -73,9 +73,7 @@ class ItemService(BaseService):
                 item_data["discount_percent"] = None
                 item_data["discount_expires_at"] = None   
 
-        update_fields = {key: value for key, value in item_data.items() if value != ""}
-        logger.info(f"{update_fields}")  
-        updated_item = self.item_repository.update_item(item_id, update_fields)
+        updated_item = self.item_repository.update_item(item_id, item_data)
         
         return updated_item    
     

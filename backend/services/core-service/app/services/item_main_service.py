@@ -130,9 +130,9 @@ class ItemMainService(BaseService):
         logger.info(f"Editing item with ID: {item_id}")
 
         item_data = {
-            key: value for key, value in item_data.items()
-            if value not in ("", None)
-        }
+        key: value for key, value in item_data.dict(exclude_unset=True).items()
+        if value not in ("", None)
+    }
         updated_item = await self.item_service.edit_item(item_id, item_data)
 
         return ItemResponseSchema(
