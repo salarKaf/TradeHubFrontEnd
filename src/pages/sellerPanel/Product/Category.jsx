@@ -9,29 +9,31 @@ import { editSubCategory, editWebsiteCategory } from "../../../API/category";
 import { createWebsiteSubcategory, getSubcategoriesByCategoryId } from "../../../API/category"; // بالای فایل
 import { createMainCategory } from "../../../API/category"; // بالای فایل
 import { deleteWebsiteCategory, deleteWebsiteSubcategory } from "../../../API/category"; // بالای فایل
-import { getItemsByCategoryId , deleteItemById  } from "../../../API/Items"; // اضافه کن بالا
+import { getItemsByCategoryId, deleteItemById } from "../../../API/Items"; // اضافه کن بالا
 
 // تابع بازگشتی برای گرفتن و آپدیت تعداد محصولات هر دسته
 // تابع بازگشتی برای گرفتن و آپدیت تعداد محصولات هر دسته
-const updateCategoryProductCounts = async (categories) => {
+import { getItemsBySubcategoryId } from "../../../API/Items";
+
+const updateCategoryProductCounts = async (categories, isSub = false) => {
     const updatedCategories = await Promise.all(
         categories.map(async (category) => {
             let productCount = 0;
 
             try {
-                const countResponse = await getItemCountByCategoryId(category.id);
-
-                console.log("📦 Count response for:", category.name, countResponse);
-
-                // بررسی دقیق‌تر برای ساختار ریسپانس
-                productCount = typeof countResponse === 'number' ? countResponse : (countResponse.count || 0);
+                if (isSub) {
+                    const items = await getItemsBySubcategoryId(category.id);
+                    productCount = Array.isArray(items) ? items.length : 0;
+                } else {
+                    const countResponse = await getItemCountByCategoryId(category.id);
+                    productCount = typeof countResponse === 'number' ? countResponse : (countResponse.count || 0);
+                }
             } catch (err) {
                 console.error(`❌ خطا در گرفتن تعداد محصولات برای ${category.name}:`, err);
             }
 
-            // ادامه بازگشتی برای زیردسته‌ها
             const updatedSubCategories = category.subCategories?.length
-                ? await updateCategoryProductCounts(category.subCategories)
+                ? await updateCategoryProductCounts(category.subCategories, true)
                 : [];
 
             return {
@@ -44,6 +46,7 @@ const updateCategoryProductCounts = async (categories) => {
 
     return updatedCategories;
 };
+
 
 
 const Category = () => {
@@ -85,7 +88,18 @@ const Category = () => {
 
     const viewCategoryProducts = async (category) => {
         try {
-            const items = await getItemsByCategoryId(category.id);
+            let items = [];
+            try {
+                if (category.subCategories && category.subCategories.length > 0) {
+                    // دسته اصلی
+                    items = await getItemsByCategoryId(category.id);
+                } else {
+                    // زیردسته
+                    items = await getItemsBySubcategoryId(category.id);
+                }
+            } catch (e) {
+                console.error("❌ خطا در گرفتن محصولات", e);
+            }
 
             const formatted = items.map(item => ({
                 id: item.item_id,
@@ -272,12 +286,25 @@ const Category = () => {
             try {
                 const allSubcategories = await getSubcategoriesByCategoryId(category.id);
                 const subcategories = allSubcategories.filter(sub => sub.is_active === true);
-                const updatedSubs = subcategories.map((sub) => ({
-                    ...sub,
-                    subCategories: [],
-                    isExpanded: false,
-                    productsCount: 0,
-                }));
+                const updatedSubs = await Promise.all(
+                    subcategories.map(async (sub) => {
+                        let count = 0;
+                        try {
+                            const items = await getItemsBySubcategoryId(sub.id);
+                            count = Array.isArray(items) ? items.length : 0;
+                        } catch (e) {
+                            console.error("❌ خطا در گرفتن محصولات زیردسته", sub.name, e);
+                        }
+
+                        return {
+                            ...sub,
+                            subCategories: [],
+                            isExpanded: false,
+                            productsCount: count,
+                        };
+                    })
+                );
+
 
                 console.log("✅ زیر‌دسته‌های دریافت‌شده:", updatedSubs);
 

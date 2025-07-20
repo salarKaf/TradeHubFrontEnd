@@ -137,3 +137,13 @@ export const createItem = async (data) => {
 
   return response.data;
 };
+
+
+
+
+
+export const getItemsBySubcategoryId = async (subcategoryId) => {
+    const response = await fetch(`${coreBaseURL}/items/items/by_subcategory/${subcategoryId}`);
+    const data = await response.json();
+    return data; // آرایه‌ای از محصولات
+};
