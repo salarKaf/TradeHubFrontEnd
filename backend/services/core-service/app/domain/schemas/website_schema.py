@@ -28,6 +28,7 @@ class WebsiteCreateSchema(BaseModel):
 
 class WebsiteUpdateSchema(BaseModel):
     website_id:UUID
+    business_name: Optional[str] = None
     guide_page: Optional[str] = None
     store_policy: Optional[str] = None
     store_slogan: Optional[str] = None
