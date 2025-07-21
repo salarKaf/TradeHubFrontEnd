@@ -7,10 +7,11 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaChevronDown, FaChevronLeft } from "react-icons/fa";
 import { uploadLogo, uploadBanner } from '../../../API/website';
 import { useParams } from "react-router-dom";
+import { updateWebsitePartial } from '../../../API/website';
 
 
 const StoreHeaderSettings = () => {
@@ -21,7 +22,7 @@ const StoreHeaderSettings = () => {
   const [files, setFiles] = useState({ logo: null, header: null });
 
 
-  
+
   const { websiteId } = useParams();
 
   const toggleOpen = () => setOpen(prev => !prev);
@@ -51,6 +52,7 @@ const StoreHeaderSettings = () => {
   };
 
 
+
   const handleSave = async (key, type) => {
     if (type === "file" && !files[key]) {
       showNotification("error", `لطفاً ${key === "logo" ? "لوگو" : "تصویر سرصفحه"} را آپلود کنید.`);
@@ -63,7 +65,6 @@ const StoreHeaderSettings = () => {
     }
 
     try {
-
       if (type === "file") {
         if (key === "logo") {
           await uploadLogo(websiteId, files.logo);
@@ -72,12 +73,27 @@ const StoreHeaderSettings = () => {
         }
       }
 
+      if (type === "text") {
+        const payload = {
+          website_id: websiteId, // 👈 این حتما باید باشه
+        };
+
+        if (key === "name") {
+          payload.business_name = textValues.name;
+        } else if (key === "slogan") {
+          payload.store_slogan = textValues.slogan;
+        }
+
+        await updateWebsitePartial(websiteId, payload);
+      }
+
       showNotification("success", "با موفقیت ذخیره شد.");
     } catch (error) {
-      showNotification("error", "خطا در ذخیره فایل. لطفاً دوباره تلاش کنید.");
+      showNotification("error", "خطا در ذخیره اطلاعات. لطفاً دوباره تلاش کنید.");
       console.error(error);
     }
   };
+
 
 
   const fields = [

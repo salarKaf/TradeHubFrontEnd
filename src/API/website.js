@@ -136,3 +136,25 @@ export const getActivePlan = async (websiteId) => {
         throw error;
     }
 };
+
+
+
+
+
+// ویرایش بخشی از سایت
+export const updateWebsitePartial = async (websiteId, data) => {
+  const token = localStorage.getItem('token');
+
+  const response = await axios.put(
+    `${coreBaseURL}/websites/update-website/${websiteId}/`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data;
+};
