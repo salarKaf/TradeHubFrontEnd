@@ -1,5 +1,4 @@
 from app.infrastructure.repositories.item_repository import ItemRepository
-from app.services.plan_service import PlanService
 from app.domain.models.website_model import Item
 from app.domain.schemas.item_schema import ItemCreateSchema,ItemUpdateSchema
 from uuid import UUID
@@ -12,15 +11,12 @@ class ItemService(BaseService):
     def __init__(
         self,
         item_repository: Annotated[ItemRepository, Depends()],
-        plan_service: Annotated[PlanService, Depends()],
     ) -> None:
         super().__init__()  
         self.item_repository = item_repository
-        self.plan_service =plan_service
 
     async def create_item(self, item_data: ItemCreateSchema) -> Item:
       
-      await self.plan_service.check_item_limit(item_data.website_id)
 
       item = Item(
           website_id=item_data.website_id,
@@ -61,17 +57,6 @@ class ItemService(BaseService):
 
     async def edit_item(self, item_id: UUID, item_data: Dict) -> Item:
         logger.info(f"Updating item with ID: {item_id}")
-
-        item = self.item_repository.get_item_by_id(item_id)
-
-        if "discount_active" in item_data :
-            if item_data["discount_active"]  and item_data["discount_percent"] is not None:
-                await self.plan_service.check_discount_permission(item.website_id)
-                self.item_repository.activate_discount(item_id,item_data["discount_percent"])
-
-            else:
-                item_data["discount_percent"] = None
-                item_data["discount_expires_at"] = None   
 
         updated_item = self.item_repository.update_item(item_id, item_data)
         
