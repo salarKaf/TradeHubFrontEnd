@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { FaAsterisk, FaTimes, FaArrowLeft, FaSave, FaStar, FaRegStar } from "react-icons/fa";
+import { FaAsterisk, FaArrowLeft, FaSave, FaStar, FaRegStar, FaCalendarAlt } from "react-icons/fa";
 import InfoCard from '../Layouts/card'
 import ProductQuestions from "./question";
 import ProductReviews from "./Comment";
 import { getProductById, getItemRating } from '../../../API/Items'
 import { useParams } from 'react-router-dom';
 import { editItem } from '../../../API/Items';
-import CategoryDropdown from './CategoryDropdown';
 import ImageManager from './ImageManager';
+import dayjs from 'dayjs';
+import jalaliday from 'jalaliday';
+dayjs.extend(jalaliday);
+import { Calendar, utils } from 'react-modern-calendar-datepicker';
+import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 
+import JalaliDatePicker from './JalaliDatePicker'
 
+function convertJalaliToGregorian({ year, month, day }) {
+    return dayjs()
+        .calendar('jalali')
+        .year(year)
+        .month(month - 1)
+        .date(day)
+        .toDate();
+}
 
 
 const ShowProduct = () => {
@@ -160,6 +173,7 @@ const ShowProduct = () => {
 
     // وضعیت برای فیلدها و تصاویر
     const [productData, setProductData] = useState({
+        discountExpiresAt: null,
         name: '',
         price: '',
         category: '',
@@ -168,12 +182,13 @@ const ShowProduct = () => {
         additionalInfo: '',
         images: [],
         primaryImageIndex: 0,
-        discount: '',
         isActive: true,
         rating: 0,
         salesCount: 0,
         totalSales: 0,
-        isBestSeller: false
+        isBestSeller: false,
+        discount: '',
+        discountActive: false,
     });
 
     const [errors, setErrors] = useState({});
@@ -189,11 +204,6 @@ const ShowProduct = () => {
             try {
                 const data = await getProductById(productId);
 
-
-                console.log("🧪 category_name:", data.category_name);
-                console.log("🧪 subcategory_name:", data.subcategory_name, typeof data.subcategory_name);
-
-
                 const hasSubcategory =
                     data.subcategory_name &&
                     data.subcategory_name !== 'null' &&
@@ -204,24 +214,42 @@ const ShowProduct = () => {
                         ? `${data.category_name}/${data.subcategory_name}`
                         : data.category_name
                     : '';
-
-
+                console.log('🔍 Expiration Date:', data.discount_expires_at);
 
                 setProductData({
                     name: data.name || '',
                     price: data.price || '',
-                    category: fullCategoryPath, // حالا کامل مسیر رو ذخیره می‌کنه
+                    category: fullCategoryPath,
                     link: data.delivery_url || '',
                     description: data.description || '',
                     additionalInfo: data.post_purchase_note || '',
                     images: [],
                     primaryImageIndex: 0,
-                    discount: data.discount_percent || '',
-                    isActive: data.stock > 0,  // این دقیق‌تر از فقط `is_available` هست
-                    stock: data.stock || 0,    // اضافه کن که همیشه موجودی داشته باشی                    rating: 0,
+                    isActive: data.stock > 0,
+                    stock: data.stock || 0,
+                    rating: 0,
                     salesCount: 0,
                     totalSales: 0,
-                    isBestSeller: false
+                    isBestSeller: false,
+                    discount: typeof data.discount_percent === 'number' ? data.discount_percent : 0,
+                    discountActive: data.discount_active || false,
+                    discountExpiresAt: data.discount_expires_at
+                        ? {
+                            year: Number(dayjs(data.discount_expires_at).calendar('jalali').format('YYYY')),
+                            month: Number(dayjs(data.discount_expires_at).calendar('jalali').format('MM')),
+                            day: Number(dayjs(data.discount_expires_at).calendar('jalali').format('DD')),
+                        }
+                        : null,
+
+
+
+
+
+                });
+                console.log('📆 formatted date for calendar:', {
+                    year: Number(dayjs(data.discount_expires_at).calendar('jalali').format('YYYY')),
+                    month: Number(dayjs(data.discount_expires_at).calendar('jalali').format('MM')),
+                    day: Number(dayjs(data.discount_expires_at).calendar('jalali').format('DD')),
                 });
             } catch (err) {
                 console.error("❌ خطا در دریافت محصول:", err);
@@ -230,7 +258,6 @@ const ShowProduct = () => {
 
         fetchProductData();
     }, [productId]);
-
 
 
 
@@ -328,12 +355,16 @@ const ShowProduct = () => {
             name: productData.name,
             description: productData.description,
             price: Number(productData.price),
-            discount_active: !!productData.discount, // true if there's a discount
+            discount_active: productData.discountActive,
             discount_percent: Number(productData.discount) || 0,
+            discount_expires_at: productData.discountExpiresAt
+                ? convertJalaliToGregorian(productData.discountExpiresAt).toISOString()
+                : null,
+
             delivery_url: productData.link,
             post_purchase_note: productData.additionalInfo,
             is_available: productData.isActive,
-            stock: productData.stock ,
+            stock: productData.stock,
         };
 
 
@@ -551,26 +582,119 @@ const ShowProduct = () => {
                                 />
                             </div>
 
-                            <div className="flex justify-between items-center font-modam">
-                                <div>
-                                    <p>آیا میخواهید تخفیفی برای این محصول قائل شوید؟</p>
-                                    <p>درصد مورد نظر خود را در فیلد رو به رو وارد کنید.</p>
-                                </div>
+                            {/* بخش تخفیف */}
+                            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-2xl p-6 font-modam">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <img src='/SellerPanel/Products/icons8-discount-64 1(1).png' className="w-8 h-8" />
+                                            <h3 className="text-xl font-semibold text-gray-800">تنظیمات تخفیف</h3>
+                                        </div>
+                                        <p className="text-gray-600 text-sm">
+                                            با فعال کردن تخفیف، درصد و تاریخ انقضای مورد نظر خود را تعیین کنید
+                                        </p>
+                                    </div>
 
-                                {/* درصد تخفیف */}
-                                <div className="w-[50%]">
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            name="discount"
-                                            value={productData.discount}
-                                            onChange={handleChange}
-                                            className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-16 mt-2 pr-12"
-                                            placeholder="درصد تخفیف"
-                                        />
-                                        <img src='/SellerPanel/Products/icons8-discount-64 1(1).png' className="absolute right-4 top-6 text-gray-500"></img>
+                                    {/* سوئیچ فعال/غیرفعال تخفیف */}
+                                    <div className="flex items-center gap-4">
+                                        <label className="flex items-center cursor-pointer">
+                                            <div className="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    name="discountActive"
+                                                    checked={productData.discountActive}
+                                                    onChange={handleChange}
+                                                    className="sr-only"
+                                                />
+                                                <div className={`block w-16 h-8 rounded-full shadow-inner ${productData.discountActive
+                                                    ? 'bg-gradient-to-r from-green-400 to-green-500'
+                                                    : 'bg-gray-400'
+                                                    }`}></div>
+                                                <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow transition-transform duration-200 ${productData.discountActive ? 'transform translate-x-8' : ''
+                                                    }`}></div>
+                                            </div>
+                                            <div className="mr-3 font-medium text-gray-700">
+                                                {productData.discountActive ? 'تخفیف فعال' : 'تخفیف غیرفعال'}
+                                            </div>
+                                        </label>
                                     </div>
                                 </div>
+
+                                {/* فیلدهای تخفیف */}
+                                {productData.discountActive && (
+                                    <div className="grid grid-cols-2 gap-6 mt-6">
+                                        {/* درصد تخفیف */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                درصد تخفیف
+                                            </label>
+                                            <div className="relative">
+                                                <input
+                                                    type="number"
+                                                    name="discount"
+                                                    value={productData.discount}
+                                                    onChange={handleChange}
+                                                    className="bg-white w-full px-4 py-3 pl-12 border border-orange-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 rounded-xl transition-colors"
+                                                    placeholder="مثال: 25"
+                                                    min="1"
+                                                    max="100"
+                                                />
+                                                <div className="absolute left-3 top-3 flex items-center gap-1">
+                                                    <span className="text-orange-500 font-bold">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* تاریخ انقضای تخفیف */}
+                                        {/* تاریخ انقضای تخفیف (شمسی) */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                تاریخ انقضا (شمسی)
+                                            </label>
+                                            <div className="relative z-10">
+                                                <JalaliDatePicker
+                                                    value={productData.discountExpiresAt}
+                                                    onChange={(value) => {
+                                                        setProductData((prev) => ({
+                                                            ...prev,
+                                                            discountExpiresAt: value,
+                                                        }));
+                                                    }}
+                                                    placeholder="انتخاب تاریخ انقضا"
+                                                />
+
+
+
+                                            </div>
+                                            {productData.discountExpiresAt && (
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    انقضا: {`${productData.discountExpiresAt.year}/${productData.discountExpiresAt.month}/${productData.discountExpiresAt.day}`}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                    </div>
+                                )}
+
+                                {/* پیش‌نمایش قیمت با تخفیف */}
+                                {productData.discountActive && productData.discount && productData.price && (
+                                    <div className="mt-6 p-4 bg-white rounded-xl border-2 border-dashed border-orange-200">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm text-gray-600">پیش‌نمایش قیمت:</span>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg line-through text-gray-400">
+                                                    {Number(productData.price).toLocaleString()} تومان
+                                                </span>
+                                                <span className="text-xl font-bold text-green-600">
+                                                    {(Number(productData.price) * (1 - Number(productData.discount) / 100)).toLocaleString()} تومان
+                                                </span>
+                                                <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-bold">
+                                                    {productData.discount}% تخفیف
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
