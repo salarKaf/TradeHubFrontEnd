@@ -71,6 +71,7 @@ class ItemMainService(BaseService):
             price=item.price,
             discount_price=item.discount_price,
             discount_active=item.discount_active,
+            discount_percent=item.discount_percent,
             discount_expires_at=item.discount_expires_at,
             delivery_url=item.delivery_url,
             post_purchase_note=item.post_purchase_note,
