@@ -59,49 +59,7 @@ const ContactInfo = () => {
   // تابع برای تغییر وضعیت باز و بسته شدن
   const toggleOpen = () => setOpen(!open);
 
-  // تابع برای ذخیره تغییرات در social links
-  const saveSocialLinks = async () => {
-    try {
-      await updateWebsitePartial(websiteId, { social_links: socialLinks });
-      setSuccessMessage('راه‌های ارتباطی با موفقیت به‌روزرسانی شد');
-    } catch (error) {
-      setEditError('خطا در ذخیره‌سازی. لطفاً دوباره تلاش کنید.');
-    }
-  };
-
-  // تابع برای تغییر مقادیر social links
-  const handleSocialLinkChange = (key, value) => {
-    setSocialLinks(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
   // تابع برای اضافه کردن شبکه اجتماعی جدید (فقط phone, telegram, instagram پذیرفته میشه)
-  const addLink = async () => {
-    if (newLinkTitle && newLinkUrl) {
-      const linkKey = newLinkTitle.toLowerCase();
-      if (['phone', 'telegram', 'instagram'].includes(linkKey)) {
-        const updatedLinks = {
-          ...socialLinks,
-          [linkKey]: newLinkUrl
-        };
-        setSocialLinks(updatedLinks);
-
-        try {
-          await updateWebsitePartial(websiteId, { social_links: updatedLinks });
-          setNewLinkTitle('');
-          setNewLinkUrl('');
-          setSuccessMessage('با موفقیت اضافه شد');
-          setAddingNewLink(false);
-        } catch (error) {
-          setEditError('خطا در ذخیره‌سازی. لطفاً دوباره تلاش کنید.');
-        }
-      } else {
-        setEditError('فقط phone، telegram و instagram قابل قبول است');
-      }
-    }
-  };
 
   // تابع برای حذف شبکه اجتماعی (خالی کردن مقدار)
   const removeLink = async () => {
@@ -160,9 +118,7 @@ const ContactInfo = () => {
   };
 
   // تبدیل socialLinks object به array برای نمایش
-  const socialLinksArray = Object.entries(socialLinks)
-    .filter(([key, value]) => value && value.trim() !== '')
-    .map(([key, value]) => ({ id: key, title: key, link: value }));
+
 
   return (
     <div className="p-6 rounded-lg relative">

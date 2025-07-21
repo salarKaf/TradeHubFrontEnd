@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { FaChevronDown, FaChevronLeft } from 'react-icons/fa';
 import { FiEdit } from 'react-icons/fi';  // از این آیکن استفاده می‌کنیم
 import { Save, CheckCircle } from 'lucide-react';
+import { getWebsiteById, updateWebsitePartial } from '../../../API/website'; // فرض میکنم path درسته
+import { useEffect } from 'react';
+import { useParams } from "react-router-dom";
 
 const ShopDescriptionCard = () => {
     const [isOpen, setIsOpen] = useState(true);
@@ -9,7 +12,27 @@ const ShopDescriptionCard = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-    const handleSave = () => {
+    const { websiteId } = useParams();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const website = await getWebsiteById(websiteId);
+                if (website && website.guide_page) {
+                    setDescription(website.guide_page);
+                }
+            } catch (err) {
+                console.error("خطا در گرفتن اطلاعات فروشگاه", err);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
+
+
+    const handleSave = async () => {
         if (description.trim() === '') {
             setShowSuccessMessage(false);
             // نمایش مدال خطا
@@ -37,17 +60,28 @@ const ShopDescriptionCard = () => {
                     document.body.removeChild(modal);
                 }
             };
+
             return;
         }
 
-        setIsEditing(false);
-        setShowSuccessMessage(true);
+        try {
+            const website = await getWebsiteById(websiteId);
+            await updateWebsitePartial(website.id, {
+                website_id: website.id,
+                guide_page: description,
+            });
 
-        // پیام موفقیت رو بعد از 3 ثانیه مخفی کن
-        setTimeout(() => {
-            setShowSuccessMessage(false);
-        }, 2000);
+            setIsEditing(false);
+            setShowSuccessMessage(true);
+            setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 2000);
+        } catch (err) {
+            console.error("خطا در ذخیره توضیحات:", err);
+        }
     };
+
+
 
     return (
         <div className="w-full text-right p-4 rounded-xl font-modam">
