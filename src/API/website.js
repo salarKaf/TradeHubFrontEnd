@@ -1,11 +1,8 @@
 import axios from "axios";
 import { coreBaseURL, mediaBaseURL } from './api';
 
-
-
 // ساخت فروشگاه با فیلدهای کامل اما خالی
 export const createWebsite = async (business_name) => {
-
     const token = localStorage.getItem("token");
 
     const response = await axios.post(
@@ -31,7 +28,6 @@ export const createWebsite = async (business_name) => {
         }
     );
 
-
     console.log("📦 payload در حال ارسال:", {
         business_name: business_name || "",
         welcome_text: "",
@@ -46,11 +42,24 @@ export const createWebsite = async (business_name) => {
         faqs: [],
     });
 
+    return response.data;
+};
+
+// دریافت فروشگاه با ID
+export const getWebsiteById = async (websiteId) => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.get(
+        `${coreBaseURL}/websites/get_website/${websiteId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+        }
+    );
 
     return response.data;
-
-
-
 };
 
 // آپلود لوگو
@@ -73,7 +82,6 @@ export const uploadLogo = async (websiteId, file) => {
     return response.data;
 };
 
-
 // آپلود بنر
 export const uploadBanner = async (websiteId, file) => {
     const token = localStorage.getItem("token");
@@ -94,7 +102,6 @@ export const uploadBanner = async (websiteId, file) => {
     return response.data;
 };
 
-
 export const getMyWebsite = async () => {
     const token = localStorage.getItem("token");
 
@@ -114,12 +121,6 @@ export const getMyWebsite = async () => {
     }
 };
 
-
-
-
-// src/API/website.js (اضافه کردن به فایل موجود)
-
-
 // تابع جدید برای چک کردن پلن فعال
 export const getActivePlan = async (websiteId) => {
     try {
@@ -137,24 +138,23 @@ export const getActivePlan = async (websiteId) => {
     }
 };
 
-
-
-
-
 // ویرایش بخشی از سایت
 export const updateWebsitePartial = async (websiteId, data) => {
-  const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-  const response = await axios.put(
-    `${coreBaseURL}/websites/update-website/${websiteId}/`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+    const response = await axios.put(
+        `${coreBaseURL}/websites/update-website/${websiteId}/`,
+        {
+            website_id: websiteId,
+            ...data
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        }
+    );
 
-  return response.data;
+    return response.data;
 };

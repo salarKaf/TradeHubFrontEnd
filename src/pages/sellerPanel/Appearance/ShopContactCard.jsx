@@ -2,6 +2,7 @@ import { Contact } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { FaChevronDown, FaChevronLeft } from 'react-icons/fa';
 import { useParams } from "react-router-dom";
+import { getWebsiteById, updateWebsitePartial } from '../../../API/website'; // فرض میکنم path درسته
 
 const ContactInfo = () => {
   const { websiteId } = useParams();
@@ -30,20 +31,7 @@ const ContactInfo = () => {
   const fetchWebsiteData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://tradehub.localhost/api/v1/websites/get_website/${websiteId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // اگر نیاز به authentication header داری، اینجا اضافه کن
-          // 'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('خطا در دریافت اطلاعات');
-      }
-
-      const result = await response.json();
+      const result = await getWebsiteById(websiteId);
 
       // بررسی وجود social_links و تنظیم مقادیر
       if (result.social_links) {
@@ -61,38 +49,6 @@ const ContactInfo = () => {
     }
   };
 
-  // تابع برای ارسال اطلاعات به بک‌اند
-
-
-  const updateWebsite = async (updatedData) => {
-    const token = localStorage.getItem('token');
-
-    try {
-      const response = await fetch(`http://tradehub.localhost/api/v1/websites/update-website/${websiteId}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          // اگر نیاز به authentication header داری، اینجا اضافه کن
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          website_id: websiteId,
-          ...updatedData
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('خطا در ارسال اطلاعات');
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Error updating website:', error);
-      throw error;
-    }
-  };
-
   // استفاده از useEffect برای دریافت اطلاعات در ابتدا
   useEffect(() => {
     if (websiteId) {
@@ -106,7 +62,7 @@ const ContactInfo = () => {
   // تابع برای ذخیره تغییرات در social links
   const saveSocialLinks = async () => {
     try {
-      await updateWebsite({ social_links: socialLinks });
+      await updateWebsitePartial(websiteId, { social_links: socialLinks });
       setSuccessMessage('راه‌های ارتباطی با موفقیت به‌روزرسانی شد');
     } catch (error) {
       setEditError('خطا در ذخیره‌سازی. لطفاً دوباره تلاش کنید.');
@@ -133,7 +89,7 @@ const ContactInfo = () => {
         setSocialLinks(updatedLinks);
 
         try {
-          await updateWebsite({ social_links: updatedLinks });
+          await updateWebsitePartial(websiteId, { social_links: updatedLinks });
           setNewLinkTitle('');
           setNewLinkUrl('');
           setSuccessMessage('با موفقیت اضافه شد');
@@ -157,7 +113,7 @@ const ContactInfo = () => {
       setSocialLinks(updatedLinks);
 
       try {
-        await updateWebsite({ social_links: updatedLinks });
+        await updateWebsitePartial(websiteId, { social_links: updatedLinks });
         setSuccessMessage('فیلد با موفقیت پاک شد');
         setIsModalOpen(false);
       } catch (error) {
@@ -188,7 +144,7 @@ const ContactInfo = () => {
     setSocialLinks(updatedLinks);
 
     try {
-      await updateWebsite({ social_links: updatedLinks });
+      await updateWebsitePartial(websiteId, { social_links: updatedLinks });
       setIsEditing(null);
       setSuccessMessage('تغییرات با موفقیت ذخیره شد');
     } catch (error) {
@@ -355,4 +311,3 @@ const ContactInfo = () => {
 };
 
 export default ContactInfo;
-
