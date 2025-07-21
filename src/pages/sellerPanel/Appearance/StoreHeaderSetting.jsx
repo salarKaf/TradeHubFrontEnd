@@ -7,14 +7,22 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { FaChevronDown, FaChevronLeft } from "react-icons/fa";
+import { uploadLogo, uploadBanner } from '../../../API/website';
+import { useParams } from "react-router-dom";
+
 
 const StoreHeaderSettings = () => {
   const [open, setOpen] = useState(true);
   const [fileNames, setFileNames] = useState({ logo: "", header: "" });
   const [textValues, setTextValues] = useState({ name: "", slogan: "" });
   const [notifications, setNotifications] = useState([]);
+  const [files, setFiles] = useState({ logo: null, header: null });
+
+
+  
+  const { websiteId } = useParams();
 
   const toggleOpen = () => setOpen(prev => !prev);
 
@@ -26,28 +34,51 @@ const StoreHeaderSettings = () => {
     }, 3000);
   };
 
+
+
+
   const handleFileChange = (e, key) => {
     const file = e.target.files[0];
     if (file) {
+      setFiles(prev => ({ ...prev, [key]: file }));
       setFileNames(prev => ({ ...prev, [key]: file.name }));
     }
   };
+
 
   const handleTextChange = (e, key) => {
     setTextValues(prev => ({ ...prev, [key]: e.target.value }));
   };
 
-  const handleSave = (key, type) => {
-    if (type === "file" && !fileNames[key]) {
+
+  const handleSave = async (key, type) => {
+    if (type === "file" && !files[key]) {
       showNotification("error", `لطفاً ${key === "logo" ? "لوگو" : "تصویر سرصفحه"} را آپلود کنید.`);
       return;
     }
+
     if (type === "text" && !textValues[key].trim()) {
       showNotification("error", `لطفاً ${key === "name" ? "نام فروشگاه" : "شعار فروشگاه"} را وارد کنید.`);
       return;
     }
-    showNotification("success", "با موفقیت ذخیره شد.");
+
+    try {
+
+      if (type === "file") {
+        if (key === "logo") {
+          await uploadLogo(websiteId, files.logo);
+        } else if (key === "header") {
+          await uploadBanner(websiteId, files.header);
+        }
+      }
+
+      showNotification("success", "با موفقیت ذخیره شد.");
+    } catch (error) {
+      showNotification("error", "خطا در ذخیره فایل. لطفاً دوباره تلاش کنید.");
+      console.error(error);
+    }
   };
+
 
   const fields = [
     {
@@ -86,11 +117,10 @@ const StoreHeaderSettings = () => {
         {notifications.map(({ id, type, message }) => (
           <div
             key={id}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm shadow border ${
-              type === "success"
-                ? "bg-green-100 text-green-700 border-green-400"
-                : "bg-red-100 text-red-700 border-red-400"
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm shadow border ${type === "success"
+              ? "bg-green-100 text-green-700 border-green-400"
+              : "bg-red-100 text-red-700 border-red-400"
+              }`}
           >
             {type === "success" ? (
               <CheckCircle className="w-4 h-4" />
@@ -122,7 +152,7 @@ const StoreHeaderSettings = () => {
         <div className="space-y-6 px-5 pt-6">
           {fields.map((field, idx) => (
             <div key={idx} className="flex flex-col md:flex-row md:items-center gap-16">
-              
+
               {/* Label + Dot */}
               <div className="flex items-center gap-2 w-full md:w-[240px]">
                 <span className="relative w-2 h-2">

@@ -74,7 +74,25 @@ export const uploadLogo = async (websiteId, file) => {
 };
 
 
+// آپلود بنر
+export const uploadBanner = async (websiteId, file) => {
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("file", file);
 
+    const response = await axios.put(
+        `${mediaBaseURL}/website/upload_banner/${websiteId}`,
+        formData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
+
+    return response.data;
+};
 
 
 export const getMyWebsite = async () => {
