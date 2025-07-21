@@ -87,8 +87,7 @@ async def get_item_image(
     logger.info(f"Getting item image with id: {image_id}")
 
     image = await item_image_service.get_image_by_id(image_id)
-    if not image:
-        raise HTTPException(status_code=404, detail="Image not found")
+
 
     mongo_id = ObjectId(image.image_url)
     logger.info(f"Mongo ID for image: {mongo_id}")

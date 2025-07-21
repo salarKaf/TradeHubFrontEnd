@@ -62,9 +62,6 @@ async def get_banner(
 
     website = await website_service.get_website_by_id(website_id)
 
-    if not website.banner_image:
-        raise HTTPException(status_code=404, detail="No banner image set for this website")
-
     mongo_id = ObjectId(website.banner_image)
     logger.info(f"Mongo id for banner: {mongo_id}")
 
@@ -123,9 +120,6 @@ async def get_logo(
     logger.info(f"Getting website info for website: {website_id}")
 
     website = await website_service.get_website_by_id(website_id)
-
-    if not website.logo_url:
-        raise HTTPException(status_code=404, detail="No logo set for this website")
 
     mongo_id = ObjectId(website.logo_url)
     logger.info(f"Mongo id for logo: {mongo_id}")
