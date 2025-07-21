@@ -1,76 +1,212 @@
 import { Contact } from 'lucide-react';
-import React, { useState } from 'react';
-import { FaChevronDown, FaChevronLeft } from 'react-icons/fa'; // به‌منظور استفاده از آیکن‌ها
+import React, { useState, useEffect } from 'react';
+import { FaChevronDown, FaChevronLeft } from 'react-icons/fa';
+import { useParams } from "react-router-dom";
 
 const ContactInfo = () => {
+  const { websiteId } = useParams();
+
   // حالت برای نگهداری داده‌ها
-  const [socialLinks, setSocialLinks] = useState([
-    { id: 1, title: 'تلگرام', link: 'https://t.me/example' },
-    { id: 2, title: 'اینستاگرام', link: 'https://instagram.com/example' }
-  ]);
+  const [socialLinks, setSocialLinks] = useState({
+    phone: "",
+    telegram: "",
+    instagram: ""
+  });
+
   const [newLinkTitle, setNewLinkTitle] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState(null);
   const [editError, setEditError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isEditing, setIsEditing] = useState(null); // برای تعیین اینکه کدام لینک در حال ویرایش است
-  const [tempTitle, setTempTitle] = useState(''); // ذخیره موقت عنوان در هنگام ویرایش
-  const [tempLink, setTempLink] = useState(''); // ذخیره موقت لینک در هنگام ویرایش
-  const [addingNewLink, setAddingNewLink] = useState(false); // برای تشخیص زمانی که کاربر در حال افزودن لینک جدید است
-  const [open, setOpen] = useState(true); // متغیر برای کنترل باز و بسته شدن بخش تنظیمات
+  const [isEditing, setIsEditing] = useState(null);
+  const [tempTitle, setTempTitle] = useState('');
+  const [tempLink, setTempLink] = useState('');
+  const [addingNewLink, setAddingNewLink] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  // تابع برای دریافت اطلاعات از بک‌اند
+  const fetchWebsiteData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://tradehub.localhost/api/v1/websites/get_website/${websiteId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // اگر نیاز به authentication header داری، اینجا اضافه کن
+          // 'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('خطا در دریافت اطلاعات');
+      }
+
+      const result = await response.json();
+
+      // بررسی وجود social_links و تنظیم مقادیر
+      if (result.social_links) {
+        setSocialLinks({
+          phone: result.social_links.phone || "",
+          telegram: result.social_links.telegram || "",
+          instagram: result.social_links.instagram || ""
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching website data:', error);
+      setEditError('خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // تابع برای ارسال اطلاعات به بک‌اند
+
+
+  const updateWebsite = async (updatedData) => {
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`http://tradehub.localhost/api/v1/websites/update-website/${websiteId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          // اگر نیاز به authentication header داری، اینجا اضافه کن
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          website_id: websiteId,
+          ...updatedData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('خطا در ارسال اطلاعات');
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error updating website:', error);
+      throw error;
+    }
+  };
+
+  // استفاده از useEffect برای دریافت اطلاعات در ابتدا
+  useEffect(() => {
+    if (websiteId) {
+      fetchWebsiteData();
+    }
+  }, [websiteId]);
 
   // تابع برای تغییر وضعیت باز و بسته شدن
   const toggleOpen = () => setOpen(!open);
 
-  // تابع برای اضافه کردن شبکه اجتماعی جدید
-  const addLink = () => {
-    if (newLinkTitle && newLinkUrl) {
-      setSocialLinks([...socialLinks, { id: Date.now(), title: newLinkTitle, link: newLinkUrl }]);
-      setNewLinkTitle('');
-      setNewLinkUrl('');
-      setSuccessMessage('با موفقیت اضافه شد');
-      setAddingNewLink(false); // مخفی کردن ورودی‌ها بعد از افزودن لینک
+  // تابع برای ذخیره تغییرات در social links
+  const saveSocialLinks = async () => {
+    try {
+      await updateWebsite({ social_links: socialLinks });
+      setSuccessMessage('راه‌های ارتباطی با موفقیت به‌روزرسانی شد');
+    } catch (error) {
+      setEditError('خطا در ذخیره‌سازی. لطفاً دوباره تلاش کنید.');
     }
   };
 
-  // تابع برای حذف شبکه اجتماعی
-  const removeLink = () => {
+  // تابع برای تغییر مقادیر social links
+  const handleSocialLinkChange = (key, value) => {
+    setSocialLinks(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  // تابع برای اضافه کردن شبکه اجتماعی جدید (فقط phone, telegram, instagram پذیرفته میشه)
+  const addLink = async () => {
+    if (newLinkTitle && newLinkUrl) {
+      const linkKey = newLinkTitle.toLowerCase();
+      if (['phone', 'telegram', 'instagram'].includes(linkKey)) {
+        const updatedLinks = {
+          ...socialLinks,
+          [linkKey]: newLinkUrl
+        };
+        setSocialLinks(updatedLinks);
+
+        try {
+          await updateWebsite({ social_links: updatedLinks });
+          setNewLinkTitle('');
+          setNewLinkUrl('');
+          setSuccessMessage('با موفقیت اضافه شد');
+          setAddingNewLink(false);
+        } catch (error) {
+          setEditError('خطا در ذخیره‌سازی. لطفاً دوباره تلاش کنید.');
+        }
+      } else {
+        setEditError('فقط phone، telegram و instagram قابل قبول است');
+      }
+    }
+  };
+
+  // تابع برای حذف شبکه اجتماعی (خالی کردن مقدار)
+  const removeLink = async () => {
     if (linkToDelete) {
-      setSocialLinks(socialLinks.filter((link) => link.id !== linkToDelete));
-      setSuccessMessage('لینک با موفقیت حذف شد');
-      setIsModalOpen(false);
+      const updatedLinks = {
+        ...socialLinks,
+        [linkToDelete]: ""
+      };
+      setSocialLinks(updatedLinks);
+
+      try {
+        await updateWebsite({ social_links: updatedLinks });
+        setSuccessMessage('فیلد با موفقیت پاک شد');
+        setIsModalOpen(false);
+      } catch (error) {
+        setEditError('خطا در حذف. لطفاً دوباره تلاش کنید.');
+      }
     }
   };
 
   // تابع برای ویرایش عنوان و لینک شبکه اجتماعی
-  const editLink = (id) => {
-    setIsEditing(id);
-    const link = socialLinks.find(link => link.id === id);
-    setTempTitle(link.title); // عنوان موقت برای ویرایش
-    setTempLink(link.link); // لینک موقت برای ویرایش
+  const editLink = (key) => {
+    setIsEditing(key);
+    setTempTitle(key); // کلید را به عنوان عنوان قرار می‌دهیم
+    setTempLink(socialLinks[key]); // مقدار فعلی لینک
   };
 
   // ذخیره تغییرات ویرایش
-  const saveEdit = (id) => {
-    if (!tempTitle || !tempLink) {
-      setEditError('عنوان و راه ارتباطی نباید خالی باشند');
+  const saveEdit = async (key) => {
+    if (!tempLink) {
+      setEditError('راه ارتباطی نباید خالی باشد');
       return;
     }
     setEditError('');
-    setSocialLinks(socialLinks.map((link) =>
-      link.id === id ? { ...link, title: tempTitle, link: tempLink } : link
-    ));
-    setIsEditing(null);
-    setSuccessMessage('تغییرات با موفقیت ذخیره شد');
+
+    const updatedLinks = {
+      ...socialLinks,
+      [key]: tempLink
+    };
+    setSocialLinks(updatedLinks);
+
+    try {
+      await updateWebsite({ social_links: updatedLinks });
+      setIsEditing(null);
+      setSuccessMessage('تغییرات با موفقیت ذخیره شد');
+    } catch (error) {
+      setEditError('خطا در ذخیره‌سازی. لطفاً دوباره تلاش کنید.');
+    }
   };
 
   // لغو ویرایش
   const cancelEdit = () => {
     setIsEditing(null);
-    setTempTitle(''); // پاک کردن عنوان موقت
-    setTempLink(''); // پاک کردن لینک موقت
+    setTempTitle('');
+    setTempLink('');
   };
+
+  // تبدیل socialLinks object به array برای نمایش
+  const socialLinksArray = Object.entries(socialLinks)
+    .filter(([key, value]) => value && value.trim() !== '')
+    .map(([key, value]) => ({ id: key, title: key, link: value }));
 
   return (
     <div className="p-6 rounded-lg relative">
@@ -94,6 +230,14 @@ const ContactInfo = () => {
         </div>
       )}
 
+      {/* پیغام خطا */}
+      {editError && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50">
+          {editError}
+          <button onClick={() => setEditError('')} className="ml-2 text-red-500">×</button>
+        </div>
+      )}
+
       {/* Title Section */}
       <div onClick={toggleOpen} className="flex items-center gap-2 cursor-pointer w-fit font-modam mb-4">
         <img src='/public/SellerPanel/Settings/Group 257.png' className="text-[#1E212D] w-9 h-9" />
@@ -109,123 +253,78 @@ const ContactInfo = () => {
       <div className="w-full h-[0.8px] bg-black bg-opacity-20 shadow-[0_2px_6px_rgba(0,0,0,0.3)] mb-10" />
 
       {/* Social Links Section */}
-      {open && (
+      {open && !loading && (
         <div>
-          {/* Table Style List of Social Links */}
-          <div className="bg-white border rounded-xl mx-4 overflow-hidden">
-            {socialLinks.map((link, index) => (
-              <div key={link.id} className={`p-4 flex justify-between items-center ${index !== socialLinks.length - 1 ? 'border-b' : ''}`}>
+          {/* نمایش فیلدهای اصلی */}
+          <div className="bg-white border rounded-xl mx-4 overflow-hidden mb-4">
+            {['phone', 'telegram', 'instagram'].map((key, index) => (
+              <div key={key} className={`p-4 flex justify-between items-center ${index !== 2 ? 'border-b' : ''}`}>
                 <div className="flex items-center space-x-6 flex-1">
-                  {isEditing === link.id ? (
-                    <div className="flex items-center space-x-4 w-full">
-                      <input
-                        type="text"
-                        value={tempTitle}
-                        onChange={(e) => setTempTitle(e.target.value)}
-                        className="p-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-1/3"
-                        placeholder="عنوان"
-                      />
-                      <input
-                        type="text"
-                        value={tempLink}
-                        onChange={(e) => setTempLink(e.target.value)}
-                        className="mt-2 p-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-1/2"
-                        placeholder="راه ارتباطی"
-                      />
-                      {editError && <span className="text-red-500 text-xs mr-2">{editError}</span>}
-                    </div>
+                  <span className="text-sm font-semibold text-gray-700 min-w-[100px] capitalize">{key}</span>
+
+                  {isEditing === key ? (
+                    <input
+                      type="text"
+                      value={tempLink}
+                      onChange={(e) => setTempLink(e.target.value)}
+                      className="p-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-1/2"
+                      placeholder={`${key} خود را وارد کنید`}
+                      autoFocus
+                    />
                   ) : (
-                    <div className="flex items-center space-x-6">
-                      <span className="text-sm font-semibold text-gray-700 min-w-[100px]">{link.title}</span>
-                      <span className="text-sm text-gray-500">{link.link}</span>
+                    <div className="flex-1">
+                      <span className="text-sm text-gray-600">
+                        {socialLinks[key] || 'مقداری وارد نشده است'}
+                      </span>
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex space-x-2">
-                  {isEditing !== link.id && (
-                    <>
-                      <button 
-                        onClick={() => { setIsModalOpen(true); setLinkToDelete(link.id); }} 
-                        className=" hover:bg-red-200 text-[#1E212D] px-3 py-2 rounded-lg transition-colors duration-200"
-                      >
-                        <i className="fa fa-trash"></i>
-                      </button>
-                      <button 
-                        onClick={() => editLink(link.id)} 
-                        className=" hover:bg-blue-200 text-[#1E212D] px-3 py-2 rounded-lg transition-colors duration-200"
-                      >
-                        <i className="fa fa-pencil-alt"></i>
-                      </button>
-                    </>
-                  )}
-                  {isEditing === link.id && (
+                  {isEditing === key ? (
                     <div className="flex space-x-2">
-                      <button 
-                        onClick={() => saveEdit(link.id)} 
+                      <button
+                        onClick={() => saveEdit(key)}
                         className="bg-green-100 hover:bg-green-200 text-green-600 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center"
                       >
                         <i className="fa fa-save ml-1"></i> ذخیره
                       </button>
-                      <button 
-                        onClick={cancelEdit} 
+                      <button
+                        onClick={cancelEdit}
                         className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center"
                       >
                         <i className="fa fa-times ml-1"></i> لغو
                       </button>
                     </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => { setIsModalOpen(true); setLinkToDelete(key); }}
+                        className="hover:bg-red-200 text-[#1E212D] px-3 py-2 rounded-lg transition-colors duration-200"
+                        title="پاک کردن فیلد"
+                      >
+                        <i className="fa fa-trash"></i>
+                      </button>
+                      <button
+                        onClick={() => editLink(key)}
+                        className="hover:bg-blue-200 text-[#1E212D] px-3 py-2 rounded-lg transition-colors duration-200"
+                        title="ویرایش"
+                      >
+                        <i className="fa fa-pencil-alt"></i>
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
             ))}
-            
-            {/* Add new link section inside table */}
-            {addingNewLink && (
-              <div className="p-4 flex justify-between items-center border-t bg-gray-50">
-                <div className="flex items-center space-x-4 flex-1">
-                  <input
-                    type="text"
-                    placeholder="عنوان"
-                    value={newLinkTitle}
-                    onChange={(e) => setNewLinkTitle(e.target.value)}
-                    className="p-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-1/3"
-                  />
-                  <input
-                    type="text"
-                    placeholder="راه ارتباطی"
-                    value={newLinkUrl}
-                    onChange={(e) => setNewLinkUrl(e.target.value)}
-                    className="p-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-1/2"
-                  />
-                </div>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={addLink} 
-                    className="bg-green-100 hover:bg-green-200 text-green-600 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center"
-                  >
-                    <i className="fa fa-check ml-1"></i> ذخیره
-                  </button>
-                  <button 
-                    onClick={() => setAddingNewLink(false)} 
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center"
-                  >
-                    <i className="fa fa-times ml-1"></i> لغو
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
+        </div>
+      )}
 
-          {/* Add button outside table */}
-          {!addingNewLink && (
-            <button
-              onClick={() => setAddingNewLink(true)}
-              className="mx-4 mt-2 font-modam bg-[#fff0d9] hover:bg-[#f7e5cc] px-4 py-4 rounded-lg text-base border border-[#d6c2aa] flex items-center gap-2 transition-colors"
-            >
-              <i className="fa fa-plus ml-2"></i>
-              اضافه کردن راه ارتباطی جدید
-            </button>
-          )}
+      {/* Loading state */}
+      {loading && open && (
+        <div className="flex justify-center items-center py-8">
+          <div className="text-gray-500">در حال بارگذاری...</div>
         </div>
       )}
 
@@ -233,19 +332,19 @@ const ContactInfo = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">آیا مطمئن هستید که می‌خواهید حذف کنید؟</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">آیا مطمئن هستید که می‌خواهید این فیلد را پاک کنید؟</h3>
             <div className="flex justify-center space-x-3 gap-10">
-              <button 
-                onClick={() => setIsModalOpen(false)} 
+              <button
+                onClick={() => setIsModalOpen(false)}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition-colors duration-200"
               >
                 لغو
               </button>
-              <button 
-                onClick={removeLink} 
+              <button
+                onClick={removeLink}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
               >
-                حذف
+                پاک کردن
               </button>
             </div>
           </div>
@@ -256,3 +355,4 @@ const ContactInfo = () => {
 };
 
 export default ContactInfo;
+
