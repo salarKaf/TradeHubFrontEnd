@@ -28,7 +28,7 @@ class PaymentService:
             "description": f"پرداخت برای سفارش {order_id}",
             "metadata": {}
         }
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=10.0)) as client:
             response = await client.post(self.sandbox_request_url, json=payload)
             data = response.json()
             logger.info(f"Payment request response: {data}")
@@ -47,7 +47,7 @@ class PaymentService:
             "amount": amount ,
             "authority": authority
         }
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=10.0)) as client:
             response = await client.post(self.sandbox_verify_url, json=payload)
             data = response.json()
             logger.info(f"Payment verify response: {data}")
