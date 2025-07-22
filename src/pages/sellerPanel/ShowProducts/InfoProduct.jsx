@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaAsterisk, FaArrowLeft, FaSave, FaStar, FaRegStar, FaCalendarAlt } from "react-icons/fa";
-import InfoCard from '../Layouts/card'
+import InfoCard from '../Layouts/card';
 import ProductQuestions from "./question";
 import ProductReviews from "./Comment";
 import { getProductById, getItemRating } from '../../../API/Items'
@@ -10,9 +10,9 @@ import ImageManager from './ImageManager';
 import dayjs from 'dayjs';
 import jalaliday from 'jalaliday';
 dayjs.extend(jalaliday);
-import { getItemSalesCount, getItemRevenue } from '../../../API/Items';
-
-import JalaliDatePicker from './JalaliDatePicker'
+import { getItemSalesCount, getItemRevenue, getItemReviews } from '../../../API/Items';
+import { getActivePlan } from '../../../API/website'; // ✅ درست
+import JalaliDatePicker from './JalaliDatePicker';
 
 function convertJalaliToGregorian({ year, month, day }) {
     return dayjs()
@@ -34,6 +34,8 @@ const ShowProduct = () => {
     ];
 
     const [reviews, setReviews] = useState(reviewsData);
+    const [planType, setPlanType] = useState(null);
+
 
     // تابع اضافه کردن پاسخ جدید به نظر
     const handleAddReply = (reviewId, newReply) => {
@@ -312,6 +314,48 @@ const ShowProduct = () => {
     }, [productId]);
 
 
+
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const raw = await getItemReviews(productId);
+
+                const formatted = raw.map((r) => ({
+                    id: r.review_id,
+                    userName: "خریدار",
+                    createdAt: r.created_at,
+                    rating: r.rating,
+                    text: r.text,
+                    likes: 0,
+                    dislikes: 0,
+                    replies: [],
+                }));
+
+                setReviews(formatted);
+            } catch (error) {
+                console.error("❌ خطا در دریافت نظرات:", error);
+            }
+        };
+
+        if (productId) fetchReviews();
+    }, [productId]);
+
+
+
+
+    useEffect(() => {
+        const fetchPlan = async () => {
+            try {
+                const plan = await getActivePlan(websiteId);
+                setPlanType(plan?.plan?.name || null);
+
+            } catch (err) {
+                console.error("❌ خطا در دریافت پلن:", err);
+            }
+        };
+        if (websiteId) fetchPlan();
+    }, [websiteId]);
 
 
 
@@ -763,13 +807,14 @@ const ShowProduct = () => {
 
                 <div>
                     {/* سایر اجزای صفحه محصول */}
-
-                    <ProductQuestions
-                        questions={questions}
-                        onAddAnswer={handleAddAnswer}
-                        onLikeAnswer={handleLikeAnswer}
-                        onDislikeAnswer={handleDislikeAnswer}
-                    />
+                    {planType === "Pro" && (
+                        <ProductQuestions
+                            questions={questions}
+                            onAddAnswer={handleAddAnswer}
+                            onLikeAnswer={handleLikeAnswer}
+                            onDislikeAnswer={handleDislikeAnswer}
+                        />
+                    )}
                 </div>
 
                 <ProductReviews

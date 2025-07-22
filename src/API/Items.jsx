@@ -216,3 +216,45 @@ export const getItemSalesCount = async (itemId) => {
 
   return res.data.total_sold; // ✅ اصلاح شد
 };
+
+
+
+
+// GET /api/v1/review/items/{item_id}/reviews
+export const getItemReviews = async (itemId) => {
+    try {
+        const response = await axios.get(`${coreBaseURL}/review/items/${itemId}/reviews`);
+        return response.data;
+    } catch (error) {
+        console.error('❌ Error fetching reviews:', error);
+        throw error;
+    }
+};
+
+
+
+
+// POST /api/v1/review/create_review
+export const createReview = async ({ website_id, item_id, rating, text }) => {
+    try {
+        const response = await fetch(`${coreBaseURL}/review/create_review`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                website_id,
+                item_id,
+                rating,
+                text,
+            }),
+        });
+
+        if (!response.ok) throw new Error('Failed to create review');
+
+        return await response.json();
+    } catch (error) {
+        console.error('❌ Error creating review:', error);
+        throw error;
+    }
+};
