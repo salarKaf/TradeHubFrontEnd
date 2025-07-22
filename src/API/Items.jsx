@@ -1,5 +1,5 @@
 import axios from "axios";
-import { coreBaseURL , mediaBaseURL } from './api';
+import { coreBaseURL, mediaBaseURL } from './api';
 
 export const getNewestItems = async (websiteId, limit = 3) => {
   const token = localStorage.getItem("token");
@@ -64,18 +64,18 @@ export const getProductById = async (productId) => {
 
 
 export const getItemRating = async (itemId) => {
-    try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${coreBaseURL}/review/items/get-rating/${itemId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("❌ خطا در دریافت امتیاز:", error);
-        throw error;
-    }
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(`${coreBaseURL}/review/items/get-rating/${itemId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ خطا در دریافت امتیاز:", error);
+    throw error;
+  }
 };
 
 
@@ -143,49 +143,76 @@ export const createItem = async (data) => {
 
 
 export const getItemsBySubcategoryId = async (subcategoryId) => {
-    const response = await fetch(`${coreBaseURL}/items/items/by_subcategory/${subcategoryId}`);
-    const data = await response.json();
-    return data; // آرایه‌ای از محصولات
+  const response = await fetch(`${coreBaseURL}/items/items/by_subcategory/${subcategoryId}`);
+  const data = await response.json();
+  return data; // آرایه‌ای از محصولات
 };
 
 
 
 
 export const deleteItemImage = async (imageId) => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    const response = await fetch(`${mediaBaseURL}/item/delete/${imageId}`, {
-        method: 'DELETE',
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error("خطا در حذف تصویر");
+  const response = await fetch(`${mediaBaseURL}/item/delete/${imageId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`
     }
+  });
 
-    return true;
+  if (!response.ok) {
+    throw new Error("خطا در حذف تصویر");
+  }
+
+  return true;
 };
 
 
 
 export const setMainItemImage = async (imageId) => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    try {
-        const response = await axios.put(
-            `${mediaBaseURL}/item/update_main_flag/${imageId}`,
-            {},
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-        );
-        return response.data;
-    } catch (error) {
-        console.error("❌ خطا در تنظیم تصویر اصلی:", error);
-        throw error;
-    }
+  try {
+    const response = await axios.put(
+      `${mediaBaseURL}/item/update_main_flag/${imageId}`,
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("❌ خطا در تنظیم تصویر اصلی:", error);
+    throw error;
+  }
+};
+
+
+
+
+export const getItemRevenue = async (itemId) => {
+  const token = localStorage.getItem("token");
+
+  const res = await axios.get(`${coreBaseURL}/order/items/${itemId}/revenue`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data.revenue; // ✅ اصلاح شد
+};
+
+export const getItemSalesCount = async (itemId) => {
+  const token = localStorage.getItem("token");
+
+  const res = await axios.get(`${coreBaseURL}/order/items/${itemId}/sales`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data.total_sold; // ✅ اصلاح شد
 };

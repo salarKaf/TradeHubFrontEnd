@@ -10,8 +10,7 @@ import ImageManager from './ImageManager';
 import dayjs from 'dayjs';
 import jalaliday from 'jalaliday';
 dayjs.extend(jalaliday);
-import { Calendar, utils } from 'react-modern-calendar-datepicker';
-import 'react-modern-calendar-datepicker/lib/DatePicker.css';
+import { getItemSalesCount, getItemRevenue } from '../../../API/Items';
 
 import JalaliDatePicker from './JalaliDatePicker'
 
@@ -160,6 +159,9 @@ const ShowProduct = () => {
 
 
 
+
+
+
     const dummyQuestions = [
         { text: "آیا این محصول اصل است؟", answer: "بله، 100٪ اصل می‌باشد.", likes: 1, dislikes: 0 },
         { text: "چند روزه ارسال میشه؟", answer: "معمولاً بین ۲ تا ۴ روز کاری.", likes: 0, dislikes: 0 }
@@ -189,6 +191,7 @@ const ShowProduct = () => {
         isBestSeller: false,
         discount: '',
         discountActive: false,
+
     });
 
     const [errors, setErrors] = useState({});
@@ -268,7 +271,7 @@ const ShowProduct = () => {
                 const ratingData = await getItemRating(productId);
                 setProductData(prev => ({
                     ...prev,
-                    rating: ratingData.average_rating || 0,
+                    rating: ratingData.average_rating || 0
                 }));
             } catch (error) {
                 console.error("❌ خطا در دریافت امتیاز:", error);
@@ -277,6 +280,34 @@ const ShowProduct = () => {
 
         if (productId) {
             fetchRating();
+        }
+    }, [productId]);
+
+
+
+    useEffect(() => {
+        const fetchSalesAndRevenue = async () => {
+            try {
+                const [salesCountRaw, revenueRaw] = await Promise.all([
+                    getItemSalesCount(productId),
+                    getItemRevenue(productId),
+                ]);
+
+                console.log("🎯 salesCount:", salesCountRaw);
+                console.log("💰 revenue:", revenueRaw);
+
+                setProductData(prev => ({
+                    ...prev,
+                    salesCount: salesCountRaw,
+                    totalSales: revenueRaw,
+                }));
+            } catch (error) {
+                console.error("❌ خطا در دریافت فروش یا درآمد:", error);
+            }
+        };
+
+        if (productId) {
+            fetchSalesAndRevenue();
         }
     }, [productId]);
 
