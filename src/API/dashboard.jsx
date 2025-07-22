@@ -11,7 +11,7 @@ const getAuthHeader = () => {
 };
 
 // گرفتن مجموع درآمد
-export const getTotalRevenue = async (websiteId) => {
+export  const getTotalRevenue = async (websiteId) => {
   try {
     const response = await axios.get(
       `${coreBaseURL}/websites/sales/total-revenue/${websiteId}`,

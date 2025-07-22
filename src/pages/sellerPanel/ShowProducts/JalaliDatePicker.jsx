@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
-
- const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تاریخ" }) => {
+const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تاریخ", minDate }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentDate, setCurrentDate] = useState({
-    year: value?.year || 1403,
-    month: value?.month || 1
+  // جدید (درست):
+  const getTodayDate = () => {
+    const today = new Date();
+    const persianDate = today.toLocaleDateString('fa-IR-u-nu-latn').split('/');
+    return {
+      year: parseInt(persianDate[0]),
+      month: parseInt(persianDate[1])
+    };
+  };
+
+  const [currentDate, setCurrentDate] = useState(() => {
+    if (value?.year && value?.month) {
+      return { year: value.year, month: value.month };
+    }
+    return getTodayDate();
   });
 
   // ماه‌های شمسی
@@ -32,11 +43,11 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
       -61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210,
       1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178
     ];
-    
+
     const gy = year + 1595;
     let leap = -14;
     let jp = breaks[0];
-    
+
     let jump = 0;
     for (let j = 1; j <= 19; j++) {
       const jm = breaks[j];
@@ -45,13 +56,13 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
       leap += Math.floor(jump / 33) * 8 + Math.floor(((jump % 33) + 3) / 4);
       jp = jm;
     }
-    
+
     let n = year - jp;
     if (n < jump) {
       leap += Math.floor(n / 33) * 8 + Math.floor(((n % 33) + 3) / 4);
       if ((jump % 33) === 4 && (jump - n) === 4) leap++;
     }
-    
+
     return (leap + 1) % 7 < 2;
   };
 
@@ -70,37 +81,37 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
     const aux1 = epOff % 1029;
     let aux2 = Math.floor(aux1 / 33);
     let epBase = epYear + 4 * aux2;
-    
+
     if (aux1 % 33 >= 29) {
       aux2++;
       epBase += 4;
     }
-    
+
     if (aux2 === 31) {
       aux2 = 30;
       epYear++;
       epBase++;
     }
-    
+
     let jDayOfYear = 0;
     for (let i = 1; i < jm; i++) {
       jDayOfYear += getDaysInMonth(jy, i);
     }
     jDayOfYear += jd;
-    
-    const gDayOfYear = jDayOfYear <= 186 
-      ? jDayOfYear 
+
+    const gDayOfYear = jDayOfYear <= 186
+      ? jDayOfYear
       : jDayOfYear - 186 + Math.floor((epBase + 1) * 365.25) - Math.floor(epYear * 365.25) + 186;
-    
+
     const gy = epBase + Math.floor(gDayOfYear / 365.25);
     const gDayOfYearInGy = gDayOfYear - Math.floor((gy - epBase) * 365.25);
-    
+
     const isLeap = ((gy % 4) === 0 && (gy % 100) !== 0) || ((gy % 400) === 0);
     const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    
+
     let gm = 1;
     let gd = gDayOfYearInGy;
-    
+
     for (let i = 0; i < 12; i++) {
       if (gd <= daysInMonths[i]) {
         gm = i + 1;
@@ -108,8 +119,22 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
       }
       gd -= daysInMonths[i];
     }
-    
+
     return { year: gy, month: gm, day: gd };
+  };
+
+  // بررسی اینکه آیا روز معین قبل از minDate است یا نه
+  const isDateDisabled = (year, month, day) => {
+    if (!minDate) return false;
+
+    // مقایسه تاریخ
+    if (year < minDate.year) return true;
+    if (year > minDate.year) return false;
+
+    if (month < minDate.month) return true;
+    if (month > minDate.month) return false;
+
+    return day < minDate.day;
   };
 
   // تولید تقویم ماه
@@ -117,23 +142,23 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
     const daysInMonth = getDaysInMonth(currentDate.year, currentDate.month);
     const firstDay = getFirstDayOfMonth(currentDate.year, currentDate.month);
     const days = [];
-    
+
     // روزهای خالی ابتدای ماه
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
-    
+
     // روزهای ماه
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(day);
     }
-    
+
     return days;
   };
 
   // انتخاب روز
   const selectDay = (day) => {
-    if (day) {
+    if (day && !isDateDisabled(currentDate.year, currentDate.month, day)) {
       const selectedDate = {
         year: currentDate.year,
         month: currentDate.month,
@@ -173,11 +198,11 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
     <div className="relative">
       {/* فیلد ورودی */}
       <div
-        className="bg-white w-full px-4 py-3 border border-orange-200 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 rounded-xl transition-colors cursor-pointer flex items-center justify-between"
+        className="bg-white w-full px-4 py-3 border border-gray-300 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 rounded-lg transition-colors cursor-pointer flex items-center justify-between"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className={value ? "text-gray-900" : "text-gray-400"}>
-          {value 
+          {value
             ? `${value.year}/${value.month.toString().padStart(2, '0')}/${value.day.toString().padStart(2, '0')}`
             : placeholder
           }
@@ -192,11 +217,12 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={prevMonth}
+              type="button"  // این خط را اضافه کنید
               className="p-1 rounded-lg hover:bg-gray-100"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
-            
+
             <div className="flex items-center gap-2">
               {/* انتخاب سال */}
               <select
@@ -211,14 +237,15 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
                   );
                 })}
               </select>
-              
+
               <span className="font-medium">
                 {persianMonths[currentDate.month - 1]}
               </span>
             </div>
-            
+
             <button
               onClick={nextMonth}
+              type="button"  // این خط را اضافه کنید
               className="p-1 rounded-lg hover:bg-gray-100"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -236,26 +263,33 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
           {/* روزهای ماه */}
           <div className="grid grid-cols-7 gap-1">
-            {days.map((day, index) => (
-              <button
-                key={index}
-                onClick={() => selectDay(day)}
-                disabled={!day}
-                className={`
-                  p-2 text-sm rounded-lg transition-colors
-                  ${!day 
-                    ? 'invisible' 
-                    : value && value.year === currentDate.year && value.month === currentDate.month && value.day === day
-                      ? 'bg-orange-500 text-white font-medium'
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }
-                `}
-              >
-                {day}
-              </button>
-            ))}
+            {days.map((day, index) => {
+              const isDisabled = day && isDateDisabled(currentDate.year, currentDate.month, day);
+              const isSelected = value && value.year === currentDate.year && value.month === currentDate.month && value.day === day;
+
+              return (
+                <button
+                  key={index}
+                  onClick={() => selectDay(day)}
+                  disabled={!day || isDisabled}
+                  className={`
+                    p-2 text-sm rounded-lg transition-colors
+                    ${!day
+                      ? 'invisible'
+                      : isDisabled
+                        ? 'text-gray-300 cursor-not-allowed'
+                        : isSelected
+                          ? 'bg-blue-500 text-white font-medium'
+                          : 'hover:bg-gray-100 text-gray-700 cursor-pointer'
+                    }
+                  `}
+                >
+                  {day}
+                </button>
+              );
+            })}
           </div>
-          
+
           {/* دکمه پاک کردن */}
           <div className="mt-4 pt-4 border-t border-gray-200">
             <button
@@ -281,4 +315,5 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
     </div>
   );
 };
+
 export default JalaliDatePicker;
