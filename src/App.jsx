@@ -24,7 +24,7 @@ import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
 import ChangePasswordForm from "./pages/sellerPanel/Profile/ChangePasswordForm.jsx";
 
-import HomeWebsite from '../src/pages/website/pages/Home';
+import HomeWebsite from '../src/pages/website/pages/Home/Home.jsx';
 import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
 import ShopWebsite from '../src/pages/website/pages/ShopWebsite';
 import RulesWebsite from '../src/pages/website/pages/RulesWebsite';
