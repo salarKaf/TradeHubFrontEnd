@@ -13,8 +13,11 @@ from app.services.base_service import BaseService
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
 from typing import List, Dict
-from app.domain.schemas.buyer_schema import BuyerResponseSchema
 from app.services.plan_service import PlanService
+import jdatetime
+from dateutil.relativedelta import relativedelta
+from app.utils.date_utils import get_jalali_month_year
+from datetime import date
 
 class WebsiteMainService(BaseService):
     def __init__(
@@ -261,7 +264,22 @@ class WebsiteMainService(BaseService):
         plan = await self.plan_service.get_plan_by_id(website_plan.plan_id)
         if plan.name != 'Pro':
             raise HTTPException(status_code=403, detail="This option is only available in pro plan.")
-        return await self.website_service.get_last_6_months_sales(website_id)
+        today = date.today()
+        months = []
+
+        for i in range(6, 0, -1):  
+            target_gregorian = today - relativedelta(months=i)
+            target_jalali = jdatetime.date.fromgregorian(date=target_gregorian)
+            year, month = target_jalali.year, target_jalali.month
+
+            total = await self.website_service.get_total_revenue_for_month(website_id, year, month)
+
+            months.append({
+                "month": get_jalali_month_year(target_gregorian), 
+                "revenue": total
+            })
+
+        return months
     
     async def get_total_revenue(self, website_id: UUID) -> dict:
         return await self.website_service.get_total_revenue(website_id)
