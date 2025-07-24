@@ -28,7 +28,7 @@ import HomeWebsite from '../src/pages/website/pages/Home/Home.jsx';
 import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
 import ShopWebsite from '../src/pages/website/pages/Shop/ShopWebsite.jsx';
 import RulesWebsite from '../src/pages/website/pages/RulesWebsite';
-
+import ProductPage from '../src/pages/website/pages/Product/ProductPage.jsx';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function App() {
@@ -75,6 +75,7 @@ export default function App() {
         <Route path="/about-website" element={<AboutWebsite />} />
         <Route path="/shop-website" element={<ShopWebsite />} />
         <Route path="/rules-website" element={<RulesWebsite />} />
+        <Route path="/product" element={<ProductPage/>}/>
 
 
 
