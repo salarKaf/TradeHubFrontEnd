@@ -26,7 +26,7 @@ import ChangePasswordForm from "./pages/sellerPanel/Profile/ChangePasswordForm.j
 
 import HomeWebsite from '../src/pages/website/pages/Home/Home.jsx';
 import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
-import ShopWebsite from '../src/pages/website/pages/ShopWebsite';
+import ShopWebsite from '../src/pages/website/pages/Shop/ShopWebsite.jsx';
 import RulesWebsite from '../src/pages/website/pages/RulesWebsite';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
