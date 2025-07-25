@@ -41,7 +41,7 @@ class Website(Base):
     logo_url = Column(String(255), nullable=True)
     banner_image = Column(String(255), nullable=True)
     welcome_text = Column(Text, nullable=True)
-    store_policy = Column(Text, nullable=True)
+    store_policy = Column(JSONB, nullable=True)
     store_slogan = Column(Text, nullable=True)
     guide_page = Column(Text, nullable=True)
     social_links = Column(JSONB, nullable=True)

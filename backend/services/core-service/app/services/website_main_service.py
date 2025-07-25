@@ -35,49 +35,42 @@ class WebsiteMainService(BaseService):
     async def create_website(self, user_id: UUID, website_data: WebsiteCreateSchema) -> WebsiteResponseSchema:
         logger.info(f"Starting to create website for user {user_id} with data: {website_data.dict()}")
 
-        try:
-            website = await self.user_service.check_is_owner(user_id)
-            if website:
-                raise HTTPException(status_code=409, detail="You only can own one website")
+        website = await self.user_service.check_is_owner(user_id)
+        if website:
+            raise HTTPException(status_code=409, detail="You only can own one website")
 
-            created_website = await self.website_service.create_website(user_id, website_data)
-            
-            return WebsiteResponseSchema(
-                id=created_website.website_id,
-                business_name=created_website.business_name,
-                welcome_text=created_website.welcome_text,
-                guide_page=created_website.guide_page,
-                social_links=jsonable_encoder(created_website.social_links), 
-                faqs=jsonable_encoder(created_website.faqs),  
-                logo_url=created_website.logo_url,
-                banner_image=created_website.banner_image,
-                created_at=created_website.created_at,
-                message="Website fetched successfully ✅"
-            )
+        created_website = await self.website_service.create_website(user_id, website_data)
         
+        return WebsiteResponseSchema(
+            website_id = created_website.website_id,
+            business_name=created_website.business_name,
+            welcome_text=created_website.welcome_text,
+            guide_page=created_website.guide_page,
+            store_policy= jsonable_encoder(created_website.store_policy),
+            store_slogan= created_website.store_slogan,
+            social_links=jsonable_encoder(created_website.social_links), 
+            faqs=jsonable_encoder(created_website.faqs),  
+            logo_url=created_website.logo_url,
+            banner_image=created_website.banner_image,
+        )
+    
 
-        except Exception as e:
-            logger.error(f"Error occurred while creating website for user {user_id}: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error creating website: {str(e)}")
 
 
     async def create_website_category(self, website_category_data: WebsiteCategoryCreateSchema) -> WebsiteCategoryResponseSchema:
         logger.info(f"Starting to create website category with data: {website_category_data.dict()}")
 
-        try:
-            created_website_category = await self.website_service.create_website_category(website_category_data)
+        created_website_category = await self.website_service.create_website_category(website_category_data)
 
-            return WebsiteCategoryResponseSchema(
-                id=created_website_category.id,
-                website_id=created_website_category.website_id,
-                name=created_website_category.name,
-                is_active=created_website_category.is_active,
-                created_at=created_website_category.created_at,
-                message="website Category Created Successfully ✅"
-            )
-        except Exception as e:
-            logger.error(f"Error occurred while creating website category: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error creating website category: {str(e)}")
+        return WebsiteCategoryResponseSchema(
+            id=created_website_category.id,
+            website_id=created_website_category.website_id,
+            name=created_website_category.name,
+            is_active=created_website_category.is_active,
+            created_at=created_website_category.created_at,
+            message="website Category Created Successfully ✅"
+        )
+
 
 
     async def get_website_by_id(self, website_id: UUID) -> WebsiteResponseSchema:
@@ -86,17 +79,16 @@ class WebsiteMainService(BaseService):
         website = await self.website_service.get_website_by_id(website_id)
 
         return WebsiteResponseSchema(
-            id = website.website_id,
+            website_id = website.website_id,
             business_name=website.business_name,
             welcome_text=website.welcome_text,
             guide_page=website.guide_page,
-            store_policy= website.store_policy,
+            store_policy= jsonable_encoder(website.store_policy),
             store_slogan= website.store_slogan,
             social_links=jsonable_encoder(website.social_links), 
             faqs=jsonable_encoder(website.faqs),  
             logo_url=website.logo_url,
             banner_image=website.banner_image,
-            message="Website fetched successfully ✅"   
         )
 
     async def get_website_categories_by_website_id(self, website_id: UUID) -> List[WebsiteCategoryResponseSchema]:
@@ -170,18 +162,17 @@ class WebsiteMainService(BaseService):
     async def get_website_for_user(self, user_id: UUID) -> WebsiteResponseSchema:
         website = await self.user_service.get_website_for_user(user_id)
         return WebsiteResponseSchema(
-            id=website.website_id,
+            website_id=website.website_id,
             business_name=website.business_name,
             welcome_text=website.welcome_text,
             guide_page=website.guide_page,
-            store_policy= website.store_policy,
+            store_policy= jsonable_encoder(website.store_policy),
             store_slogan= website.store_slogan,
             social_links=jsonable_encoder(website.social_links),
             faqs=jsonable_encoder(website.faqs),
             logo_url=website.logo_url,
             banner_image=website.banner_image,
             created_at=website.created_at,
-            message="Website fetched successfully ✅"
         )
 
     async def add_new_owner(self,owner_id: UUID ,new_owner_data: AddWebsiteOwnerSchema) -> MessageResponse:
@@ -220,18 +211,17 @@ class WebsiteMainService(BaseService):
         logger.info(f"Successfully updated website with ID: {updated_data.website_id}")
         
         return WebsiteResponseSchema(
-                id=updated_website.website_id,
+                website_id=updated_website.website_id,
                 business_name=updated_website.business_name,
                 welcome_text=updated_website.welcome_text,
                 guide_page=updated_website.guide_page,
-                store_policy= updated_website.store_policy,
+                store_policy= jsonable_encoder(updated_website.store_policy),
                 store_slogan= updated_website.store_slogan,
                 social_links=jsonable_encoder(updated_website.social_links), 
                 faqs=jsonable_encoder(updated_website.faqs),  
                 logo_url=updated_website.logo_url,
                 banner_image=updated_website.banner_image,
                 created_at=updated_website.created_at,
-                message="Website fetched successfully ✅"
             )
     
     async def get_buyers_by_website_id(self, website_id: UUID) :
