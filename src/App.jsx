@@ -12,7 +12,7 @@ import PricingPlans from "./pages/TradePages/Plans/Plans";
 import PaymentCallback from './pages/TradePages/Plans/components/PaymentCallback';
 import PaymentResult from './pages/TradePages/Plans/components/PaymentResult.jsx';
 import OTPForm from "./pages/TradePages/OTPForm"
-
+import Slug from "./pages/TradePages/slug";
 
 import HomeSeller from "./pages/sellerPanel/Home/Home";
 import Appearance from "./pages/sellerPanel/Appearance/Appearance";
@@ -24,10 +24,12 @@ import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
 import ChangePasswordForm from "./pages/sellerPanel/Profile/ChangePasswordForm.jsx";
 
+
+
 import HomeWebsite from '../src/pages/website/pages/Home/Home.jsx';
-import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
+import AboutWebsite from './pages/website/pages/AboutUs/About.jsx';
 import ShopWebsite from '../src/pages/website/pages/Shop/ShopWebsite.jsx';
-import RulesWebsite from '../src/pages/website/pages/RulesWebsite';
+import RulesWebsite from '../src/pages/website/pages/Rules/RulesWebsite';
 import ProductPage from '../src/pages/website/pages/Product/ProductPage.jsx';
 import Cart from '../src/pages/website/pages/Cart/Cart.jsx';
 import SignUp from '../src/pages/website/pages/Auth/SignUp';
@@ -53,6 +55,7 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/login" element={<LoginForm></LoginForm>} />
         <Route path="/storeForm" element={<CreateStore></CreateStore>} />
+        <Route path="/Slug/:websiteId" element={<Slug></Slug>}></Route>
         <Route path="/rules/:websiteId" element={<RulesTrade></RulesTrade>}></Route>
         <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
         <Route path="/OTPForm" element={<OTPForm />} />
@@ -69,7 +72,6 @@ export default function App() {
         <Route path='/products/:websiteId' element={<Products></Products>} />
         <Route path='/seller/products/:websiteId/add' element={<AddProductaPage></AddProductaPage>}></Route>
         <Route path='/detailProduct/:websiteId/:productId' element={<ShowProductaPage></ShowProductaPage>}></Route>
-
         <Route path='/ChangePassword/:websiteId' element={<ChangePasswordForm></ChangePasswordForm>}></Route>
 
 
@@ -79,8 +81,8 @@ export default function App() {
         <Route path="/about-website" element={<AboutWebsite />} />
         <Route path="/shop-website" element={<ShopWebsite />} />
         <Route path="/rules-website" element={<RulesWebsite />} />
-        <Route path="/product" element={<ProductPage/>}/>
-        <Route path="/cart" element={<Cart/>}/>
+        <Route path="/product" element={<ProductPage />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/signup-website" element={<SignUp />} />
         <Route path="/login-website" element={<Login />} />
         <Route path="/digital-product-purchased" element={<ProductAfterPurchase />} />

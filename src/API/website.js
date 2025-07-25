@@ -158,3 +158,28 @@ export const updateWebsitePartial = async (websiteId, data) => {
 
     return response.data;
 };
+
+
+
+
+
+
+
+
+
+export const updateWebsiteFaqs = async (websiteId, faqs) => {
+  const token = localStorage.getItem("token");
+  const res = await axios.put(
+    `${coreBaseURL}/websites/update-website/${websiteId}/`,
+    {
+      website_id: websiteId,
+      faqs,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+};

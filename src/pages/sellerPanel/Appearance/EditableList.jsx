@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { FaChevronDown, FaChevronLeft } from "react-icons/fa";
+import {  useEffect } from "react";
+
 
 const EditableList = ({ title, icon, items = [], viewText, onSave, editIcon, deleteIcon }) => {
   const [data, setData] = useState(items);
@@ -23,25 +25,33 @@ const EditableList = ({ title, icon, items = [], viewText, onSave, editIcon, del
   const [viewModal, setViewModal] = useState(null);
   const [isExpanded, setIsExpanded] = useState(true);
 
+  // وقتی items از parent تغییر کرد، data رو هم بروز کن
+  // به این تبدیل کن:
+  useEffect(() => {
+    setData(items);
+  }, [items]);
   const handleEdit = (index) => {
     setEditIndex(index);
     setTempItem(data[index]);
   };
 
   const handleSave = (index) => {
-    if (!tempItem.title.trim() ||
-        (viewText.includes("پرسش") && (!tempItem.question?.trim() || !tempItem.answer?.trim())) ||
-        (viewText.includes("توضیحات") && !tempItem.description?.trim())
-    ) {
+    if (!tempItem.question?.trim() || !tempItem.answer?.trim()) {
       setModal({ type: "error", text: "همه فیلدها باید پر شوند." });
       return;
     }
+
     const updated = [...data];
     updated[index] = tempItem;
     setData(updated);
     setEditIndex(null);
     setTempItem({});
-    onSave && onSave(updated);
+
+    console.log("🟡 onSave اجرا شد با داده:", updated);
+
+    if (onSave) {
+      onSave(updated);
+    }
   };
 
   const handleDelete = (index) => {
@@ -57,51 +67,38 @@ const EditableList = ({ title, icon, items = [], viewText, onSave, editIcon, del
     });
   };
 
-  const handleAdd = () => {
-    if (!newItem.title.trim() ||
-        (viewText.includes("پرسش") && (!newItem.question?.trim() || !newItem.answer?.trim())) ||
-        (viewText.includes("توضیحات") && !newItem.description?.trim())
-    ) {
-      setModal({ type: "error", text: "همه فیلدها باید پر شوند." });
-      return;
-    }
-    const newData = [...data, { ...newItem, id: Date.now() }];
-    setData(newData);
-    setNewItem({ title: "", question: "", answer: "", description: "" });
-    setShowAddForm(false);
-    onSave && onSave(newData);
-  };
-
   const addNewRow = () => {
-    const newData = [...data, { 
-      id: Date.now(), 
-      title: "", 
-      question: "", 
-      answer: "", 
-      description: "" 
-    }];
+    const isFaq = viewText.includes("پرسش");
+
+    const newItem = {
+      id: Date.now(),
+      title: isFaq ? `پرسش ${data.length + 1}` : "",
+      question: "",
+      answer: "",
+      description: ""
+    };
+
+    const newData = [...data, newItem];
     setData(newData);
     setEditIndex(newData.length - 1);
-    setTempItem({ title: "", question: "", answer: "", description: "" });
-    onSave && onSave(newData);
+    setTempItem(newItem);
   };
 
   return (
     <div className="space-y-6 relative p-4">
       {/* Header with title and toggle button */}
       <div className="flex items-center gap-3 font-modam font-bold text-[#1E212D] opacity-90 text-2xl">
-        
         <div className="flex items-center justify-center w-8 h-8">
           {icon}
         </div>
         <span>{title}</span>
-        
-        <button 
+
+        <button
           onClick={() => setIsExpanded(!isExpanded)}
           className=" p-2 "
         >
-          {isExpanded ? 
-            <FaChevronDown className="w-5 h-5 text-[#1E212D]" />: 
+          {isExpanded ?
+            <FaChevronDown className="w-5 h-5 text-[#1E212D]" /> :
             <FaChevronLeft className="w-5 h-5 text-[#1E212D]" />
           }
         </button>
@@ -113,107 +110,122 @@ const EditableList = ({ title, icon, items = [], viewText, onSave, editIcon, del
       {/* Table content */}
       {isExpanded && (
         <div className="space-y-4">
-          {/* Table */}
-          <div className="border border-[#d6c2aa] rounded-lg overflow-hidden bg-white font-modam">
-            <table className="w-full">
-              <tbody>
-                {data.map((item, index) => (
-                  <tr key={item.id} className="border-b border-[#d6c2aa] last:border-b-0">
-                    <td className="px-4 py-3 text-right">
-                      {editIndex === index ? (
-                        <div className="space-y-2">
-                          <input
-                            type="text"
-                            value={tempItem.title}
-                            onChange={(e) =>
-                              setTempItem({ ...tempItem, title: e.target.value })
-                            }
-                            placeholder="عنوان"
-                            className="w-full border border-gray-300 p-2 rounded text-sm"
-                          />
-                          {viewText.includes("پرسش") ? (
-                            <>
-                              <input
-                                type="text"
-                                value={tempItem.question || ""}
-                                onChange={(e) =>
-                                  setTempItem({ ...tempItem, question: e.target.value })
-                                }
-                                placeholder="پرسش را وارد کنید"
-                                className="w-full border border-gray-300 p-2 rounded text-sm"
-                              />
+          {/* Table or Empty State */}
+          {data.length === 0 ? (
+            // حالت خالی
+            <div className="border border-[#d6c2aa] rounded-lg bg-white font-modam p-8 text-center">
+              <div className="text-gray-500 text-lg mb-4">
+                🤷‍♂️ هنوز چیزی ثبت نشده!
+              </div>
+              <div className="text-gray-400 text-sm">
+                برای شروع روی "افزودن ردیف جدید" کلیک کنید
+              </div>
+            </div>
+          ) : (
+            // جدول معمولی
+            <div className="border border-[#d6c2aa] rounded-lg overflow-hidden bg-white font-modam">
+              <table className="w-full">
+                <tbody>
+                  {data.map((item, index) => (
+                    <tr key={item.id} className="border-b border-[#d6c2aa] last:border-b-0">
+                      <td className="px-4 py-3 text-right">
+                        {editIndex === index ? (
+                          <div className="space-y-2">
+                            <input
+                              type="text"
+                              value={tempItem.title}
+                              onChange={(e) =>
+                                setTempItem({ ...tempItem, title: e.target.value })
+                              }
+                              placeholder="عنوان"
+                              className="w-full border border-gray-300 p-2 rounded text-sm"
+                            />
+                            {viewText.includes("پرسش") ? (
+                              <>
+                                <input
+                                  type="text"
+                                  value={tempItem.question || ""}
+                                  onChange={(e) =>
+                                    setTempItem({ ...tempItem, question: e.target.value })
+                                  }
+                                  placeholder="پرسش را وارد کنید"
+                                  className="w-full border border-gray-300 p-2 rounded text-sm"
+                                />
+                                <textarea
+                                  value={tempItem.answer || ""}
+                                  onChange={(e) =>
+                                    setTempItem({ ...tempItem, answer: e.target.value })
+                                  }
+                                  placeholder="پاسخ را وارد کنید"
+                                  className="w-full border border-gray-300 p-2 rounded text-sm"
+                                  rows={3}
+                                />
+                              </>
+                            ) : (
                               <textarea
-                                value={tempItem.answer || ""}
+                                value={tempItem.description || ""}
                                 onChange={(e) =>
-                                  setTempItem({ ...tempItem, answer: e.target.value })
+                                  setTempItem({ ...tempItem, description: e.target.value })
                                 }
-                                placeholder="پاسخ را وارد کنید"
+                                placeholder="توضیحات"
                                 className="w-full border border-gray-300 p-2 rounded text-sm"
                                 rows={3}
                               />
+                            )}
+                          </div>
+                        ) : (
+                          <div className="font-medium text-sm">
+                            {viewText.includes("پرسش") ? `پرسش ${index + 1}` : item.title}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 w-64 font-modam">
+                        <div className="flex gap-2 justify-end items-center">
+                          <button
+                            onClick={() => setViewModal(item)}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium whitespace-nowrap"
+                          >
+                            {viewText.includes("پرسش") ? "مشاهده پرسش و پاسخ" : "مشاهده توضیحات"}
+                          </button>
+                          {editIndex === index ? (
+                            <>
+                              <button
+                                onClick={() => handleSave(index)}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
+                              >
+                                <Save className="w-6 h-6 text-green-600" />
+                              </button>
+                              <button
+                                onClick={() => setEditIndex(null)}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
+                              >
+                                <X className="w-6 h-6 text-gray-500" />
+                              </button>
                             </>
                           ) : (
-                            <textarea
-                              value={tempItem.description || ""}
-                              onChange={(e) =>
-                                setTempItem({ ...tempItem, description: e.target.value })
-                              }
-                              placeholder="توضیحات"
-                              className="w-full border border-gray-300 p-2 rounded text-sm"
-                              rows={3}
-                            />
+                            <>
+                              <button
+                                onClick={() => handleEdit(index)}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
+                              >
+                                <Pencil className="w-5 h-5 text-[#1E212D]" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(index)}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
+                              >
+                                <Trash2 className="w-6 h-8 text-[#1E212D]" />
+                              </button>
+                            </>
                           )}
                         </div>
-                      ) : (
-                        <div className="font-medium text-sm">{item.title}</div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 w-64 font-modam">
-                      <div className="flex gap-2 justify-end items-center">
-                        <button 
-                          onClick={() => setViewModal(item)} 
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium whitespace-nowrap"
-                        >
-                          {viewText.includes("پرسش") ? "مشاهده پرسش و پاسخ" : "مشاهده توضیحات"}
-                        </button>
-                        {editIndex === index ? (
-                          <>
-                            <button 
-                              onClick={() => handleSave(index)} 
-                              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
-                            >
-                              <Save className="w-6 h-6 text-green-600" />
-                            </button>
-                            <button 
-                              onClick={() => setEditIndex(null)} 
-                              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
-                            >
-                              <X className="w-6 h-6 text-gray-500" />
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button 
-                              onClick={() => handleEdit(index)} 
-                              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
-                            >
-                              <Pencil className="w-5 h-5 text-[#1E212D]" />
-                            </button>
-                            <button 
-                              onClick={() => handleDelete(index)} 
-                              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
-                            >
-                              <Trash2 className="w-6 h-8 text-[#1E212D]" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* Add button positioned to the left and attached to table */}
           <div className="flex justify-start font-modam">

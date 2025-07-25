@@ -14,6 +14,7 @@ const ProductPage = () => {
         <ProductShow></ProductShow>
 
       </div>
+
       <div className='mt-20'>
         <Footer></Footer>
       </div>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import ProductCard from './ProductCard';
+import Card from './ProductCard';
 import Navbar from '../../components/Navbar'
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -10,7 +10,7 @@ const Cart =()=>{
         <div>
             <Navbar></Navbar>
             <Header></Header>
-            <ProductCard></ProductCard>
+            <Card></Card>
             <Footer></Footer>
         </div>
     );

@@ -3,7 +3,7 @@
 import Navbar from "../../components/Navbar";
 import Header from "../../components/Header";
 import ProductGrid from "./ProductGrid";
-import ProductSlider from "./ProductSlider";  
+import ProductSlider from "./ProductSlider";
 import Footer from "../../components/Footer";
 const HomeWebsite = () => {
   return (
@@ -11,7 +11,10 @@ const HomeWebsite = () => {
       <Navbar />
       <Header />
       <ProductGrid />
-      <ProductSlider></ProductSlider>
+      <div className="mt-10 mb-56">
+        <ProductSlider></ProductSlider>
+      </div>
+      <div className=' h-[1px] bg-black/30'></div>
       <Footer></Footer>
     </div>
   );

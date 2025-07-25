@@ -57,74 +57,49 @@ const HomeContent = () => {
     const fetchDashboardData = async () => {
       try {
         const website_Id = websiteId;
-        const last6MonthSales = await getLast6MonthsSales(website_Id);
 
-        // فرض بر اینکه این فرمت رو برگردونه:
-        /// [ { month: 'فروردین', revenue: 10000 }, ... ]
+        // اول پلن کاربر رو بگیر
+        const activePlan = await getActivePlan(website_Id);
+        setPlanType(activePlan?.plan?.name || null);
 
-        // تابع برای تشخیص روند نمودار و انتخاب رنگ
+        // حالا فقط اگه پلن Pro بود، داده نمودار رو بگیر
+        let last6MonthSales = [];
+        if (activePlan?.plan?.name === "Pro") {
+          last6MonthSales = await getLast6MonthsSales(website_Id);
 
-        const getChartTrendColor = (dataPoints) => {
-          if (!dataPoints || dataPoints.length < 2) {
-            return { border: '#2196F3', background: 'rgba(33, 150, 243, 0.2)' }; // آبی برای ثابت
-          }
+          const labels = last6MonthSales.map(item => item.month);
+          const dataPoints = last6MonthSales.map(item => item.revenue);
+          const trendColors = getChartTrendColor(dataPoints);
 
-          let increasing = 0;
-          let decreasing = 0;
+          setSalesChartData({
+            labels,
+            datasets: [
+              {
+                label: 'درآمد فروش',
+                data: dataPoints,
+                borderColor: trendColors.border,
+                backgroundColor: trendColors.background,
+                tension: 0.1,
+              },
+            ],
+          });
+        }
 
-          for (let i = 1; i < dataPoints.length; i++) {
-            if (dataPoints[i] > dataPoints[i - 1]) {
-              increasing++;
-            } else if (dataPoints[i] < dataPoints[i - 1]) {
-              decreasing++;
-            }
-          }
-
-          if (increasing > decreasing) {
-            return { border: '#4CAF50', background: 'rgba(76, 175, 80, 0.2)' }; // سبز برای صعودی
-          } else if (decreasing > increasing) {
-            return { border: '#F44336', background: 'rgba(244, 67, 54, 0.2)' }; // قرمز برای نزولی
-          } else {
-            return { border: '#2196F3', background: 'rgba(33, 150, 243, 0.2)' }; // آبی برای ثابت
-          }
-        };
-
-
-        const labels = last6MonthSales.map(item => item.month);
-        const dataPoints = last6MonthSales.map(item => item.revenue);
-        const trendColors = getChartTrendColor(dataPoints);
-
-        setSalesChartData({
-          labels,
-          datasets: [
-            {
-              label: 'درآمد فروش',
-              data: dataPoints,
-              borderColor: trendColors.border,
-              backgroundColor: trendColors.background,
-              tension: 0.1,
-            },
-          ],
-        });
-
-
+        // بقیه داده‌ها رو هم بگیر (بدون وابستگی به نوع پلن)
         const [
           revenue,
           salesCount,
           productCount,
-          activePlan,
           latestOrders,
           newestItemsRaw
         ] = await Promise.all([
           getTotalRevenue(website_Id),
           getTotalSalesCount(website_Id),
           getProductCount(website_Id),
-          getActivePlan(website_Id),
           getLatestOrders(website_Id),
           getNewestItems(website_Id, 3),
         ]);
 
-        // ✅ گرفتن داده فروش و درآمد برای هر محصول
         const newestItems = await Promise.all(newestItemsRaw.map(async (item) => {
           const [sales, amount] = await Promise.all([
             getItemSalesCount(item.item_id),
@@ -141,26 +116,15 @@ const HomeContent = () => {
           ...prevData,
           totalSales: revenue?.total_revenue || 0,
           totalOrders: salesCount?.total_sales_count || 0,
-          totalProducts: productCount?.items_count || 0, // ✅ کلید درست از API
+          totalProducts: productCount?.items_count || 0,
           recentOrders: latestOrders || [],
           bestProducts: newestItems || [],
         }));
-
-        setPlanType(activePlan?.plan?.name || null);
-
-        console.log("✅ داشبورد به‌روزرسانی شد:", {
-          revenue,
-          salesCount,
-          productCount,
-          newestItems
-        });
 
       } catch (error) {
         console.error("❌ خطا در گرفتن داده داشبورد:", error);
       }
     };
-
-
     if (websiteId) fetchDashboardData();
   }, [websiteId]);
 
