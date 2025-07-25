@@ -23,4 +23,4 @@ async def get_current_user(
         )
 
     logger.info(f"Validating token {token}")
-    return await client.validate_token(token)
+    return await client.validate_user_token(token)
