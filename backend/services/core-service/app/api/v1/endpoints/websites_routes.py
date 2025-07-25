@@ -6,7 +6,7 @@ from app.domain.schemas.website_schema import (WebsiteCreateSchema, WebsiteRespo
                                                   SubCategoryUpdateSchema,OrderInvoiceSchema,
                                                   WebsiteSubcategoryResponseSchema, WebsiteSubcategoryCreateSchema,
                                                   WebsiteUpdateSchema ,AddWebsiteOwnerSchema)
-from app.services.auth_services.auth_service import get_current_user
+from app.services.auth_services.user_auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
 from typing import Annotated, List, Literal, Dict, Optional

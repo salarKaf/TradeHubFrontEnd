@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
-from app.services.auth_services.auth_service import get_current_user, get_current_buyer
+from app.services.auth_services.user_auth_service import get_current_user
+from app.services.auth_services.buyer_auth_service import get_current_buyer
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
 from typing import Annotated, List

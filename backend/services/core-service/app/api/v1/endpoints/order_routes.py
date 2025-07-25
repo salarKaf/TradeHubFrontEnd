@@ -4,7 +4,9 @@ from uuid import UUID
 from app.domain.schemas.order_schema import OrderCreateSchema, OrderResponseSchema
 from app.domain.schemas.token_schema import TokenDataSchema
 from app.services.order_main_service import OrderMainService
-from app.services.auth_services.auth_service import get_current_buyer, get_current_user
+from app.services.auth_services.buyer_auth_service import get_current_buyer
+from app.services.auth_services.user_auth_service import  get_current_user
+
 from loguru import logger
 
 order_router = APIRouter()
