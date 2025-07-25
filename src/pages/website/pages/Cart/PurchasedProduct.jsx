@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
-import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X, Link, CheckCircle } from 'lucide-react';
 
-import CommentsSystem from './ProductCommentList';
-import QuestionAnswerSystem from './ProductQuestionList';
-
-const ProductShow = () => {
+const PurchasedProduct = () => {
     const [selectedImage, setSelectedImage] = useState(0);
-    const [isFavorite, setIsFavorite] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
 
-    // داده‌های ماک
     const productImages = [
         '/public/website/a3655ad2f99985ab6b83020118c028d9 1.png',
         '/public/website/a3655ad2f99985ab6b83020118c028d9 1.png',
@@ -137,6 +132,12 @@ const ProductShow = () => {
                     </div>
 
                     <div className="space-y-6">
+                        {/* خریداری شده بخش */}
+                        <div className="flex items-center gap-2 text-green-500">
+                            <CheckCircle className="w-6 h-6" />
+                            <span className="text-xl font-semibold">خریداری شده</span>
+                        </div>
+
                         <div className="mb-2">
                             <span className="text-gray-600 text-base font-semibold">
                                 {productData.category} / {productData.subCategory}
@@ -174,52 +175,31 @@ const ProductShow = () => {
                             <span className="text-sm text-gray-500">{productData.buyers} خریدار</span>
                         </div>
 
-                        <div className="flex gap-2">
+                        {/* لینک محافظت‌شده */}
+                        <div className="border border-blue-500 rounded-lg p-4">
+                            <a href="https://example.com" className="text-blue-500 flex items-center">
+                                <Link className="w-4 h-4 mr-2" />
+                                لینک محافظت شده دسترسی به محصول
+                            </a>
+                        </div>
+
+                        {/* مطالعه معرفی و دیدگاه‌های محصول */}
+                        <div className="flex gap-2 mt-4">
                             <button
-                                onClick={() => scrollToSection('comments')}
-                                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
+                                onClick={() => window.location.href = '/product'}
+                                className="px-3 py-1 text-blue-500 underline text-sm transition-colors"
                             >
-                                نظرات ({productData.commentsCount})
-                            </button>
-                            <button
-                                onClick={() => scrollToSection('questions')}
-                                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
-                            >
-                                پرسش‌ها ({productData.questionsCount})
-                            </button>
-                            <button
-                                onClick={() => scrollToSection('introduction')}
-                                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
-                            >
-                                معرفی
+                                 طالعه معرفی و دیدگاه‌های محصول &gt;
                             </button>
                         </div>
 
-                        <div className="flex gap-4 pt-28 justify-end">
-                            <button
-                                onClick={() => setIsFavorite(!isFavorite)}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all ${isFavorite
-                                    ? 'border-red-500 text-red-500 bg-red-50'
-                                    : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-500'
-                                    }`}
-                            >
-                                <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-                                افزودن به علاقه‌مندی‌ها
-                            </button>
-
-                            <button className="flex items-center gap-2 px-8 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all">
-                                <ShoppingCart className="w-5 h-5" />
-                                خرید فوری
-                            </button>
-                        </div>
                     </div>
                 </div>
                 <div id="introduction" className="mt-20">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                             <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r  from-black via-gray-600 to-gray-800 rounded-full text-white">
-                                معرفی محصول
-                            </div>
+                                توضیحات پس از خرید                            </div>
                         </div>
 
                     </div>
@@ -228,35 +208,9 @@ const ProductShow = () => {
                         توضیحات کامل مربوط به محصول اینجا قرار می‌گیرد.
                     </p>
                 </div>
-                {/* سایر بخش‌ها */}
-                <div id="comments" className="mt-20">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r from-black via-gray-600 to-gray-800 rounded-full text-white">
-                                دیدگاه‌ها
-                            </div>
-                            <span className="text-sm text-gray-500">({productData.commentsCount} دیدگاه)</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 border-t-[1.4px] border-gray-800 mr-[27px] mb-10"></div>
-                    <CommentsSystem />
-                </div>
-
-                <div id="questions" className="mt-20">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r from-black via-gray-600 to-gray-800 rounded-full text-white">
-                                پرسش‌ها
-                            </div>
-                            <span className="text-sm text-gray-500">({productData.questionsCount} پرسش)</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 border-t-[1.4px] border-gray-800 mr-[27px] mb-10"></div>
-                    <QuestionAnswerSystem />
-                </div>
             </div>
         </div>
     );
 };
 
-export default ProductShow;
+export default PurchasedProduct;

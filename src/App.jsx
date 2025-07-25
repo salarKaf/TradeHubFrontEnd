@@ -29,10 +29,10 @@ import AboutWebsite from '../src/pages/website/pages/AboutWebsite';
 import ShopWebsite from '../src/pages/website/pages/Shop/ShopWebsite.jsx';
 import RulesWebsite from '../src/pages/website/pages/RulesWebsite';
 import ProductPage from '../src/pages/website/pages/Product/ProductPage.jsx';
-import Cart from '../src/pages/website/pages/Cart/cart.jsx';
+import Cart from '../src/pages/website/pages/Cart/Cart.jsx';
 import SignUp from '../src/pages/website/pages/Auth/SignUp';
 import Login from '../src/pages/website/pages/Auth/Login.jsx';
-
+import ProductAfterPurchase from './pages/website/pages/Cart/ProductAfterPurchase.jsx';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function App() {
@@ -83,6 +83,7 @@ export default function App() {
         <Route path="/cart" element={<Cart/>}/>
         <Route path="/signup-website" element={<SignUp />} />
         <Route path="/login-website" element={<Login />} />
+        <Route path="/digital-product-purchased" element={<ProductAfterPurchase />} />
 
         {/* مسیرهای پنل فروشنده */}
 

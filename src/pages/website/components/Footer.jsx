@@ -224,7 +224,7 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="border-t border-gray-700 bg-white">
+      <div className=" bg-white">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="text-center space-y-2">
             <p className="text-black">
