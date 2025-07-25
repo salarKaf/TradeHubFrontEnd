@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 from uuid import UUID
+
 class CouponCreateSchema(BaseModel):
     website_id: UUID
     code: str

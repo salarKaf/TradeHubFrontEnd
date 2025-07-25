@@ -7,6 +7,7 @@ from app.services.auth_services.admin_auth_service import get_current_admin
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
 
+
 admin_router = APIRouter()
 
 @admin_router.get("/dashboard/stats", response_model=ShopPlanStatsSchema)
