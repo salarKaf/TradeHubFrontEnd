@@ -9,8 +9,8 @@ class SlugMainService:
         self.slug_service = slug_service
 
     async def create_slug(self, slug: str, website_id: UUID) -> bool:
-        slug = await self.slug_service.get_slug(slug)
-        if slug:
+        exist_slug = await self.slug_service.get_slug(slug)
+        if exist_slug:
             raise HTTPException(status_code=403, detail="Slug already exists.")
         return await self.slug_service.create_slug(slug, website_id)
 
