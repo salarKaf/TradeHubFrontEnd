@@ -3,47 +3,42 @@ import { coreBaseURL, mediaBaseURL } from './api';
 
 // ساخت فروشگاه با فیلدهای کامل اما خالی
 export const createWebsite = async (business_name) => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    const response = await axios.post(
-        `${coreBaseURL}/websites/create_website`,
+  const response = await axios.post(
+    `${coreBaseURL}/websites/create_website`,
+    {
+      business_name: business_name || "",
+      welcome_text: "",
+      guide_page: "",
+      store_policy: [
         {
-            business_name: business_name || "",      // لازم
-            welcome_text: "",                        // خالی ولی string
-            guide_page: "",
-            store_policy: "",
-            store_slogan: "",
-            social_links: {
-                phone: "",
-                telegram: "https://example.com", // 👈 باید URL معتبر باشه حتی اگر تستیه
-                instagram: "https://example.com"
-            },
-            faqs: [] // باید آرایه باشه نه null
+          section: "string",
+          subsection: "string",
         },
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-        }
-    );
+      ],
+      store_slogan: "",
+      social_links: {
+        phone: "",
+        telegram: "https://example.com",
+        instagram: "https://example.com",
+      },
+      faqs: [],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
-    console.log("📦 payload در حال ارسال:", {
-        business_name: business_name || "",
-        welcome_text: "",
-        guide_page: "",
-        store_policy: "",
-        store_slogan: "",
-        social_links: {
-            phone: "",
-            telegram: "https://example.com",
-            instagram: "https://example.com",
-        },
-        faqs: [],
-    });
+  // 🔍 لاگ خروجی واقعی سرور
+  console.log("✅ پاسخ دریافتی از سرور:", response.data);
 
-    return response.data;
+  return response.data;
 };
+
 // api/slugApi.js
 
 export const getWebsiteIdBySlug = async (slug) => {
@@ -111,99 +106,99 @@ export const getWebsiteById = async (websiteId) => {
 
 // آپلود لوگو
 export const uploadLogo = async (websiteId, file) => {
-    const token = localStorage.getItem("token");
-    const formData = new FormData();
-    formData.append("file", file);
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("file", file);
 
-    const response = await axios.put(
-        `${mediaBaseURL}/website/upload_logo/${websiteId}`,
-        formData,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-            },
-        }
-    );
+  const response = await axios.put(
+    `${mediaBaseURL}/website/upload_logo/${websiteId}`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-    return response.data;
+  return response.data;
 };
 
 // آپلود بنر
 export const uploadBanner = async (websiteId, file) => {
-    const token = localStorage.getItem("token");
-    const formData = new FormData();
-    formData.append("file", file);
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("file", file);
 
-    const response = await axios.put(
-        `${mediaBaseURL}/website/upload_banner/${websiteId}`,
-        formData,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-            },
-        }
-    );
+  const response = await axios.put(
+    `${mediaBaseURL}/website/upload_banner/${websiteId}`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-    return response.data;
+  return response.data;
 };
 
 export const getMyWebsite = async () => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    try {
-        const response = await axios.get(`${coreBaseURL}/websites/my_website`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
-        return response.data; // اطلاعات فروشگاه
-    } catch (error) {
-        if (error.response && error.response.status === 404) {
-            return null; // یعنی فروشگاهی وجود نداره
-        }
-        throw new Error("خطا در دریافت فروشگاه کاربر");
+  try {
+    const response = await axios.get(`${coreBaseURL}/websites/my_website`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // اطلاعات فروشگاه
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return null; // یعنی فروشگاهی وجود نداره
     }
+    throw new Error("خطا در دریافت فروشگاه کاربر");
+  }
 };
 
 // تابع جدید برای چک کردن پلن فعال
 export const getActivePlan = async (websiteId) => {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${coreBaseURL}/websites/plans/active_plan/${websiteId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching active plan:', error);
-        throw error;
-    }
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${coreBaseURL}/websites/plans/active_plan/${websiteId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching active plan:', error);
+    throw error;
+  }
 };
 
 // ویرایش بخشی از سایت
 export const updateWebsitePartial = async (websiteId, data) => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    const response = await axios.put(
-        `${coreBaseURL}/websites/update-website/${websiteId}/`,
-        {
-            website_id: websiteId,
-            ...data
-        },
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        }
-    );
+  const response = await axios.put(
+    `${coreBaseURL}/websites/update-website/${websiteId}/`,
+    {
+      website_id: websiteId,
+      ...data
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
-    return response.data;
+  return response.data;
 };
 
 

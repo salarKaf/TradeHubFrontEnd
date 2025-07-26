@@ -33,7 +33,6 @@ export default function Slug() {
             setStatusMsg("");
             const token = localStorage.getItem("token");
             const websiteId = localStorage.getItem("website_id");
-
             const res = await fetch("http://tradehub.localhost/api/v1/slug/slug", {
                 method: "POST",
                 headers: {

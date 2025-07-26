@@ -14,7 +14,7 @@ export default function LoginForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
-        setIsLoading(true); // شروع لودینگ
+        setIsLoading(true);
 
         try {
             const data = await login({
@@ -26,24 +26,33 @@ export default function LoginForm() {
 
             const website = await getMyWebsite();
 
-            if (website?.id) {
-                localStorage.setItem("website_id", website.id);
-
-                try {
-                    const activePlan = await getActivePlan(website.id);
-
-                    if (activePlan === null) {
-                        navigate(`/PricingPlans/${website.id}`);
-                    } else {
-                        navigate(`/HomeSeller/${website.id}`);
-                    }
-                } catch (planError) {
-                    console.error('Error checking active plan:', planError);
-                    navigate(`/PricingPlans/${website.id}`);
-                }
-            } else {
+            // 1️⃣ اگر وبسایت نداشت، بره به StoreForm
+            if (!website?.website_id) {
                 navigate("/StoreForm");
+                return;
             }
+
+            // ذخیره وبسایت آیدی
+            const websiteId = website.website_id;
+            localStorage.setItem("website_id", websiteId);
+
+            try {
+                // 2️⃣ چک کردن پلن فعال
+                const activePlan = await getActivePlan(websiteId);
+
+                if (activePlan?.plan?.name === "Basic" || activePlan?.plan?.name === "Pro") {
+                    // ✅ اگر پلن Basic یا Pro بود، وارد پنل فروشنده می‌شه
+                    navigate(`/HomeSeller/${websiteId}`);
+                } else {
+                    // ⚠️ اگر پلن غیر از Basic/Pro بود یا اصلاً پلن نداشت، بره به انتخاب پلن
+                    navigate(`/PricingPlans/${websiteId}`);
+                }
+
+            } catch (planError) {
+                console.error('❌ Error checking active plan:', planError);
+                navigate(`/PricingPlans/${websiteId}`);
+            }
+
         } catch (error) {
             const detail = error.response?.data?.detail;
 
@@ -59,6 +68,7 @@ export default function LoginForm() {
             setIsLoading(false); // پایان لودینگ
         }
     };
+
 
 
     return (
@@ -204,7 +214,7 @@ export default function LoginForm() {
                                     "وارد شوید"
                                 )}
                             </button>
- 
+
                         </div>
                     </form>
                 </div>

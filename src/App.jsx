@@ -61,6 +61,7 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/storeForm" element={<CreateStore />} />
+
         <Route path="/OTPForm" element={<OTPForm />} />
         <Route path="/payment/callback" element={<PaymentCallback />} />
         <Route path="/payment-result" element={<PaymentResult />} />
@@ -77,6 +78,7 @@ export default function App() {
         <Route path='/ChangePassword/:websiteId' element={<ChangePasswordForm />} />
         <Route path="/rules/:websiteId" element={<RulesTrade />} />
         <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
+        <Route path="/Slug/:websiteId" element={<Slug />} />  // برای تعریف اسلاگ توسط کاربر
 
         {/* مسیرهای فروشگاه با اسلاگ - تغییر کلیدی اینجاست */}
         <Route path="/:slug" element={<SlugHandler />} />
