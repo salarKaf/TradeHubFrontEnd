@@ -26,19 +26,30 @@ const EditableList = ({ title, icon, items = [], viewText, onSave, editIcon, del
   const [isExpanded, setIsExpanded] = useState(true);
 
   // وقتی items از parent تغییر کرد، data رو هم بروز کن
-  // به این تبدیل کن:
   useEffect(() => {
     setData(items);
   }, [items]);
+
   const handleEdit = (index) => {
     setEditIndex(index);
     setTempItem(data[index]);
   };
 
   const handleSave = (index) => {
-    if (!tempItem.question?.trim() || !tempItem.answer?.trim()) {
-      setModal({ type: "error", text: "همه فیلدها باید پر شوند." });
-      return;
+    const isFaq = viewText.includes("پرسش");
+    
+    // برای پرسش و پاسخ: فقط پرسش و پاسخ الزامی است
+    if (isFaq) {
+      if (!tempItem.question?.trim() || !tempItem.answer?.trim()) {
+        setModal({ type: "error", text: "پرسش و پاسخ باید پر شوند." });
+        return;
+      }
+    } else {
+      // برای قوانین: فقط عنوان و توضیحات الزامی است
+      if (!tempItem.title?.trim() || !tempItem.description?.trim()) {
+        setModal({ type: "error", text: "عنوان و توضیحات باید پر شوند." });
+        return;
+      }
     }
 
     const updated = [...data];
@@ -131,15 +142,19 @@ const EditableList = ({ title, icon, items = [], viewText, onSave, editIcon, del
                       <td className="px-4 py-3 text-right">
                         {editIndex === index ? (
                           <div className="space-y-2">
-                            <input
-                              type="text"
-                              value={tempItem.title}
-                              onChange={(e) =>
-                                setTempItem({ ...tempItem, title: e.target.value })
-                              }
-                              placeholder="عنوان"
-                              className="w-full border border-gray-300 p-2 rounded text-sm"
-                            />
+                            {/* فقط برای قوانین فیلد عنوان نشان داده شود */}
+                            {!viewText.includes("پرسش") && (
+                              <input
+                                type="text"
+                                value={tempItem.title || ""}
+                                onChange={(e) =>
+                                  setTempItem({ ...tempItem, title: e.target.value })
+                                }
+                                placeholder="عنوان"
+                                className="w-full border border-gray-300 p-2 rounded text-sm"
+                              />
+                            )}
+                            
                             {viewText.includes("پرسش") ? (
                               <>
                                 <input

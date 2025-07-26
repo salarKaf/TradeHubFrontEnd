@@ -20,8 +20,6 @@ import {
   Legend
 } from 'chart.js';
 
-
-
 // Registering the required components of Chart.js
 ChartJS.register(
   CategoryScale,
@@ -33,12 +31,64 @@ ChartJS.register(
   Legend
 );
 
+// تابع تعیین رنگ نمودار بر اساس روند داده‌ها
+const getChartTrendColor = (dataPoints) => {
+  if (!dataPoints || dataPoints.length === 0) {
+    return {
+      border: 'rgba(75, 192, 192, 1)',
+      background: 'rgba(75, 192, 192, 0.2)'
+    };
+  }
 
+  // محاسبه میانگین تغییرات
+  let totalChange = 0;
+  let changeCount = 0;
 
+  for (let i = 1; i < dataPoints.length; i++) {
+    if (dataPoints[i-1] !== 0) { // جلوگیری از تقسیم بر صفر
+      const change = (dataPoints[i] - dataPoints[i-1]) / dataPoints[i-1];
+      totalChange += change;
+      changeCount++;
+    }
+  }
+
+  const averageChange = changeCount > 0 ? totalChange / changeCount : 0;
+
+  // تعیین رنگ بر اساس روند
+  if (averageChange > 0.1) {
+    // روند صعودی قوی - سبز
+    return {
+      border: 'rgba(34, 197, 94, 1)',
+      background: 'rgba(34, 197, 94, 0.2)'
+    };
+  } else if (averageChange > 0) {
+    // روند صعودی ملایم - آبی سبز
+    return {
+      border: 'rgba(59, 130, 246, 1)',
+      background: 'rgba(59, 130, 246, 0.2)'
+    };
+  } else if (averageChange < -0.1) {
+    // روند نزولی قوی - قرمز
+    return {
+      border: 'rgba(239, 68, 68, 1)',
+      background: 'rgba(239, 68, 68, 0.2)'
+    };
+  } else if (averageChange < 0) {
+    // روند نزولی ملایم - نارنجی
+    return {
+      border: 'rgba(245, 158, 11, 1)',
+      background: 'rgba(245, 158, 11, 0.2)'
+    };
+  } else {
+    // روند ثابت - خاکستری
+    return {
+      border: 'rgba(107, 114, 128, 1)',
+      background: 'rgba(107, 114, 128, 0.2)'
+    };
+  }
+};
 
 const HomeContent = () => {
-
-
   const { websiteId } = useParams();
 
   const [data, setData] = useState({
@@ -128,8 +178,6 @@ const HomeContent = () => {
     if (websiteId) fetchDashboardData();
   }, [websiteId]);
 
-
-
   return (
     <div>
       <div className='mx-4 border-2 border-black border-opacity-20 rounded-lg'>
@@ -169,8 +217,6 @@ const HomeContent = () => {
       </div>
 
       <div className='p-4 flex justify-between'>
-
-
         {/* جدول آخرین سفارشات */}
         <div className={`mb-6 pb-6 p-5 font-modam rounded-xl border-black border-opacity-20 border-2 ${planType === "Pro" ? "w-[55%]" : "w-[48%]"}`}>
           <h2 className="text-2xl font-semibold mb-4 p-5 text-zinc-600">آخرین سفارشات</h2>
@@ -198,12 +244,10 @@ const HomeContent = () => {
                   </td>
                 </tr>
               )}
-
             </tbody>
           </table>
           <a className='p-10 text-cyan-700' href={`/orders/${websiteId}`} > مشاهده کل سفارشات   &gt; </a>
         </div>
-
 
         <div className={`mb-6 pb-6 font-modam rounded-xl border-black border-opacity-20 border-2 ${planType === "Pro" ? "w-[42%]" : "w-[48%]"}`}>
           <h2 className="text-2xl font-semibold mb-4 p-5 text-zinc-600">آخرین محصولات</h2>
@@ -217,7 +261,6 @@ const HomeContent = () => {
             </thead>
             <tbody>
               {data.bestProducts.length > 0 ? (
-
                 data.bestProducts.map((order, index) => (
                   <tr key={index} className="border-t border-black border-opacity-10 text-center">
                     <td className="py-3">{order.name}</td>
@@ -225,8 +268,6 @@ const HomeContent = () => {
                     <td className="py-3">{Number(order.amount ?? 0).toLocaleString()} تومان</td>
                   </tr>
                 ))
-
-
               ) : (
                 <tr>
                   <td colSpan="3" className="py-8 text-center text-gray-500">
@@ -241,11 +282,6 @@ const HomeContent = () => {
       </div>
 
       <div className='p-4 flex justify-between'>
-
-
-
-
-
         {/* اعلان‌های جدید - فقط برای Pro */}
         {planType === "Pro" && (
           <div className="mb-6 w-[42%] font-modam rounded-xl border-black border-opacity-20 border-2">
@@ -276,7 +312,6 @@ const HomeContent = () => {
         {planType === "Pro" && (
           <div className='mb-6 pb-6 p-5 w-[55%] font-modam rounded-xl border-black border-opacity-20 border-2'>
             <h2>نگاهی به میزان فروش 6 ماه اخیر</h2>
-
 
             {salesChartData ? (
               <Line
@@ -311,11 +346,8 @@ const HomeContent = () => {
             ) : (
               <p className='text-gray-400 pt-4'>در حال دریافت اطلاعات...</p>
             )}
-
-
           </div>
         )}
-
       </div>
 
       <div className='flex h-24 mx-4 border-2 border-black border-opacity-20 rounded-lg items-center justify-between'>
