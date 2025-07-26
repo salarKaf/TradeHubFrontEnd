@@ -19,3 +19,7 @@ class SlugMainService:
         if not slug: 
             raise HTTPException(status_code=404, detail="Slug Not Found.")
         return slug.website_id
+
+    async def get_slug_by_website_id(self, website_id: UUID) -> Optional[str]:
+        slug = await self.slug_service.get_slug_by_website_id(website_id)
+        return slug.slug

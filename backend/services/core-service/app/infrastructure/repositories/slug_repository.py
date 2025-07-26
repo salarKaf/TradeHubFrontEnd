@@ -19,3 +19,6 @@ class SlugRepository:
     def get_slug(self, slug: str) -> Optional[UUID]:
         entry = self.db.query(SlugModel).filter_by(slug=slug).first()
         return entry
+    
+    def get_slug_by_website_id(self, website_id: UUID) -> Optional[UUID]:
+        return self.db.query(SlugModel).filter_by(website_id=website_id).first()

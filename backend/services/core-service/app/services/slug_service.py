@@ -20,3 +20,6 @@ class SlugService:
 
     async def get_slug(self, slug: str) -> Optional[UUID]:
         return self.slug_repo.get_slug(slug)
+
+    async def get_slug_by_website_id(self, website_id: UUID) -> Optional[UUID]:
+        return self.slug_repo.get_slug_by_website_id(website_id)
