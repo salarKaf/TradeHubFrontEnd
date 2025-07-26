@@ -46,7 +46,7 @@ const ProductShow = () => {
                 } catch (imgError) {
                     console.warn("خطا در بارگذاری تصاویر:", imgError);
                     // در صورت عدم وجود تصویر، یک تصویر پیش‌فرض قرار بده
-                    setProductImages(['/public/website/default-product.png']);
+                    setProductImages(['/website/default-product.png']);
                 }
 
                 // دریافت امتیاز محصول
@@ -157,11 +157,11 @@ const ProductShow = () => {
                         {/* Main Image */}
                         <div className="relative bg-gray-100 rounded-lg overflow-hidden">
                             <img
-                                src={productImages[selectedImage] || '/public/website/default-product.png'}
+                                src={productImages[selectedImage] || '/website/default-product.png'}
                                 alt={productData.name || "محصول"}
                                 className="w-full h-96 object-cover"
                                 onError={(e) => {
-                                    e.target.src = '/public/website/default-product.png';
+                                    e.target.src = '/website/default-product.png';
                                 }}
                             />
                             {/* Navigation Arrows - فقط اگر بیش از یک تصویر باشد */}
@@ -207,7 +207,7 @@ const ProductShow = () => {
                                             alt={`تصویر ${index + 1}`} 
                                             className="w-full h-full object-cover" 
                                             onError={(e) => {
-                                                e.target.src = '/public/website/default-product.png';
+                                                e.target.src = '/website/default-product.png';
                                             }}
                                         />
                                     </button>

@@ -30,29 +30,32 @@ export const getWebsiteCategories = async (websiteId) => {
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      },  
-    }
-  );
-
-  return response.data;
-};
-
-
-export const getItemCountByCategoryId = async (categoryId) => {
-  const token = localStorage.getItem("token");
-  const response = await axios.get(
-    `${coreBaseURL}/items/items/item-count/${categoryId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
       },
     }
   );
-    console.log("📥 getItemCountByCategoryId response:", response); // ← این خطو اضافه کن
 
   return response.data;
 };
-
+export const getItemCountByCategoryId = async (categoryId) => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(
+      `${coreBaseURL}/items/items/item-count/${categoryId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // اصلاح این قسمت
+    return {
+      count: response.data?.count || response.data || 0
+    };
+  } catch (error) {
+    console.error("Error getting item count:", error);
+    return { count: 0 };
+  }
+};
 
 
 export const editWebsiteCategory = async ({ category_id, website_id, name }) => {
@@ -61,7 +64,7 @@ export const editWebsiteCategory = async ({ category_id, website_id, name }) => 
   const response = await axios.put(
     `${coreBaseURL}/websites/edit_website_category/${category_id}`,
     {
-      
+
       website_id,
       category_id,
       name,
@@ -101,15 +104,20 @@ export const createWebsiteSubcategory = async (parentId, name) => {
 // گرفتن زیر دسته‌های یک دسته خاص
 export const getSubcategoriesByCategoryId = async (categoryId) => {
   const token = localStorage.getItem("token");
-  const response = await axios.get(
-    `${coreBaseURL}/websites/get_subcategories_by_category_id/${categoryId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response.data;
+  try {
+    const response = await axios.get(
+      `${coreBaseURL}/websites/get_subcategories_by_category_id/${categoryId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data || []; // اطمینان از برگشت آرایه
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
+    return [];
+  }
 };
 
 
