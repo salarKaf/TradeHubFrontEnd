@@ -1,10 +1,11 @@
-
-// HomeWebsite.js
+// pages/website/pages/Home/Home.jsx
+import React from "react";
 import Navbar from "../../components/Navbar";
 import Header from "../../components/Header";
 import ProductGrid from "./ProductGrid";
 import ProductSlider from "./ProductSlider";
 import Footer from "../../components/Footer";
+
 const HomeWebsite = () => {
   return (
     <div className="relative overflow-hidden">
@@ -12,10 +13,10 @@ const HomeWebsite = () => {
       <Header />
       <ProductGrid />
       <div className="mt-10 mb-56">
-        <ProductSlider></ProductSlider>
+        <ProductSlider />
       </div>
-      <div className=' h-[1px] bg-black/30'></div>
-      <Footer></Footer>
+      <div className="h-[1px] bg-black/30"></div>
+      <Footer />
     </div>
   );
 };

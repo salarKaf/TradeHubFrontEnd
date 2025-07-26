@@ -44,23 +44,70 @@ export const createWebsite = async (business_name) => {
 
     return response.data;
 };
+// api/slugApi.js
 
-// دریافت فروشگاه با ID
-export const getWebsiteById = async (websiteId) => {
-    const token = localStorage.getItem("token");
+export const getWebsiteIdBySlug = async (slug) => {
+  try {
+    const response = await fetch(`${coreBaseURL}/slug/slug/${slug}`, {
+      method: 'GET',
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
 
-    const response = await axios.get(
-        `${coreBaseURL}/websites/get_website/${websiteId}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-        }
-    );
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('فروشگاه یافت نشد');
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    return response.data;
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('خطا در دریافت آیدی وبسایت:', error);
+    throw error;
+  }
 };
+
+// دریافت فروشگاه با ID (بدون توکن)
+export const getWebsiteById = async (websiteId) => {
+  try {
+    const response = await fetch(`${coreBaseURL}/websites/get_website/${websiteId}`, {
+      method: 'GET',
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('خطا در دریافت اطلاعات وبسایت:', error);
+    throw error;
+  }
+};
+// دریافت فروشگاه با ID
+// export const getWebsiteById = async (websiteId) => {
+//     const token = localStorage.getItem("token");
+
+//     const response = await axios.get(
+//         `${coreBaseURL}/websites/get_website/${websiteId}`,
+//         {
+//             headers: {
+//                 Authorization: `Bearer ${token}`,
+//                 "Content-Type": "application/json"
+//             },
+//         }
+//     );
+
+//     return response.data;
+// };
 
 // آپلود لوگو
 export const uploadLogo = async (websiteId, file) => {
@@ -183,3 +230,4 @@ export const updateWebsiteFaqs = async (websiteId, faqs) => {
   );
   return res.data;
 };
+

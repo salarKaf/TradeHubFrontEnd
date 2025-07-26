@@ -14,6 +14,7 @@ import PaymentResult from './pages/TradePages/Plans/components/PaymentResult.jsx
 import OTPForm from "./pages/TradePages/OTPForm"
 import Slug from "./pages/TradePages/slug";
 
+// Seller Panel Pages
 import HomeSeller from "./pages/sellerPanel/Home/Home";
 import Appearance from "./pages/sellerPanel/Appearance/Appearance";
 import Profile from "./pages/sellerPanel/Profile/Profile";
@@ -24,10 +25,9 @@ import AddProductaPage from './pages/sellerPanel/AddProduct/AddProductaPage';
 import ShowProductaPage from './pages/sellerPanel/ShowProducts/ShowProductPage';
 import ChangePasswordForm from "./pages/sellerPanel/Profile/ChangePasswordForm.jsx";
 
-
-
+// Website Pages  
 import HomeWebsite from '../src/pages/website/pages/Home/Home.jsx';
-import AboutWebsite from './pages/website/pages/AboutUs/About.jsx';
+import AboutWebsite from '../src/pages/website/pages/AboutUs/AboutWebsite';
 import ShopWebsite from '../src/pages/website/pages/Shop/ShopWebsite.jsx';
 import RulesWebsite from '../src/pages/website/pages/Rules/RulesWebsite';
 import ProductPage from '../src/pages/website/pages/Product/ProductPage.jsx';
@@ -35,12 +35,17 @@ import Cart from '../src/pages/website/pages/Cart/Cart.jsx';
 import SignUp from '../src/pages/website/pages/Auth/SignUp';
 import Login from '../src/pages/website/pages/Auth/Login.jsx';
 import ProductAfterPurchase from './pages/website/pages/Cart/ProductAfterPurchase.jsx';
+
+// Slug Handler Component
+import SlugHandler from '../src/pages/website/pages/SlugHandler.jsx';
+
+import { WebsiteProvider } from '../src/pages/website/pages/WebsiteProvider.jsx';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function App() {
   const location = useLocation();
 
-  // مسیرهایی که باید Navbar نمایش داده بشه
+  // مسیرهایی که باید Navbar نمایش داده بشه (صفحات اصلی پلتفرم)
   const showNavbarPaths = ["/", "/about", "/contact", "/pricing", "/portfolio"];
   const shouldShowNavbar = showNavbarPaths.includes(location.pathname);
 
@@ -48,58 +53,48 @@ export default function App() {
     <>
       {shouldShowNavbar && <Navbar />}
       <Routes>
+        {/* صفحات اصلی پلتفرم */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/signup" element={<SignupForm />} />
-        <Route path="/login" element={<LoginForm></LoginForm>} />
-        <Route path="/storeForm" element={<CreateStore></CreateStore>} />
-        <Route path="/Slug/:websiteId" element={<Slug></Slug>}></Route>
-        <Route path="/rules/:websiteId" element={<RulesTrade></RulesTrade>}></Route>
-        <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/storeForm" element={<CreateStore />} />
         <Route path="/OTPForm" element={<OTPForm />} />
         <Route path="/payment/callback" element={<PaymentCallback />} />
-
-
-
-
-        <Route path='/HomeSeller/:websiteId' element={<HomeSeller />}></Route>
-        <Route path='/appearance/:websiteId' element={<Appearance></Appearance>}></Route>
-        <Route path='/profile/:websiteId' element={<Profile></Profile>} />
-        <Route path='/customers/:websiteId' element={<Customers></Customers>} />
-        <Route path='/orders/:websiteId' element={<Orders></Orders>} />
-        <Route path='/products/:websiteId' element={<Products></Products>} />
-        <Route path='/seller/products/:websiteId/add' element={<AddProductaPage></AddProductaPage>}></Route>
-        <Route path='/detailProduct/:websiteId/:productId' element={<ShowProductaPage></ShowProductaPage>}></Route>
-        <Route path='/ChangePassword/:websiteId' element={<ChangePasswordForm></ChangePasswordForm>}></Route>
-
-
-
-
-        <Route path="/Home-website" element={<HomeWebsite></HomeWebsite>}></Route>
-        <Route path="/about-website" element={<AboutWebsite />} />
-        <Route path="/shop-website" element={<ShopWebsite />} />
-        <Route path="/rules-website" element={<RulesWebsite />} />
-        <Route path="/product" element={<ProductPage />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/signup-website" element={<SignUp />} />
-        <Route path="/login-website" element={<Login />} />
-        <Route path="/digital-product-purchased" element={<ProductAfterPurchase />} />
-
-        {/* مسیرهای پنل فروشنده */}
-
-
-
-
-
-        <Route path="/pricing/:websiteId" element={<PricingPlans />} />
-
-        {/*  route جدید برای callback پرداخت */}
-        <Route path="/payment/callback" element={<PaymentCallback />} />
-
-        {/* route برای نمایش نتایج پرداخت (اختیاری) */}
         <Route path="/payment-result" element={<PaymentResult />} />
+
+        {/* مسیرهای پنل فروشنده (بدون slug) */}
+        <Route path='/HomeSeller/:websiteId' element={<HomeSeller />} />
+        <Route path='/appearance/:websiteId' element={<Appearance />} />
+        <Route path='/profile/:websiteId' element={<Profile />} />
+        <Route path='/customers/:websiteId' element={<Customers />} />
+        <Route path='/orders/:websiteId' element={<Orders />} />
+        <Route path='/products/:websiteId' element={<Products />} />
+        <Route path='/seller/products/:websiteId/add' element={<AddProductaPage />} />
+        <Route path='/detailProduct/:websiteId/:productId' element={<ShowProductaPage />} />
+        <Route path='/ChangePassword/:websiteId' element={<ChangePasswordForm />} />
+        <Route path="/rules/:websiteId" element={<RulesTrade />} />
+        <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
+
+        {/* مسیرهای فروشگاه با اسلاگ - تغییر کلیدی اینجاست */}
+        <Route path="/:slug" element={<SlugHandler />} />
+        <Route path="/:slug/*" element={
+          <WebsiteProvider>
+            <Routes>
+              <Route path="home" element={<HomeWebsite />} />
+              <Route path="about" element={<AboutWebsite />} />
+              <Route path="shop" element={<ShopWebsite />} />
+              <Route path="rules" element={<RulesWebsite />} />
+              <Route path="product/:productId" element={<ProductPage />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="signup" element={<SignUp />} />
+              <Route path="login" element={<Login />} />
+              <Route path="digital-product-purchased" element={<ProductAfterPurchase />} />
+            </Routes>
+          </WebsiteProvider>
+        } />
       </Routes>
     </>
   );
