@@ -19,6 +19,7 @@ from app.api.v1.endpoints.admin_routes import admin_router
 from app.api.v1.endpoints.coupon_routes import coupon_router
 from app.api.v1.endpoints.plan_routes import plan_router
 from app.api.v1.endpoints.slug_routes import slug_router
+from app.api.v1.endpoints.favorite_routes import favorite_router
 
 app = FastAPI()
 
@@ -49,6 +50,7 @@ app.include_router(admin_router, prefix="/api/v1/admin", tags=["admins"])
 app.include_router(coupon_router, prefix="/api/v1/coupon", tags=["coupons"])
 app.include_router(plan_router, prefix="/api/v1/plan", tags=["plans"])
 app.include_router(slug_router, prefix="/api/v1/slug", tags=["slugs"])
+app.include_router(favorite_router, prefix="/api/v1/favorite", tags=["favorites"])
 
 @app.get("/")
 async def root():

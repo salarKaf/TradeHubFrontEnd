@@ -37,9 +37,10 @@ class WebsiteService(BaseService):
             business_name=website_data.business_name,
             welcome_text=website_data.welcome_text,
             guide_page=website_data.guide_page,
-            social_links=jsonable_encoder(website_data.social_links),  
-            faqs=jsonable_encoder(website_data.faqs), 
-
+            store_policy= jsonable_encoder(website_data.store_policy),
+            store_slogan= website_data.store_slogan,
+            social_links=jsonable_encoder(website_data.social_links), 
+            faqs=jsonable_encoder(website_data.faqs),  
         ))
         logger.info(f"Website created successfully with ID: {created_website.website_id}")
 

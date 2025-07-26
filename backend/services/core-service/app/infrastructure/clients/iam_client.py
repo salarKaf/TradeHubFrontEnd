@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 from loguru import logger
 from fastapi import Depends
 from app.core.configs.config import get_settings, Settings
@@ -27,8 +28,9 @@ class IAMClient:
 
 
     
-    async def validate_buyer_token(self, token: str) -> TokenDataSchema:
-        headers = {"Authorization": f"Bearer {token}"}
+    async def validate_buyer_token(self, token: str, website_id:str) -> TokenDataSchema:
+        headers = {"Authorization": f"Bearer {token}",
+                "X-Website-Id": website_id,}
         async with self.http_client as client:
             response = await client.get(
                 f"{self.config.IAM_URL}/api/v1/buyers/Me", headers=headers
