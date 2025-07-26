@@ -191,9 +191,10 @@ class OrderRepository:
                     })
         return result
 
-    def get_best_selling_items(self, website_id: UUID, limit: int = 5) -> list:
+    def get_best_selling_items(self, website_id: UUID, limit: int) -> list:
         from sqlalchemy import func
         results = self.db.query(
+            Item.item_id,
             Item.name,
             func.sum(OrderItem.price).label("total_amount"),
             func.count(OrderItem.item_id).label("sales_count")
@@ -210,6 +211,7 @@ class OrderRepository:
 
         return [
             {
+                "item_id": result.item_id,
                 "product_name": result.name,
                 "total_amount": result.total_amount,
                 "sales_count": result.sales_count
