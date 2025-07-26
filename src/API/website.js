@@ -226,3 +226,15 @@ export const updateWebsiteFaqs = async (websiteId, faqs) => {
   return res.data;
 };
 
+
+// گرفتن لوگو
+export const getLogo = async (websiteId) => {
+  const response = await axios.get(`${mediaBaseURL}/website/get_logo/${websiteId}`, { responseType: 'blob' });
+  return URL.createObjectURL(response.data);  // تبدیل Blob به URL
+};
+
+// گرفتن بنر
+export const getBanner = async (websiteId) => {
+  const response = await axios.get(`${mediaBaseURL}/website/get_banner/${websiteId}`, { responseType: 'blob' });
+  return URL.createObjectURL(response.data);  // تبدیل Blob به URL
+};
