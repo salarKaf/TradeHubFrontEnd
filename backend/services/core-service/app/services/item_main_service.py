@@ -154,12 +154,11 @@ class ItemMainService(BaseService):
             await self.plan_service.check_discount_permission(item.website_id)
             discount_percent = Decimal(str(item_data["discount_percent"]))
             discount_price = item.price * (Decimal("1") - discount_percent / Decimal("100"))
-            # discount_price = item.price * (1 - item_data["discount_percent"] / 100)
             item_data["discount_price"] = discount_price
-        # else:
-        #     item_data["discount_percent"] = None
-        #     item_data["discount_expires_at"] = None
-        #     item_data["discount_price"] = None
+        else:
+            item_data["discount_percent"] = None
+            item_data["discount_expires_at"] = None
+            item_data["discount_price"] = None
 
         updated_item = await self.item_service.edit_item(item_id, item_data)
 
