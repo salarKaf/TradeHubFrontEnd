@@ -22,14 +22,15 @@ async def request_order_payment(
 
 
 @payment_router.get("/order_payment/callback/{order_id}")
-async def payment_callback(payment_main_service: Annotated[PaymentMainService, Depends()],
+async def payment_callback(
+    payment_main_service: Annotated[PaymentMainService, Depends()],
     order_id: UUID,
     authority: str = Query(..., alias="Authority"),  
     status: str = Query(..., alias="Status")   
 ):
-    logger.info("Got heer")
-    return await payment_main_service.confirm_order_payment(order_id, authority, status)
-
+    result = await payment_main_service.confirm_order_payment(order_id, authority, status)
+    frontend_url = f"http://localhost:5173//website/orders/payment-callback"
+    return RedirectResponse(url=frontend_url)
 
 @payment_router.post("/plan_payment_request/{plan_id}")
 async def request_plan_payment(

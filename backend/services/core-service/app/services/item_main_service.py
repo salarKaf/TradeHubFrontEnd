@@ -139,28 +139,31 @@ class ItemMainService(BaseService):
     async def edit_item(self, item_id: UUID, item_data: ItemUpdateSchema) -> ItemResponseSchema:
         logger.info(f"Editing item with ID: {item_id}")
 
-        item_data = {
-        key: value for key, value in item_data.dict(exclude_unset=True).items()
-        if value not in ("", None)
-    }
+        item_data_dict = item_data.dict(exclude_unset=True)  
         item = await self.item_service.get_item_by_id(item_id)
-        
-        if item_data.get("discount_active") is True and item_data.get("discount_percent") is None:
-            raise ValueError("Discount percent is required when discount is active.")
-        if item_data.get("discount_percent") is not None and not item_data.get("discount_active", False):
-            raise ValueError("Discount percent should not be provided when discount is not active.")
+        if not item:
+            raise ValueError("Item not found!")
 
-        if item_data.get("discount_active"):
-            await self.plan_service.check_discount_permission(item.website_id)
-            discount_percent = Decimal(str(item_data["discount_percent"]))
+        if item_data.discount_active:
+            if item_data.discount_percent is None:
+                raise ValueError("Discount percent is required when discount is active.")
+
+            discount_percent = Decimal(str(item_data.discount_percent))
             discount_price = item.price * (Decimal("1") - discount_percent / Decimal("100"))
-            item_data["discount_price"] = discount_price
+            
+            item_data_dict["discount_price"] = discount_price
         else:
-            item_data["discount_percent"] = None
-            item_data["discount_expires_at"] = None
-            item_data["discount_price"] = None
+            item_data_dict["discount_percent"] = None
+            item_data_dict["discount_expires_at"] = None
+            item_data_dict["discount_price"] = None
 
-        updated_item = await self.item_service.edit_item(item_id, item_data)
+        for key, value in item_data_dict.items():
+            setattr(item, key, value)
+            
+        updated_item = await self.item_service.edit_item(item_id, item_data_dict)
+
+        return updated_item
+
 
 
 
