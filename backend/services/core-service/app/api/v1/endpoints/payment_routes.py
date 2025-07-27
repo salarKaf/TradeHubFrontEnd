@@ -22,11 +22,13 @@ async def request_order_payment(
     return {"payment_url": payment_url}
 
 
-@payment_router.get("/order_payment/callback/{order_id}")
+
+@payment_router.get("/order_payment/callback")
 async def payment_callback(
     payment_main_service: Annotated[PaymentMainService, Depends()],
-    order_id: UUID,
-    authority: str = Query(..., alias="Authority"),  
+    order_id: UUID= Query(...),
+    website_id: UUID = Query(...),
+  ] authority: str = Query(..., alias="Authority"),  
     status: str = Query(..., alias="Status")   
 ):
     result = await payment_main_service.confirm_order_payment(order_id, authority, status)
