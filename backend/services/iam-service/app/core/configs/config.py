@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM : str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     OTP_EXPIRE_TIME: int = 3600
+    MOJOAUTH_API_KEY: str = "test-81f9f5dc-1c99-425b-b17a-fb7557d24ee4"
 
 @logger.catch
 def get_settings():

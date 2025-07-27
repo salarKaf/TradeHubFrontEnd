@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Dict
 from loguru import logger
 from fastapi import Depends, HTTPException, status
 from app.domain.schemas.user_schema import (
@@ -9,11 +9,13 @@ from app.domain.schemas.user_schema import (
     ResendOTPResponseSchema,
     ResendOTPSchema
 )
+from app.domain.schemas.token_schema import TokenSchema
 from app.services.auth_services.auth_service import AuthService
 from app.services.auth_services.otp_service import OTPService
 from app.services.base_service import BaseService
 from app.services.user_service import UserService
 from app.utils import helper
+from uuid import UUID
 
 class RegisterService(BaseService):
     def __init__(
@@ -60,7 +62,7 @@ class RegisterService(BaseService):
         )
     async def verify_user(
         self, verify_user_schema: VerifyOTPSchema
-    ) -> VerifyOTPResponseSchema:
+    ) -> TokenSchema:
         if not self.otp_service.verify_otp(
             verify_user_schema.email, verify_user_schema.otp
         ):
@@ -76,10 +78,14 @@ class RegisterService(BaseService):
         await self.user_service.update_verified_status(user.user_id, {"is_verified": True})
 
         logger.info(f"User with email{verify_user_schema.email} verified✅")
-        return VerifyOTPResponseSchema(
-            verified=True, message="User Verified Successfully"
-        )
+        # return VerifyOTPResponseSchema(
+        #     verified=True, message="User Verified Successfully"
+        # )
 
+        token = self.auth_service.create_access_token(data={"sub": str(user.user_id), "role": "user"})
+        return {"access_token": token, "token_type": "bearer"} 
+    
+    
     async def resend_otp(
         self, resend_otp_schema: ResendOTPSchema
     ) -> ResendOTPResponseSchema:
@@ -130,3 +136,28 @@ class RegisterService(BaseService):
         logger.info(f"User with email{verify_user_schema.email} Requested for password reseting")
         return {"status_code": 200, "message": "OTP Verified Successfully"}
     
+
+    async def create_user(self, user_body: UserCreateSchema) :
+        return await self.user_service.create_user(user_body)
+    
+    async def get_user_by_email(self, email: str) :
+        return await self.user_service.get_user_by_email(email)
+
+    async def get_user_by_id(self, user_id: UUID) :  
+        return await self.user_service.get_user_by_id(user_id)
+
+    async def update_verified_status(self, user_id: UUID, update_fields: Dict) : 
+
+        return await self.user_service.update_verified_status(user_id, update_fields)
+
+    async def update_user(self, user_id: UUID, update_fields: Dict) :
+       
+        return await self.user_service.update_user(user_id, update_fields)
+
+    async def update_can_change_status(self, user_id: UUID, update_fields: Dict) : 
+        return await self.user_service.update_can_change_status(user_id, update_fields)
+
+
+    async def change_user_password(self, email:str, update_fields: Dict) :
+        return await self.user_service.change_user_password(email, update_fields)
+

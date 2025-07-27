@@ -22,9 +22,8 @@ class Settings(BaseSettings):
     OTP_EXPIRE_TIME: int = 3600
     DATABASE_URL: str =  "mongodb://mongo:27017" 
     # DATABASE_URL: str = "mongodb://localhost:27017"
-    DATABASE_NAME: str = "tradehubMediaDB"
     FILE_STORAGE_PATH: str = "app/media"
-    IAM_URL: str = "http://iam.localhost"
+    IAM_URL: str = "http://iam"
     # IAM_URL: str = "http://127.0.0.1:8000"
 
     GRPC_PORT: int = 50051

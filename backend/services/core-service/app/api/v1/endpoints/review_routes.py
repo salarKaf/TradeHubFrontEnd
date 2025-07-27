@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, status
 from typing import Annotated, List
 from app.domain.schemas.review_schema import ReviewCreateSchema, ReviewResponseSchema
-from app.services.auth_services.auth_service import get_current_buyer, get_current_user
+from app.services.auth_services.buyer_auth_service import get_current_buyer
 from app.domain.schemas.token_schema import TokenDataSchema
+from app.services.auth_services.user_auth_service import get_current_user
 from app.services.review_main_service import ReviewMainService
 from uuid import UUID
 from loguru import logger

@@ -3,8 +3,7 @@ from app.infrastructure.repositories.item_repository import ItemRepository
 from app.domain.models.website_model import WebsitePlan, Website
 from uuid import UUID
 from fastapi import HTTPException, Depends
-from app.services.base_service import BaseService
-
+from app.infrastructure.repositories.website_repository import WebsiteRepository
 from typing import Annotated, List
 from loguru import logger
 from datetime import datetime
@@ -17,11 +16,12 @@ class PlanService:
         self,
         plan_repository: Annotated[PlanRepository, Depends()],
         item_repository: Annotated[ItemRepository, Depends()],
+        website_repository: Annotated[WebsiteRepository, Depends()],
 
     ) -> None:
-        super().__init__()  
         self.plan_repository = plan_repository
         self.item_repository = item_repository
+        self.website_repository = website_repository
 
 
 
@@ -88,4 +88,28 @@ class PlanService:
 
     async def get_plan_purchase_stats(self) -> List[dict]:
         return self.plan_repository.get_website_plan_counts()
+    
+
+    async def get_all_plans(self):
+        return self.plan_repository.get_all_plans()
+    
+
+    async def activate_free_plan(self, website_id:UUID):
+        website = self.website_repository.get_website_by_id(website_id)
+        if not website:
+            raise HTTPException(status_code=404, detail="Website not found.")
+        active_plan = self.get_active_plan_by_website_id(website_id)
+        # if active_plan:
+        #     raise HTTPException(status_code=400, detail="This website already has an active plan.")
+        basic_plan = self.plan_repository.get_basic_plan()
+        self.plan_repository.create_free_website_plan(website_id, basic_plan.plan_id)
+
+
+    async def check_had_plan(self, website_id:UUID): 
+        return self.plan_repository.check_had_paln(website_id)  
+        
+        
+    async def get_left_days(self,website_id:UUID):
+        return self.plan_repository.get_left_days(website_id)    
+    
     

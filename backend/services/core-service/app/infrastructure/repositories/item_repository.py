@@ -35,10 +35,19 @@ class ItemRepository:
         return self.db.query(Item).filter(Item.subcategory_id == subcategory_id).all()
     
 
-    def update_item(self, item: Item) -> Item:
-        self.db.commit()
-        self.db.refresh(item)
-        return item
+    def update_item(self, item_id: UUID, updated_item) -> Item:
+        item_query = self.db.query(Item).filter(Item.item_id == item_id)
+        db_item = item_query.first()
+
+        if db_item:
+            item_query.update(updated_item, synchronize_session=False)
+            self.db.commit()
+            self.db.refresh(db_item)
+            logger.info(f"✅ item {item_id} updated")
+            return db_item
+        else:
+            logger.warning(f"⚠️ item {item_id} not found")
+            return None
     
 
     def delete_item(self, item: Item) -> Item:
@@ -63,5 +72,26 @@ class ItemRepository:
     def get_items_count(self, website_id: UUID) -> int:
         count = self.db.query(func.count(Item.item_id)).filter(
             Item.website_id == website_id
+        ).scalar() or 0
+        return count
+    
+    def activate_discount(self, item_id: UUID, percent:int):
+        item = self.get_item_by_id(item_id)    
+        discount_price = float(item.price) * (1 - percent / 100)
+        item.discount_price = round(discount_price, 2)
+
+        if percent <= 0 or percent >= 100:
+            raise ValueError("Must be between 1-99")
+        
+        item.discount_active = True
+        item.discount_percent = percent
+        item.discount_price = round(discount_price, 2)
+        
+        self.db.commit()
+        self.db.refresh(item)
+
+    def get_item_count_by_category_id(self, category_id: UUID) -> int:
+        count = self.db.query(func.count(Item.item_id)).filter(
+            Item.category_id == category_id
         ).scalar() or 0
         return count

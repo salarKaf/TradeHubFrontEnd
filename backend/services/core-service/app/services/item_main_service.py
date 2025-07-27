@@ -1,29 +1,38 @@
-from app.infrastructure.repositories.item_repository import ItemRepository
 from app.services.item_service import ItemService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
 from app.services.base_service import BaseService
-from typing import Annotated, List
+from typing import Annotated, List, Dict
+from app.services.website_service import WebsiteService
+from app.services.plan_service import PlanService
+from decimal import Decimal
+
+
 
 class ItemMainService(BaseService):
     def __init__(
         self,
         item_service: Annotated[ItemService, Depends()],
+        website_service: Annotated[WebsiteService, Depends()],
+        plan_service: Annotated[PlanService, Depends()],
     ) -> None:
         super().__init__()
         self.item_service = item_service
-
+        self.website_service = website_service
+        self.plan_service =plan_service
 
     async def create_item(self, item_data: ItemCreateSchema) -> ItemResponseSchema:
         logger.info(f"Starting to create item... ")
         
         if item_data.stock <= 0:
             raise HTTPException(status_code=400, detail="Stock must be greater than zero")
+        await self.plan_service.check_item_limit(item_data.website_id)
+
 
         created_item = await self.item_service.create_item(item_data)
-
+    
         return ItemResponseSchema(
                 item_id=created_item.item_id,
                 website_id=created_item.website_id,
@@ -44,21 +53,25 @@ class ItemMainService(BaseService):
         
 
         
-    async def get_item_by_id(self, item_id: UUID) -> ItemResponseSchema:
+    async def get_item_by_id(self, item_id: UUID) -> ItemResponseWithNameSchema:
         logger.info(f"Starting to fetch item with ID: {item_id}")
 
         item = await self.item_service.get_item_by_id(item_id)
-
-        return ItemResponseSchema(
+        category = await self.website_service.get_category_by_id(item.category_id)
+        subcategory = await self.website_service.get_subcategory_by_id(item.subcategory_id)
+        return ItemResponseWithNameSchema(
             item_id=item.item_id,
             website_id=item.website_id,
             category_id=item.category_id,
             subcategory_id=item.subcategory_id,
+            category_name=category.name if category else 'null',
+            subcategory_name=subcategory.name if subcategory else 'null',
             name=item.name,
             description=item.description,
             price=item.price,
             discount_price=item.discount_price,
             discount_active=item.discount_active,
+            discount_percent=item.discount_percent,
             discount_expires_at=item.discount_expires_at,
             delivery_url=item.delivery_url,
             post_purchase_note=item.post_purchase_note,
@@ -110,6 +123,7 @@ class ItemMainService(BaseService):
                 price=item.price,
                 discount_price=item.discount_price,
                 discount_active=item.discount_active,
+                discount_percent=item.discount_percent,
                 discount_expires_at=item.discount_expires_at,
                 delivery_url=item.delivery_url,
                 post_purchase_note=item.post_purchase_note,
@@ -125,7 +139,30 @@ class ItemMainService(BaseService):
     async def edit_item(self, item_id: UUID, item_data: ItemUpdateSchema) -> ItemResponseSchema:
         logger.info(f"Editing item with ID: {item_id}")
 
+        item_data = {
+        key: value for key, value in item_data.dict(exclude_unset=True).items()
+        if value not in ("", None)
+    }
+        item = await self.item_service.get_item_by_id(item_id)
+        
+        if item_data.get("discount_active") is True and item_data.get("discount_percent") is None:
+            raise ValueError("Discount percent is required when discount is active.")
+        if item_data.get("discount_percent") is not None and not item_data.get("discount_active", False):
+            raise ValueError("Discount percent should not be provided when discount is not active.")
+
+        if item_data.get("discount_active"):
+            await self.plan_service.check_discount_permission(item.website_id)
+            discount_percent = Decimal(str(item_data["discount_percent"]))
+            discount_price = item.price * (Decimal("1") - discount_percent / Decimal("100"))
+            item_data["discount_price"] = discount_price
+        else:
+            item_data["discount_percent"] = None
+            item_data["discount_expires_at"] = None
+            item_data["discount_price"] = None
+
         updated_item = await self.item_service.edit_item(item_id, item_data)
+
+
 
         return ItemResponseSchema(
             item_id=updated_item.item_id,
@@ -135,8 +172,9 @@ class ItemMainService(BaseService):
             name=updated_item.name,
             description=updated_item.description,
             price=updated_item.price,
-            discount_price=updated_item.discount_price,
+            discount_price=discount_price,
             discount_active=updated_item.discount_active,
+            discount_percent=updated_item.discount_percent,
             discount_expires_at=updated_item.discount_expires_at,
             delivery_url=updated_item.delivery_url,
             post_purchase_note=updated_item.post_purchase_note,
@@ -155,30 +193,41 @@ class ItemMainService(BaseService):
     
 
 
-    async def get_newest_items(self, website_id: UUID, limit: int) -> List[ItemResponseSchema]:
+    async def get_newest_items(self, website_id: UUID, limit: int) -> List[ItemResponseWithNameSchema]:
         items = await self.item_service.get_newest_items(website_id, limit)
-        return [
-        ItemResponseSchema(
-            item_id=item.item_id,
-            website_id=item.website_id,
-            category_id=item.category_id,
-            subcategory_id=item.subcategory_id,
-            name=item.name,
-            description=item.description,
-            price=item.price,
-            discount_price=item.discount_price,
-            discount_active=item.discount_active,
-            discount_expires_at=item.discount_expires_at,
-            delivery_url=item.delivery_url,
-            post_purchase_note=item.post_purchase_note,
-            stock=item.stock,
-            is_available= item.is_available,
-            created_at=item.created_at
-        )
-        for item in items
-    ]
+        result = []
+        for item in items:
+            category = await self.website_service.get_category_by_id(item.category_id)
+            subcategory = await self.website_service.get_subcategory_by_id(item.subcategory_id)
+
+            category_name = category.name if category else 'null'
+            subcategory_name = subcategory.name if subcategory else 'null'
+
+            result.append(ItemResponseWithNameSchema(
+                item_id=item.item_id,
+                website_id=item.website_id,
+                category_id=item.category_id,
+                subcategory_id=item.subcategory_id,
+                category_name=category_name,
+                subcategory_name=subcategory_name,
+                name=item.name,
+                description=item.description,
+                price=item.price,
+                discount_price=item.discount_price,
+                discount_active=item.discount_active,
+                discount_expires_at=item.discount_expires_at,
+                delivery_url=item.delivery_url,
+                post_purchase_note=item.post_purchase_note,
+                stock=item.stock,
+                is_available=item.is_available,
+                created_at=item.created_at,
+            ))
+
+        return result
 
     async def get_items_count(self, website_id: UUID) -> int:
         return await self.item_service.get_items_count(website_id)
 
 
+    async def get_item_count_by_category_id(self, category_id: UUID) -> int:
+        return await self.item_service.get_item_count_by_category_id(category_id)

@@ -53,7 +53,7 @@ class Website(Base):
     logo_url = Column(String(255), nullable=True)
     banner_image = Column(String(255), nullable=True)
     welcome_text = Column(Text, nullable=True)
-    store_policy = Column(Text, nullable=True)
+    store_policy = Column(JSONB, nullable=True)
     store_slogan = Column(Text, nullable=True)
     guide_page = Column(Text, nullable=True)
     social_links = Column(JSONB, nullable=True)
@@ -100,7 +100,7 @@ class Item(Base):
     price = Column(DECIMAL(10, 2), nullable=False)
     discount_price = Column(DECIMAL(10, 2), nullable=True)
     discount_active = Column(Boolean, default=False)
-    discount_percent = Column(Integer, default=False)
+    discount_percent = Column(Integer, default=0)
     discount_expires_at = Column(TIMESTAMP, nullable=True)
     delivery_url = Column(String(255), nullable=False)
     post_purchase_note = Column(Text, nullable=True)
@@ -138,6 +138,6 @@ class Announcement(Base):
     __tablename__ = "announcements"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    website_id = Column(UUID(as_uuid=True), ForeignKey("website.id"), nullable=False)
+    website_id = Column(UUID(as_uuid=True), ForeignKey("websites.website_id"), nullable=False)
     message = Column(String(512), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, nullable=False)

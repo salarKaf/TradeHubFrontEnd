@@ -8,6 +8,7 @@ from uuid import UUID
 from sqlalchemy.orm import joinedload
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import func, extract
+from datetime import datetime, timedelta
 
 class PlanRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -30,9 +31,6 @@ class PlanRepository:
             .filter(WebsitePlan.website_id == website_id, WebsitePlan.is_active == True)
             .first()
         )
-
-        if not plan:
-            return "Inactive"
         return plan
 
     def get_plan_price(self, name: UUID) -> float:
@@ -49,14 +47,14 @@ class PlanRepository:
 
 
     def deactivate_all_website_plans(self, website_id):
-            self.db.query(WebsitePlan)\
+        self.db.query(WebsitePlan)\
                 .filter(WebsitePlan.website_id == website_id, WebsitePlan.is_active == True)\
                 .update({WebsitePlan.is_active: False})
-            self.db.commit()
+        self.db.commit()
 
     def create_website_plan(self, website_id, plan_id, price):
         activated_at=datetime.utcnow()
-        expires_at = activated_at + relativedelta(months=3)
+        expires_at = activated_at + timedelta(days=90)
         website_plan = WebsitePlan(
             website_id=website_id,
             plan_id=plan_id,
@@ -69,6 +67,20 @@ class PlanRepository:
         self.db.refresh(website_plan)
         return website_plan
     
+    def create_free_website_plan(self, website_id, plan_id):
+        activated_at=datetime.utcnow()
+        expires_at = activated_at + relativedelta(days=7)
+        website_plan = WebsitePlan(
+            website_id=website_id,
+            plan_id=plan_id,
+            activated_at=activated_at,
+            expires_at=expires_at,
+            is_active=True
+        )
+        self.db.add(website_plan)
+        self.db.commit()
+        self.db.refresh(website_plan)
+        return website_plan
 
 
     def get_active_plan_counts(self):
@@ -164,3 +176,26 @@ class PlanRepository:
             .order_by(func.count().desc())
             .all()
         )
+
+    def get_basic_plan(self):
+        return self.db.query(SubscriptionPlan).filter(SubscriptionPlan.name == 'Basic').first()
+
+    def get_all_plans(self):
+        plans = self.db.query(SubscriptionPlan).all()
+        return [
+            {
+                "id": p.plan_id,
+                "name": p.name,
+                "price": p.price
+            }
+            for p in plans
+        ]
+    
+    def check_had_paln(self, website_id:UUID):
+        return self.db.query(WebsitePlan).filter(WebsitePlan.website_id == website_id).first()
+
+    def get_left_days(self, website_id:UUID):
+        plan = self.get_active_plan_by_website_id(website_id)
+        now = datetime.utcnow()
+        expiration_time = plan.expires_at - now 
+        return expiration_time.days

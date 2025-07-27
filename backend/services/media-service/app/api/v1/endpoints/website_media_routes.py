@@ -29,6 +29,7 @@ async def upload_banner(
     website_service: Annotated[WebsiteMainService, Depends()],
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
 ):
+    
     logger.info(f"Validating banner file")
     validate_image_file(file) 
 
@@ -43,8 +44,8 @@ async def upload_banner(
     await website_service.update_website(update_data, current_user.user_id)
     
     await website_service.update_website(update_data, current_user.user_id)
-
     return output
+
 
 
 @media_router.get(
@@ -60,9 +61,6 @@ async def get_banner(
     logger.info(f"Getting website info for website: {website_id}")
 
     website = await website_service.get_website_by_id(website_id)
-
-    if not website.banner_image:
-        raise HTTPException(status_code=404, detail="No banner image set for this website")
 
     mongo_id = ObjectId(website.banner_image)
     logger.info(f"Mongo id for banner: {mongo_id}")
@@ -122,9 +120,6 @@ async def get_logo(
     logger.info(f"Getting website info for website: {website_id}")
 
     website = await website_service.get_website_by_id(website_id)
-
-    if not website.logo_url:
-        raise HTTPException(status_code=404, detail="No logo set for this website")
 
     mongo_id = ObjectId(website.logo_url)
     logger.info(f"Mongo id for logo: {mongo_id}")

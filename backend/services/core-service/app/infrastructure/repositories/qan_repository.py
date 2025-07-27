@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated, List
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.core.postgres_db.database import get_db
@@ -38,4 +38,6 @@ class QuestionRepository:
         return self.db.query(ItemQuestion).get(question_id)
     
 
+    def get_question_by_item_id(self, item_id: UUID) -> List[ItemQuestion]:
+        return self.db.query(ItemQuestion).filter(ItemQuestion.item_id == item_id).all()
     

@@ -1,9 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
+import logging
 
 from app.api.v1.endpoints.website_media_routes import media_router
 from app.api.v1.endpoints.item_imag_routes import item_media_router
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    force=True,
+)
+
+logger = logging.getLogger(__name__)
+logger.info("Custom logging is configured.")
+
 app = FastAPI()
 
 app.add_middleware(

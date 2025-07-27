@@ -158,6 +158,14 @@ CREATE TABLE website_plans (
 );
 
 
+CREATE TABLE website_slugs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE
+);
+
+
+
 CREATE TABLE cart_items (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   website_id UUID NOT NULL REFERENCES websites(website_id) ON DELETE CASCADE,
@@ -213,7 +221,11 @@ CREATE TABLE coupons (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+CREATE TABLE favorites(
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+     item_id UUID NOT NULL REFERENCES items(item_id) ON DELETE CASCADE,
+     buyer_id UUID NOT NULL REFERENCES buyers(buyer_id) ON DELETE CASCADE
+);
 
 CREATE OR REPLACE FUNCTION notify_new_review()
 RETURNS TRIGGER AS $$
@@ -260,3 +272,14 @@ CREATE INDEX idx_orders_website_id ON orders(website_id);
 CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
 CREATE INDEX idx_website_owners_website_id ON website_owners(website_id);
 CREATE INDEX idx_website_owners_user_id ON website_owners(user_id);
+
+
+
+
+
+
+
+
+
+
+

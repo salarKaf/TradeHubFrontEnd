@@ -87,8 +87,7 @@ async def get_item_image(
     logger.info(f"Getting item image with id: {image_id}")
 
     image = await item_image_service.get_image_by_id(image_id)
-    if not image:
-        raise HTTPException(status_code=404, detail="Image not found")
+
 
     mongo_id = ObjectId(image.image_url)
     logger.info(f"Mongo ID for image: {mongo_id}")
@@ -104,3 +103,29 @@ async def get_item_image(
             "Content-Disposition": f"inline; filename={media_schema.filename}"
         },
     )
+
+
+
+
+@item_media_router.put(
+    "/update_main_flag/{image_id}",
+    status_code=status.HTTP_200_OK
+)
+async def update_main_flag(
+    image_id: UUID,
+    item_image_service: Annotated[ItemImageMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],):
+    return await item_image_service.set_main(image_id)
+
+
+
+@item_media_router.delete(
+    "/delete/{image_id}",
+    status_code=status.HTTP_200_OK
+)
+async def update_main_flag(
+    image_id: UUID,
+    item_image_service: Annotated[ItemImageMainService, Depends()],
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    ):
+    return await item_image_service.delete(image_id)

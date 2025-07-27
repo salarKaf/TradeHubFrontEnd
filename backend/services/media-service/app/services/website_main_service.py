@@ -33,8 +33,6 @@ class WebsiteMainService(BaseService):
             guide_page=website.guide_page,
             social_links=jsonable_encoder(website.social_links), 
             faqs=jsonable_encoder(website.faqs),  
-            website_url=website.website_url,
-            custom_domain=website.custom_domain,
             logo_url=website.logo_url,
             banner_image=website.banner_image,
             message="Website fetched successfully ✅"   
@@ -60,8 +58,6 @@ class WebsiteMainService(BaseService):
                 guide_page=updated_website.guide_page,
                 social_links=jsonable_encoder(updated_website.social_links), 
                 faqs=jsonable_encoder(updated_website.faqs),  
-                website_url=updated_website.website_url,
-                custom_domain=updated_website.custom_domain,
                 logo_url=updated_website.logo_url,
                 banner_image=updated_website.banner_image,
                 created_at=updated_website.created_at,

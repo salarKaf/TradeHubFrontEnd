@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Dict 
 from loguru import logger
 from fastapi import Depends, HTTPException, status
 
@@ -15,7 +15,8 @@ from app.services.auth_services.otp_service import OTPService
 from app.services.base_service import BaseService
 from app.services.buyer_service import BuyerService
 from app.utils import helper
-
+from app.domain.schemas.token_schema import TokenSchema
+from uuid import UUID
 
 class RegisterService(BaseService):
     def __init__(
@@ -62,7 +63,7 @@ class RegisterService(BaseService):
 
     async def verify_buyer(
         self, verify_buyer_schema: VerifyOTPSchema
-    ) -> VerifyOTPResponseSchema:
+    ) -> TokenSchema:
         if not self.otp_service.verify_otp(
             verify_buyer_schema.email, verify_buyer_schema.otp
         ):
@@ -75,13 +76,12 @@ class RegisterService(BaseService):
         await self.buyer_service.update_verified_status(buyer.buyer_id, {"is_verified": True})
 
         logger.info(f"Buyer with email {verify_buyer_schema.email} verified✅")
-        return VerifyOTPResponseSchema(
-            verified=True, message="Buyer Verified Successfully"
-        )
+        token = self.auth_service.create_access_token(data={"sub": str(buyer.buyer_id), "role": "buyer"})
+        return {"access_token": token, "token_type": "bearer"} 
 
     async def resend_otp(
         self, resend_otp_schema: ResendOTPSchema
-    ) -> ResendOTPResponseSchema:
+    ) -> TokenSchema:
         existing_buyer = await self.buyer_service.get_buyer_by_email(resend_otp_schema.website_id,resend_otp_schema.email)
         
         if not existing_buyer:
@@ -105,11 +105,12 @@ class RegisterService(BaseService):
         otp = self.otp_service.send_otp(resend_otp_schema.email)
 
         logger.info(f"OTP resent to email {resend_otp_schema.email}")
-        return ResendOTPResponseSchema(
-            email=resend_otp_schema.email,
-            OTP=otp,
-            message="OTP sent to email",
-        )
+        # return ResendOTPResponseSchema(
+        #     email=resend_otp_schema.email,
+        #     OTP=otp,
+        #     message="OTP sent to email",
+        # )
+
 
     async def verify_otp_forget_password(
         self, verify_buyer_schema: VerifyOTPSchema
@@ -127,3 +128,26 @@ class RegisterService(BaseService):
 
         logger.info(f"Buyer with email {verify_buyer_schema.email} requested for password reset")
         return {"status_code": 200, "message": "OTP Verified Successfully"}
+
+
+    async def create_buyer(self, buyer_body: BuyerCreateSchema):
+        return await self.buyer_service.create_buyer(buyer_body)
+
+    async def get_buyer_by_email(self, website_id:UUID ,email: str):
+        return await self.buyer_service.get_buyer_by_id(website_id, email)
+
+
+    async def get_buyer_by_id(self, buyer_id: UUID):  
+        return await self.buyer_service.get_buyer_by_id(buyer_id)
+
+    async def update_verified_status(self, buyer_id: UUID, update_fields: Dict): 
+        return await self.buyer_service.update_verified_status(buyer_id, update_fields)
+
+    async def update_can_reset_password_status(self, buyer_id: UUID, update_fields: Dict): 
+        return await self.buyer_service.update_can_reset_password_status(buyer_id, update_fields)
+    
+    async def update_buyer(self, buyer_id: UUID, update_fields: Dict):
+        return await self.buyer_service.update_buyer(buyer_id, update_fields)
+
+    async def change_buyer_password(self, email: str, update_fields: Dict):
+        return await self.buyer_service.change_buyer_password(email, update_fields)

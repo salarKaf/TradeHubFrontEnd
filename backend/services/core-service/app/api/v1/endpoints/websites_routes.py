@@ -6,7 +6,7 @@ from app.domain.schemas.website_schema import (WebsiteCreateSchema, WebsiteRespo
                                                   SubCategoryUpdateSchema,OrderInvoiceSchema,
                                                   WebsiteSubcategoryResponseSchema, WebsiteSubcategoryCreateSchema,
                                                   WebsiteUpdateSchema ,AddWebsiteOwnerSchema)
-from app.services.auth_services.auth_service import get_current_user
+from app.services.auth_services.user_auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
 from typing import Annotated, List, Literal, Dict, Optional
@@ -235,8 +235,8 @@ async def get_latest_orders(
     return orders
 
 
-@website_router.get("/products/best-selling/{website_id}")
-async def best_selling_products(
+@website_router.get("/items/best-selling/{website_id}")
+async def best_selling_items(
     website_id: UUID,
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
     website_service: Annotated[WebsiteMainService, Depends()],
@@ -284,9 +284,10 @@ async def get_active_plan(
 @website_router.get("/orders/invoice-table/{website_id}")
 async def get_invoice_table(
     website_id: UUID,
-    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
     website_service: Annotated[WebsiteMainService, Depends()],
     sort_by: Optional[str] = Query("latest", enum=["latest", "amount"]),
     
 ):
     return await website_service.get_order_invoice_table(website_id, sort_by)
+
+

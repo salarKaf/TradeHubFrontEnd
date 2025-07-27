@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.item_main_service import ItemMainService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse
-from app.services.auth_services.auth_service import get_current_user
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
+from app.services.auth_services.user_auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
 from typing import Annotated, List
@@ -21,7 +21,7 @@ async def create_item(
     return created_item
 
 
-@item_router.get("/items/{item_id}", response_model=ItemResponseSchema, status_code=status.HTTP_200_OK)
+@item_router.get("/items/{item_id}", response_model=ItemResponseWithNameSchema, status_code=status.HTTP_200_OK)
 async def get_item_by_id(
     item_id: UUID,
     item_main_service: Annotated[ItemMainService, Depends()]
@@ -71,12 +71,12 @@ async def delete_item(
 
 
 
-@item_router.get("/newest_items", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
+@item_router.get("/newest_items", response_model=List[ItemResponseWithNameSchema], status_code=status.HTTP_200_OK)
 async def get_newest_items(website_id: UUID, limit:int, item_main_service: ItemMainService = Depends()):
     return await item_main_service.get_newest_items(website_id, limit)
 
 
-@item_router.get("/products/count/{website_id}")
+@item_router.get("/items/count/{website_id}")
 async def get_items_count(
     website_id: UUID,
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
@@ -85,3 +85,12 @@ async def get_items_count(
     count = await item_service.get_items_count(website_id)
     return {"items_count": count}
 
+
+
+@item_router.get("/items/item-count/{category_id}")
+async def get_item_count_by_category_id(
+    category_id: UUID,
+    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
+    item_service: Annotated[ItemMainService, Depends()],
+):
+    return await item_service.get_item_count_by_category_id(category_id)

@@ -27,3 +27,13 @@ class CouponRepository:
         self.db.commit()
         self.db.refresh(coupon)
         return coupon
+    
+
+    def get_coupon_by_id(self, coupon_id: UUID) -> Optional[Coupon]:
+        return self.db.query(Coupon).filter_by(coupon_id=coupon_id).first()
+
+    def delete_coupon(self, coupon_id: UUID) -> None:
+        coupon = self.get_coupon_by_id(coupon_id)
+        if coupon:
+            self.db.delete(coupon)
+            self.db.commit()

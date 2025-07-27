@@ -32,8 +32,6 @@ class ReviewService:
 
     async def get_item_reviews(self, item_id:UUID) -> List[Review]:
         reviews = self.review_repository.get_reviews_by_item(item_id)
-        if not reviews:
-            raise HTTPException(status_code=404, detail="No review was found")
         return reviews
 
     async def get_review_by_buyer_and_item(self, buyer_id: UUID, item_id: UUID) -> Optional[Review]:

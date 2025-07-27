@@ -12,6 +12,7 @@ class CartItemResponseSchema(BaseModel):
   id: UUID
   website_id: UUID
   item_id: UUID
+  item_name: Optional[str] = None
   quantity: int
   added_at: datetime
   expires_at: Optional[datetime]

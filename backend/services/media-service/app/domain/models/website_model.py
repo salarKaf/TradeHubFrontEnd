@@ -23,3 +23,11 @@ class Website(Base):
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
 
+class WebsiteOwner(Base):
+    __tablename__ = "website_owners"
+
+    id = Column(UUID, primary_key=True, default=uuid4)
+    website_id = Column(UUID, ForeignKey("websites.website_id"), nullable=False)
+    user_id = Column(UUID, ForeignKey("users.user_id"), nullable=False)
+    joined_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
+

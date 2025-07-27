@@ -14,13 +14,14 @@ class Settings(BaseSettings):
     DEBUG_MODE: bool = False
     # REDIS_URL: str = "localhost"
     REDIS_URL: str = "redis"
+    IAM_URL: str = "http://iam"
     REDIS_PORT: int = 6379
     JWT_SECRET_KEY : str = "3ffdda4a51a141cff4485a36f9cd137287f2526c1edb8300cd678ab96a49d1bd"
     JWT_ALGORITHM : str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     OTP_EXPIRE_TIME: int = 3600
     # DATABASE_URL: str =  "7" 
-    MEDIA_URL: str = "http://127.0.0.1:8004"
+    # MEDIA_URL: str = "http://127.0.0.1:8004"
 
 @logger.catch
 def get_settings():
