@@ -31,6 +31,7 @@ class CartMainService(BaseService):
         id= cart_item.id, 
         website_id= cart_item.website_id, 
         item_id= cart_item.item_id, 
+        item_name= item.name,
         quantity= cart_item.quantity, 
         added_at= cart_item.added_at,
         expires_at= cart_item.expires_at,
