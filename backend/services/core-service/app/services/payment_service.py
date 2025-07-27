@@ -20,7 +20,6 @@ class PaymentService:
         return f"{base_url}/{order_id}?website_id={website_id}"
     async def request_order_payment(self, website_id:UUID, order_id: UUID, amount: Decimal) -> str:
 
-
         payload = {
             "merchant_id": self.merchant_id,
             "amount": float(amount),
@@ -60,7 +59,7 @@ class PaymentService:
                 return False
             
     def create_plan_callback_url(self, website_id: UUID, plan_id: UUID) -> str:
-        base_url = "https://tradehub-core.liara.run/api/v1/payment/plan_payment/callback"
+        base_url = "http://tradehub.localhost/api/v1/payment/plan_payment/callback"
         return f"{base_url}?website_id={website_id}&plan_id={plan_id}"
 
 

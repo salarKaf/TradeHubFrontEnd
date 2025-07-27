@@ -162,6 +162,7 @@ class ItemMainService(BaseService):
             
         updated_item = await self.item_service.edit_item(item_id, item_data_dict)
 
+        # return updated_item
         return ItemResponseSchema(
             item_id=updated_item.item_id,
             website_id=updated_item.website_id,

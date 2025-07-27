@@ -8,7 +8,7 @@ from app.core.configs.config import get_settings
 
 config = get_settings()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"https://tradehub-iam.liara.run/api/v1/users/login", scheme_name="UserOAuth2")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"http://iam.localhost/api/v1/users/login", scheme_name="UserOAuth2")
 
 
 async def get_current_user(
