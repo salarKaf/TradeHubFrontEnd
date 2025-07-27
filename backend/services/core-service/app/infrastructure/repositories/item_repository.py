@@ -95,3 +95,12 @@ class ItemRepository:
             Item.category_id == category_id
         ).scalar() or 0
         return count
+    
+
+    def reduce(self, item_id: UUID, stock: int, is_available:bool)-> Item:
+        item = self.get_item_by_id(item_id)  
+        item.stock = stock
+        item.is_available= is_available
+
+        self.db.commit()
+        self.db.refresh(item)

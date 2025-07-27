@@ -66,8 +66,7 @@ class OrderService:
                 item.stock -= order_item.quantity
                 if item.stock == 0:
                     item.is_available = False
-                item_data = ItemUpdateSchema(stock=item.stock, is_available=item.is_available)
-                await self.item_service.edit_item(item.item_id, item_data)
+                await self.item_service.reduce(item.item_id,item.stock,item.is_available)
 
 
     async def get_order_item_by_buyer_and_item(self, buyer_id: UUID, item_id: UUID) -> bool:

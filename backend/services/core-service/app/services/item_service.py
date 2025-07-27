@@ -83,3 +83,7 @@ class ItemService(BaseService):
 
     async def get_item_count_by_category_id(self, category_id: UUID) -> int:
         return self.item_repository.get_item_count_by_category_id(category_id)
+    
+
+    async def reduce(self, item_id: UUID ,stock: int, is_available:bool):
+        return self.item_repository.reduce(item_id,stock, is_available)
