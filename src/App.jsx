@@ -35,7 +35,7 @@ import Cart from '../src/pages/website/pages/Cart/Cart.jsx';
 import SignUp from '../src/pages/website/pages/Auth/SignUp';
 import Login from '../src/pages/website/pages/Auth/Login.jsx';
 import ProductAfterPurchase from './pages/website/pages/Cart/ProductAfterPurchase.jsx';
-
+import OTPFormBuyer from './pages/website/pages/Auth/OTPFormBuyer.jsx'
 // Slug Handler Component
 import SlugHandler from '../src/pages/website/pages/SlugHandler.jsx';
 
@@ -94,6 +94,7 @@ export default function App() {
               <Route path="signup" element={<SignUp />} />
               <Route path="login" element={<Login />} />
               <Route path="digital-product-purchased" element={<ProductAfterPurchase />} />
+              <Route path="otp-verification" element={<OTPFormBuyer />} />
             </Routes>
           </WebsiteProvider>
         } />

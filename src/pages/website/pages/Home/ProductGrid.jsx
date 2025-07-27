@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // ✅ اضافه کردن useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { getWebsiteIdBySlug } from "../../../../API/website.js";
-import { getNewestItems } from "../../../../API/Items"; // فرض می‌کنم این path درسته
+import { getNewestItems } from "../../../../API/Items";
 
 export default function ProductGrid() {
   const { slug } = useParams();
-  const navigate = useNavigate(); // ✅ برای نیویگیشن
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,10 +71,16 @@ export default function ProductGrid() {
 
   const handleProductClick = (productId) => {
     if (slug) {
-      navigate(`/${slug}/product/${productId}`); // هدایت به صفحه محصول با slug
+      navigate(`/${slug}/product/${productId}`);
     } else {
-      navigate(`/product/${productId}`); // هدایت به صفحه محصول بدون slug
+      navigate(`/product/${productId}`);
     }
+  };
+
+  // callback برای وقتی محصول به سبد خرید اضافه میشه
+  const handleAddToCart = (productId, result) => {
+    console.log(`محصول ${productId} به سبد خرید اضافه شد:`, result);
+    // اینجا می‌تونی state سبد خرید رو آپدیت کنی یا notification نشون بدی
   };
 
   if (loading) {
@@ -113,20 +119,19 @@ export default function ProductGrid() {
             </div>
           ) : (
             products.map((product) => (
-              <div
+              <ProductCard
                 key={product.id}
-                onClick={() => handleProductClick(product.id)} // کلیک برای هدایت به صفحه محصول
-                className="cursor-pointer transform hover:scale-105 transition-transform duration-200"
-              >
-                <ProductCard
-                  name={product.name}
-                  price={product.originalPrice || product.price}
-                  image={product.image}
-                  rating={product.rating}
-                  discount={product.discount}
-                  product={product}
-                />
-              </div>
+                id={product.id} // ✅ اضافه کردن id
+                websiteId={websiteId} // ✅ اضافه کردن websiteId
+                name={product.name}
+                price={product.originalPrice || product.price}
+                image={product.image}
+                rating={product.rating}
+                discount={product.discount}
+                product={product}
+                onClick={handleProductClick} // برای دکمه مشاهده
+                onAddToCart={handleAddToCart} // برای دکمه افزودن به سبد
+              />
             ))
           )}
         </div>

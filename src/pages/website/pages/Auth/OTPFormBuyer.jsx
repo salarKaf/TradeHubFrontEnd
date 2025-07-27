@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Clock, CheckCircle, XCircle } from 'lucide-react';
-
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { iamBaseURL } from '../../../../API/api';
 const OTPForm = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(120); // 2 minutes in seconds
   const [canResend, setCanResend] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [email, setEmail] = useState('user@example.com'); // Mock email
 
   // Timer effect
   useEffect(() => {
@@ -20,6 +20,66 @@ const OTPForm = () => {
       setCanResend(true);
     }
   }, [timer]);
+
+
+  const { slug } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // دریافت ایمیل و websiteId از state
+  const [email, setEmail] = useState(location.state?.email || '');
+  const [websiteId, setWebsiteId] = useState(location.state?.websiteId || '');
+
+  // توابع API
+  const verifyOTP = async (otpCode) => {
+    try {
+      const response = await fetch(`${iamBaseURL}/buyers/VerifyOTP`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          website_id: websiteId,
+          email: email,
+          otp: otpCode
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('کد تایید نامعتبر است');
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const resendOTP = async () => {
+    try {
+      const response = await fetch(`${iamBaseURL}/buyers/ResendOTP`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          website_id: websiteId,
+          email: email
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('خطا در ارسال مجدد کد');
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+
+
 
   // Format timer to MM:SS
   const formatTime = (seconds) => {
@@ -81,36 +141,42 @@ const OTPForm = () => {
   const handleSubmit = async () => {
     try {
       const otpCode = otp.join('');
-      console.log('Verifying OTP:', otpCode);
-      
-      // Simulate API call
+      const response = await verifyOTP(otpCode); // دریافت response
+
+      // ذخیره توکن خریدار بعد از تایید موفق OTP
+      if (response.access_token) {
+        localStorage.setItem('buyer_access_token', response.access_token);
+      }
+
+      setShowSuccessModal(true);
       setTimeout(() => {
-        setShowSuccessModal(true);
-        setTimeout(() => {
-          setShowSuccessModal(false);
-          console.log('Redirecting to next page...');
-        }, 2500);
-      }, 1000);
+        navigate(`/${slug}/home`);
+      }, 2500);
 
     } catch (err) {
       console.error('OTP verification failed:', err);
+      setShowErrorModal(true);
     }
   };
 
+
+
   const handleResendCode = async () => {
-    if (!canResend) {
-      alert("لطفاً تا پایان زمان صبر کنید!");
-      return;
-    }
+    if (!canResend) return;
 
     try {
-      console.log('Resending OTP to:', email);
+      await resendOTP(email, websiteId);
       setTimer(120);
       setCanResend(false);
       setOtp(['', '', '', '', '', '']);
-      alert("کد مجدداً ارسال شد!");
+
+      // نمایش پیام موفقیت آمیز
+      alert("کد جدید با موفقیت ارسال شد!");
     } catch (err) {
       console.error('Resend failed:', err);
+      setErrors({
+        general: err.message || 'خطا در ارسال مجدد کد'
+      });
     }
   };
 
@@ -192,13 +258,12 @@ const OTPForm = () => {
             <button
               type="button"
               onClick={handleMainButton}
-              className={`w-full py-4 font-bold rounded-3xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-2 ${
-                canResend
-                  ? 'bg-gradient-to-r from-blue-500/80 to-blue-600/80 backdrop-blur-sm text-white border-blue-400/50 hover:from-blue-600/90 hover:to-blue-700/90'
-                  : isCodeComplete
-                    ? 'bg-gradient-to-r from-green-500/80 to-green-600/80 backdrop-blur-sm text-white border-green-400/50 hover:from-green-600/90 hover:to-green-700/90'
-                    : 'bg-black/80 backdrop-blur-sm text-white border-white/10 hover:bg-black/90'
-              }`}
+              className={`w-full py-4 font-bold rounded-3xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-2 ${canResend
+                ? 'bg-gradient-to-r from-blue-500/80 to-blue-600/80 backdrop-blur-sm text-white border-blue-400/50 hover:from-blue-600/90 hover:to-blue-700/90'
+                : isCodeComplete
+                  ? 'bg-gradient-to-r from-green-500/80 to-green-600/80 backdrop-blur-sm text-white border-green-400/50 hover:from-green-600/90 hover:to-green-700/90'
+                  : 'bg-black/80 backdrop-blur-sm text-white border-white/10 hover:bg-black/90'
+                }`}
             >
               {canResend ? 'ارسال مجدد کد تایید' : 'تایید کد'}
             </button>
@@ -226,7 +291,7 @@ const OTPForm = () => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-8 rounded-2xl shadow-2xl max-w-md mx-4">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-white/5 to-transparent pointer-events-none"></div>
-            
+
             <div className="relative z-10 text-center space-y-4">
               <div className="w-16 h-16 mx-auto bg-gradient-to-br from-red-500/80 to-red-600/80 backdrop-blur-sm rounded-full flex items-center justify-center border border-red-400/50">
                 <XCircle size={32} className="text-white" />
@@ -249,7 +314,7 @@ const OTPForm = () => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-8 rounded-2xl shadow-2xl max-w-md mx-4">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-white/5 to-transparent pointer-events-none"></div>
-            
+
             <div className="relative z-10 text-center space-y-4">
               <div className="w-16 h-16 mx-auto bg-gradient-to-br from-green-500/80 to-green-600/80 backdrop-blur-sm rounded-full flex items-center justify-center border border-green-400/50">
                 <CheckCircle size={32} className="text-white" />
@@ -265,4 +330,4 @@ const OTPForm = () => {
   );
 };
 
-export default OTPForm;
+export default OTPForm; 

@@ -8,9 +8,10 @@ const Header = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+
   // تصاویر پیش‌فرض
-  const defaultBackgroundImage = "/website/Group 432.png";
-  const defaultLogoImage = "/website/Picsart_25-04-16_19-30-26-995 1.png";
+  const defaultBackgroundImage = "public/website/Group 432.png";
+  const defaultLogoImage = "public/website/Picsart_25-04-16_19-30-26-995 1.png";
   const defaultStoreName = "ویترین";
   const defaultSubSlogan = "خرید امن محصولات اینترنتی با کیفیت و بهترین قیمت در سریع‌ترین زمان ممکن";
 
@@ -32,6 +33,8 @@ const Header = () => {
         }
 
         const websiteId = slugResponse.website_id;
+        localStorage.setItem('current_store_website_id', websiteId); // تغییر نام کلید
+
 
         console.log('✅ Step 2: Website ID found:', websiteId);
 
@@ -61,7 +64,7 @@ const Header = () => {
 
     fetchData();
   }, [slug]);
-
+  // در Header.js بعد از دریافت websiteId
   // استخراج اطلاعات
   const storeName = websiteData?.business_name || defaultStoreName;
   const storeSlogan = websiteData?.store_slogan || defaultSubSlogan;

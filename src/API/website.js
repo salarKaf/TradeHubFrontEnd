@@ -59,6 +59,7 @@ export const getWebsiteIdBySlug = async (slug) => {
     }
 
     const data = await response.json();
+
     return data;
   } catch (error) {
     console.error('خطا در دریافت آیدی وبسایت:', error);

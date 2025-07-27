@@ -1,9 +1,24 @@
 import React, { useState } from "react";
 import { Heart, Eye, ShoppingCart } from "lucide-react";
+import { addItemToCart } from "../../../../API/cart";
+import { useParams, useNavigate } from 'react-router-dom';
 
-
-const ProductCard = ({ product, discount, image, price = "150,000 تومان", name = "نام محصول", rating = 5 }) => {
+const ProductCard = ({
+  product,
+  discount,
+  image,
+  price = "150,000 تومان",
+  name = "نام محصول",
+  rating = 5,
+  id, // اضافه کردن id
+  websiteId, // اضافه کردن websiteId
+  onAddToCart, // callback برای اطلاع والد از تغییرات سبد
+  onClick // callback برای کلیک روی مشاهده
+}) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { slug } = useParams(); // برای گرفتن websiteId
+  const navigate = useNavigate();
 
   // محاسبه قیمت تخفیف‌دار
   const calculateDiscountedPrice = (originalPrice, discountPercent) => {
@@ -16,14 +31,67 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
 
   const discountedPrice = discount ? calculateDiscountedPrice(price, discount) : null;
 
+  const handleAddToCart = async () => {
+    try {
+      setIsAddingToCart(true);
+
+      // 🔴 تغییر ۵: استفاده از توکن مخصوص فروشگاه فعلی
+      const websiteId = localStorage.getItem('current_store_website_id');
+      const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+      if (!token) {
+        alert('برای افزودن به سبد خرید باید وارد شوید');
+        navigate(`/${slug}/login`);
+        return;
+      }
+
+      // ✅ اینجا بود که کد ناتمام بود - حالا کامل میکنیم
+      console.log('🛒 Adding to cart:', { id, websiteId, token });
+
+      // صدا زدن API برای افزودن به سبد خرید
+      const result = await addItemToCart(id, websiteId, 1, token); // quantity = 1
+
+      console.log('✅ Product added to cart successfully:', result);
+
+      // اطلاع دادن به کامپوننت والد
+      if (onAddToCart) {
+        onAddToCart(id, result);
+      }
+
+      // نمایش پیام موفقیت
+      alert('محصول با موفقیت به سبد خرید اضافه شد!');
+
+    } catch (error) {
+      console.error('❌ Error adding to cart:', error);
+
+      // بررسی نوع خطا و نمایش پیام مناسب
+      if (error.message.includes('401') || error.message.includes('unauthorized')) {
+        alert('توکن شما منقضی شده. لطفاً دوباره وارد شوید');
+        navigate(`/${slug}/login`);
+      } else if (error.message.includes('stock')) {
+        alert('متأسفانه این محصول در انبار موجود نیست');
+      } else {
+        alert('خطا در افزودن محصول به سبد خرید. لطفاً دوباره تلاش کنید');
+      }
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   return (
-    <div className="group relative font-rubik bg-white shadow-lg rounded-2xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-2xl hover:scale-105">      {/* Hover Overlay for entire card */}
+    <div className="group relative font-rubik bg-white shadow-lg rounded-2xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-2xl hover:scale-105">
+      {/* Hover Overlay for entire card */}
       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-2xl z-10">
         {/* Add to Cart Button - Center */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <button className="opacity-0 group-hover:opacity-100 bg-black text-white px-4 py-2 rounded-full font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex items-center gap-2 hover:bg-gray-800">
+          <button
+            onClick={handleAddToCart}
+            disabled={isAddingToCart}
+            className={`opacity-0 group-hover:opacity-100 bg-black text-white px-4 py-2 rounded-full font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex items-center gap-2 hover:bg-gray-800 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+          >
             <ShoppingCart size={18} />
-            افزودن به سبد
+            {isAddingToCart ? 'در حال افزودن...' : 'افزودن به سبد'}
           </button>
         </div>
 
@@ -40,7 +108,10 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
             <span className="text-sm font-medium">پسندیدن</span>
           </button>
 
-          <button className="flex items-center justify-center gap-1 px-3 py-2 w-1/2 ml-1 rounded-lg bg-black text-white hover:bg-gray-800 transition-all duration-200">
+          <button
+            onClick={() => onClick && onClick(id)}
+            className="flex items-center justify-center gap-1 px-3 py-2 w-1/2 ml-1 rounded-lg bg-black text-white hover:bg-gray-800 transition-all duration-200"
+          >
             <Eye size={16} />
             <span className="text-sm font-medium">مشاهده</span>
           </button>
@@ -93,6 +164,5 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
     </div>
   );
 };
-
 
 export default ProductCard;

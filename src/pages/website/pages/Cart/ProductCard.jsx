@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Trash2, Heart, Eye, Package, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { addItemToCart, getMyCart, removeOneFromCart, deleteItemFromCart } from '../../../../API/cart';
 
 // کامپوننت کارت محصول
 const ProductCard = ({ product, discount, image, price = "150,000 تومان", name = "نام محصول", rating = 5 }) => {
@@ -81,11 +83,58 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
 };
 
 export default function Card() {
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: "گوشی موبایل سامسونگ", price: 15000000, quantity: 2, image: null },
-    { id: 2, name: "هدفون بی‌سیم", price: 850000, quantity: 1, image: null },
-    { id: 3, name: "کیبورد گیمینگ", price: 1200000, quantity: 1, image: null }
-  ]);
+  const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // چک کردن لاگین و بارگذاری سبد خرید
+  useEffect(() => {
+    const checkLoginAndLoadCart = async () => {
+      const token = localStorage.getItem('buyer_access_token');
+
+      if (!token) {
+        setIsLoggedIn(false);
+        setLoading(false);
+        return;
+      }
+
+      setIsLoggedIn(true);
+      await loadCartItems();
+    };
+
+    checkLoginAndLoadCart();
+  }, []);
+
+  // بارگذاری آیتم‌های سبد خرید
+  const loadCartItems = async () => {
+    try {
+      setLoading(true);
+      const cartItems = await getMyCart();
+
+      // فرمت‌دهی آیتم‌های سبد خرید
+      const formattedItems = cartItems.map(item => ({
+        id: item.id,
+        name: item.name || `محصول ${item.item_id.substring(0, 8)}`, // اگر نام نداره از item_id استفاده کن
+        price: parseFloat(item.price),
+        quantity: item.quantity,
+        image: item.image_url || null,
+        itemId: item.item_id,
+        websiteId: item.website_id
+      }));
+
+      setCartItems(formattedItems);
+    } catch (error) {
+      console.error("خطا در دریافت سبد خرید:", error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('buyer_access_token');
+        setIsLoggedIn(false);
+        navigate('/login');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // نمونه داده‌های خرید‌های قبلی
   const [previousOrders] = useState([
@@ -136,18 +185,37 @@ export default function Card() {
     { id: 5, name: "تبلت آیپد", price: "25,000,000 تومان", discount: "", rating: 5 },
     { id: 6, name: "کیس گیمینگ", price: "3,200,000 تومان", discount: "20%", rating: 4 }
   ]);
-  
+
   const [couponCode, setCouponCode] = useState('');
 
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
+  // حذف آیتم از سبد خرید
+  const removeItem = async (cartItemId) => {
+    try {
+      await deleteItemFromCart(cartItemId);
+      await loadCartItems(); // رفرش سبد خرید
+    } catch (error) {
+      console.error("خطا در حذف محصول:", error);
+      alert('خطا در حذف محصول');
+    }
   };
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity > 0) {
-      setCartItems(cartItems.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      ));
+  // تغییر تعداد آیتم
+  const updateQuantity = async (cartItemId, newQuantity, currentQuantity, itemId, websiteId) => {
+    try {
+      if (newQuantity > currentQuantity) {
+        // اضافه کردن - باید از addItemToCart استفاده کنیم
+        await addItemToCart(itemId);
+      } else if (newQuantity < currentQuantity && newQuantity > 0) {
+        // کم کردن
+        await removeOneFromCart(cartItemId);
+      } else if (newQuantity === 0) {
+        // حذف کامل
+        await deleteItemFromCart(cartItemId);
+      }
+      await loadCartItems(); // رفرش سبد خرید
+    } catch (error) {
+      console.error("خطا در تغییر تعداد:", error);
+      alert('خطا در تغییر تعداد محصول');
     }
   };
 
@@ -170,12 +238,49 @@ export default function Card() {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ 
+      element.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
     }
   };
+
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
+
+  // اگر لاگین نکرده
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 font-sans flex items-center justify-center" dir="rtl">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center max-w-md">
+          <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShoppingCart className="w-12 h-12 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">برای مشاهده سبد خرید وارد شوید</h2>
+          <p className="text-gray-600 mb-6">برای مشاهده و مدیریت سبد خرید خود باید وارد حساب کاربری شوید</p>
+          <button
+            onClick={() => navigate('/login')}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-full font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            ورود به حساب کاربری
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // اگر در حال بارگذاری
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 font-sans flex items-center justify-center" dir="rtl">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">در حال بارگذاری سبد خرید...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 font-sans" dir="rtl">
@@ -183,21 +288,21 @@ export default function Card() {
       <div className="bg-white/80 backdrop-blur-sm shadow-lg sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex justify-center items-center gap-8">
-            <button 
+            <button
               onClick={() => scrollToSection('cart-section')}
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <ShoppingCart className="w-5 h-5" />
               <span className="font-medium">سبد خرید</span>
             </button>
-            <button 
+            <button
               onClick={() => scrollToSection('previous-section')}
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <Package className="w-5 h-5" />
               <span className="font-medium">خرید های پیشین</span>
             </button>
-            <button 
+            <button
               onClick={() => scrollToSection('interests-section')}
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-full hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
@@ -220,13 +325,13 @@ export default function Card() {
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">جزئیات پرداخت</h2>
               </div>
-              
+
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-600">قیمت کل محصولات</span>
                   <span className="font-bold text-gray-800">{formatPrice(calculateTotal())}</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-600">تعداد آیتم‌ها</span>
                   <span className="font-bold text-gray-800">{getTotalItems()} عدد</span>
@@ -236,14 +341,14 @@ export default function Card() {
                   <span className="text-gray-600">هزینه ارسال</span>
                   <span className="font-bold text-green-600">رایگان</span>
                 </div>
-                
+
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex justify-between text-xl font-bold">
                     <span className="text-gray-800">مبلغ قابل پرداخت</span>
                     <span className="text-blue-600">{formatPrice(calculateTotal())}</span>
                   </div>
                 </div>
-                
+
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-600 mb-3">کد تخفیف دارید؟</p>
                   <div className="space-y-3">
@@ -254,7 +359,7 @@ export default function Card() {
                       onChange={(e) => setCouponCode(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
-                    <button 
+                    <button
                       onClick={handleCouponSubmit}
                       className="w-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 py-3 px-4 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-300 font-medium"
                     >
@@ -263,7 +368,7 @@ export default function Card() {
                   </div>
                 </div>
               </div>
-              
+
               <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105">
                 ادامه فرایند خرید
               </button>
@@ -291,13 +396,13 @@ export default function Card() {
                       <div className="text-center">نام محصول</div>
                       <div className="text-center">محصول</div>
                     </div>
-                    
+
                     {/* Cart Items */}
                     <div className="divide-y divide-gray-100">
                       {cartItems.map((item) => (
                         <div key={item.id} className="grid grid-cols-6 gap-4 p-6 items-center hover:bg-gray-50/50 transition-all duration-300">
                           <div className="flex justify-center">
-                            <button 
+                            <button
                               onClick={() => removeItem(item.id)}
                               className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-full hover:bg-red-50"
                             >
@@ -305,15 +410,15 @@ export default function Card() {
                             </button>
                           </div>
                           <div className="flex justify-center items-center gap-3">
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            <button
+                              onClick={() => updateQuantity(item.id, item.quantity - 1, item.quantity, item.itemId, item.websiteId)}
                               className="w-10 h-10 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 flex items-center justify-center transition-all duration-300 font-bold"
                             >
                               -
                             </button>
                             <span className="w-8 text-center font-bold text-lg">{item.quantity}</span>
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            <button
+                              onClick={() => updateQuantity(item.id, item.quantity + 1, item.quantity, item.itemId, item.websiteId)}
                               className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-200 to-blue-300 hover:from-blue-300 hover:to-blue-400 flex items-center justify-center transition-all duration-300 font-bold"
                             >
                               +
@@ -326,11 +431,17 @@ export default function Card() {
                             <span className="font-bold text-xl text-blue-600">{formatPrice(item.price * item.quantity)}</span>
                           </div>
                           <div className="text-center">
-                            <span className="font-bold text-gray-800">{item.name}</span>
+                            <span className="font-bold text-gray-800">
+                              {item.name || `محصول ${item.itemId.substring(0, 8)}`}
+                            </span>
                           </div>
                           <div className="flex justify-center">
                             <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl flex items-center justify-center shadow-lg">
-                              <Package className="w-8 h-8 text-gray-500" />
+                              {item.image ? (
+                                <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-xl" />
+                              ) : (
+                                <Package className="w-8 h-8 text-gray-500" />
+                              )}
                             </div>
                           </div>
                         </div>
@@ -351,7 +462,7 @@ export default function Card() {
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">سفارش‌های قبلی</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {previousOrders.map((order) => (
               <div key={order.id} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
@@ -365,7 +476,7 @@ export default function Card() {
                     <p className="text-sm text-gray-500">{order.items.length} محصول</p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <h4 className="font-bold text-gray-700 border-b border-gray-200 pb-2">محصولات سفارش:</h4>
                   <div className="space-y-3 max-h-48 overflow-y-auto">
@@ -385,7 +496,7 @@ export default function Card() {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="mt-6 pt-4 border-t border-gray-200">
                   <button className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
                     مشاهده جزئیات سفارش
@@ -404,7 +515,7 @@ export default function Card() {
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-pink-800 bg-clip-text text-transparent">علاقه‌مندی‌ها</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
             {favoriteProducts.map((product) => (
               <ProductCard

@@ -1,40 +1,76 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-
+import { registerBuyer } from '../../../../API/buyerAuth'; // مسیر رو درست کن
+import { useParams } from 'react-router-dom';
+import { getWebsiteIdBySlug, getWebsiteById, getLogo, getBanner } from "../../../../API/website";
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // این خط را اضافه کنید
 const SignUp = () => {
+  const { slug } = useParams(); // برای گرفتن websiteId
+  const [name, setName] = useState(''); // ✅ اضافه شده
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false); // ✅ اضافه شده
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => { // ✅ async شده
     e.preventDefault();
-    
+
     const newErrors = {};
-    
+
+    if (!name.trim()) { // ✅ اضافه شده
+      newErrors.name = 'نام ضروری است';
+    }
+
     if (!email.trim()) {
       newErrors.email = 'ایمیل ضروری است';
     }
-    
+
     if (!password.trim()) {
       newErrors.password = 'رمز عبور ضروری است';
     }
-    
+
     if (!confirmPassword.trim()) {
       newErrors.confirmPassword = 'تکرار رمز عبور ضروری است';
     }
-    
+
     if (password && confirmPassword && password !== confirmPassword) {
       newErrors.confirmPassword = 'رمز عبور و تکرار آن یکسان نیستند';
     }
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0) {
-      console.log("Form submitted", { email, password, confirmPassword });
-      // اینجا میتونی درخواست ارسال کنی
+      setLoading(true);
+      try {
+        // باید websiteId رو بگیری (از slug یا جای دیگه)
+        const slugResponse = await getWebsiteIdBySlug(slug);
+        const websiteId = slugResponse.website_id;
+
+        const result = await registerBuyer(websiteId, name, email, password, confirmPassword);
+        console.log("Registration successful:", result);
+
+
+        // اگه موفق بود، بیاش صفحه OTP یا login
+        // navigate('/otp-verification');
+        alert('ثبت نام موفقیت آمیز بود! کد تایید برای شما ارسال شد.');
+        // تغییر این بخش:
+        navigate(`/${slug}/otp-verification`, {
+          state: {
+            email: email,
+            websiteId: websiteId
+          }
+        });
+
+      } catch (error) {
+        console.error("Registration failed:", error);
+        setErrors({ general: 'خطا در ثبت نام. لطفاً دوباره تلاش کنید.' });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -67,7 +103,27 @@ const SignUp = () => {
               <p className="text-black text-base">جهت ثبت نام در فروشگاه فرم زیر را پر کنید</p>
             </div>
 
+            {/* ✅ خطای کلی */}
+            {errors.general && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {errors.general}
+              </div>
+            )}
+
             <div className="space-y-6">
+              {/* ✅ فیلد نام اضافه شده */}
+              <div>
+                <label className="block text-black text-sm mb-2">نام خود را وارد کنید</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={`w-full p-3 bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 ${errors.name ? 'border-red-500' : 'border-black/60'} rounded-3xl text-black placeholder-white/60 focus:ring-2 focus:ring-white/30 focus:border-black/80 focus:outline-none transition-all duration-300`}
+                  placeholder="نام کامل شما"
+                />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              </div>
+
               <div>
                 <label className="block text-black text-sm mb-2">ایمیل خود را وارد کنید</label>
                 <input
@@ -75,6 +131,7 @@ const SignUp = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`w-full p-3 bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 ${errors.email ? 'border-red-500' : 'border-black/60'} rounded-3xl text-black placeholder-white/60 focus:ring-2 focus:ring-white/30 focus:border-black/80 focus:outline-none transition-all duration-300`}
+                  placeholder="example@email.com"
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
@@ -86,6 +143,7 @@ const SignUp = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`w-full p-3 pr-12 bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 ${errors.password ? 'border-red-500' : 'border-black/60'} rounded-3xl text-black placeholder-white/60 focus:ring-2 focus:ring-white/30 focus:border-black/80 focus:outline-none transition-all duration-300`}
+                  placeholder="رمز عبور خود را وارد کنید"
                 />
                 <button
                   type="button"
@@ -109,6 +167,7 @@ const SignUp = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className={`w-full p-3 pr-12 bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 ${errors.confirmPassword ? 'border-red-500' : 'border-black/60'} rounded-3xl text-black placeholder-white/60 focus:ring-2 focus:ring-white/30 focus:border-black/80 focus:outline-none transition-all duration-300`}
+                  placeholder="رمز عبور خود را دوباره وارد کنید"
                 />
                 <button
                   type="button"
@@ -128,16 +187,20 @@ const SignUp = () => {
 
             <button
               onClick={handleSubmit}
-              className="w-full py-4 mt-8 bg-black/80 backdrop-blur-sm text-white font-bold rounded-3xl hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-300 border border-white/10 hover:scale-[1.02] active:scale-[0.98]"
+              disabled={loading} // ✅ اضافه شده
+              className="w-full py-4 mt-8 bg-black/80 backdrop-blur-sm text-white font-bold rounded-3xl hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-300 border border-white/10 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ثبت نام
+              {loading ? 'در حال ثبت نام...' : 'ثبت نام'}
             </button>
 
             <div className="mt-6 text-center text-sm text-black/80">
               <span>آیا از قبل حساب دارید؟ </span>
-              <a href="#" className="text-black hover:text-black/80 underline transition-colors duration-300">
+              <Link
+                to={`/${slug}/login`}
+                className="text-black hover:text-black/80 underline transition-colors duration-300"
+              >
                 وارد شوید
-              </a>
+              </Link>
             </div>
           </div>
 

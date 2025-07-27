@@ -268,7 +268,7 @@ const AddProduct = () => {
             price: Number(productData.price),
             delivery_url: productData.link,
             post_purchase_note: productData.additionalInfo,
-            stock: 1,
+            stock: 1000000,
         };
 
         // اگر زیردسته انتخاب شده، به payload اضافه کن

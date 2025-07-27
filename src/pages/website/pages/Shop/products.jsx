@@ -4,6 +4,7 @@ import ProductCard from "../Home/ProductCard";
 import { getWebsiteIdBySlug } from "../../../../API/website";
 import { getNewestItems, getItemsByCategoryId, getItemsBySubcategoryId } from "../../../../API/Items";
 import { getWebsiteCategories, getSubcategoriesByCategoryId, getItemCountByCategoryId } from "../../../../API/category";
+import { addItemToCart } from "../../../../API/cart"; // اضافه کردن import
 import { FaChevronDown, FaChevronUp, FaFilter, FaExclamationTriangle } from "react-icons/fa";
 
 const Products = () => {
@@ -20,12 +21,11 @@ const Products = () => {
     const [priceFilter, setPriceFilter] = useState(100);
     const [sortOption, setSortOption] = useState("جدیدترین");
     const [currentPage, setCurrentPage] = useState(1);
-    const [activeFilter, setActiveFilter] = useState(null); // 'category' or 'subcategory' and id
+    const [activeFilter, setActiveFilter] = useState(null);
     const productsPerPage = 9;
 
     // Fetch website ID and categories
     useEffect(() => {
-        // در تابع fetchWebsiteIdAndCategories:
         const fetchWebsiteIdAndCategories = async () => {
             if (!slug) return;
 
@@ -41,15 +41,12 @@ const Products = () => {
                 const categoriesRes = await getWebsiteCategories(slugRes.website_id);
                 setCategories(categoriesRes);
 
-                // دریافت زیردسته‌ها برای همه دسته‌ها به صورت همزمان
                 const subcats = {};
                 const counts = {};
 
-                // در تابع fetchWebsiteIdAndCategories
                 await Promise.all(categoriesRes.map(async (cat) => {
                     try {
                         const countRes = await getItemCountByCategoryId(cat.id);
-                        // اصلاح این خط
                         counts[cat.id] = typeof countRes === 'object' ? countRes.count : countRes;
 
                         const subcategoriesRes = await getSubcategoriesByCategoryId(cat.id);
@@ -58,7 +55,6 @@ const Products = () => {
 
                             await Promise.all(subcategoriesRes.map(async (subcat) => {
                                 const subCountRes = await getItemCountByCategoryId(subcat.id);
-                                // اصلاح این خط
                                 subcat.item_count = typeof subCountRes === 'object' ? subCountRes.count : subCountRes;
                             }));
                         }
@@ -107,7 +103,6 @@ const Products = () => {
                 setActiveFilter(null);
             }
 
-            // مطمئن شوید response یک آرایه است
             if (!Array.isArray(response)) {
                 response = [];
             }
@@ -155,6 +150,22 @@ const Products = () => {
             navigate(`/${slug}/product/${productId}`);
         } else {
             navigate(`/product/${productId}`);
+        }
+    };
+
+    // ✅ اضافه کردن تابع افزودن به سبد خرید
+    const handleAddToCart = async (productId) => {
+        if (!websiteId || !productId) {
+            console.error("Website ID or Product ID is missing");
+            return;
+        }
+
+        try {
+            await addItemToCart( productId);
+            // می‌تونی اینجا پیام موفقیت نمایش بدی یا state مربوط به سبد خرید رو آپدیت کنی
+            console.log("محصول با موفقیت به سبد خرید اضافه شد");
+        } catch (error) {
+            console.error("خطا در افزودن محصول به سبد خرید:", error);
         }
     };
 
@@ -253,9 +264,7 @@ const Products = () => {
                                                     <span className="text-xs bg-gray-200 rounded-full px-2 py-1 mr-2">
                                                         {categoryItemCounts[cat.id] !== undefined ? categoryItemCounts[cat.id] : '...'}
                                                     </span>
-
                                                 </div>
-                                                {/* تغییر در این بخش */}
                                                 {(subcategories[cat.id] && subcategories[cat.id].length > 0) && (
                                                     <span
                                                         onClick={(e) => {
@@ -269,7 +278,6 @@ const Products = () => {
                                                 )}
                                             </button>
 
-                                            {/* تغییر در این بخش */}
                                             {openCategory === cat.id && subcategories[cat.id] && subcategories[cat.id].length > 0 && (
                                                 <ul className="pr-4 mt-1 space-y-1 text-sm text-gray-600">
                                                     {subcategories[cat.id].map((subItem) => (
@@ -280,7 +288,6 @@ const Products = () => {
                                                             onClick={() => handleSubcategoryClick(subItem.id)}
                                                         >
                                                             <span>{subItem.name}</span>
-
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -367,12 +374,13 @@ const Products = () => {
                         <>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                 {paginatedProducts().map((product) => (
-                                    <div
-                                        key={product.id}
-                                        onClick={() => handleProductClick(product.id)}
-                                        className="cursor-pointer hover:scale-[1.02] transition-transform duration-200"
-                                    >
-                                        <ProductCard {...product} />
+                                    <div key={product.id}>
+                                        <ProductCard 
+                                            {...product} 
+                                            websiteId={websiteId} // ✅ اضافه کردن websiteId
+                                            onClick={handleProductClick}
+                                            onAddToCart={handleAddToCart} // ✅ اضافه کردن تابع افزودن به سبد خرید
+                                        />
                                     </div>
                                 ))}
                             </div>

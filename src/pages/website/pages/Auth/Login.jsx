@@ -1,46 +1,63 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { loginBuyer } from '../../../../API/buyerAuth';
+import { getWebsiteIdBySlug } from '../../../../API/website';
 
 const Login = () => {
+    const { slug } = useParams();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // اعتبارسنجی فیلدها
         const newErrors = {};
-
-        if (!email.trim()) {
-            newErrors.email = 'ایمیل ضروری است';
-        }
-
-        if (!password.trim()) {
-            newErrors.password = 'رمز عبور ضروری است';
-        }
-
+        if (!email.trim()) newErrors.email = 'ایمیل ضروری است';
+        if (!password.trim()) newErrors.password = 'رمز عبور ضروری است';
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length === 0) {
-            console.log("Form submitted", { email, password });
-            // اینجا میتونی درخواست ارسال کنی
+            setLoading(true);
+            try {
+                // دریافت website_id از slug
+                const websiteResponse = await getWebsiteIdBySlug(slug);
+                const websiteId = websiteResponse.website_id;
+
+                // ارسال درخواست لاگین
+                const response = await loginBuyer({
+                    website_id: websiteId,
+                    username: email,
+                    password: password,
+                    grant_type: 'password'
+                });
+
+                // ذخیره توکن و انتقال به صفحه اصلی
+                localStorage.setItem('buyer_access_token', response.access_token);
+                navigate(`/${slug}/home`);
+
+            } catch (error) {
+                console.error("Login failed:", error);
+                setErrors({
+                    general: error.message || 'ایمیل یا رمز عبور نادرست است'
+                });
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
     return (
-        <div
-            className="min-h-screen bg-cover bg-center relative"
-            style={{
-                backgroundImage: "url('/public/website/backHomoShop 1.png')",
-            }}
-        >
-
+        <div className="min-h-screen bg-cover bg-center relative" style={{ backgroundImage: "url('/public/website/backHomoShop 1.png')" }}>
             {/* Logo and store name - top left */}
             <div className="absolute top-8 left-8 z-20 flex items-center gap-3 font-rubik">
                 <h1 className="text-lg font-bold text-black">فروشگاه ویترین</h1>
-
-                <img src='/public/website/Picsart_25-04-16_19-30-26-995 1.png ' className='w-10 h-12' />
+                <img src='/public/website/Picsart_25-04-16_19-30-26-995 1.png' className='w-10 h-12' alt="Store Logo" />
             </div>
 
             {/* Form container */}
@@ -57,7 +74,15 @@ const Login = () => {
                             <p className="text-black text-base">جهت ورود به فروشگاه فرم زیر را پر کنید</p>
                         </div>
 
-                        <div className="space-y-6">
+                        {/* نمایش خطاهای کلی */}
+                        {errors.general && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                                {errors.general}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* فیلد ایمیل */}
                             <div>
                                 <label className="block text-black text-sm mb-2">ایمیل خود را وارد کنید</label>
                                 <input
@@ -65,10 +90,12 @@ const Login = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className={`w-full p-3 bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 ${errors.email ? 'border-red-500' : 'border-black/60'} rounded-3xl text-black placeholder-white/60 focus:ring-2 focus:ring-white/30 focus:border-black/80 focus:outline-none transition-all duration-300`}
+                                    placeholder="example@email.com"
                                 />
                                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                             </div>
 
+                            {/* فیلد رمز عبور */}
                             <div className="relative">
                                 <label className="block text-black text-sm mb-2">رمز عبور</label>
                                 <input
@@ -76,6 +103,7 @@ const Login = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className={`w-full p-3 pr-12 bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 ${errors.password ? 'border-red-500' : 'border-black/60'} rounded-3xl text-black placeholder-white/60 focus:ring-2 focus:ring-white/30 focus:border-black/80 focus:outline-none transition-all duration-300`}
+                                    placeholder="رمز عبور خود را وارد کنید"
                                 />
                                 <button
                                     type="button"
@@ -92,28 +120,35 @@ const Login = () => {
                                 {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                             </div>
 
-                            {/* Empty div to match signup form height */}
-                        </div>
+                            {/* لینک بازیابی رمز عبور */}
+                            <div className="text-right mb-4">
+                                <Link
+                                    to={`/${slug}/forgot-password`}
+                                    className="text-black/70 hover:text-black text-sm underline transition-colors duration-300"
+                                >
+                                    بازیابی رمز عبور
+                                </Link>
+                            </div>
 
-                        {/* Forgot password - right aligned */}
-                        <div className="text-right mb-4">
-                            <a href="#" className="text-black/70 hover:text-black text-sm underline transition-colors duration-300">
-                                بازیابی رمز عبور
-                            </a>
-                        </div>
+                            {/* دکمه ورود */}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-4 bg-black/80 backdrop-blur-sm text-white font-bold rounded-3xl hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-300 border border-white/10 hover:scale-[1.02] active:scale-[0.98] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {loading ? 'در حال ورود...' : 'وارد شوید'}
+                            </button>
+                        </form>
 
-                        <button
-                            onClick={handleSubmit}
-                            className="w-full py-4 mt-4 bg-black/80 backdrop-blur-sm text-white font-bold rounded-3xl hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-300 border border-white/10 hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                            وارد شوید
-                        </button>
-
+                        {/* لینک به صفحه ثبت‌نام */}
                         <div className="mt-6 text-center text-sm text-black/80">
                             <span>آیا حسابی ندارید؟ </span>
-                            <a href="#" className="text-black hover:text-black/80 underline transition-colors duration-300">
-                                ثبت نام کنید.
-                            </a>
+                            <Link
+                                to={`/${slug}/signup`}
+                                className="text-black hover:text-black/80 underline transition-colors duration-300"
+                            >
+                                ثبت نام کنید
+                            </Link>
                         </div>
                     </div>
 
