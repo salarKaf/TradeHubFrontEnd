@@ -11,6 +11,7 @@ from app.infrastructure.repositories.cart_repository import CartRepository
 from datetime import datetime, timedelta,date
 from sqlalchemy import extract, func
 from app.utils.date_utils import to_jalali_str
+from loguru import logger
 
 class OrderRepository:
     def __init__(self,
@@ -127,7 +128,7 @@ class OrderRepository:
             extract("month", Order.created_at) == month,
             Order.status == 'Paid'
         ).first()
-
+        logger.info(f"{result[1]}")
         return {"count": result[0], "revenue": result[1]}
 
     def get_sales_by_year(self, website_id: UUID, year: int) -> dict:
@@ -141,19 +142,6 @@ class OrderRepository:
         ).first()
 
         return {"count": result[0], "revenue": result[1]}
-    
-
-    def get_total_revenue_for_month(self, website_id: UUID, year: int, month: int) -> int:
-        result = self.db.query(
-            func.coalesce(func.sum(Order.total_price), 0)
-        ).filter(
-            Order.website_id == website_id,
-            extract("year", Order.created_at) == year,
-            extract("month", Order.created_at) == month,
-            Order.status == 'Paid'
-        ).scalar()
-
-        return result or 0
     
 
     def get_total_revenue(self, website_id: UUID) -> dict:

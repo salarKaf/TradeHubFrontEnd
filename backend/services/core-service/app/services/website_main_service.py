@@ -257,17 +257,20 @@ class WebsiteMainService(BaseService):
         today = date.today()
         months = []
 
-        for i in range(6, 0, -1):  
+        for i in range(0,6):  
             target_gregorian = today - relativedelta(months=i)
-            target_jalali = jdatetime.date.fromgregorian(date=target_gregorian)
-            year, month = target_jalali.year, target_jalali.month
+            jalali_label = get_jalali_month_year(target_gregorian)
 
-            total = await self.website_service.get_total_revenue_for_month(website_id, year, month)
+            year, month = target_gregorian.year, target_gregorian.month
+
+            stats = await self.website_service.get_total_revenue_for_month(website_id, year, month)
 
             months.append({
-                "month": get_jalali_month_year(target_gregorian), 
-                "revenue": total
+                "month": jalali_label,
+                "revenue": stats["revenue"]
+
             })
+
 
         return months
     

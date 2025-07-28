@@ -247,6 +247,7 @@ class WebsiteService(BaseService):
             return self.order_repository.get_sales_by_day(website_id, today)
 
         elif mode == "monthly":
+            logger.info(f"{today.year}, {today.month}")
             return self.order_repository.get_sales_by_month(website_id, today.year, today.month)
 
         elif mode == "yearly":
@@ -258,7 +259,8 @@ class WebsiteService(BaseService):
 
 
     async def get_total_revenue_for_month(self, website_id: UUID, year: int, month: int) -> List[dict]:
-        return self.order_repository.get_total_revenue_for_month(website_id, year, month)
+        logger.info(f"year :{year} , month: {month}")
+        return self.order_repository.get_sales_by_month(website_id, year, month)
 
 
     async def get_total_revenue(self, website_id: UUID) -> dict:
