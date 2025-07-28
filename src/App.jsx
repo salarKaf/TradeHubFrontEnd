@@ -36,6 +36,7 @@ import SignUp from '../src/pages/website/pages/Auth/SignUp';
 import Login from '../src/pages/website/pages/Auth/Login.jsx';
 import ProductAfterPurchase from './pages/website/pages/Cart/ProductAfterPurchase.jsx';
 import OTPFormBuyer from './pages/website/pages/Auth/OTPFormBuyer.jsx'
+import PaymentCallbackOrder from './pages/website/pages/Orders/PaymentCallbackOrder.jsx';
 // Slug Handler Component
 import SlugHandler from '../src/pages/website/pages/SlugHandler.jsx';
 
@@ -79,8 +80,9 @@ export default function App() {
         <Route path="/rules/:websiteId" element={<RulesTrade />} />
         <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
         <Route path="/Slug/:websiteId" element={<Slug />} />  // برای تعریف اسلاگ توسط کاربر
-
         {/* مسیرهای فروشگاه با اسلاگ - تغییر کلیدی اینجاست */}
+        <Route path="/website/orders/payment-callback" element={<PaymentCallbackOrder />} />
+
         <Route path="/:slug" element={<SlugHandler />} />
         <Route path="/:slug/*" element={
           <WebsiteProvider>
@@ -95,6 +97,7 @@ export default function App() {
               <Route path="login" element={<Login />} />
               <Route path="digital-product-purchased" element={<ProductAfterPurchase />} />
               <Route path="otp-verification" element={<OTPFormBuyer />} />
+
             </Routes>
           </WebsiteProvider>
         } />

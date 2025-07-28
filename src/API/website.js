@@ -167,11 +167,9 @@ export const getMyWebsite = async () => {
 // تابع جدید برای چک کردن پلن فعال
 export const getActivePlan = async (websiteId) => {
   try {
-    const token = localStorage.getItem('token');
     const response = await axios.get(`${coreBaseURL}/websites/plans/active_plan/${websiteId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+
       },
     });
     return response.data;
@@ -238,4 +236,25 @@ export const getLogo = async (websiteId) => {
 export const getBanner = async (websiteId) => {
   const response = await axios.get(`${mediaBaseURL}/website/get_banner/${websiteId}`, { responseType: 'blob' });
   return URL.createObjectURL(response.data);  // تبدیل Blob به URL
+};
+
+
+
+
+
+export const getStoreSlug = async (websiteId) => {
+  try {
+    const response = await axios.get(
+      `${coreBaseURL}/slug/get-slug-by/${websiteId}`,
+      {
+        headers: {
+        }
+      }
+    );
+    
+    return response.data.slug || 'store';
+  } catch (error) {
+    console.error('Error getting store slug:', error);
+    return 'store'; // مقدار پیش‌فرض
+  }
 };

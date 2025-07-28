@@ -1,31 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; // ✅ اضافه کردن useParams
 import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
-
+import { getActivePlan } from '../../../../API/website.js';
 import CommentsSystem from './ProductCommentList';
 import QuestionAnswerSystem from './ProductQuestionList';
 import { getProductById, getItemImages, getItemImageById, getItemRating } from '../../../../API/Items'; // ✅ import کردن API functions
 
 const ProductShow = () => {
     const { productId } = useParams(); // ✅ گرفتن productId از URL
-    
+
     const [selectedImage, setSelectedImage] = useState(0);
     const [isFavorite, setIsFavorite] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // ✅ State های جدید برای داده‌های دینامیک
     const [productData, setProductData] = useState(null);
     const [productImages, setProductImages] = useState([]);
     const [productRating, setProductRating] = useState(0);
+
+
+
+    const [hasPro, setHasPro] = useState(false);
+    const [planLoading, setPlanLoading] = useState(true);
 
     // ✅ useEffect برای بارگذاری اطلاعات محصول
     useEffect(() => {
         const loadProductData = async () => {
             try {
                 setLoading(true);
-                
+                // چک کردن پلن فعال
+                try {
+                    const websiteId = productData?.website_id || localStorage.getItem('current_store_website_id');
+                    const activePlan = await getActivePlan(websiteId);
+                    setHasPro(activePlan?.is_active && activePlan?.plan?.name === 'Pro'); console.log(hasPro)
+                } catch (planError) {
+                    console.warn("خطا در دریافت پلن:", planError);
+                    setHasPro(false);
+                } finally {
+                    setPlanLoading(false);
+                }
+
                 // دریافت اطلاعات محصول
                 const product = await getProductById(productId);
                 setProductData(product);
@@ -39,7 +55,7 @@ const ProductShow = () => {
                             return { url, isMain: img.is_main };
                         })
                     );
-                    
+
                     // مرتب کردن تصاویر - تصویر اصلی اول
                     const sortedImages = imageUrls.sort((a, b) => b.isMain - a.isMain);
                     setProductImages(sortedImages.map(img => img.url));
@@ -202,10 +218,10 @@ const ProductShow = () => {
                                         className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
-                                        <img 
-                                            src={image} 
-                                            alt={`تصویر ${index + 1}`} 
-                                            className="w-full h-full object-cover" 
+                                        <img
+                                            src={image}
+                                            alt={`تصویر ${index + 1}`}
+                                            className="w-full h-full object-cover"
                                             onError={(e) => {
                                                 e.target.src = '/website/default-product.png';
                                             }}
@@ -219,14 +235,42 @@ const ProductShow = () => {
                     <div className="space-y-6">
                         <div className="mb-2">
                             <span className="text-gray-600 text-base font-semibold">
-                                {productData.category_name || "دسته‌بندی"} / {productData.subcategory_name || "زیردسته"}
+                                {productData.category_name || "دسته‌بندی"}
+                                {productData.subcategory_name && productData.subcategory_name !== "null" && (
+                                    <> / {productData.subcategory_name}</>
+                                )}
                             </span>
                         </div>
 
-                        <div className="flex justify-between items-center mb-4">
+                        <div className="flex justify-between items-start mb-4">
+                            {/* اسم محصول سمت راست */}
                             <h1 className="text-2xl font-bold text-gray-800">{productData.name || "نام محصول"}</h1>
-                            <div className="text-2xl font-bold text-red-500">
-                                {productData.price ? `${productData.price.toLocaleString()} تومان` : "قیمت نامشخص"}
+
+                            {/* قیمت‌ها سمت چپ */}
+                            <div className="text-left">
+                                {productData.discount_active ? (
+                                    <div className="space-y-2">
+                                        {/* درصد تخفیف */}
+                                        <div className="inline-block bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold">
+                                            {productData.discount_percent}% تخفیف
+                                        </div>
+                                        {/* قیمت‌ها در یک خط */}
+                                        <div className="flex items-center gap-3">
+                                            {/* قیمت بعد تخفیف */}
+                                            <div className="text-2xl font-bold text-red-500">
+                                                {parseInt(productData.discount_price).toLocaleString()} تومان
+                                            </div>
+                                            {/* قیمت اصلی */}
+                                            <div className="text-lg text-gray-500 line-through">
+                                                {parseInt(productData.price).toLocaleString()} تومان
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-2xl font-bold text-red-500">
+                                        {productData.price ? `${parseInt(productData.price).toLocaleString()} تومان` : "قیمت نامشخص"}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -263,12 +307,17 @@ const ProductShow = () => {
                             >
                                 نظرات ({productData.reviews_count || 0})
                             </button>
-                            <button
-                                onClick={() => scrollToSection('questions')}
-                                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
-                            >
-                                پرسش‌ها ({productData.questions_count || 0})
-                            </button>
+
+                            {/* دکمه پرسش‌ها فقط برای پلن پرو */}
+                            {hasPro && (
+                                <button
+                                    onClick={() => scrollToSection('questions')}
+                                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
+                                >
+                                    پرسش‌ها ({productData.questions_count || 0})
+                                </button>
+                            )}
+
                             <button
                                 onClick={() => scrollToSection('introduction')}
                                 className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
@@ -296,7 +345,7 @@ const ProductShow = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="introduction" className="mt-20">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
@@ -354,7 +403,7 @@ const ProductShow = () => {
                         >
                             <X className="w-6 h-6" />
                         </button>
-                        
+
                         {productImages.length > 1 && (
                             <>
                                 <button

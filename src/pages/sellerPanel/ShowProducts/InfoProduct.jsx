@@ -106,73 +106,15 @@ const ShowProduct = () => {
         );
     };
 
-    const questionsData = [
-    ];
-
-
-    const [questions, setQuestions] = useState(questionsData);
-
-    // تابع اضافه کردن پاسخ جدید
-    const handleAddAnswer = (questionId, newAnswer) => {
-        setQuestions(prevQuestions =>
-            prevQuestions.map(question =>
-                question.id === questionId
-                    ? { ...question, answers: [...question.answers, newAnswer] }
-                    : question
-            )
-        );
-    };
-
-    // تابع لایک کردن پاسخ
-    const handleLikeAnswer = (questionId, answerIndex) => {
-        setQuestions(prevQuestions =>
-            prevQuestions.map(question =>
-                question.id === questionId
-                    ? {
-                        ...question,
-                        answers: question.answers.map((answer, index) =>
-                            index === answerIndex
-                                ? { ...answer, likes: answer.likes + 1 }
-                                : answer
-                        )
-                    }
-                    : question
-            )
-        );
-    };
-
-    // تابع دیسلایک کردن پاسخ
-    const handleDislikeAnswer = (questionId, answerIndex) => {
-        setQuestions(prevQuestions =>
-            prevQuestions.map(question =>
-                question.id === questionId
-                    ? {
-                        ...question,
-                        answers: question.answers.map((answer, index) =>
-                            index === answerIndex
-                                ? { ...answer, dislikes: answer.dislikes + 1 }
-                                : answer
-                        )
-                    }
-                    : question
-            )
-        );
-    }
 
 
 
 
 
 
-    const dummyQuestions = [
-        { text: "آیا این محصول اصل است؟", answer: "بله، 100٪ اصل می‌باشد.", likes: 1, dislikes: 0 },
-        { text: "چند روزه ارسال میشه؟", answer: "معمولاً بین ۲ تا ۴ روز کاری.", likes: 0, dislikes: 0 }
-    ];
 
-    const dummyReviews = [
-        { user: "خریدار", date: "۳ روز پیش", rating: 4, text: "بسیار راضی بودم از خرید این محصول.", likes: 2, dislikes: 0 },
-        { user: "خریدار", date: "۱ هفته پیش", rating: 5, text: "کیفیت عالی. بسته‌بندی مناسب.", likes: 1, dislikes: 0 }
-    ];
+
+
 
 
     // وضعیت برای فیلدها و تصاویر
@@ -809,10 +751,7 @@ const ShowProduct = () => {
                     {/* سایر اجزای صفحه محصول */}
                     {planType === "Pro" && (
                         <ProductQuestions
-                            questions={questions}
-                            onAddAnswer={handleAddAnswer}
-                            onLikeAnswer={handleLikeAnswer}
-                            onDislikeAnswer={handleDislikeAnswer}
+                            productId={productId}
                         />
                     )}
                 </div>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Trash2, Heart, Eye, Package, ChevronDown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, Trash2, Heart, Eye, Package, ChevronDown, CreditCard, Loader } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { addItemToCart, getMyCart, removeOneFromCart, deleteItemFromCart } from '../../../../API/cart';
+import { createOrder } from '../../../../API/orders';
+import { requestOrderPayment } from '../../../../API/payments';
 
-// کامپوننت کارت محصول
+// کامپوننت کارت محصول (همون قبلی)
 const ProductCard = ({ product, discount, image, price = "150,000 تومان", name = "نام محصول", rating = 5 }) => {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -84,14 +86,18 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
 
 export default function Card() {
   const navigate = useNavigate();
+  const { slug } = useParams(); // برای گرفتن slug
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // چک کردن لاگین و بارگذاری سبد خرید
   useEffect(() => {
     const checkLoginAndLoadCart = async () => {
-      const token = localStorage.getItem('buyer_access_token');
+      // 🔴 استفاده از توکن مخصوص فروشگاه فعلی
+      const websiteId = localStorage.getItem('current_store_website_id');
+      const token = localStorage.getItem(`buyer_token_${websiteId}`);
 
       if (!token) {
         setIsLoggedIn(false);
@@ -115,7 +121,7 @@ export default function Card() {
       // فرمت‌دهی آیتم‌های سبد خرید
       const formattedItems = cartItems.map(item => ({
         id: item.id,
-        name: item.name || `محصول ${item.item_id.substring(0, 8)}`, // اگر نام نداره از item_id استفاده کن
+        name: item.name || `محصول ${item.item_id.substring(0, 8)}`,
         price: parseFloat(item.price),
         quantity: item.quantity,
         image: item.image_url || null,
@@ -127,12 +133,115 @@ export default function Card() {
     } catch (error) {
       console.error("خطا در دریافت سبد خرید:", error);
       if (error.response?.status === 401) {
-        localStorage.removeItem('buyer_access_token');
+        const websiteId = localStorage.getItem('current_store_website_id');
+        localStorage.removeItem(`buyer_token_${websiteId}`);
         setIsLoggedIn(false);
-        navigate('/login');
+        navigate(`/${slug}/login`);
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // فرآیند پرداخت
+  // ✅ فرآیند پرداخت درست شده
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) {
+      alert('سبد خرید شما خالی است!');
+      return;
+    }
+
+    try {
+      setIsProcessingPayment(true);
+
+      // گرفتن اطلاعات مورد نیاز
+      const websiteId = localStorage.getItem('current_store_website_id');
+      const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+      if (!token || !websiteId) {
+        alert('لطفاً دوباره وارد شوید');
+        navigate(`/${slug}/login`);
+        return;
+      }
+
+      console.log('🚀 Starting checkout process...');
+      console.log('Website ID:', websiteId);
+      console.log('Token exists:', !!token);
+      console.log('Cart items count:', cartItems.length);
+
+      // مرحله 1: ایجاد سفارش (این website_id می‌خواهد)
+      console.log('📝 Step 1: Creating order...');
+      const orderResponse = await createOrder(websiteId, token);
+
+      if (!orderResponse || !orderResponse.order_id) {
+        throw new Error('خطا در ایجاد سفارش - order_id دریافت نشد');
+      }
+
+      console.log('✅ Order created with ID:', orderResponse.order_id);
+
+      // مرحله 2: درخواست پرداخت (این هیچ پارامتری نمی‌خواهد، فقط توکن)
+      console.log('💳 Step 2: Requesting payment...');
+      const paymentResponse = await requestOrderPayment(token);  // فقط توکن
+
+      if (!paymentResponse || !paymentResponse.payment_url) {
+        throw new Error('خطا در دریافت لینک پرداخت - payment_url دریافت نشد');
+      }
+
+      console.log('✅ Payment URL received:', paymentResponse.payment_url);
+
+      // ذخیره اطلاعات مورد نیاز برای callback
+      localStorage.setItem('current_order_id', orderResponse.order_id);
+      localStorage.setItem('current_website_id', websiteId);
+
+      console.log('🔄 Redirecting to payment gateway...');
+
+      // انتقال به درگاه پرداخت
+      window.location.href = paymentResponse.payment_url;
+
+    } catch (error) {
+      console.error('❌ Checkout error details:', error);
+
+      // مدیریت خطاهای مختلف با جزئیات بیشتر
+      if (error.message.includes('401') || error.message.includes('unauthorized')) {
+        alert('جلسه شما منقضی شده. لطفاً مجدداً وارد شوید');
+        const websiteId = localStorage.getItem('current_store_website_id');
+        localStorage.removeItem(`buyer_token_${websiteId}`);
+        navigate(`/${slug}/login`);
+      } else if (error.message.includes('422')) {
+        alert('داده‌های ارسالی نامعتبر است. ممکن است سبد خرید شما خالی باشد');
+        await loadCartItems(); // رفرش سبد خرید
+      } else if (error.message.includes('400')) {
+        alert('درخواست نامعتبر. لطفاً صفحه را رفرش کنید و دوباره تلاش کنید');
+      } else if (error.message.includes('500')) {
+        alert('خطای سرور. لطفاً چند لحظه بعد دوباره تلاش کنید');
+      } else {
+        alert('خطا در فرآیند پرداخت: ' + error.message);
+      }
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // ✅ همچنین این تابع را برای debug اضافه کنید
+  const debugCheckoutInfo = () => {
+    const websiteId = localStorage.getItem('current_store_website_id');
+    const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+    console.log('🔍 Debug Info:');
+    console.log('- Website ID:', websiteId);
+    console.log('- Token exists:', !!token);
+    console.log('- Token length:', token ? token.length : 0);
+    console.log('- Cart items:', cartItems.length);
+    console.log('- User logged in:', isLoggedIn);
+
+    if (token) {
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        console.log('- Token payload:', tokenPayload);
+        console.log('- Token expires:', new Date(tokenPayload.exp * 1000));
+      } catch (e) {
+        console.log('- Token parse error:', e.message);
+      }
     }
   };
 
@@ -229,6 +338,7 @@ export default function Card() {
 
   const handleCouponSubmit = () => {
     console.log('Coupon applied:', couponCode);
+    // TODO: پیاده‌سازی کد تخفیف در آینده
   };
 
   const formatPrice = (price) => {
@@ -260,7 +370,7 @@ export default function Card() {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">برای مشاهده سبد خرید وارد شوید</h2>
           <p className="text-gray-600 mb-6">برای مشاهده و مدیریت سبد خرید خود باید وارد حساب کاربری شوید</p>
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate(`/${slug}/login`)}
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-full font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             ورود به حساب کاربری
@@ -369,9 +479,33 @@ export default function Card() {
                 </div>
               </div>
 
-              <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105">
-                ادامه فرایند خرید
+              {/* 🔥 دکمه پرداخت آپدیت شده */}
+              <button
+                onClick={handleCheckout}
+                disabled={isProcessingPayment || cartItems.length === 0}
+                className={`w-full py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300 flex items-center justify-center gap-3 ${isProcessingPayment || cartItems.length === 0
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 hover:scale-105'
+                  }`}
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <Loader className="w-6 h-6 animate-spin" />
+                    در حال پردازش...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-6 h-6" />
+                    ادامه فرایند خرید
+                  </>
+                )}
               </button>
+
+              {cartItems.length === 0 && (
+                <p className="text-sm text-gray-500 text-center mt-3">
+                  سبد خرید شما خالی است
+                </p>
+              )}
             </div>
 
             {/* Cart Items */}

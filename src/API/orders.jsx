@@ -18,3 +18,32 @@ export const getLatestOrders = async (websiteId) => {
     return [];
   }
 };
+// API functions for orders and payment
+// Add these to your API folder
+
+// orders.js
+
+export const createOrder = async (websiteId, token) => {
+  try {
+    const response = await fetch(`${coreBaseURL}/order/create_order?website_id=${websiteId}`, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Order created successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Error creating order:', error);
+    throw error;
+  }
+};
+

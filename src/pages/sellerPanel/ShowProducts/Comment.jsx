@@ -102,81 +102,8 @@ const ProductReviews = ({ reviews, onAddReply, onLikeReview, onDislikeReview, on
                     {/* متن نظر */}
                     <p className="text-sm text-gray-700 mb-4 leading-relaxed">{review.text}</p>
 
-                    {/* پاسخ‌ها به نظر */}
-                    {review.replies && review.replies.length > 0 && (
-                        <div className="pr-6 mb-4 space-y-3">
-                            {review.replies.map((reply, replyIndex) => (
-                                <div key={replyIndex} className="bg-white rounded-lg p-3 border border-gray-100">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-                                            خریدار
-                                        </span>
-                                        <span className="text-xs text-gray-400">
-                                            {new Date(reply.createdAt).toLocaleDateString('fa-IR')}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-700 mb-2">{reply.text}</p>
-
-                                    <div className="flex items-center gap-3 text-xs text-gray-500">
-                                        <button
-                                            onClick={() => onLikeReply(review.id, replyIndex)}
-                                            className="flex items-center gap-1 hover:text-green-600 transition-colors"
-                                        >
-                                            <FaThumbsUp />
-                                            <span>{reply.likes}</span>
-                                        </button>
-                                        <button
-                                            onClick={() => onDislikeReply(review.id, replyIndex)}
-                                            className="flex items-center gap-1 hover:text-red-600 transition-colors"
-                                        >
-                                            <FaThumbsDown />
-                                            <span>{reply.dislikes}</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
 
                     {/* عملیات نظر */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => onLikeReview(review.id)}
-                                className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors"
-                            >
-                                <FaThumbsUp />
-                                <span>{review.likes}</span>
-                            </button>
-                            <button
-                                onClick={() => onDislikeReview(review.id)}
-                                className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-600 transition-colors"
-                            >
-                                <FaThumbsDown />
-                                <span>{review.dislikes}</span>
-                            </button>
-                        </div>
-
-                        {/* دکمه پاسخ به کامنت */}
-                        {activeReplyForm !== review.id ? (
-                            <button
-                                onClick={() => setActiveReplyForm(review.id)}
-                                className="text-blue-600 text-sm hover:text-blue-700 transition-colors"
-                            >
-                                پاسخ به کامنت
-                            </button>
-                        ) : (
-                            <button
-                                onClick={() => {
-                                    setActiveReplyForm(null);
-                                    setNewReply('');
-                                }}
-                                className="text-gray-600 text-sm hover:text-gray-800 transition-colors"
-                            >
-                                انصراف
-                            </button>
-                        )}
-                    </div>
 
                     {/* فرم پاسخ */}
                     {activeReplyForm === review.id && (

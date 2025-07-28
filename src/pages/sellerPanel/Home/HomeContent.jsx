@@ -45,8 +45,8 @@ const getChartTrendColor = (dataPoints) => {
   let changeCount = 0;
 
   for (let i = 1; i < dataPoints.length; i++) {
-    if (dataPoints[i-1] !== 0) { // جلوگیری از تقسیم بر صفر
-      const change = (dataPoints[i] - dataPoints[i-1]) / dataPoints[i-1];
+    if (dataPoints[i - 1] !== 0) { // جلوگیری از تقسیم بر صفر
+      const change = (dataPoints[i] - dataPoints[i - 1]) / dataPoints[i - 1];
       totalChange += change;
       changeCount++;
     }
@@ -234,7 +234,7 @@ const HomeContent = () => {
                   <tr key={index} className="border-t border-black border-opacity-10 text-center">
                     <td className="py-3">{new Date(order.date).toLocaleDateString('fa-IR')}</td>
                     <td className="py-3">{order.id}</td>
-                    <td className="py-3">{order.total_price.toLocaleString()} تومان</td>
+                    <td className="py-3">{(order.total_price || 0).toLocaleString()} تومان</td>
                   </tr>
                 ))
               ) : (
