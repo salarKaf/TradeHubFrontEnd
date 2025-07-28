@@ -41,18 +41,13 @@ export default function ProductGrid() {
         const formattedProducts = productsData.map((item, index) => ({
           id: item.item_id || index + 1,
           name: item.name || "محصول بدون نام",
-          price: item.price ? `${parseInt(item.price).toLocaleString('fa-IR')} تومان` : "قیمت نامشخص",
+          price: item.price ? parseInt(item.price) : 0,
           image: item.image_url || "",
           rating: 5,
-          discount: item.discount_active && item.discount_percent > 0 ? `${item.discount_percent}%` : undefined,
-          originalPrice: item.discount_active && item.discount_price ?
-            `${parseInt(item.discount_price).toLocaleString('fa-IR')} تومان` : undefined,
-          isAvailable: item.is_available,
-          stock: item.stock,
-          categoryName: item.category_name,
-          subcategoryName: item.subcategory_name,
-          description: item.description
+          discount: item.discount_active && item.discount_percent > 0 ? item.discount_percent : null,
+          discountedPrice: item.discount_active && item.discount_price ? parseInt(item.discount_price) : null,
         }));
+
 
         setProducts(formattedProducts);
         setError(null);
@@ -121,17 +116,19 @@ export default function ProductGrid() {
             products.map((product) => (
               <ProductCard
                 key={product.id}
-                id={product.id} // ✅ اضافه کردن id
-                websiteId={websiteId} // ✅ اضافه کردن websiteId
+                id={product.id}
+                websiteId={websiteId}
                 name={product.name}
-                price={product.originalPrice || product.price}
+                price={product.price}
+                discountedPrice={product.discountedPrice}
                 image={product.image}
                 rating={product.rating}
                 discount={product.discount}
                 product={product}
-                onClick={handleProductClick} // برای دکمه مشاهده
-                onAddToCart={handleAddToCart} // برای دکمه افزودن به سبد
+                onClick={handleProductClick}
+                onAddToCart={handleAddToCart}
               />
+
             ))
           )}
         </div>

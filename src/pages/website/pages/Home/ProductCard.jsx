@@ -7,13 +7,14 @@ const ProductCard = ({
   product,
   discount,
   image,
-  price = "150,000 تومان",
   name = "نام محصول",
   rating = 5,
   id, // اضافه کردن id
   websiteId, // اضافه کردن websiteId
   onAddToCart, // callback برای اطلاع والد از تغییرات سبد
-  onClick // callback برای کلیک روی مشاهده
+  onClick, // callback برای کلیک روی مشاهده
+  price, // عددی باشه
+  discountedPrice, // عددی باشه
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -29,7 +30,7 @@ const ProductCard = ({
     return discountedPrice.toLocaleString('fa-IR') + ' تومان';
   };
 
-  const discountedPrice = discount ? calculateDiscountedPrice(price, discount) : null;
+  // const discountedPrice = discount ? calculateDiscountedPrice(price, discount) : null;
 
   const handleAddToCart = async () => {
     try {
@@ -141,14 +142,21 @@ const ProductCard = ({
         <h3 className="text-gray-800 font-bold text-lg leading-tight">{name}</h3>
 
         {/* Price Section */}
-        <div className="space-y-1">
-          {discount ? (
+        {/* Price Section */}
+        <div className="space-y-1 font-modam">
+          {discount && discountedPrice ? (
             <>
-              <p className="text-gray-400 text-sm line-through font-modam">{price}</p>
-              <p className="text-red-500 font-bold text-xl font-modam">{discountedPrice}</p>
+              <p className="text-gray-400 text-sm line-through">
+                {price.toLocaleString('fa-IR')} تومان
+              </p>
+              <p className="text-red-500 font-bold text-xl">
+                {discountedPrice.toLocaleString('fa-IR')} تومان
+              </p>
             </>
           ) : (
-            <p className="text-blue-600 font-bold text-xl font-modam">{price}</p>
+            <p className="text-blue-600 font-bold text-xl">
+              {price.toLocaleString('fa-IR')} تومان
+            </p>
           )}
         </div>
 
