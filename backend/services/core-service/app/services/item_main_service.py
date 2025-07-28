@@ -1,5 +1,5 @@
 from app.services.item_service import ItemService
-from app.domain.schemas.item_schema import ItemCreateSchema, NewestItemResponseSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
+from app.domain.schemas.item_schema import ItemCreateSchema, NewestItemResponseSchema, ItemResponseWithRateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
@@ -9,6 +9,7 @@ from app.services.website_service import WebsiteService
 from app.services.plan_service import PlanService
 from decimal import Decimal
 from app.services.order_service import OrderService
+from app.services.review_service import ReviewService
 
 
 class ItemMainService(BaseService):
@@ -18,6 +19,7 @@ class ItemMainService(BaseService):
         website_service: Annotated[WebsiteService, Depends()],
         plan_service: Annotated[PlanService, Depends()],
         order_service: Annotated[OrderService, Depends()],
+        review_service: Annotated[ReviewService, Depends()],
 
     ) -> None:
         super().__init__()
@@ -25,6 +27,7 @@ class ItemMainService(BaseService):
         self.website_service = website_service
         self.plan_service =plan_service
         self.order_service = order_service
+        self.review_service = review_service
 
     async def create_item(self, item_data: ItemCreateSchema) -> ItemResponseSchema:
         logger.info(f"Starting to create item... ")
@@ -56,13 +59,15 @@ class ItemMainService(BaseService):
         
 
         
-    async def get_item_by_id(self, item_id: UUID) -> ItemResponseWithNameSchema:
+    async def get_item_by_id(self, item_id: UUID) -> ItemResponseWithRateSchema:
         logger.info(f"Starting to fetch item with ID: {item_id}")
 
         item = await self.item_service.get_item_by_id(item_id)
         category = await self.website_service.get_category_by_id(item.category_id)
         subcategory = await self.website_service.get_subcategory_by_id(item.subcategory_id)
-        return ItemResponseWithNameSchema(
+
+        rating = await self.review_service.get_rating_for_item(item_id)
+        return ItemResponseWithRateSchema(
             item_id=item.item_id,
             website_id=item.website_id,
             category_id=item.category_id,
@@ -78,6 +83,7 @@ class ItemMainService(BaseService):
             discount_expires_at=item.discount_expires_at,
             delivery_url=item.delivery_url,
             post_purchase_note=item.post_purchase_note,
+            rating=rating,
             stock=item.stock,
             is_available=item.is_available,
             created_at=item.created_at,
