@@ -38,6 +38,7 @@ class OrderMainService(BaseService):
             OrderResponseSchema(
                 order_id=order.order_id,
                 website_id=order.website_id,
+
                 buyer_id=order.buyer_id,
                 status=order.status,
                 total_price=order.total_price,
@@ -46,6 +47,7 @@ class OrderMainService(BaseService):
                     OrderItemResponseSchema(
                         order_item_id= item.order_item_id,
                         item_id=item.item_id,
+                        item_name=item.name,
                         quantity=item.quantity,
                         price=item.price,
                     )
@@ -80,6 +82,7 @@ class OrderMainService(BaseService):
                     OrderItemResponseSchema(
                         order_item_id= item.order_item_id,
                         item_id=item.item_id,
+                        item_name=item.name,
                         quantity=item.quantity,
                         price=item.price,
                     )
@@ -107,6 +110,7 @@ class OrderMainService(BaseService):
                     OrderItemResponseSchema(
                         order_item_id= item.order_item_id,
                         item_id=item.item_id,
+                        item_name=item.name,
                         quantity=item.quantity,
                         price=item.price,
                     )
@@ -133,6 +137,7 @@ class OrderMainService(BaseService):
                     OrderItemResponseSchema(
                         order_item_id=item.order_item_id,
                         item_id=item.item_id,
+                        item_name=item.name,
                         quantity=item.quantity,
                         price=item.price,
                     )

@@ -12,6 +12,7 @@ class OrderCreateSchema(BaseModel):
 class OrderItemResponseSchema(BaseModel):
     order_item_id: UUID
     item_id: UUID
+    item_name: str
     quantity: int
     price: Decimal
 
