@@ -61,21 +61,22 @@ async def get_banner(
     logger.info(f"Getting website info for website: {website_id}")
 
     website = await website_service.get_website_by_id(website_id)
+    
+    if website.banner_image:
+        mongo_id = ObjectId(website.banner_image)
+        logger.info(f"Mongo id for banner: {mongo_id}")
+        
+        media_schema, file_stream = await media_service.get_public_media(mongo_id)
 
-    mongo_id = ObjectId(website.banner_image)
-    logger.info(f"Mongo id for banner: {mongo_id}")
+        logger.info(f"Retrieving banner file {media_schema.filename}")
 
-    media_schema, file_stream = await media_service.get_public_media(mongo_id)
-
-    logger.info(f"Retrieving banner file {media_schema.filename}")
-
-    return StreamingResponse(
-        content=file_stream(),
-        media_type=media_schema.content_type,
-        headers={
-            "Content-Disposition": f"inline; filename={media_schema.filename}"
-        },
-    )
+        return StreamingResponse(
+            content=file_stream(),
+            media_type=media_schema.content_type,
+            headers={
+                "Content-Disposition": f"inline; filename={media_schema.filename}"
+            },
+        )
 
 
 
@@ -120,18 +121,19 @@ async def get_logo(
     logger.info(f"Getting website info for website: {website_id}")
 
     website = await website_service.get_website_by_id(website_id)
+    
+    if website.logo_url:
+        mongo_id = ObjectId(website.logo_url)
+        logger.info(f"Mongo id for logo: {mongo_id}")
+        
+        media_schema, file_stream = await media_service.get_public_media(mongo_id)
 
-    mongo_id = ObjectId(website.logo_url)
-    logger.info(f"Mongo id for logo: {mongo_id}")
+        logger.info(f"Retrieving logo file {media_schema.filename}")
 
-    media_schema, file_stream = await media_service.get_public_media(mongo_id)
-
-    logger.info(f"Retrieving logo file {media_schema.filename}")
-
-    return StreamingResponse(
-        content=file_stream(),
-        media_type=media_schema.content_type,
-        headers={
-            "Content-Disposition": f"inline; filename={media_schema.filename}"
-        },
-    )
+        return StreamingResponse(
+            content=file_stream(),
+            media_type=media_schema.content_type,
+            headers={
+                "Content-Disposition": f"inline; filename={media_schema.filename}"
+            },
+        )
