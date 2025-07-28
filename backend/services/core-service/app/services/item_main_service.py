@@ -173,7 +173,7 @@ class ItemMainService(BaseService):
             name=updated_item.name,
             description=updated_item.description,
             price=updated_item.price,
-            discount_price=discount_price,
+            discount_price=updated_item.discount_price if updated_item.discount_active else None,
             discount_active=updated_item.discount_active,
             discount_percent=updated_item.discount_percent,
             discount_expires_at=updated_item.discount_expires_at,
