@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.item_main_service import ItemMainService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
+from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema,NewestItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
 from app.services.auth_services.user_auth_service import get_current_user
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
@@ -71,7 +71,7 @@ async def delete_item(
 
 
 
-@item_router.get("/newest_items", response_model=List[ItemResponseWithNameSchema], status_code=status.HTTP_200_OK)
+@item_router.get("/newest_items", response_model=List[NewestItemResponseSchema], status_code=status.HTTP_200_OK)
 async def get_newest_items(website_id: UUID, limit:int, item_main_service: ItemMainService = Depends()):
     return await item_main_service.get_newest_items(website_id, limit)
 

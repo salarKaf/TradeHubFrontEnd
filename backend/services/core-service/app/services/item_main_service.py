@@ -1,5 +1,5 @@
 from app.services.item_service import ItemService
-from app.domain.schemas.item_schema import ItemCreateSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
+from app.domain.schemas.item_schema import ItemCreateSchema, NewestItemResponseSchema, ItemResponseSchema, ItemUpdateSchema, MessageResponse, ItemResponseWithNameSchema
 from uuid import UUID
 from fastapi import HTTPException, Depends
 from loguru import logger
@@ -8,7 +8,7 @@ from typing import Annotated, List, Dict
 from app.services.website_service import WebsiteService
 from app.services.plan_service import PlanService
 from decimal import Decimal
-
+from app.services.order_service import OrderService
 
 
 class ItemMainService(BaseService):
@@ -17,11 +17,14 @@ class ItemMainService(BaseService):
         item_service: Annotated[ItemService, Depends()],
         website_service: Annotated[WebsiteService, Depends()],
         plan_service: Annotated[PlanService, Depends()],
+        order_service: Annotated[OrderService, Depends()],
+
     ) -> None:
         super().__init__()
         self.item_service = item_service
         self.website_service = website_service
         self.plan_service =plan_service
+        self.order_service = order_service
 
     async def create_item(self, item_data: ItemCreateSchema) -> ItemResponseSchema:
         logger.info(f"Starting to create item... ")
@@ -162,7 +165,6 @@ class ItemMainService(BaseService):
             
         updated_item = await self.item_service.edit_item(item_id, item_data_dict)
 
-        # return updated_item
         return ItemResponseSchema(
             item_id=updated_item.item_id,
             website_id=updated_item.website_id,
@@ -192,7 +194,7 @@ class ItemMainService(BaseService):
     
 
 
-    async def get_newest_items(self, website_id: UUID, limit: int) -> List[ItemResponseWithNameSchema]:
+    async def get_newest_items(self, website_id: UUID, limit: int) -> List[NewestItemResponseSchema]:
         items = await self.item_service.get_newest_items(website_id, limit)
         result = []
         for item in items:
@@ -202,7 +204,9 @@ class ItemMainService(BaseService):
             category_name = category.name if category else 'null'
             subcategory_name = subcategory.name if subcategory else 'null'
 
-            result.append(ItemResponseWithNameSchema(
+            sales_count = await self.order_service.get_sales_count(item.item_id)
+
+            result.append(NewestItemResponseSchema(
                 item_id=item.item_id,
                 website_id=item.website_id,
                 category_id=item.category_id,
@@ -218,6 +222,7 @@ class ItemMainService(BaseService):
                 discount_expires_at=item.discount_expires_at,
                 delivery_url=item.delivery_url,
                 post_purchase_note=item.post_purchase_note,
+                sales_count = sales_count,
                 stock=item.stock,
                 is_available=item.is_available,
                 created_at=item.created_at,
