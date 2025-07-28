@@ -1,93 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Trash2, Heart, Eye, Package, ChevronDown, CreditCard, Loader, Ticket, Calendar, Percent } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addItemToCart, getMyCart, removeOneFromCart, deleteItemFromCart } from '../../../../API/cart';
-import { createOrder } from '../../../../API/orders';
-import { requestOrderPayment } from '../../../../API/payments';
+import { addItemToCart, getMyCart, removeOneFromCart, deleteItemFromCart } from '../../../../API/cart.jsx';
+import { createOrder } from '../../../../API/orders.jsx';
+import { requestOrderPayment } from '../../../../API/payments.jsx';
+import { getCouponsByWebsiteInStore } from '../../../../API/coupons.jsx';
+import { getActivePlan } from '../../../../API/website.js';
+import { getFavorites } from '../../../../API/favorites.jsx';
+import { getProductById } from '../../../../API/Items.jsx'; // بر
 
-// کامپوننت کارت محصول
-const ProductCard = ({ product, discount, image, price = "150,000 ریال", name = "نام محصول", rating = 5 }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const { slug } = useParams(); // برای گرفتن websiteId
+import ProductCard from '../Home/ProductCard.jsx';
 
-  const calculateDiscountedPrice = (originalPrice, discountPercent) => {
-    if (!discountPercent) return null;
-    const numericPrice = parseInt(originalPrice.replace(/[^\d]/g, ''));
-    const discountAmount = (numericPrice * parseInt(discountPercent)) / 100;
-    const discountedPrice = numericPrice - discountAmount;
-    return discountedPrice.toLocaleString('fa-IR') + ' ریال';
-  };
-
-  const discountedPrice = discount ? calculateDiscountedPrice(price, discount) : null;
-
-  return (
-    <div className="group relative font-sans bg-white shadow-lg rounded-xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-xl">
-      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-xl z-10">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <button className="opacity-0 group-hover:opacity-100 bg-black text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex items-center gap-2 hover:bg-gray-800">
-            <ShoppingCart size={18} />
-            افزودن به سبد
-          </button>
-        </div>
-
-        <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 flex transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`flex items-center justify-center gap-1 px-3 py-2 w-1/2 mr-1 rounded-lg transition-all duration-200 ${isLiked
-              ? 'bg-black text-red-400 hover:bg-gray-800'
-              : 'bg-black text-white hover:bg-gray-800'
-              }`}
-          >
-            <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
-            <span className="text-sm font-medium">پسندیدن</span>
-          </button>
-          <button className="flex items-center justify-center gap-1 px-3 py-2 w-1/2 ml-1 rounded-lg bg-black text-white hover:bg-gray-800 transition-all duration-200">
-            <Eye size={16} />
-            <span className="text-sm font-medium">مشاهده</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="relative mb-4 overflow-hidden rounded-lg">
-        <div className="h-52 flex items-center justify-center bg-gray-100">
-          <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center">
-            <span className="text-gray-500">تصویر محصول</span>
-          </div>
-        </div>
-        {discount && (
-          <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-lg font-bold shadow-lg z-20">
-            {discount}
-          </span>
-        )}
-      </div>
-
-      <div className="text-right space-y-2">
-        <h3 className="text-gray-800 font-bold text-lg leading-tight">{name}</h3>
-        <div className="space-y-1">
-          {discount ? (
-            <>
-              <p className="text-gray-400 text-sm line-through">{price}</p>
-              <p className="text-red-500 font-bold text-xl">{discountedPrice}</p>
-            </>
-          ) : (
-            <p className="text-gray-800 font-bold text-xl">{price}</p>
-          )}
-        </div>
-        <div className="flex justify-end items-center gap-1">
-          {[...Array(5)].map((_, i) => (
-            <span key={i} className={`text-lg ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}>
-              ★
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
-
-import { getMyOrders } from '../../../../API/orders';
+import { getMyOrders } from '../../../../API/orders.jsx';
 
 
 export default function Card() {
@@ -98,8 +22,72 @@ export default function Card() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [previousOrders, setPreviousOrders] = useState([]);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+  const [activePlan, setActivePlan] = useState(null);
+  const [loadingCoupons, setLoadingCoupons] = useState(false);
 
+  // در state های کامپوننت اضافه کن:
+  const [favoriteProducts, setFavoriteProducts] = useState([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
 
+  // useEffect برای بارگذاری علاقه‌مندی‌ها
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!isLoggedIn) return;
+
+      try {
+        setLoadingFavorites(true);
+        const websiteId = localStorage.getItem('current_store_website_id');
+
+        // دریافت لیست علاقه‌مندی‌ها
+        const favorites = await getFavorites(websiteId);
+
+        // دریافت جزئیات هر محصول
+        const favoriteDetails = await Promise.all(
+          favorites.map(async (fav) => {
+            try {
+              const productDetail = await getProductById(fav.item_id);
+              return {
+                id: fav.item_id,
+                favoriteId: fav.id,
+                name: productDetail.name || "محصول بدون نام",
+                price: productDetail.price ? parseInt(productDetail.price) : 0,
+                image: productDetail.image_url || "",
+                rating: 5,
+                discount: productDetail.discount_active && productDetail.discount_percent > 0
+                  ? `${productDetail.discount_percent}%`
+                  : null,
+                discountedPrice: productDetail.discount_active && productDetail.discount_price
+                  ? parseInt(productDetail.discount_price)
+                  : null,
+              };
+            } catch (error) {
+              console.error(`خطا در دریافت جزئیات محصول ${fav.item_id}:`, error);
+              return {
+                id: fav.item_id,
+                favoriteId: fav.id,
+                name: `محصول ${fav.item_id.substring(0, 8)}`,
+                price: 0,
+                image: "",
+                rating: 5,
+                discount: null,
+                discountedPrice: null,
+              };
+            }
+          })
+        );
+
+        setFavoriteProducts(favoriteDetails);
+      } catch (error) {
+        console.error('خطا در دریافت علاقه‌مندی‌ها:', error);
+        setFavoriteProducts([]);
+      } finally {
+        setLoadingFavorites(false);
+      }
+    };
+
+    fetchFavorites();
+  }, [isLoggedIn]);
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -113,7 +101,7 @@ export default function Card() {
             name: `آیتم ${item.item_id.substring(0, 6)}`, // چون فعلاً نام نداریم
             price: parseFloat(item.price),
             quantity: item.quantity,
-              itemId: item.item_id, // 👈 اضافه کن این خطو
+            itemId: item.item_id, // 👈 اضافه کن این خطو
           })),
           status: order.status
         }));
@@ -242,47 +230,44 @@ export default function Card() {
 
 
 
-  // نمونه محصولات علاقه‌مندی
-  const [favoriteProducts] = useState([
-    { id: 1, name: "آیفون 15 پرو", price: "45,000,000 ریال", discount: "5%", rating: 5 },
-    { id: 2, name: "سامسونگ گلکسی S24", price: "32,000,000 ریال", discount: "", rating: 4 },
-    { id: 3, name: "هدفون سونی", price: "2,500,000 ریال", discount: "15%", rating: 5 },
-    { id: 4, name: "ساعت هوشمند", price: "8,500,000 ریال", discount: "10%", rating: 4 }
-  ]);
 
-  // کوپن‌های تخفیف
-  const [availableCoupons] = useState([
-    {
-      id: 1,
-      code: "WINTER20",
-      title: "تخفیف زمستانی",
-      discount: 20,
-      discountType: "percent",
-      usageCount: 5,
-      expiryDate: "1403/06/30",
-      description: "20% تخفیف برای خرید‌های بالای 500 هزار ریال"
-    },
-    {
-      id: 2,
-      code: "SAVE50000",
-      title: "تخفیف ویژه",
-      discount: 50000,
-      discountType: "fixed",
-      usageCount: 3,
-      expiryDate: "1403/05/15",
-      description: "50 هزار ریال تخفیف برای اولین خرید"
-    },
-    {
-      id: 3,
-      code: "TECH15",
-      title: "تخفیف تکنولوژی",
-      discount: 15,
-      discountType: "percent",
-      usageCount: 8,
-      expiryDate: "1403/07/20",
-      description: "15% تخفیف برای محصولات تکنولوژی"
+
+  // دریافت پلن فعال و کوپن‌ها
+  useEffect(() => {
+    const fetchPlanAndCoupons = async () => {
+      try {
+        const websiteId = localStorage.getItem('current_store_website_id');
+        if (!websiteId) return;
+
+        // دریافت پلن فعال
+        const planData = await getActivePlan(websiteId);
+        setActivePlan(planData);
+
+        // 🔧 تغییر اینجا - مثل ProductShow عمل کن
+        const hasPro = planData?.is_active && planData?.plan?.name === 'Pro';
+
+        // اگر پلن Pro باشه، کوپن‌ها رو بگیر
+        if (hasPro) {
+          setLoadingCoupons(true);
+          try {
+            const couponsData = await getCouponsByWebsiteInStore(websiteId);
+            setAvailableCoupons(couponsData || []);
+          } catch (error) {
+            console.error('خطا در دریافت کوپن‌ها:', error);
+            setAvailableCoupons([]);
+          } finally {
+            setLoadingCoupons(false);
+          }
+        }
+      } catch (error) {
+        console.error('خطا در دریافت پلن:', error);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchPlanAndCoupons();
     }
-  ]);
+  }, [isLoggedIn]);
 
   const [couponCode, setCouponCode] = useState('');
 
@@ -346,8 +331,80 @@ export default function Card() {
     }
   };
 
+
+  // این تابع‌ها رو در کامپوننت Card قبل از return اضافه کن:
+
+  // callback برای وقتی محصول به سبد خرید اضافه میشه
+  const handleAddToCart = async (productId, result) => {
+    console.log(`محصول ${productId} به سبد خرید اضافه شد:`, result);
+    // بارگذاری مجدد سبد خرید برای نمایش تعداد جدید
+    await loadCartItems();
+  };
+
+  // callback برای کلیک روی محصول
   const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+    navigate(`/${slug}/product/${productId}`);
+  };
+
+  // تابع برای رفرش کردن علاقه‌مندی‌ها بعد از تغییر
+  const refreshFavorites = async () => {
+    if (!isLoggedIn) return;
+
+    try {
+      setLoadingFavorites(true);
+      const websiteId = localStorage.getItem('current_store_website_id');
+
+      // دریافت لیست علاقه‌مندی‌ها
+      const favorites = await getFavorites(websiteId);
+
+      // دریافت جزئیات هر محصول
+      const favoriteDetails = await Promise.all(
+        favorites.map(async (fav) => {
+          try {
+            const productDetail = await getProductById(fav.item_id);
+            return {
+              id: fav.item_id,
+              favoriteId: fav.id,
+              name: productDetail.name || "محصول بدون نام",
+              price: productDetail.price ? parseInt(productDetail.price) : 0,
+              image: productDetail.image_url || "",
+              rating: 5,
+              discount: productDetail.discount_active && productDetail.discount_percent > 0
+                ? `${productDetail.discount_percent}%`
+                : null,
+              discountedPrice: productDetail.discount_active && productDetail.discount_price
+                ? parseInt(productDetail.discount_price)
+                : null,
+            };
+          } catch (error) {
+            console.error(`خطا در دریافت جزئیات محصول ${fav.item_id}:`, error);
+            return {
+              id: fav.item_id,
+              favoriteId: fav.id,
+              name: `محصول ${fav.item_id.substring(0, 8)}`,
+              price: 0,
+              image: "",
+              rating: 5,
+              discount: null,
+              discountedPrice: null,
+            };
+          }
+        })
+      );
+
+      setFavoriteProducts(favoriteDetails);
+    } catch (error) {
+      console.error('خطا در دریافت علاقه‌مندی‌ها:', error);
+      setFavoriteProducts([]);
+    } finally {
+      setLoadingFavorites(false);
+    }
+  };
+
+  // callback برای وقتی محصول از علاقه‌مندی‌ها حذف/اضافه میشه
+  const handleFavoriteChange = () => {
+    // رفرش کردن لیست علاقه‌مندی‌ها
+    refreshFavorites();
   };
 
   // اگر لاگین نکرده
@@ -396,13 +453,17 @@ export default function Card() {
               <ShoppingCart className="w-5 h-5" />
               <span className="font-medium">سبد خرید</span>
             </button>
-            <button
-              onClick={() => scrollToSection('coupons-section')}
-              className="flex items-center gap-2 px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-lg"
-            >
-              <Ticket className="w-5 h-5" />
-              <span className="font-medium">کوپن های تخفیف</span>
-            </button>
+            {/* فقط اگر پلن Pro باشه دکمه کوپن رو نشون بده */}
+            {/* فقط اگر پلن Pro باشه دکمه کوپن رو نشون بده */}
+            {activePlan?.is_active && activePlan?.plan?.name === 'Pro' && (
+              <button
+                onClick={() => scrollToSection('coupons-section')}
+                className="flex items-center gap-2 px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-lg"
+              >
+                <Ticket className="w-5 h-5" />
+                <span className="font-medium">کوپن های تخفیف</span>
+              </button>
+            )}
             <button
               onClick={() => scrollToSection('previous-section')}
               className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300 shadow-lg"
@@ -592,52 +653,70 @@ export default function Card() {
         </section>
 
         {/* Coupons Section - کامل شده */}
-        <section id="coupons-section" className="scroll-mt-24">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-gray-800 rounded-xl">
-              <Ticket className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800">کوپن‌های تخفیف</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {availableCoupons.map((coupon) => (
-              <div key={coupon.id} className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="bg-gray-100 px-3 py-1 rounded-lg">
-                    <span className="font-bold text-gray-800 text-lg">{coupon.code}</span>
-                  </div>
-                  <div className="text-left">
-                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-sm font-bold">
-                      {coupon.discountType === 'percent' ? `${coupon.discount}%` : `${formatPrice(coupon.discount)}`}
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className="font-bold text-gray-800 mb-2">{coupon.title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{coupon.description}</p>
-
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar className="w-4 h-4" />
-                    <span>تاریخ انقضا: {coupon.expiryDate}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Percent className="w-4 h-4" />
-                    <span>قابل استفاده: {coupon.usageCount} بار</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => applyCoupon(coupon.code)}
-                  className="w-full bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-900 transition-all duration-300 font-medium"
-                >
-                  استفاده از کوپن
-                </button>
+        {/* Coupons Section - فقط برای پلن Pro */}
+        {activePlan?.is_active && activePlan?.plan?.name === 'Pro' && (
+          <section id="coupons-section" className="scroll-mt-24">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-3 bg-gray-800 rounded-xl">
+                <Ticket className="w-8 h-8 text-white" />
               </div>
-            ))}
-          </div>
-        </section>
+              <h2 className="text-3xl font-bold text-gray-800">کوپن‌های تخفیف</h2>
+            </div>
+
+            {loadingCoupons ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800 mx-auto mb-4"></div>
+                <p className="text-gray-600">در حال بارگذاری کوپن‌ها...</p>
+              </div>
+            ) : availableCoupons.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-lg p-12 text-center border border-gray-200">
+                <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Ticket className="w-12 h-12 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-600 mb-3">کوپن تخفیفی موجود نیست</h3>
+                <p className="text-gray-500">در حال حاضر کوپن تخفیف فعالی برای این فروشگاه وجود ندارد</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {availableCoupons.map((coupon) => (
+                  <div key={coupon.id} className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="bg-gray-100 px-3 py-1 rounded-lg">
+                        <span className="font-bold text-gray-800 text-lg">{coupon.code}</span>
+                      </div>
+                      <div className="text-left">
+                        <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-sm font-bold">
+                          {coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : `${formatPrice(coupon.discount_value)}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="font-bold text-gray-800 mb-2">{coupon.title || 'کوپن تخفیف'}</h3>
+                    <p className="text-gray-600 text-sm mb-4">{coupon.description || 'بدون توضیحات'}</p>
+
+                    <div className="space-y-3 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Calendar className="w-4 h-4" />
+                        <span>تاریخ انقضا: {new Date(coupon.expiry_date).toLocaleDateString('fa-IR')}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Percent className="w-4 h-4" />
+                        <span>حداقل خرید: {formatPrice(coupon.minimum_order_amount)}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => applyCoupon(coupon.code)}
+                      className="w-full bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-900 transition-all duration-300 font-medium"
+                    >
+                      استفاده از کوپن
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Previous Orders Section - دکمه‌ها در یک ردیف */}
         <section id="previous-section" className="scroll-mt-24">
@@ -716,19 +795,43 @@ export default function Card() {
               <Heart className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-gray-800">علاقه‌مندی‌ها</h2>
+            <span className="text-sm text-gray-500">({favoriteProducts.length} محصول)</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
-            {favoriteProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                name={product.name}
-                price={product.price}
-                discount={product.discount}
-                rating={product.rating}
-              />
-            ))}
-          </div>
+          {loadingFavorites ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800 mx-auto mb-4"></div>
+              <p className="text-gray-600">در حال بارگذاری علاقه‌مندی‌ها...</p>
+            </div>
+          ) : favoriteProducts.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-lg p-12 text-center border border-gray-200">
+              <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart className="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-600 mb-3">هنوز محصولی به علاقه‌مندی‌ها اضافه نکرده‌اید</h3>
+              <p className="text-gray-500">محصولات مورد علاقه‌تان را با کلیک روی قلب اضافه کنید</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+              {favoriteProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  websiteId={localStorage.getItem('current_store_website_id')}
+                  name={product.name}
+                  price={product.price}
+                  discountedPrice={product.discountedPrice}
+                  image={product.image}
+                  rating={product.rating}
+                  discount={product.discount}
+                  product={product}
+                  onClick={handleProductClick}
+                  onAddToCart={handleAddToCart}
+                  onFavoriteChange={handleFavoriteChange}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>

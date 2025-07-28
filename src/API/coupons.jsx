@@ -49,3 +49,29 @@ export const deleteCoupon = async (couponId) => {
         throw error;
     }
 };
+
+
+
+// دریافت لیست کوپن‌های یک وبسایت
+export const getCouponsByWebsiteInStore = async (websiteId) => {
+    try {
+        // 🔧 گرفتن buyer token از localStorage
+        const buyerToken = localStorage.getItem(`buyer_token_${websiteId}`);
+        
+        if (!buyerToken) {
+            throw new Error('توکن buyer یافت نشد');
+        }
+
+        const response = await axios.get(`${coreBaseURL}/coupon/website/${websiteId}/coupons`, {
+            headers: {
+                'Authorization': `Bearer ${buyerToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        return response.data;
+    } catch (error) {
+        console.error('❌ خطا در دریافت کوپن‌ها:', error);
+        throw error;
+    }
+};

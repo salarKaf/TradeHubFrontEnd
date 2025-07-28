@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Heart, Eye, ShoppingCart } from "lucide-react";
 import { addItemToCart } from "../../../../API/cart";
+import { addToFavorites, removeFromFavorites, isItemInFavorites, getFavoriteIdByItemId } from "../../../../API/favorites";
 import { useParams, useNavigate } from 'react-router-dom';
 
 const ProductCard = ({
@@ -18,27 +19,57 @@ const ProductCard = ({
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const { slug } = useParams(); // برای گرفتن websiteId
+  const [isUpdatingFavorite, setIsUpdatingFavorite] = useState(false);
+  const [favoriteId, setFavoriteId] = useState(null);
+  const { slug } = useParams();
   const navigate = useNavigate();
+
+  // ✅ چک کردن وضعیت علاقه‌مندی هنگام بارگذاری کامپوننت
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      try {
+        const currentWebsiteId = websiteId || localStorage.getItem('current_store_website_id');
+        const token = localStorage.getItem(`buyer_token_${currentWebsiteId}`);
+
+        if (!token || !id) return;
+
+        const isFavorite = await isItemInFavorites(id, currentWebsiteId);
+        setIsLiked(isFavorite);
+
+        if (isFavorite) {
+          const favId = await getFavoriteIdByItemId(id, currentWebsiteId);
+          setFavoriteId(favId);
+        }
+      } catch (error) {
+        console.warn('خطا در چک کردن وضعیت علاقه‌مندی:', error);
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [id, websiteId]);
 
   // محاسبه قیمت تخفیف‌دار
   const calculateDiscountedPrice = (originalPrice, discountPercent) => {
-    if (!discountPercent) return null;
-    const numericPrice = parseInt(originalPrice.replace(/[^\d]/g, ''));
+    if (!discountPercent || originalPrice === undefined || originalPrice === null) return null;
+
+    // اگر originalPrice عدد باشه، مستقیم استفاده کن
+    const numericPrice = typeof originalPrice === "number"
+      ? originalPrice
+      : parseInt(originalPrice.replace(/[^\d]/g, ''));
+
     const discountAmount = (numericPrice * parseInt(discountPercent)) / 100;
     const discountedPrice = numericPrice - discountAmount;
+
     return discountedPrice.toLocaleString('fa-IR') + ' تومان';
   };
 
-  // const discountedPrice = discount ? calculateDiscountedPrice(price, discount) : null;
 
   const handleAddToCart = async () => {
     try {
       setIsAddingToCart(true);
 
-      // 🔴 تغییر ۵: استفاده از توکن مخصوص فروشگاه فعلی
-      const websiteId = localStorage.getItem('current_store_website_id');
-      const token = localStorage.getItem(`buyer_token_${websiteId}`);
+      const currentWebsiteId = websiteId || localStorage.getItem('current_store_website_id');
+      const token = localStorage.getItem(`buyer_token_${currentWebsiteId}`);
 
       if (!token) {
         alert('برای افزودن به سبد خرید باید وارد شوید');
@@ -46,26 +77,21 @@ const ProductCard = ({
         return;
       }
 
-      // ✅ اینجا بود که کد ناتمام بود - حالا کامل میکنیم
-      console.log('🛒 Adding to cart:', { id, websiteId, token });
+      console.log('🛒 Adding to cart:', { id, currentWebsiteId, token });
 
-      // صدا زدن API برای افزودن به سبد خرید
-      const result = await addItemToCart(id, websiteId, 1, token); // quantity = 1
+      const result = await addItemToCart(id, currentWebsiteId, 1, token);
 
       console.log('✅ Product added to cart successfully:', result);
 
-      // اطلاع دادن به کامپوننت والد
       if (onAddToCart) {
         onAddToCart(id, result);
       }
 
-      // نمایش پیام موفقیت
       alert('محصول با موفقیت به سبد خرید اضافه شد!');
 
     } catch (error) {
       console.error('❌ Error adding to cart:', error);
 
-      // بررسی نوع خطا و نمایش پیام مناسب
       if (error.message.includes('401') || error.message.includes('unauthorized')) {
         alert('توکن شما منقضی شده. لطفاً دوباره وارد شوید');
         navigate(`/${slug}/login`);
@@ -76,6 +102,48 @@ const ProductCard = ({
       }
     } finally {
       setIsAddingToCart(false);
+    }
+  };
+
+  // ✅ Handle favorites toggle
+  const handleFavoriteToggle = async () => {
+    try {
+      setIsUpdatingFavorite(true);
+
+      const currentWebsiteId = websiteId || localStorage.getItem('current_store_website_id');
+      const token = localStorage.getItem(`buyer_token_${currentWebsiteId}`);
+
+      if (!token) {
+        alert('برای افزودن به علاقه‌مندی‌ها باید وارد شوید');
+        navigate(`/${slug}/login`);
+        return;
+      }
+
+      if (isLiked && favoriteId) {
+        // حذف از علاقه‌مندی‌ها
+        await removeFromFavorites(favoriteId, currentWebsiteId);
+        setIsLiked(false);
+        setFavoriteId(null);
+        console.log('✅ Removed from favorites');
+      } else {
+        // افزودن به علاقه‌مندی‌ها
+        const result = await addToFavorites(id, currentWebsiteId);
+        setIsLiked(true);
+        setFavoriteId(result.id);
+        console.log('✅ Added to favorites:', result);
+      }
+
+    } catch (error) {
+      console.error('❌ Error updating favorites:', error);
+
+      if (error.message.includes('401') || error.message.includes('unauthorized')) {
+        alert('توکن شما منقضی شده. لطفاً دوباره وارد شوید');
+        navigate(`/${slug}/login`);
+      } else {
+        alert('خطا در به‌روزرسانی علاقه‌مندی‌ها');
+      }
+    } finally {
+      setIsUpdatingFavorite(false);
     }
   };
 
@@ -99,14 +167,17 @@ const ProductCard = ({
         {/* Action Buttons - Bottom Full Width */}
         <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 flex transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
           <button
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={handleFavoriteToggle}
+            disabled={isUpdatingFavorite}
             className={`flex items-center justify-center gap-1 px-3 py-2 w-1/2 mr-1 rounded-lg transition-all duration-200 ${isLiked
-              ? 'bg-black text-red-400 hover:bg-gray-800'
-              : 'bg-black text-white hover:bg-gray-800'
-              }`}
+                ? 'bg-black text-red-400 hover:bg-gray-800'
+                : 'bg-black text-white hover:bg-gray-800'
+              } ${isUpdatingFavorite ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
-            <span className="text-sm font-medium">پسندیدن</span>
+            <span className="text-sm font-medium">
+              {isUpdatingFavorite ? 'صبر...' : 'پسندیدن'}
+            </span>
           </button>
 
           <button
@@ -142,7 +213,6 @@ const ProductCard = ({
         <h3 className="text-gray-800 font-bold text-lg leading-tight">{name}</h3>
 
         {/* Price Section */}
-        {/* Price Section */}
         <div className="space-y-1 font-modam">
           {discount && discountedPrice ? (
             <>
@@ -151,6 +221,15 @@ const ProductCard = ({
               </p>
               <p className="text-red-500 font-bold text-xl">
                 {discountedPrice.toLocaleString('fa-IR')} تومان
+              </p>
+            </>
+          ) : discount ? (
+            <>
+              <p className="text-gray-400 text-sm line-through">
+                {price.toLocaleString('fa-IR')} تومان
+              </p>
+              <p className="text-red-500 font-bold text-xl">
+                {calculateDiscountedPrice(price, discount.replace('%', '')).toLocaleString('fa-IR')} تومان
               </p>
             </>
           ) : (
