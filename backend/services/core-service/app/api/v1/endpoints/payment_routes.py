@@ -7,7 +7,7 @@ from app.services.auth_services.buyer_auth_service import get_current_buyer
 
 from app.domain.schemas.token_schema import TokenDataSchema
 from loguru import logger
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 
 payment_router = APIRouter()
 
@@ -27,10 +27,14 @@ async def payment_callback(
     payment_main_service: Annotated[PaymentMainService, Depends()],
     order_id: UUID,
     authority: str = Query(..., alias="Authority"),  
-    status: str = Query(..., alias="Status")   
+    status: str = Query(..., alias="Status"),
+    website_id: UUID = Query(..., alias="website_id")    
 ):
     result = await payment_main_service.confirm_order_payment(order_id, authority, status)
-    frontend_url = f"http://localhost:5173/website/orders/payment-callback"
+    frontend_url = (
+        f"http://localhost:5173/website/orders/payment-callback"
+        f"?orderId={order_id}&authority={authority}&status={status}&websiteId={website_id}"
+    ) 
     return RedirectResponse(url=frontend_url)
 
 @payment_router.post("/plan_payment_request/{plan_id}")
