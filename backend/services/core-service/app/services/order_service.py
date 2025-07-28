@@ -75,7 +75,11 @@ class OrderService:
         return Order_item       
     
     async def get_sales_count(self, item_id:UUID) -> int:
-        return self.order_repository.get_sales_count(item_id)
+        logger.info(f"getting sales count")
+        count = self.order_repository.get_sales_count(item_id)
+        logger.info(f"{count}")
+        return count
+    
     
     async def get_item_revenue(self, item_id:UUID) -> Decimal:
         return self.order_repository.get_item_revenue(item_id)

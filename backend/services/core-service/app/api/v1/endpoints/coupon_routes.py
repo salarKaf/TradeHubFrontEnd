@@ -23,7 +23,6 @@ async def create_coupon(
 @coupon_router.get("/website/{website_id}/coupons", response_model=List[CouponResponseSchema])
 async def get_coupons_by_website(
     website_id: UUID,
-    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
     coupon_main_service: Annotated[CouponMainService, Depends()]
 ):
     return await coupon_main_service.get_coupons_by_website_id(website_id)
