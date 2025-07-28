@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Trash2, Heart, Eye, Package, ChevronDown, CreditCard, Loader } from 'lucide-react';
+import { ShoppingCart, Trash2, Heart, Eye, Package, ChevronDown, CreditCard, Loader, Ticket, Calendar, Percent } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addItemToCart, getMyCart, removeOneFromCart, deleteItemFromCart } from '../../../../API/cart';
 import { createOrder } from '../../../../API/orders';
 import { requestOrderPayment } from '../../../../API/payments';
 
-// کامپوننت کارت محصول (همون قبلی)
-const ProductCard = ({ product, discount, image, price = "150,000 تومان", name = "نام محصول", rating = 5 }) => {
+// کامپوننت کارت محصول
+const ProductCard = ({ product, discount, image, price = "150,000 ریال", name = "نام محصول", rating = 5 }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const { slug } = useParams(); // برای گرفتن websiteId
 
   const calculateDiscountedPrice = (originalPrice, discountPercent) => {
     if (!discountPercent) return null;
     const numericPrice = parseInt(originalPrice.replace(/[^\d]/g, ''));
     const discountAmount = (numericPrice * parseInt(discountPercent)) / 100;
     const discountedPrice = numericPrice - discountAmount;
-    return discountedPrice.toLocaleString('fa-IR') + ' تومان';
+    return discountedPrice.toLocaleString('fa-IR') + ' ریال';
   };
 
   const discountedPrice = discount ? calculateDiscountedPrice(price, discount) : null;
 
   return (
-    <div className="group relative font-sans bg-white shadow-lg rounded-2xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-2xl hover:scale-105">
-      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-2xl z-10">
+    <div className="group relative font-sans bg-white shadow-lg rounded-xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-xl">
+      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-xl z-10">
         <div className="absolute inset-0 flex items-center justify-center">
-          <button className="opacity-0 group-hover:opacity-100 bg-black text-white px-4 py-2 rounded-full font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex items-center gap-2 hover:bg-gray-800">
+          <button className="opacity-0 group-hover:opacity-100 bg-black text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex items-center gap-2 hover:bg-gray-800">
             <ShoppingCart size={18} />
             افزودن به سبد
           </button>
@@ -47,14 +48,14 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
         </div>
       </div>
 
-      <div className="relative mb-4 overflow-hidden rounded-xl">
-        <div className="h-52 flex items-center justify-center bg-gray-50">
+      <div className="relative mb-4 overflow-hidden rounded-lg">
+        <div className="h-52 flex items-center justify-center bg-gray-100">
           <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center">
-            <span className="text-gray-400">تصویر محصول</span>
+            <span className="text-gray-500">تصویر محصول</span>
           </div>
         </div>
         {discount && (
-          <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg z-20">
+          <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-lg font-bold shadow-lg z-20">
             {discount}
           </span>
         )}
@@ -69,7 +70,7 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
               <p className="text-red-500 font-bold text-xl">{discountedPrice}</p>
             </>
           ) : (
-            <p className="text-blue-600 font-bold text-xl">{price}</p>
+            <p className="text-gray-800 font-bold text-xl">{price}</p>
           )}
         </div>
         <div className="flex justify-end items-center gap-1">
@@ -84,18 +85,53 @@ const ProductCard = ({ product, discount, image, price = "150,000 تومان", n
   );
 };
 
+
+
+import { getMyOrders } from '../../../../API/orders';
+
+
 export default function Card() {
   const navigate = useNavigate();
-  const { slug } = useParams(); // برای گرفتن slug
+  const { slug } = useParams();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [previousOrders, setPreviousOrders] = useState([]);
+
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await getMyOrders();
+
+        const formatted = data.map(order => ({
+          id: order.order_id,
+          date: new Date(order.created_at).toLocaleDateString('fa-IR'),
+          total: parseFloat(order.total_price),
+          items: order.order_items.map(item => ({
+            name: `آیتم ${item.item_id.substring(0, 6)}`, // چون فعلاً نام نداریم
+            price: parseFloat(item.price),
+            quantity: item.quantity,
+              itemId: item.item_id, // 👈 اضافه کن این خطو
+          })),
+          status: order.status
+        }));
+
+        setPreviousOrders(formatted);
+      } catch (err) {
+        console.error('خطا در دریافت سفارش‌ها:', err);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchOrders();
+    }
+  }, [isLoggedIn]);
 
   // چک کردن لاگین و بارگذاری سبد خرید
   useEffect(() => {
     const checkLoginAndLoadCart = async () => {
-      // 🔴 استفاده از توکن مخصوص فروشگاه فعلی
       const websiteId = localStorage.getItem('current_store_website_id');
       const token = localStorage.getItem(`buyer_token_${websiteId}`);
 
@@ -118,7 +154,6 @@ export default function Card() {
       setLoading(true);
       const cartItems = await getMyCart();
 
-      // فرمت‌دهی آیتم‌های سبد خرید
       const formattedItems = cartItems.map(item => ({
         id: item.id,
         name: item.name || `محصول ${item.item_id.substring(0, 8)}`,
@@ -144,7 +179,6 @@ export default function Card() {
   };
 
   // فرآیند پرداخت
-  // ✅ فرآیند پرداخت درست شده
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
       alert('سبد خرید شما خالی است!');
@@ -154,7 +188,6 @@ export default function Card() {
     try {
       setIsProcessingPayment(true);
 
-      // گرفتن اطلاعات مورد نیاز
       const websiteId = localStorage.getItem('current_store_website_id');
       const token = localStorage.getItem(`buyer_token_${websiteId}`);
 
@@ -165,12 +198,6 @@ export default function Card() {
       }
 
       console.log('🚀 Starting checkout process...');
-      console.log('Website ID:', websiteId);
-      console.log('Token exists:', !!token);
-      console.log('Cart items count:', cartItems.length);
-
-      // مرحله 1: ایجاد سفارش (این website_id می‌خواهد)
-      console.log('📝 Step 1: Creating order...');
       const orderResponse = await createOrder(websiteId, token);
 
       if (!orderResponse || !orderResponse.order_id) {
@@ -179,29 +206,20 @@ export default function Card() {
 
       console.log('✅ Order created with ID:', orderResponse.order_id);
 
-      // مرحله 2: درخواست پرداخت (این هیچ پارامتری نمی‌خواهد، فقط توکن)
-      console.log('💳 Step 2: Requesting payment...');
-      const paymentResponse = await requestOrderPayment(token);  // فقط توکن
+      const paymentResponse = await requestOrderPayment(token);
 
       if (!paymentResponse || !paymentResponse.payment_url) {
         throw new Error('خطا در دریافت لینک پرداخت - payment_url دریافت نشد');
       }
 
-      console.log('✅ Payment URL received:', paymentResponse.payment_url);
-
-      // ذخیره اطلاعات مورد نیاز برای callback
       localStorage.setItem('current_order_id', orderResponse.order_id);
       localStorage.setItem('current_website_id', websiteId);
 
-      console.log('🔄 Redirecting to payment gateway...');
-
-      // انتقال به درگاه پرداخت
       window.location.href = paymentResponse.payment_url;
 
     } catch (error) {
       console.error('❌ Checkout error details:', error);
 
-      // مدیریت خطاهای مختلف با جزئیات بیشتر
       if (error.message.includes('401') || error.message.includes('unauthorized')) {
         alert('جلسه شما منقضی شده. لطفاً مجدداً وارد شوید');
         const websiteId = localStorage.getItem('current_store_website_id');
@@ -209,7 +227,7 @@ export default function Card() {
         navigate(`/${slug}/login`);
       } else if (error.message.includes('422')) {
         alert('داده‌های ارسالی نامعتبر است. ممکن است سبد خرید شما خالی باشد');
-        await loadCartItems(); // رفرش سبد خرید
+        await loadCartItems();
       } else if (error.message.includes('400')) {
         alert('درخواست نامعتبر. لطفاً صفحه را رفرش کنید و دوباره تلاش کنید');
       } else if (error.message.includes('500')) {
@@ -222,77 +240,48 @@ export default function Card() {
     }
   };
 
-  // ✅ همچنین این تابع را برای debug اضافه کنید
-  const debugCheckoutInfo = () => {
-    const websiteId = localStorage.getItem('current_store_website_id');
-    const token = localStorage.getItem(`buyer_token_${websiteId}`);
 
-    console.log('🔍 Debug Info:');
-    console.log('- Website ID:', websiteId);
-    console.log('- Token exists:', !!token);
-    console.log('- Token length:', token ? token.length : 0);
-    console.log('- Cart items:', cartItems.length);
-    console.log('- User logged in:', isLoggedIn);
-
-    if (token) {
-      try {
-        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-        console.log('- Token payload:', tokenPayload);
-        console.log('- Token expires:', new Date(tokenPayload.exp * 1000));
-      } catch (e) {
-        console.log('- Token parse error:', e.message);
-      }
-    }
-  };
-
-  // نمونه داده‌های خرید‌های قبلی
-  const [previousOrders] = useState([
-    {
-      id: 1,
-      date: "1403/04/15",
-      total: 2450000,
-      items: [
-        { name: "لپ‌تاپ ایسوس", price: 2200000, quantity: 1 },
-        { name: "ماوس گیمینگ", price: 250000, quantity: 1 }
-      ]
-    },
-    {
-      id: 2,
-      date: "1403/03/28",
-      total: 1850000,
-      items: [
-        { name: "تلویزیون ال‌جی", price: 1850000, quantity: 1 }
-      ]
-    },
-    {
-      id: 3,
-      date: "1403/03/10",
-      total: 950000,
-      items: [
-        { name: "اسپیکر بلوتوث", price: 450000, quantity: 1 },
-        { name: "کابل شارژ", price: 50000, quantity: 10 }
-      ]
-    },
-    {
-      id: 4,
-      date: "1403/02/20",
-      total: 3200000,
-      items: [
-        { name: "موبایل شیائومی", price: 1800000, quantity: 1 },
-        { name: "کیف لپ‌تاپ", price: 350000, quantity: 1 },
-        { name: "پاوربانک", price: 520000, quantity: 2 }
-      ]
-    }
-  ]);
 
   // نمونه محصولات علاقه‌مندی
   const [favoriteProducts] = useState([
-    { id: 1, name: "آیفون 15 پرو", price: "45,000,000 تومان", discount: "5%", rating: 5 },
-    { id: 2, name: "سامسونگ گلکسی S24", price: "32,000,000 تومان", discount: "", rating: 4 },
-    { id: 3, name: "هدفون سونی", price: "2,500,000 تومان", discount: "15%", rating: 5 },
-    { id: 4, name: "ساعت هوشمند", price: "8,500,000 تومان", discount: "10%", rating: 4 },
-    { id: 5, name: "تبلت آیپد", price: "25,000,000 تومان", discount: "", rating: 5 },
-    { id: 6, name: "کیس گیمینگ", price: "3,200,000 تومان", discount: "20%", rating: 4 }
+    { id: 1, name: "آیفون 15 پرو", price: "45,000,000 ریال", discount: "5%", rating: 5 },
+    { id: 2, name: "سامسونگ گلکسی S24", price: "32,000,000 ریال", discount: "", rating: 4 },
+    { id: 3, name: "هدفون سونی", price: "2,500,000 ریال", discount: "15%", rating: 5 },
+    { id: 4, name: "ساعت هوشمند", price: "8,500,000 ریال", discount: "10%", rating: 4 }
+  ]);
+
+  // کوپن‌های تخفیف
+  const [availableCoupons] = useState([
+    {
+      id: 1,
+      code: "WINTER20",
+      title: "تخفیف زمستانی",
+      discount: 20,
+      discountType: "percent",
+      usageCount: 5,
+      expiryDate: "1403/06/30",
+      description: "20% تخفیف برای خرید‌های بالای 500 هزار ریال"
+    },
+    {
+      id: 2,
+      code: "SAVE50000",
+      title: "تخفیف ویژه",
+      discount: 50000,
+      discountType: "fixed",
+      usageCount: 3,
+      expiryDate: "1403/05/15",
+      description: "50 هزار ریال تخفیف برای اولین خرید"
+    },
+    {
+      id: 3,
+      code: "TECH15",
+      title: "تخفیف تکنولوژی",
+      discount: 15,
+      discountType: "percent",
+      usageCount: 8,
+      expiryDate: "1403/07/20",
+      description: "15% تخفیف برای محصولات تکنولوژی"
+    }
   ]);
 
   const [couponCode, setCouponCode] = useState('');
@@ -301,7 +290,7 @@ export default function Card() {
   const removeItem = async (cartItemId) => {
     try {
       await deleteItemFromCart(cartItemId);
-      await loadCartItems(); // رفرش سبد خرید
+      await loadCartItems();
     } catch (error) {
       console.error("خطا در حذف محصول:", error);
       alert('خطا در حذف محصول');
@@ -312,16 +301,13 @@ export default function Card() {
   const updateQuantity = async (cartItemId, newQuantity, currentQuantity, itemId, websiteId) => {
     try {
       if (newQuantity > currentQuantity) {
-        // اضافه کردن - باید از addItemToCart استفاده کنیم
         await addItemToCart(itemId);
       } else if (newQuantity < currentQuantity && newQuantity > 0) {
-        // کم کردن
         await removeOneFromCart(cartItemId);
       } else if (newQuantity === 0) {
-        // حذف کامل
         await deleteItemFromCart(cartItemId);
       }
-      await loadCartItems(); // رفرش سبد خرید
+      await loadCartItems();
     } catch (error) {
       console.error("خطا در تغییر تعداد:", error);
       alert('خطا در تغییر تعداد محصول');
@@ -338,11 +324,16 @@ export default function Card() {
 
   const handleCouponSubmit = () => {
     console.log('Coupon applied:', couponCode);
-    // TODO: پیاده‌سازی کد تخفیف در آینده
+    // TODO: پیاده‌سازی کد تخفیف در آینده - اتصال به API
+  };
+
+  const applyCoupon = (couponCode) => {
+    setCouponCode(couponCode);
+    handleCouponSubmit();
   };
 
   const formatPrice = (price) => {
-    return price.toLocaleString('fa-IR') + ' تومان';
+    return price.toLocaleString('fa-IR') + ' ریال';
   };
 
   const scrollToSection = (sectionId) => {
@@ -362,16 +353,16 @@ export default function Card() {
   // اگر لاگین نکرده
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 font-sans flex items-center justify-center" dir="rtl">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center max-w-md">
-          <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center" dir="rtl">
+        <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md">
+          <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
             <ShoppingCart className="w-12 h-12 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">برای مشاهده سبد خرید وارد شوید</h2>
           <p className="text-gray-600 mb-6">برای مشاهده و مدیریت سبد خرید خود باید وارد حساب کاربری شوید</p>
           <button
             onClick={() => navigate(`/${slug}/login`)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-full font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="bg-gray-800 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-900 transition-all duration-300 shadow-lg"
           >
             ورود به حساب کاربری
           </button>
@@ -383,9 +374,9 @@ export default function Card() {
   // اگر در حال بارگذاری
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 font-sans flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center" dir="rtl">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800 mx-auto mb-4"></div>
           <p className="text-gray-600">در حال بارگذاری سبد خرید...</p>
         </div>
       </div>
@@ -393,28 +384,35 @@ export default function Card() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 font-sans" dir="rtl">
+    <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       {/* Navigation Menu */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-lg sticky top-0 z-50">
+      <div className="bg-white shadow-lg sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex justify-center items-center gap-8">
             <button
               onClick={() => scrollToSection('cart-section')}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="flex items-center gap-2 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all duration-300 shadow-lg"
             >
               <ShoppingCart className="w-5 h-5" />
               <span className="font-medium">سبد خرید</span>
             </button>
             <button
+              onClick={() => scrollToSection('coupons-section')}
+              className="flex items-center gap-2 px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-lg"
+            >
+              <Ticket className="w-5 h-5" />
+              <span className="font-medium">کوپن های تخفیف</span>
+            </button>
+            <button
               onClick={() => scrollToSection('previous-section')}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300 shadow-lg"
             >
               <Package className="w-5 h-5" />
               <span className="font-medium">خرید های پیشین</span>
             </button>
             <button
               onClick={() => scrollToSection('interests-section')}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-full hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="flex items-center gap-2 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-300 shadow-lg"
             >
               <Heart className="w-5 h-5" />
               <span className="font-medium">علاقمندی ها</span>
@@ -428,9 +426,9 @@ export default function Card() {
         <section id="cart-section" className="scroll-mt-24">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Summary Card */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 h-fit border border-white/20">
+            <div className="bg-white rounded-xl shadow-lg p-6 h-fit border border-gray-200">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+                <div className="p-2 bg-gray-800 rounded-lg">
                   <ShoppingCart className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">جزئیات پرداخت</h2>
@@ -455,7 +453,7 @@ export default function Card() {
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex justify-between text-xl font-bold">
                     <span className="text-gray-800">مبلغ قابل پرداخت</span>
-                    <span className="text-blue-600">{formatPrice(calculateTotal())}</span>
+                    <span className="text-gray-800">{formatPrice(calculateTotal())}</span>
                   </div>
                 </div>
 
@@ -467,11 +465,11 @@ export default function Card() {
                       placeholder="کد تخفیف را وارد کنید"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
                     />
                     <button
                       onClick={handleCouponSubmit}
-                      className="w-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 py-3 px-4 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-300 font-medium"
+                      className="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 transition-all duration-300 font-medium"
                     >
                       اعمال کد تخفیف
                     </button>
@@ -479,13 +477,12 @@ export default function Card() {
                 </div>
               </div>
 
-              {/* 🔥 دکمه پرداخت آپدیت شده */}
               <button
                 onClick={handleCheckout}
                 disabled={isProcessingPayment || cartItems.length === 0}
-                className={`w-full py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300 flex items-center justify-center gap-3 ${isProcessingPayment || cartItems.length === 0
-                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 hover:scale-105'
+                className={`w-full py-4 px-6 rounded-lg font-bold text-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-3 ${isProcessingPayment || cartItems.length === 0
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  : 'bg-gray-800 text-white hover:bg-gray-900'
                   }`}
               >
                 {isProcessingPayment ? (
@@ -510,10 +507,10 @@ export default function Card() {
 
             {/* Cart Items */}
             <div className="lg:col-span-2">
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-white/20">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
                 {cartItems.length === 0 ? (
                   <div className="p-12 text-center">
-                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
                       <ShoppingCart className="w-12 h-12 text-gray-400" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-600 mb-3">سبد خرید خالی است</h3>
@@ -521,62 +518,68 @@ export default function Card() {
                   </div>
                 ) : (
                   <>
-                    {/* Table Header */}
-                    <div className="grid grid-cols-6 gap-4 p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 font-bold text-gray-700">
-                      <div className="text-center">حذف</div>
-                      <div className="text-center">تعداد</div>
-                      <div className="text-center">قیمت واحد</div>
-                      <div className="text-center">قیمت کل</div>
-                      <div className="text-center">نام محصول</div>
+                    {/* Table Header - درست شده از راست به چپ */}
+                    <div className="grid grid-cols-6 gap-4 p-6 bg-gray-100 border-b border-gray-200 font-bold text-gray-700">
                       <div className="text-center">محصول</div>
+                      <div className="text-center">نام محصول</div>
+                      <div className="text-center">قیمت واحد</div>
+                      <div className="text-center">تعداد</div>
+                      <div className="text-center">قیمت کل</div>
+                      <div className="text-center">حذف</div>
                     </div>
 
-                    {/* Cart Items */}
+                    {/* Cart Items - درست شده از راست به چپ */}
                     <div className="divide-y divide-gray-100">
                       {cartItems.map((item) => (
-                        <div key={item.id} className="grid grid-cols-6 gap-4 p-6 items-center hover:bg-gray-50/50 transition-all duration-300">
+                        <div key={item.id} className="grid grid-cols-6 gap-4 p-6 items-center hover:bg-gray-50 transition-all duration-300">
+                          {/* محصول */}
                           <div className="flex justify-center">
-                            <button
-                              onClick={() => removeItem(item.id)}
-                              className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-full hover:bg-red-50"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
+                            <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center shadow-lg">
+                              {item.image ? (
+                                <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                              ) : (
+                                <Package className="w-8 h-8 text-gray-500" />
+                              )}
+                            </div>
                           </div>
+                          {/* نام محصول */}
+                          <div className="text-center">
+                            <span className="font-bold text-gray-800">
+                              {item.name || `محصول ${item.itemId.substring(0, 8)}`}
+                            </span>
+                          </div>
+                          {/* قیمت واحد */}
+                          <div className="text-center">
+                            <span className="font-bold text-gray-700">{formatPrice(item.price)}</span>
+                          </div>
+                          {/* تعداد */}
                           <div className="flex justify-center items-center gap-3">
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1, item.quantity, item.itemId, item.websiteId)}
-                              className="w-10 h-10 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 flex items-center justify-center transition-all duration-300 font-bold"
+                              className="w-10 h-10 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-all duration-300 font-bold"
                             >
                               -
                             </button>
                             <span className="w-8 text-center font-bold text-lg">{item.quantity}</span>
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1, item.quantity, item.itemId, item.websiteId)}
-                              className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-200 to-blue-300 hover:from-blue-300 hover:to-blue-400 flex items-center justify-center transition-all duration-300 font-bold"
+                              className="w-10 h-10 rounded-lg bg-gray-600 hover:bg-gray-700 text-white flex items-center justify-center transition-all duration-300 font-bold"
                             >
                               +
                             </button>
                           </div>
+                          {/* قیمت کل */}
                           <div className="text-center">
-                            <span className="font-bold text-gray-700">{formatPrice(item.price)}</span>
+                            <span className="font-bold text-xl text-gray-800">{formatPrice(item.price * item.quantity)}</span>
                           </div>
-                          <div className="text-center">
-                            <span className="font-bold text-xl text-blue-600">{formatPrice(item.price * item.quantity)}</span>
-                          </div>
-                          <div className="text-center">
-                            <span className="font-bold text-gray-800">
-                              {item.name || `محصول ${item.itemId.substring(0, 8)}`}
-                            </span>
-                          </div>
+                          {/* حذف */}
                           <div className="flex justify-center">
-                            <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl flex items-center justify-center shadow-lg">
-                              {item.image ? (
-                                <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-xl" />
-                              ) : (
-                                <Package className="w-8 h-8 text-gray-500" />
-                              )}
-                            </div>
+                            <button
+                              onClick={() => removeItem(item.id)}
+                              className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -588,25 +591,78 @@ export default function Card() {
           </div>
         </section>
 
-        {/* Previous Orders Section */}
+        {/* Coupons Section - کامل شده */}
+        <section id="coupons-section" className="scroll-mt-24">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-3 bg-gray-800 rounded-xl">
+              <Ticket className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800">کوپن‌های تخفیف</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {availableCoupons.map((coupon) => (
+              <div key={coupon.id} className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="bg-gray-100 px-3 py-1 rounded-lg">
+                    <span className="font-bold text-gray-800 text-lg">{coupon.code}</span>
+                  </div>
+                  <div className="text-left">
+                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-sm font-bold">
+                      {coupon.discountType === 'percent' ? `${coupon.discount}%` : `${formatPrice(coupon.discount)}`}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="font-bold text-gray-800 mb-2">{coupon.title}</h3>
+                <p className="text-gray-600 text-sm mb-4">{coupon.description}</p>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4" />
+                    <span>تاریخ انقضا: {coupon.expiryDate}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Percent className="w-4 h-4" />
+                    <span>قابل استفاده: {coupon.usageCount} بار</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => applyCoupon(coupon.code)}
+                  className="w-full bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-900 transition-all duration-300 font-medium"
+                >
+                  استفاده از کوپن
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Previous Orders Section - دکمه‌ها در یک ردیف */}
         <section id="previous-section" className="scroll-mt-24">
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl">
+            <div className="p-3 bg-gray-800 rounded-xl">
               <Package className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">سفارش‌های قبلی</h2>
+            <h2 className="text-3xl font-bold text-gray-800">سفارش‌های قبلی</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {previousOrders.map((order) => (
-              <div key={order.id} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+              <div key={order.id} className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
                 <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">سفارش #{order.id}</h3>
-                    <p className="text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-sm">📅 {order.date}</p>
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">سفارش شما</h3>
+                      <p className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full inline-block">
+                        {order.status === 'Paid' ? '✅ پرداخت شده' : '❌ لغو شده'} | تاریخ: {order.date}
+                      </p>
+                    </div>
                   </div>
+
                   <div className="text-left">
-                    <p className="text-2xl font-bold text-purple-600">{formatPrice(order.total)}</p>
+                    <p className="text-2xl font-bold text-gray-800">{formatPrice(order.total)}</p>
                     <p className="text-sm text-gray-500">{order.items.length} محصول</p>
                   </div>
                 </div>
@@ -615,27 +671,39 @@ export default function Card() {
                   <h4 className="font-bold text-gray-700 border-b border-gray-200 pb-2">محصولات سفارش:</h4>
                   <div className="space-y-3 max-h-48 overflow-y-auto">
                     {order.items.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                      <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 bg-gradient-to-br from-purple-200 to-purple-300 rounded-xl flex items-center justify-center shadow-lg">
-                            <Package className="w-6 h-6 text-purple-600" />
+                          <div className="w-14 h-14 bg-gray-200 rounded-xl flex items-center justify-center shadow-lg">
+                            <Package className="w-6 h-6 text-gray-600" />
                           </div>
                           <div>
                             <p className="font-bold text-gray-800">{item.name}</p>
-                            <p className="text-sm text-gray-600 bg-purple-100 px-2 py-1 rounded-full inline-block">تعداد: {item.quantity}</p>
+                            <p className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full inline-block">تعداد: {item.quantity}</p>
                           </div>
                         </div>
-                        <p className="font-bold text-purple-600 text-lg">{formatPrice(item.price)}</p>
+
+                        <div className="flex items-center gap-4">
+                          <p className="font-bold text-gray-800 text-lg">{formatPrice(item.price)}</p>
+                          <button
+                            onClick={() => {
+                              if (order.status === 'Canceled') {
+                                navigate(`/${slug}/product/${item.itemId}`); // 👈 فقط وقتی itemId باشه کار می‌کنه
+                              } else {
+                                navigate(`/${slug}/order/product/${order.id}`);
+                              }
+                            }}
+                            className="bg-gray-800 text-white text-sm py-2 px-4 rounded-lg hover:bg-gray-900 transition-all duration-300"
+                          >
+                            مشاهده محصول
+                          </button>
+
+                        </div>
                       </div>
                     ))}
+
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <button className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
-                    مشاهده جزئیات سفارش
-                  </button>
-                </div>
               </div>
             ))}
           </div>
@@ -644,10 +712,10 @@ export default function Card() {
         {/* Interests Section */}
         <section id="interests-section" className="scroll-mt-24">
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl">
+            <div className="p-3 bg-gray-800 rounded-xl">
               <Heart className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-pink-800 bg-clip-text text-transparent">علاقه‌مندی‌ها</h2>
+            <h2 className="text-3xl font-bold text-gray-800">علاقه‌مندی‌ها</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">

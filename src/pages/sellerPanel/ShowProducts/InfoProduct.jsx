@@ -361,29 +361,28 @@ const ShowProduct = () => {
 
 
     // ذخیره تغییرات
+    // ذخیره تغییرات
     const handleSave = async () => {
         if (!validateFields()) return;
-
-        // تجزیه مسیر دسته‌بندی
-        const categoryParts = productData.category.split('/');
-
 
         const payload = {
             name: productData.name,
             description: productData.description,
             price: Number(productData.price),
-            discount_active: productData.discountActive,
-            discount_percent: Number(productData.discount) || 0,
-            discount_expires_at: productData.discountExpiresAt
-                ? convertJalaliToGregorian(productData.discountExpiresAt).toISOString()
-                : null,
-
             delivery_url: productData.link,
             post_purchase_note: productData.additionalInfo,
             is_available: productData.isActive,
             stock: productData.stock,
+            discount_active: productData.discountActive,
         };
 
+        // فقط اگر تخفیف فعال باشه، این فیلدها رو اضافه کن
+        if (productData.discountActive) {
+            payload.discount_percent = Number(productData.discount) || 0;
+            payload.discount_expires_at = productData.discountExpiresAt
+                ? convertJalaliToGregorian(productData.discountExpiresAt).toISOString()
+                : null;
+        }
 
         try {
             await editItem(productId, payload);
@@ -588,16 +587,7 @@ const ShowProduct = () => {
                             </div>
 
                             {/* اطلاعات اضافی */}
-                            <div className="font-modam text-lg">
-                                <textarea
-                                    name="additionalInfo"
-                                    value={productData.additionalInfo}
-                                    onChange={handleChange}
-                                    className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-36 mt-2"
-                                    placeholder="شرح امکان مرجوعی کالا"
-                                    rows="2"
-                                />
-                            </div>
+
 
                             {/* بخش تخفیف */}
                             <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-2xl p-6 font-modam">
@@ -716,22 +706,22 @@ const ShowProduct = () => {
                         </div>
                     </div>
 
-                    {/* توضیحات پس از خرید */}
+                    {/* توضیحات پس از خرید  */}
+
                     <div className="mx-16 my-0">
-                        <div
-                            className="ml-auto mb-0  bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-lط w-64 h-4/5  text-white py-4 px-6 rounded-full shadow-md"
-                        >
+                        <div className="ml-auto mb-0 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-lg w-64 h-4/5 text-white py-4 px-6 rounded-full shadow-md">
                             توضیحات پس از خرید محصول
                         </div>
                         <textarea
-                            name="description"
-                            value={productData.description}
+                            name="additionalInfo"
+                            value={productData.additionalInfo}
                             onChange={handleChange}
-                            className="bg-[#fbf7ed] w-full px-6 py-6  border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-36"
+                            className="bg-[#fbf7ed] w-full px-6 py-6 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-36"
                             placeholder="توضیحات خود را در اینجا وارد کنید."
                             rows="4"
                         />
                     </div>
+
 
                     {/* دکمه ذخیره تغییرات */}
                     <div className="flex justify-end mt-6 pl-16">
@@ -777,8 +767,4 @@ const ShowProduct = () => {
 
 
 export default ShowProduct;
-
-
-
-
 

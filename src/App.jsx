@@ -95,7 +95,7 @@ export default function App() {
               <Route path="cart" element={<Cart />} />
               <Route path="signup" element={<SignUp />} />
               <Route path="login" element={<Login />} />
-              <Route path="digital-product-purchased" element={<ProductAfterPurchase />} />
+              <Route path="order/product/:orderId" element={<ProductAfterPurchase />} />
               <Route path="otp-verification" element={<OTPFormBuyer />} />
 
             </Routes>
