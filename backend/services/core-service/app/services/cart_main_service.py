@@ -35,7 +35,8 @@ class CartMainService(BaseService):
         quantity= cart_item.quantity, 
         added_at= cart_item.added_at,
         expires_at= cart_item.expires_at,
-        price=price_per_unit,
+        price=item.price,
+        discount_price= item.discount_price,
         total_price=total_price,
 
         )
@@ -48,7 +49,7 @@ class CartMainService(BaseService):
 
         for cart_item in cart_items:
             item = await self.item_service.get_item_by_id(cart_item.item_id)
-            price_per_unit = self.cart_service.calculate_price(item, 1)   
+            # price_per_unit = self.cart_service.calculate_price(item, 1)   
             total_price = self.cart_service.calculate_price(item, cart_item.quantity)  
 
             response.append(
@@ -61,7 +62,8 @@ class CartMainService(BaseService):
                 quantity=cart_item.quantity,
                 added_at=cart_item.added_at,
                 expires_at=cart_item.expires_at,
-                price=price_per_unit,
+                price=item.price,
+                discount_price= item.discount_price,
                 total_price=total_price,
             )
         )

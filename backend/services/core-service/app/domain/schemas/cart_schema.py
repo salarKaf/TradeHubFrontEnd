@@ -16,7 +16,8 @@ class CartItemResponseSchema(BaseModel):
   quantity: int
   added_at: datetime
   expires_at: Optional[datetime]
-  price: Decimal           
+  price: Decimal 
+  discount_price: Optional[Decimal]                    
   total_price: Decimal
   
   class Config:
