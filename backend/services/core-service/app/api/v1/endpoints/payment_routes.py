@@ -30,7 +30,7 @@ async def payment_callback(
     status: str = Query(..., alias="Status")   
 ):
     result = await payment_main_service.confirm_order_payment(order_id, authority, status)
-    frontend_url = f"http://localhost:5173//website/orders/payment-callback"
+    frontend_url = f"http://localhost:5173/website/orders/payment-callback"
     return RedirectResponse(url=frontend_url)
 
 @payment_router.post("/plan_payment_request/{plan_id}")
