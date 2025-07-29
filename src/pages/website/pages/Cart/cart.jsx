@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Card from './CartContent';
+import Card from './Card';
 import Navbar from '../../components/Navbar'
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';

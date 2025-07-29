@@ -75,11 +75,6 @@ export const getCouponsByWebsiteInStore = async (websiteId) => {
         throw error;
     }
 };
-
-
-
-
-
 export const applyCouponToOrder = async (orderId, couponCode) => {
   try {
     const websiteId = localStorage.getItem('current_store_website_id');
@@ -89,9 +84,11 @@ export const applyCouponToOrder = async (orderId, couponCode) => {
       throw new Error('توکن buyer یافت نشد');
     }
 
-    const response = await axios.post(`${coreBaseURL}/order/apply_coupon`, null, {
+    console.log('🔍 Sending request with:', { orderId, couponCode }); // اضافه کن
+
+    const response = await axios.post(`${coreBaseURL}/order/apply_coupon`, {}, {
       params: {
-        order_id: orderId,
+        order_id: orderId,  // چک کن orderId null نباشه
         coupon_code: couponCode
       },
       headers: {
@@ -103,6 +100,13 @@ export const applyCouponToOrder = async (orderId, couponCode) => {
     return response.data;
   } catch (error) {
     console.error('❌ خطا در اعمال کوپن:', error);
+    
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response detail:', error.response.data.detail); // اضافه کن
+      console.error('Response status:', error.response.status);
+    }
+    
     throw error;
   }
 };
