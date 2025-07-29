@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; // ✅ اضافه کردن useParams
-import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X , ShoppingBag } from 'lucide-react';
 import { getActivePlan } from '../../../../API/website.js';
 import CommentsSystem from './ProductCommentList';
 import QuestionAnswerSystem from './ProductQuestionList';
@@ -279,6 +279,7 @@ const ProductShow = () => {
                         <div className="border-t-[1px] border-gray-300 my-2" />
 
                         {/* Rating and Reviews */}
+                        {/* Rating and Reviews */}
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1">
                                 {/* ستاره‌های پر */}
@@ -303,8 +304,10 @@ const ProductShow = () => {
 
                                 <span className="text-sm text-gray-600 mr-2">{productRating.toFixed(1)}</span>
                             </div>
-                            <span className="text-sm text-gray-500">{productData.sales_count || 0} خریدار</span>
-                        </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                                <ShoppingBag className="w-4 h-4" />
+                                <span>{productData.sales_count || 0} فروش</span>
+                            </div>                        </div>
 
                         <div className="flex gap-2">
                             <button
