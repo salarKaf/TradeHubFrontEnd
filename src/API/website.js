@@ -20,8 +20,8 @@ export const createWebsite = async (business_name) => {
       store_slogan: "",
       social_links: {
         phone: "",
-        telegram: "https://example.com",
-        instagram: "https://example.com",
+        telegram: "",
+        instagram: "",
       },
       faqs: [],
     },
@@ -238,23 +238,36 @@ export const getBanner = async (websiteId) => {
   return URL.createObjectURL(response.data);  // تبدیل Blob به URL
 };
 
-
-
-
-
 export const getStoreSlug = async (websiteId) => {
   try {
     const response = await axios.get(
-      `${coreBaseURL}/slug/get-slug-by/${websiteId}`,
-      {
-        headers: {
-        }
-      }
+      `${coreBaseURL}/slug/get-slug-by/${websiteId}`
     );
     
-    return response.data.slug || 'store';
+    // لاگ کامل پاسخ برای دیباگ
+    console.log('Raw API response:', {
+      status: response.status,
+      data: response.data,
+      headers: response.headers
+    });
+    
+    // اگر پاسخ مستقیماً slug است (مثلاً "lolo")
+    if (typeof response.data === 'string') {
+      return response.data;
+    }
+    
+    // اگر پاسخ یک آبجکت است و slug دارد
+    if (response.data?.slug) {
+      return response.data.slug;
+    }
+    
+    // اگر هیچکدام نبود، مقدار پیش‌فرض
+    return 'store';
   } catch (error) {
-    console.error('Error getting store slug:', error);
-    return 'store'; // مقدار پیش‌فرض
+    console.error('Error getting slug:', {
+      message: error.message,
+      response: error.response?.data
+    });
+    return 'store';
   }
 };

@@ -14,32 +14,35 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+            e.preventDefault();
 
-        // اعتبارسنجی فیلدها
-        const newErrors = {};
-        if (!email.trim()) newErrors.email = 'ایمیل ضروری است';
-        if (!password.trim()) newErrors.password = 'رمز عبور ضروری است';
-        setErrors(newErrors);
+    // اعتبارسنجی فیلدها
+    const newErrors = {};
+    if (!email.trim()) newErrors.email = 'ایمیل ضروری است';
+    if (!password.trim()) newErrors.password = 'رمز عبور ضروری است';
+    setErrors(newErrors);
 
-        if (Object.keys(newErrors).length === 0) {
-            setLoading(true);
-            try {
-                // دریافت website_id از slug
-                const websiteResponse = await getWebsiteIdBySlug(slug);
-                const websiteId = websiteResponse.website_id;
+    if (Object.keys(newErrors).length === 0) {
+        setLoading(true);
+        try {
+            // این خط رو اضافه کن - پاک کردن توکن قبلی
+            localStorage.removeItem('buyer_access_token');
+            
+            // دریافت website_id از slug
+            const websiteResponse = await getWebsiteIdBySlug(slug);
+            const websiteId = websiteResponse.website_id;
 
-                // ارسال درخواست لاگین
-                const response = await loginBuyer({
-                    website_id: websiteId,
-                    username: email,
-                    password: password,
-                    grant_type: 'password'
-                });
+            // ارسال درخواست لاگین
+            const response = await loginBuyer({
+                website_id: websiteId,
+                username: email,
+                password: password,
+                grant_type: 'password'
+            });
 
-                // ذخیره توکن و انتقال به صفحه اصلی
-                localStorage.setItem('buyer_access_token', response.access_token);
-                navigate(`/${slug}/home`);
+            // ذخیره توکن و انتقال به صفحه اصلی
+            localStorage.setItem('buyer_access_token', response.access_token);
+            navigate(`/${slug}/home`);
 
             } catch (error) {
                 console.error("Login failed:", error);

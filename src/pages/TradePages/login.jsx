@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "/src/API/auth.jsx";
-import { getMyWebsite, getActivePlan } from "/src/API/website"; // ⬅️ اضافه کردن getActivePlan
+import { getMyWebsite, getActivePlan, getStoreSlug } from "/src/API/website"; // اضافه کردن getStoreSlug
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -35,6 +35,28 @@ export default function LoginForm() {
             // ذخیره وبسایت آیدی
             const websiteId = website.website_id;
             localStorage.setItem("website_id", websiteId);
+
+
+            // 🆕 چک کردن اسلاگ
+            // 🆕 چک کردن اسلاگ
+            try {
+                console.log(websiteId);
+                const slug = await getStoreSlug(websiteId);
+                console.log('Slug from API:', slug);
+
+                // شرط اصلاح شده - فقط اگر اسلاگ خالی یا 'store' بود به صفحه Slug برود
+                if (!slug || slug.trim() === '' || slug.toLowerCase() === 'store') {
+                    navigate(`/Slug/${websiteId}`);
+                } else {
+                    // اگر اسلاگ معتبر دارد (نه خالی و نه 'store')
+                    navigate(`/HomeSeller/${websiteId}`);
+                }
+                return; // حتماً return کنید تا کد بعدی اجرا نشود
+            } catch (slugError) {
+                console.error('❌ Error checking slug:', slugError);
+                navigate(`/Slug/${websiteId}`);
+                
+            }
 
             try {
                 // 2️⃣ چک کردن پلن فعال

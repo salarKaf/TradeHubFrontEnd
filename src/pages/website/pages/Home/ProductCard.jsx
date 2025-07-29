@@ -60,7 +60,7 @@ const ProductCard = ({
     const discountAmount = (numericPrice * parseInt(discountPercent)) / 100;
     const discountedPrice = numericPrice - discountAmount;
 
-    return discountedPrice.toLocaleString('fa-IR') + ' تومان';
+    return discountedPrice.toLocaleString('fa-IR') + ' ریال';
   };
 
 
@@ -203,7 +203,7 @@ const ProductCard = ({
         {/* Discount Badge */}
         {discount && (
           <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg z-20">
-            {discount}
+            {discount}% 
           </span>
         )}
       </div>
@@ -217,24 +217,24 @@ const ProductCard = ({
           {discount && discountedPrice ? (
             <>
               <p className="text-gray-400 text-sm line-through">
-                {price.toLocaleString('fa-IR')} تومان
+                {price.toLocaleString('fa-IR')} ریال
               </p>
               <p className="text-red-500 font-bold text-xl">
-                {discountedPrice.toLocaleString('fa-IR')} تومان
+                {discountedPrice.toLocaleString('fa-IR')} ریال
               </p>
             </>
           ) : discount ? (
             <>
               <p className="text-gray-400 text-sm line-through">
-                {price.toLocaleString('fa-IR')} تومان
+                {price.toLocaleString('fa-IR')} ریال
               </p>
               <p className="text-red-500 font-bold text-xl">
-                {calculateDiscountedPrice(price, discount.replace('%', '')).toLocaleString('fa-IR')} تومان
+                {calculateDiscountedPrice(price, discount.replace('%', '')).toLocaleString('fa-IR')} ریال
               </p>
             </>
           ) : (
             <p className="text-blue-600 font-bold text-xl">
-              {price.toLocaleString('fa-IR')} تومان
+              {price.toLocaleString('fa-IR')} ریال
             </p>
           )}
         </div>

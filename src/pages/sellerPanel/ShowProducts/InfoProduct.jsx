@@ -215,7 +215,7 @@ const ShowProduct = () => {
                 const ratingData = await getItemRating(productId);
                 setProductData(prev => ({
                     ...prev,
-                    rating: ratingData.average_rating || 0
+                    rating: ratingData.rating || 0  // تغییر از average_rating به rating
                 }));
             } catch (error) {
                 console.error("❌ خطا در دریافت امتیاز:", error);

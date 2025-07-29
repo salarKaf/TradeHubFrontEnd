@@ -66,12 +66,15 @@ const ProductShow = () => {
                 }
 
                 // دریافت امتیاز محصول
+                // دریافت امتیاز محصول
+                // دریافت امتیاز محصول
                 try {
                     const rating = await getItemRating(productId);
-                    setProductRating(rating.average_rating || 0);
+                    console.log('Rating from API:', rating);
+                    setProductRating(rating.rating || 0); // تغییر از average_rating به rating
                 } catch (ratingError) {
                     console.warn("خطا در دریافت امتیاز:", ratingError);
-                    setProductRating(0);
+                    setProductRating(productData.rating || 0);
                 }
 
             } catch (err) {
@@ -90,16 +93,15 @@ const ProductShow = () => {
     // محاسبه تعداد ستاره‌ها
     const getStars = (rating) => {
         const fullStars = Math.floor(rating);
-        const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-        const emptyStars = 5 - fullStars - halfStar;
+        const hasHalfStar = (rating % 1) >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
         return {
             fullStars,
-            halfStar,
+            hasHalfStar,
             emptyStars
         };
     };
-
     const handlePrevImage = () => {
         setSelectedImage(prev => prev > 0 ? prev - 1 : productImages.length - 1);
     };
@@ -163,8 +165,7 @@ const ProductShow = () => {
         );
     }
 
-    const { fullStars, halfStar, emptyStars } = getStars(productRating);
-
+    const { fullStars, hasHalfStar, emptyStars } = getStars(productRating);
     return (
         <div className='font-rubik'>
             <div className="max-w-6xl mx-auto p-6 bg-white" dir="rtl">
@@ -286,13 +287,18 @@ const ProductShow = () => {
                                 ))}
 
                                 {/* ستاره نیمه‌پر */}
-                                {halfStar === 1 && (
-                                    <Star key="half" className="w-5 h-5 fill-yellow-200 text-yellow-200" />
+                                {hasHalfStar && (
+                                    <div className="relative">
+                                        <Star className="w-5 h-5 fill-gray-300 text-gray-300" />
+                                        <div className="absolute inset-0 overflow-hidden w-1/2">
+                                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                                        </div>
+                                    </div>
                                 )}
 
                                 {/* ستاره‌های خالی */}
                                 {[...Array(emptyStars)].map((_, i) => (
-                                    <Star key={i + fullStars + halfStar} className="w-5 h-5 fill-gray-300 text-gray-300" />
+                                    <Star key={i + fullStars + (hasHalfStar ? 1 : 0)} className="w-5 h-5 fill-gray-300 text-gray-300" />
                                 ))}
 
                                 <span className="text-sm text-gray-600 mr-2">{productRating.toFixed(1)}</span>

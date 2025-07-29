@@ -75,3 +75,34 @@ export const getCouponsByWebsiteInStore = async (websiteId) => {
         throw error;
     }
 };
+
+
+
+
+
+export const applyCouponToOrder = async (orderId, couponCode) => {
+  try {
+    const websiteId = localStorage.getItem('current_store_website_id');
+    const buyerToken = localStorage.getItem(`buyer_token_${websiteId}`);
+    
+    if (!buyerToken) {
+      throw new Error('توکن buyer یافت نشد');
+    }
+
+    const response = await axios.post(`${coreBaseURL}/order/apply_coupon`, null, {
+      params: {
+        order_id: orderId,
+        coupon_code: couponCode
+      },
+      headers: {
+        'Authorization': `Bearer ${buyerToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('❌ خطا در اعمال کوپن:', error);
+    throw error;
+  }
+};

@@ -8,12 +8,9 @@ import { getCouponsByWebsiteInStore } from '../../../../API/coupons.jsx';
 import { getActivePlan } from '../../../../API/website.js';
 import { getFavorites } from '../../../../API/favorites.jsx';
 import { getProductById } from '../../../../API/Items.jsx'; // بر
-
 import ProductCard from '../Home/ProductCard.jsx';
-
 import { getMyOrders } from '../../../../API/orders.jsx';
-
-
+import { applyCouponToOrder } from '../../../../API/coupons.jsx';
 export default function Card() {
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -25,10 +22,21 @@ export default function Card() {
   const [availableCoupons, setAvailableCoupons] = useState([]);
   const [activePlan, setActivePlan] = useState(null);
   const [loadingCoupons, setLoadingCoupons] = useState(false);
-
+  // بعد از useState های موجود:
+  const [copiedCode, setCopiedCode] = useState(null);
   // در state های کامپوننت اضافه کن:
   const [favoriteProducts, setFavoriteProducts] = useState([]);
   const [loadingFavorites, setLoadingFavorites] = useState(false);
+  // بعد از useState ها اضافه کن:
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [currentOrderId, setCurrentOrderId] = useState(null);
+  useEffect(() => {
+    if (copiedCode) {
+      const timer = setTimeout(() => setCopiedCode(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copiedCode]);
 
   // useEffect برای بارگذاری علاقه‌مندی‌ها
   useEffect(() => {
@@ -96,12 +104,12 @@ export default function Card() {
         const formatted = data.map(order => ({
           id: order.order_id,
           date: new Date(order.created_at).toLocaleDateString('fa-IR'),
-          total: parseFloat(order.total_price),
+          total: order.total_price ? parseFloat(order.total_price) : 0, // 👈 اینجا
           items: order.order_items.map(item => ({
-            name: `آیتم ${item.item_id.substring(0, 6)}`, // چون فعلاً نام نداریم
-            price: parseFloat(item.price),
-            quantity: item.quantity,
-            itemId: item.item_id, // 👈 اضافه کن این خطو
+            name: `آیتم ${item.item_id.substring(0, 6)}`,
+            price: item.price ? parseFloat(item.price) : 0, // 👈 اینجا
+            quantity: item.quantity || 1, // 👈 اینجا
+            itemId: item.item_id,
           })),
           status: order.status
         }));
@@ -145,13 +153,12 @@ export default function Card() {
       const formattedItems = cartItems.map(item => ({
         id: item.id,
         name: item.name || `محصول ${item.item_id.substring(0, 8)}`,
-        price: parseFloat(item.price),
-        quantity: item.quantity,
+        price: item.price ? parseFloat(item.price) : 0, // 👈 اینجا چک کن
+        quantity: item.quantity || 1, // 👈 اینجا هم
         image: item.image_url || null,
         itemId: item.item_id,
         websiteId: item.website_id
       }));
-
       setCartItems(formattedItems);
     } catch (error) {
       console.error("خطا در دریافت سبد خرید:", error);
@@ -300,25 +307,78 @@ export default function Card() {
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => {
+      const price = item.price || 0;
+      const quantity = item.quantity || 0;
+      return total + (price * quantity);
+    }, 0);
   };
 
   const getTotalItems = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
+    return cartItems.reduce((total, item) => {
+      const quantity = item.quantity || 0;
+      return total + quantity;
+    }, 0);
   };
 
-  const handleCouponSubmit = () => {
-    console.log('Coupon applied:', couponCode);
-    // TODO: پیاده‌سازی کد تخفیف در آینده - اتصال به API
+  const handleCouponSubmit = async () => {
+    if (!couponCode.trim()) {
+      alert('لطفاً کد تخفیف را وارد کنید');
+      return;
+    }
+
+    // ابتدا سفارش ایجاد کن
+    try {
+      const websiteId = localStorage.getItem('current_store_website_id');
+      const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+      const orderResponse = await createOrder(websiteId, token);
+      if (!orderResponse?.order_id) {
+        throw new Error('خطا در ایجاد سفارش');
+      }
+
+      setCurrentOrderId(orderResponse.order_id);
+
+      // حالا کوپن رو اعمال کن
+      const couponResponse = await applyCouponToOrder(orderResponse.order_id, couponCode);
+
+      setAppliedCoupon(couponCode);
+      setCouponDiscount(couponResponse.discount_amount || 0);
+      alert('کد تخفیف با موفقیت اعمال شد!');
+
+    } catch (error) {
+      console.error('خطا در اعمال کوپن:', error);
+      alert('خطا در اعمال کد تخفیف: ' + error.message);
+    }
   };
 
   const applyCoupon = (couponCode) => {
     setCouponCode(couponCode);
+    navigator.clipboard.writeText(couponCode);
+    setCopiedCode(couponCode);
+
+    // پیام کپی شدن رو بعد از 2 ثانیه پاک کن
+    setTimeout(() => setCopiedCode(null), 2000);
+
     handleCouponSubmit();
   };
 
+
+  const calculateFinalTotal = () => {
+    const baseTotal = calculateTotal();
+    return baseTotal - couponDiscount;
+  };
+
   const formatPrice = (price) => {
-    return price.toLocaleString('fa-IR') + ' ریال';
+    // اگه price وجود نداشته باشه یا null باشه
+    if (!price && price !== 0) {
+      return '0 ریال';
+    }
+
+    // تبدیل به عدد
+    const numericPrice = typeof price === 'number' ? price : parseFloat(price) || 0;
+
+    return numericPrice.toLocaleString('fa-IR') + ' ریال';
   };
 
   const scrollToSection = (sectionId) => {
@@ -510,11 +570,17 @@ export default function Card() {
                   <span className="text-gray-600">هزینه ارسال</span>
                   <span className="font-bold text-green-600">رایگان</span>
                 </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between items-center py-2 text-green-600">
+                    <span>تخفیف ({appliedCoupon})</span>
+                    <span className="font-bold">-{formatPrice(couponDiscount)}</span>
+                  </div>
+                )}
 
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex justify-between text-xl font-bold">
                     <span className="text-gray-800">مبلغ قابل پرداخت</span>
-                    <span className="text-gray-800">{formatPrice(calculateTotal())}</span>
+                    <span className="text-gray-800">{formatPrice(calculateFinalTotal())}</span>
                   </div>
                 </div>
 
@@ -591,8 +657,8 @@ export default function Card() {
 
                     {/* Cart Items - درست شده از راست به چپ */}
                     <div className="divide-y divide-gray-100">
-                      {cartItems.map((item) => (
-                        <div key={item.id} className="grid grid-cols-6 gap-4 p-6 items-center hover:bg-gray-50 transition-all duration-300">
+                      {cartItems.map((item  , index) => (
+                        <div key={item.id || index} className="grid grid-cols-6 gap-4 p-6 items-center hover:bg-gray-50 transition-all duration-300">
                           {/* محصول */}
                           <div className="flex justify-center">
                             <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center shadow-lg">
@@ -631,7 +697,7 @@ export default function Card() {
                           </div>
                           {/* قیمت کل */}
                           <div className="text-center">
-                            <span className="font-bold text-xl text-gray-800">{formatPrice(item.price * item.quantity)}</span>
+                            <span className="font-bold text-xl text-gray-800">{formatPrice((item.price || 0) * (item.quantity || 1))}</span>
                           </div>
                           {/* حذف */}
                           <div className="flex justify-center">
@@ -682,34 +748,41 @@ export default function Card() {
                   <div key={coupon.id} className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <div className="bg-gray-100 px-3 py-1 rounded-lg">
-                        <span className="font-bold text-gray-800 text-lg">{coupon.code}</span>
-                      </div>
+                        <span
+                          className="font-bold text-gray-800 text-lg cursor-pointer hover:bg-gray-200 px-2 py-1 rounded transition-all"
+                          onClick={() => navigator.clipboard.writeText(coupon.code)}
+                          title="کلیک کنید تا کپی شود"
+                        >
+                          {coupon.code}
+                        </span>                      </div>
                       <div className="text-left">
                         <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-sm font-bold">
-                          {coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : `${formatPrice(coupon.discount_value)}`}
+                          {formatPrice(coupon.discount_amount)} تخفیف
                         </span>
                       </div>
                     </div>
 
-                    <h3 className="font-bold text-gray-800 mb-2">{coupon.title || 'کوپن تخفیف'}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{coupon.description || 'بدون توضیحات'}</p>
+                    <h3 className="font-bold text-gray-800 mb-2">کوپن تخفیف {formatPrice(coupon.discount_amount)}</h3>
+                    <p className="text-gray-600 text-sm mb-4">کد: {coupon.code}</p>
 
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4" />
-                        <span>تاریخ انقضا: {new Date(coupon.expiry_date).toLocaleDateString('fa-IR')}</span>
-                      </div>
+                        <span>تاریخ انقضا: {new Date(coupon.expiration_date).toLocaleDateString('fa-IR')}</span>                      </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Percent className="w-4 h-4" />
-                        <span>حداقل خرید: {formatPrice(coupon.minimum_order_amount)}</span>
+                        <span>قابل استفاده: {coupon.usage_limit - coupon.times_used} بار</span>
                       </div>
                     </div>
 
                     <button
                       onClick={() => applyCoupon(coupon.code)}
-                      className="w-full bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-900 transition-all duration-300 font-medium"
+                      className={`w-full py-3 px-4 rounded-lg transition-all duration-300 font-medium ${copiedCode === coupon.code
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-800 text-white hover:bg-gray-900'
+                        }`}
                     >
-                      استفاده از کوپن
+                      {copiedCode === coupon.code ? '✓ کد کپی شد!' : 'کپی کد تخفیف'}
                     </button>
                   </div>
                 ))}
@@ -833,7 +906,10 @@ export default function Card() {
             </div>
           )}
         </section>
+
       </div>
+
     </div>
+
   );
 }

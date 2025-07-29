@@ -141,9 +141,13 @@ const OTPForm = () => {
   const handleSubmit = async () => {
     try {
       const otpCode = otp.join('');
-      const response = await verifyOTP(otpCode); // دریافت response
 
-      // ذخیره توکن خریدار بعد از تایید موفق OTP
+      // این خط رو اضافه کن - پاک کردن توکن قبلی
+      localStorage.removeItem('buyer_access_token');
+
+      const response = await verifyOTP(otpCode);
+
+      // ذخیره توکن جدید
       if (response.access_token) {
         localStorage.setItem('buyer_access_token', response.access_token);
       }
