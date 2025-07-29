@@ -44,7 +44,6 @@ async def upload_banner(
     logger.info(f"Saving media in website with id: {website_id}")
     await website_service.update_website(update_data, current_user.user_id)
     
-    await website_service.update_website(update_data, current_user.user_id)
     return output
 
 
@@ -62,27 +61,33 @@ async def get_banner(
     logger.info(f"Getting website info for website: {website_id}")
     try:
         website = await website_service.get_website_by_id(website_id)
-        
-        if website.banner_image:
-            logger.info("we entered here")
-            logger.info(f"banner image url: {website.banner_image}")
-            mongo_id = ObjectId(website.banner_image)
-            logger.info(f"Mongo id for banner: {mongo_id}")
-            
-            media_schema, file_stream = await media_service.get_public_media(mongo_id)
 
-            logger.info(f"Retrieving banner file {media_schema.filename}")
+        if not website.banner_image:
+            logger.info(f"No banner image for website: {website_id}")
+            return Response(status_code=204)
 
-            return StreamingResponse(
-                content=file_stream(),
-                media_type=media_schema.content_type,
-                headers={
-                    "Content-Disposition": f"inline; filename={media_schema.filename}"
-                },
-            )
+        logger.info("we entered here")
+        logger.info(f"banner image url: {website.banner_image}")
+        mongo_id = ObjectId(website.banner_image)
 
-    except:
-        logger.warning(f"[Media Fetch Error] Logo for website {website_id} not found: {e}")
+        media_schema, file_stream = await media_service.get_public_media(mongo_id)
+
+        if not (media_schema and file_stream):
+            logger.warning(f"No media or file stream found for banner {mongo_id}")
+            return Response(status_code=204)
+
+        logger.info(f"Retrieving banner file {media_schema.filename}")
+
+        return StreamingResponse(
+            content=file_stream(),
+            media_type=media_schema.content_type,
+            headers={
+                "Content-Disposition": f"inline; filename={media_schema.filename}"
+            },
+        )
+
+    except Exception as e:
+        logger.warning(f"[Media Fetch Error] Banner for website {website_id} failed: {e}")
         return Response(status_code=204)
     
     
@@ -126,18 +131,32 @@ async def get_logo(
 ):
     logger.info(f"Getting website info for website: {website_id}")
 
-    website = await website_service.get_website_by_id(website_id)
-    
     try:
+        website = await website_service.get_website_by_id(website_id)
+
+        if not website.logo_url:
+            logger.info(f"No logo set for website {website_id}")
+            return Response(status_code=204)
+
         mongo_id = ObjectId(website.logo_url)
+        logger.info(f"Mongo ID for logo: {mongo_id}")
+
         media_schema, file_stream = await media_service.get_public_media(mongo_id)
+
+        if not (media_schema and file_stream):
+            logger.warning(f"No media or stream found for logo {mongo_id}")
+            return Response(status_code=204)
+
+        logger.info(f"Retrieving logo file: {media_schema.filename}")
 
         return StreamingResponse(
             content=file_stream(),
             media_type=media_schema.content_type,
-            headers={"Content-Disposition": f"inline; filename={media_schema.filename}"}
+            headers={
+                "Content-Disposition": f"inline; filename={media_schema.filename}"
+            },
         )
 
     except Exception as e:
-        logger.warning(f"[Media Fetch Error] Logo for website {website_id} not found: {e}")
+        logger.warning(f"[Media Fetch Error] Logo for website {website_id} failed: {e}")
         return Response(status_code=204)
