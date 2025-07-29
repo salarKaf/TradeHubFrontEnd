@@ -14,6 +14,7 @@ from app.services.website_main_service import WebsiteMainService
 from app.domain.schemas.website_schema import WebsiteUpdateSchema
 
 
+from fastapi.responses import Response
 
 media_router = APIRouter()
 
@@ -59,29 +60,32 @@ async def get_banner(
     website_service: Annotated[WebsiteMainService, Depends()],
 ):
     logger.info(f"Getting website info for website: {website_id}")
-
-    website = await website_service.get_website_by_id(website_id)
-    
-    if website.banner_image:
-        logger.info("we entered here")
-        logger.info(f"banner image url: {website.banner_image}")
-        mongo_id = ObjectId(website.banner_image)
-        logger.info(f"Mongo id for banner: {mongo_id}")
+    try:
+        website = await website_service.get_website_by_id(website_id)
         
-        media_schema, file_stream = await media_service.get_public_media(mongo_id)
+        if website.banner_image:
+            logger.info("we entered here")
+            logger.info(f"banner image url: {website.banner_image}")
+            mongo_id = ObjectId(website.banner_image)
+            logger.info(f"Mongo id for banner: {mongo_id}")
+            
+            media_schema, file_stream = await media_service.get_public_media(mongo_id)
 
-        logger.info(f"Retrieving banner file {media_schema.filename}")
+            logger.info(f"Retrieving banner file {media_schema.filename}")
 
-        return StreamingResponse(
-            content=file_stream(),
-            media_type=media_schema.content_type,
-            headers={
-                "Content-Disposition": f"inline; filename={media_schema.filename}"
-            },
-        )
+            return StreamingResponse(
+                content=file_stream(),
+                media_type=media_schema.content_type,
+                headers={
+                    "Content-Disposition": f"inline; filename={media_schema.filename}"
+                },
+            )
 
-
-
+    except:
+        logger.warning(f"[Media Fetch Error] Logo for website {website_id} not found: {e}")
+        return Response(status_code=204)
+    
+    
 @media_router.put(
     "/upload_logo/{website_id}",
     response_model=MediaSchema,
@@ -124,18 +128,16 @@ async def get_logo(
 
     website = await website_service.get_website_by_id(website_id)
     
-    if website.logo_url:
+    try:
         mongo_id = ObjectId(website.logo_url)
-        logger.info(f"Mongo id for logo: {mongo_id}")
-        
         media_schema, file_stream = await media_service.get_public_media(mongo_id)
-
-        logger.info(f"Retrieving logo file {media_schema.filename}")
 
         return StreamingResponse(
             content=file_stream(),
             media_type=media_schema.content_type,
-            headers={
-                "Content-Disposition": f"inline; filename={media_schema.filename}"
-            },
+            headers={"Content-Disposition": f"inline; filename={media_schema.filename}"}
         )
+
+    except Exception as e:
+        logger.warning(f"[Media Fetch Error] Logo for website {website_id} not found: {e}")
+        return Response(status_code=204)
