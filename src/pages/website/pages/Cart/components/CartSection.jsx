@@ -41,18 +41,23 @@ const CartSection = ({
               <span className="font-bold text-gray-800">{formatPrice(calculateOriginalTotal())}</span>
             </div>
 
-            {/* تخفیف محصولات */}
-            {calculateProductDiscount() > 0 && (
-              <div className="flex justify-between items-center py-2 text-green-600">
-                <span>تخفیف محصولات</span>
-                <span className="font-bold">-{formatPrice(calculateProductDiscount())}</span>
-              </div>
-            )}
-
-            {/* قیمت نهایی محصولات */}
+            {/* قیمت محصولات (با یا بدون تخفیف) */}
             <div className="flex justify-between items-center py-2">
               <span className="text-gray-600">قیمت محصولات</span>
-              <span className="font-bold text-gray-800">{formatPrice(calculateTotal())}</span>
+              <div className="text-left">
+                {calculateProductDiscount() > 0 ? (
+                  <div>
+                    <div className="line-through text-gray-400 text-sm">
+                      {formatPrice(calculateOriginalTotal())}
+                    </div>
+                    <div className="font-bold text-gray-800">
+                      {formatPrice(calculateTotal())}
+                    </div>
+                  </div>
+                ) : (
+                  <span className="font-bold text-gray-800">{formatPrice(calculateTotal())}</span>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-between items-center py-2">
@@ -65,25 +70,11 @@ const CartSection = ({
               <span className="font-bold text-green-600">رایگان</span>
             </div>
 
-            {/* تخفیف کوپن */}
-            {appliedCoupon && (
-              <div className="flex justify-between items-center py-2 text-green-600">
-                <span>تخفیف کوپن ({appliedCoupon})</span>
-                <span className="font-bold">-{formatPrice(couponDiscount)}</span>
-              </div>
-            )}
-
             <div className="pt-4 border-t border-gray-200">
               <div className="flex justify-between text-xl font-bold">
                 <span className="text-gray-800">مبلغ قابل پرداخت</span>
                 <span className="text-gray-800">{formatPrice(calculateFinalTotal())}</span>
               </div>
-              {/* نمایش کل صرفه‌جویی */}
-              {(calculateProductDiscount() + couponDiscount) > 0 && (
-                <div className="text-center mt-2 text-green-600 text-sm">
-                  کل صرفه‌جویی شما: {formatPrice(calculateProductDiscount() + couponDiscount)}
-                </div>
-              )}
             </div>
 
             {/* مرحله 1: ایجاد سفارش */}
@@ -119,13 +110,15 @@ const CartSection = ({
               </div>
             ) : (
               <div className="pt-4 border-t border-gray-200 space-y-4">
-                {/* نمایش موفقیت ایجاد سفارش */}
-                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-green-700 text-sm font-medium">
-                    سفارش با موفقیت ایجاد شد
-                  </span>
-                </div>
+                {/* نمایش اعمال کد تخفیف */}
+                {appliedCoupon && (
+                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <span className="text-green-700 text-sm font-medium">
+                      کد تخفیف اعمال شد
+                    </span>
+                  </div>
+                )}
 
                 {/* مرحله 2: اعمال کد تخفیف (اختیاری) */}
                 <div className="space-y-3">
@@ -262,11 +255,6 @@ const CartSection = ({
                         <span className="font-bold text-xl text-gray-800">
                           {formatPrice((item.price || 0) * (item.quantity || 1))}
                         </span>
-                        {item.hasDiscount && (
-                          <div className="text-xs text-green-600 mt-1">
-                            صرفه‌جویی: {formatPrice((item.originalPrice - item.price) * item.quantity)}
-                          </div>
-                        )}
                       </div>
 
                       {/* حذف */}

@@ -39,6 +39,10 @@ export default function Card() {
   // 1. اضافه کردن state جدید برای isCreatingOrder
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
 
+
+
+  // 1. اضافه کردن state جدید برای isCreatingOrder
+
   // 2. تابع جدید برای ایجاد سفارش
   const handleCreateOrder = async () => {
     if (cartItems.length === 0) {
@@ -76,6 +80,8 @@ export default function Card() {
       setIsCreatingOrder(false);
     }
   };
+
+
 
   useEffect(() => {
     if (copiedCode) {
@@ -224,6 +230,7 @@ export default function Card() {
 
 
   // 4. تغییر handleCheckout
+  // 4. تغییر handleCheckout
   const handleCheckout = async () => {
     if (!currentOrderId) {
       alert('ابتدا سفارش را ایجاد کنید');
@@ -262,6 +269,7 @@ export default function Card() {
       setIsProcessingPayment(false);
     }
   };
+
 
   // دریافت پلن فعال و کوپن‌ها
   useEffect(() => {
@@ -337,6 +345,8 @@ export default function Card() {
   };
 
   // 3. تغییر handleCouponSubmit
+
+  // 3. تغییر handleCouponSubmit
   const handleCouponSubmit = async () => {
     if (!couponCode.trim()) {
       alert('لطفاً کد تخفیف را وارد کنید');
@@ -354,7 +364,13 @@ export default function Card() {
       const couponResponse = await applyCouponToOrder(currentOrderId, couponCode);
 
       setAppliedCoupon(couponCode);
-      setCouponDiscount(couponResponse.discount_amount || 0);
+
+      // بجای discount_amount، total_price رو از response بگیر
+      const newTotalPrice = parseFloat(couponResponse.total_price) || 0;
+      const currentTotal = calculateTotal();
+      const discountAmount = Math.max(0, currentTotal - newTotalPrice);
+
+      setCouponDiscount(discountAmount);
       alert('کد تخفیف با موفقیت اعمال شد!');
 
     } catch (error) {
