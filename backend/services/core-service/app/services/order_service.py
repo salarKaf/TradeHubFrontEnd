@@ -97,8 +97,7 @@ class OrderService:
 
         discounted_price = max(order.total_price - coupon.discount_amount, 0)
         order.total_price = discounted_price
-        coupon.times_used += 1
         self.order_repository.update_order(order)
-        self.coupon_repository.update_coupon(coupon)
+        self.coupon_repository.increment_times_used(coupon.coupon_id)
 
         return order

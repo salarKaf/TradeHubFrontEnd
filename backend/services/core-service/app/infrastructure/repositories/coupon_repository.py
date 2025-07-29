@@ -28,6 +28,11 @@ class CouponRepository:
         self.db.refresh(coupon)
         return coupon
     
+    def increment_times_used(self, coupon_id: UUID):
+        self.db.query(Coupon).filter(Coupon.coupon_id == coupon_id).update({
+            Coupon.times_used: Coupon.times_used + 1
+        })
+        self.db.commit()
 
     def get_coupon_by_id(self, coupon_id: UUID) -> Optional[Coupon]:
         return self.db.query(Coupon).filter_by(coupon_id=coupon_id).first()

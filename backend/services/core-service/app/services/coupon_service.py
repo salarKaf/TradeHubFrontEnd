@@ -17,10 +17,7 @@ class CouponService:
         self.coupon_repository = coupon_repository
         self.website_repository = website_repository
 
-    async def create_coupon(
-        self,
-        coupon_data: CouponCreateSchema
-    ) -> Coupon:
+    async def create_coupon(self, coupon_data: CouponCreateSchema) -> Coupon:
 
         new_coupon = Coupon(
             website_id=coupon_data.website_id,
