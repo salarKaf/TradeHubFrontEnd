@@ -60,6 +60,8 @@ class MediaService:
     self, media_id: ObjectId
     ) -> tuple[MediaSchema, Callable[[], Generator[Any, Any, None]]]:
         media = await self.media_repository.get_media(media_id)
+        logger.info(f"media found: {media}")
+
         if not media:
             # raise HTTPException(status_code=404, detail="Media not found")
             logger.info(f"media was not found idk whyyyyyyyyyy")
