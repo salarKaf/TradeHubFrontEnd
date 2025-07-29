@@ -21,7 +21,7 @@ async def create_item(
     return created_item
 
 
-@item_router.get("/items/{item_id}", response_model=ItemResponseWithRateSchema, status_code=status.HTTP_200_OK)
+@item_router.get("/items/{item_id}", response_model=NewestItemResponseSchema, status_code=status.HTTP_200_OK)
 async def get_item_by_id(
     item_id: UUID,
     item_main_service: Annotated[ItemMainService, Depends()]

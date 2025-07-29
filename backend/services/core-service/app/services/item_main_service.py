@@ -59,15 +59,16 @@ class ItemMainService(BaseService):
         
 
         
-    async def get_item_by_id(self, item_id: UUID) -> ItemResponseWithRateSchema:
+    async def get_item_by_id(self, item_id: UUID) -> NewestItemResponseSchema:
         logger.info(f"Starting to fetch item with ID: {item_id}")
 
         item = await self.item_service.get_item_by_id(item_id)
         category = await self.website_service.get_category_by_id(item.category_id)
         subcategory = await self.website_service.get_subcategory_by_id(item.subcategory_id)
+        sales_count = await self.order_service.get_sales_count(item.item_id)
 
         rating = await self.review_service.get_rating_for_item(item_id)
-        return ItemResponseWithRateSchema(
+        return NewestItemResponseSchema(
             item_id=item.item_id,
             website_id=item.website_id,
             category_id=item.category_id,
@@ -84,6 +85,7 @@ class ItemMainService(BaseService):
             delivery_url=item.delivery_url,
             post_purchase_note=item.post_purchase_note,
             rating=rating,
+            sales_count = sales_count,
             stock=item.stock,
             is_available=item.is_available,
             created_at=item.created_at,
@@ -210,6 +212,8 @@ class ItemMainService(BaseService):
             category_name = category.name if category else 'null'
             subcategory_name = subcategory.name if subcategory else 'null'
 
+            rating = await self.review_service.get_rating_for_item(item.item_id)
+
             sales_count = await self.order_service.get_sales_count(item.item_id)
 
             result.append(NewestItemResponseSchema(
@@ -230,6 +234,7 @@ class ItemMainService(BaseService):
                 post_purchase_note=item.post_purchase_note,
                 sales_count = sales_count,
                 stock=item.stock,
+                rating=rating,
                 is_available=item.is_available,
                 created_at=item.created_at,
             ))

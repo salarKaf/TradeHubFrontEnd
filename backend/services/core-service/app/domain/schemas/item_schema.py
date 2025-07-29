@@ -101,6 +101,7 @@ class NewestItemResponseSchema(BaseModel):
     post_purchase_note: Optional[str] = None
     sales_count: int
     stock: int
+    rating: int
     is_available: bool
     created_at: datetime
 

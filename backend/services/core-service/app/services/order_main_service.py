@@ -139,7 +139,7 @@ class OrderMainService(BaseService):
     async def get_pending_order(self, buyer_id: UUID) -> List[OrderResponseSchema]:
         logger.info("Getting pending orders for buyer...")
         order = await self.order_service.get_pending_order(buyer_id)
-        
+        it = await self.item_service.get_item_by_id()
         return OrderResponseSchema(
                 order_id=order.order_id,
                 website_id=order.website_id,
