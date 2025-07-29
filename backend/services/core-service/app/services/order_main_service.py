@@ -28,8 +28,29 @@ class OrderMainService(BaseService):
         logger.info(f"Creating order for buyer...")
         order = await self.order_service.create_order_from_cart(buyer_id, website_id)
         
-        return OrderResponseSchema.from_orm(order) 
+        order_items_response = []
+        for item in order.order_items:
+            item_obj = await self.item_service.get_item_by_id(item.item_id)
+            item_name = item_obj.name if item_obj else "null"
 
+            order_items_response.append(OrderItemResponseSchema(
+                order_item_id=item.order_item_id,
+                item_id=item.item_id,
+                item_name=item_name,
+                quantity=item.quantity,
+                price=item.price,
+            ))
+
+        return OrderResponseSchema(
+            order_id=order.order_id,
+            website_id=order.website_id,
+            buyer_id=order.buyer_id,
+            status=order.status,
+            total_price=order.total_price,
+            created_at=order.created_at,
+            order_items=order_items_response
+        )
+    
     async def get_my_orders(self, buyer_id: UUID) -> List[OrderResponseSchema]:
         logger.info("Getting orders for buyer...")
         orders: List[Order] = await self.order_service.get_orders_by_buyer(buyer_id)
@@ -66,8 +87,29 @@ class OrderMainService(BaseService):
         logger.info(f"Getting order ...")
         order = await self.order_service.get_order_by_id(order_id)
         
-        return OrderResponseSchema.from_orm(order) 
-    
+        order_items_response = []
+        for item in order.order_items:
+            item_obj = await self.item_service.get_item_by_id(item.item_id)
+            item_name = item_obj.name if item_obj else "null"
+
+            order_items_response.append(OrderItemResponseSchema(
+                order_item_id=item.order_item_id,
+                item_id=item.item_id,
+                item_name=item_name,
+                quantity=item.quantity,
+                price=item.price,
+            ))
+
+        return OrderResponseSchema(
+            order_id=order.order_id,
+            website_id=order.website_id,
+            buyer_id=order.buyer_id,
+            status=order.status,
+            total_price=order.total_price,
+            created_at=order.created_at,
+            order_items=order_items_response
+        )
+        
 
     async def get_orders_by_website_id(self,website_id: UUID) -> OrderResponseSchema:
         
@@ -139,25 +181,29 @@ class OrderMainService(BaseService):
     async def get_pending_order(self, buyer_id: UUID) -> List[OrderResponseSchema]:
         logger.info("Getting pending orders for buyer...")
         order = await self.order_service.get_pending_order(buyer_id)
-        it = await self.item_service.get_item_by_id()
+        order_items_response = []
+        for item in order.order_items:
+            item_obj = await self.item_service.get_item_by_id(item.item_id)
+            item_name = item_obj.name if item_obj else "null"
+
+            order_items_response.append(OrderItemResponseSchema(
+                order_item_id=item.order_item_id,
+                item_id=item.item_id,
+                item_name=item_name,
+                quantity=item.quantity,
+                price=item.price,
+            ))
+
         return OrderResponseSchema(
-                order_id=order.order_id,
-                website_id=order.website_id,
-                buyer_id=order.buyer_id,
-                status=order.status,
-                total_price=order.total_price,
-                created_at=order.created_at,
-                order_items=[
-                    OrderItemResponseSchema(
-                        order_item_id=item.order_item_id,
-                        item_id=item.item_id,
-                        item_name=item.name,
-                        quantity=item.quantity,
-                        price=item.price,
-                    )
-                    for item in order.order_items
-                ]
-            )  
+            order_id=order.order_id,
+            website_id=order.website_id,
+            buyer_id=order.buyer_id,
+            status=order.status,
+            total_price=order.total_price,
+            created_at=order.created_at,
+            order_items=order_items_response
+        )
+    
     
 
     async def get_item_delivery_url(self, buyer_id: UUID, item_id: UUID) -> str:
@@ -191,4 +237,26 @@ class OrderMainService(BaseService):
 
         updated_order = await self.order_service.apply_coupon_to_order(order, coupon)
 
-        return OrderResponseSchema.from_orm(updated_order) 
+        order_items_response = []
+        for item in updated_order.order_items:
+            item_obj = await self.item_service.get_item_by_id(item.item_id)
+            item_name = item_obj.name if item_obj else "null"
+
+            order_items_response.append(OrderItemResponseSchema(
+                order_item_id=item.order_item_id,
+                item_id=item.item_id,
+                item_name=item_name,
+                quantity=item.quantity,
+                price=item.price,
+            ))
+
+        return OrderResponseSchema(
+            order_id=updated_order.order_id,
+            website_id=updated_order.website_id,
+            buyer_id=updated_order.buyer_id,
+            status=updated_order.status,
+            total_price=updated_order.total_price,
+            created_at=updated_order.created_at,
+            order_items=order_items_response
+        )
+    
