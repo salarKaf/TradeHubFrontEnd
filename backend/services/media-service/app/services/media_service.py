@@ -60,8 +60,11 @@ class MediaService:
     self, media_id: ObjectId
     ) -> tuple[MediaSchema, Callable[[], Generator[Any, Any, None]]]:
         media = await self.media_repository.get_media(media_id)
-        # if not media:
-        #     raise HTTPException(status_code=404, detail="Media not found")
+        if not media:
+            # raise HTTPException(status_code=404, detail="Media not found")
+            logger.info(f"media was not found idk whyyyyyyyyyy")
+            return []
+        logger.info(f"storage_id: {media.storage_id}")    
 
         file = await self.storage.get_file(media.storage_id)
 

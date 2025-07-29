@@ -63,6 +63,8 @@ async def get_banner(
     website = await website_service.get_website_by_id(website_id)
     
     if website.banner_image:
+        logger.info("we entered here")
+        logger.info(f"banner image url: {website.banner_image}")
         mongo_id = ObjectId(website.banner_image)
         logger.info(f"Mongo id for banner: {mongo_id}")
         
