@@ -97,3 +97,78 @@ export const getOrderWithProduct = async (orderId) => {
     createdAt: order.created_at
   };
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const getAuthHeaders = (token) => ({
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${token}`,
+});
+
+// 📌 دریافت فروش کل (بدون محدودیت پلن)
+// API/orders.js
+export const getTotalSalesCount = async (websiteId, token) => {
+  const response = await fetch(`${coreBaseURL}/websites/sales/total-count/${websiteId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('خطا در دریافت آمار فروش کل');
+  }
+
+  const data = await response.json();
+
+  // اگر فقط count برگشت، دستی مقدار amount رو 0 بذار
+  return {
+    total_sales_count: data.total_sales_count ?? 0,
+    total_sales_amount: data.total_sales_amount ?? 0
+  };
+};
+
+
+// 📌 دریافت خلاصه فروش (برای daily/monthly/yearly)
+export const getSalesSummary = async (websiteId, token, mode) => {
+  const res = await fetch(`${coreBaseURL}/websites/sales/summary/${websiteId}?mode=${mode}`, {
+    headers: getAuthHeaders(token),
+  });
+
+  if (!res.ok) throw new Error(`خطا در دریافت فروش ${mode}`);
+
+  return await res.json(); // { count: ..., revenue: ... }
+};
+
+
+
+
+
+
+
+export const getOrdersByWebsite = async (websiteId, token) => {
+  const response = await fetch(`${coreBaseURL}/order/orders/${websiteId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('خطا در دریافت سفارش‌ها');
+  }
+
+  return await response.json(); // آرایه‌ای از سفارش‌ها
+};

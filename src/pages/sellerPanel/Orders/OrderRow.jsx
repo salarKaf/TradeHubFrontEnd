@@ -1,12 +1,17 @@
 import React from 'react';
+import { Link, useParams } from 'react-router-dom'; // بالای فایل اضافه کن
 
 const OrderRow = ({ order, expandedOrders, onToggleExpansion, isSearchMode }) => {
+
+
+    const { websiteId } = useParams();
+
     // اگر در حالت سرچ هستیم، نمایش ساده محصول
     if (isSearchMode || order.isExpandedView) {
         return (
             <div className="px-6 py-4 hover:bg-gray-50 transition-colors">
                 <div className="grid grid-cols-12 gap-2 text-center items-center text-sm">
-                    <div className="col-span-2 font-medium text-gray-900">{order.orderNumber}</div>
+                    <div className="col-span-2 font-mediu   m text-gray-900">{order.orderNumber}</div>
                     <div className="col-span-2 text-gray-600">{order.date}</div>
                     <div className="col-span-2 font-medium text-gray-900">{order.product}</div>
                     <div className="col-span-2 text-gray-600">{order.amount}</div>
@@ -42,7 +47,7 @@ const OrderRow = ({ order, expandedOrders, onToggleExpansion, isSearchMode }) =>
                     </div>
                 </div>
             </div>
-            
+
             {/* نمایش محصولات expanded */}
             {isExpanded && order.products && (
                 <div className="mx-6 mb-4 bg-gradient-to-r rounded-xl border shadow-sm">
@@ -55,17 +60,20 @@ const OrderRow = ({ order, expandedOrders, onToggleExpansion, isSearchMode }) =>
                             </div>
                             <h4 className="text-lg font-medium text-gray-800 font-modam"> محصولات سفارش  {order.orderNumber}</h4>
                         </div>
-                        
+
                         <div className="grid gap-3">
                             {order.products.map((product, index) => (
                                 <div key={index} className="group font-modam">
-                                    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200">
+                                    <Link
+                                        to={`/detailProduct/${websiteId}/${product.item_id}`}
+                                        className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
+                                    >
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 bg-gradient-to-r from-[#EABF9F] to-[#EABF9F] rounded-lg flex items-center justify-center flex-shrink-0">
                                                 <span className="text-gray-900 font-bold text-sm">{index + 1}</span>
                                             </div>
                                             <div>
-                                                <h5 className="font-medium text-gray-900  transition-colors">{product.name}</h5>
+                                                <h5 className="font-medium text-gray-900 transition-colors">{product.name}</h5>
                                                 <p className="text-sm text-gray-500">محصول شماره {index + 1}</p>
                                             </div>
                                         </div>
@@ -73,11 +81,12 @@ const OrderRow = ({ order, expandedOrders, onToggleExpansion, isSearchMode }) =>
                                             <span className="text-base font-bold text-gray-900">{product.amount}</span>
                                             <span className="text-sm text-gray-500 mr-1">تومان</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </div>
+
                             ))}
                         </div>
-                        
+
                         <div className="mt-4 pt-4 border-t border-gray-400 font-modam">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-gray-600">مجموع کل:</span>
