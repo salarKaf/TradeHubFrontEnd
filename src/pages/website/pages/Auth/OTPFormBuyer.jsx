@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { iamBaseURL } from '../../../../API/api';
+import { verifyOTP, resendOTP } from '../../../../API/buyerAuth';
 const OTPForm = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(120); // 2 minutes in seconds
@@ -30,53 +30,7 @@ const OTPForm = () => {
   const [email, setEmail] = useState(location.state?.email || '');
   const [websiteId, setWebsiteId] = useState(location.state?.websiteId || '');
 
-  // توابع API
-  const verifyOTP = async (otpCode) => {
-    try {
-      const response = await fetch(`${iamBaseURL}/buyers/VerifyOTP`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          website_id: websiteId,
-          email: email,
-          otp: otpCode
-        })
-      });
 
-      if (!response.ok) {
-        throw new Error('کد تایید نامعتبر است');
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const resendOTP = async () => {
-    try {
-      const response = await fetch(`${iamBaseURL}/buyers/ResendOTP`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          website_id: websiteId,
-          email: email
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('خطا در ارسال مجدد کد');
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
-  };
 
 
 
@@ -141,13 +95,10 @@ const OTPForm = () => {
   const handleSubmit = async () => {
     try {
       const otpCode = otp.join('');
-
-      // این خط رو اضافه کن - پاک کردن توکن قبلی
       localStorage.removeItem('buyer_access_token');
 
-      const response = await verifyOTP(otpCode);
+      const response = await verifyOTP({ email, websiteId, otp: otpCode });
 
-      // ذخیره توکن جدید
       if (response.access_token) {
         localStorage.setItem('buyer_access_token', response.access_token);
       }
@@ -156,33 +107,29 @@ const OTPForm = () => {
       setTimeout(() => {
         navigate(`/${slug}/home`);
       }, 2500);
-
     } catch (err) {
       console.error('OTP verification failed:', err);
       setShowErrorModal(true);
     }
   };
 
-
-
   const handleResendCode = async () => {
     if (!canResend) return;
 
     try {
-      await resendOTP(email, websiteId);
+      await resendOTP({ email, websiteId });
       setTimer(120);
       setCanResend(false);
       setOtp(['', '', '', '', '', '']);
-
-      // نمایش پیام موفقیت آمیز
-      alert("کد جدید با موفقیت ارسال شد!");
+      alert('کد جدید با موفقیت ارسال شد!');
     } catch (err) {
       console.error('Resend failed:', err);
       setErrors({
-        general: err.message || 'خطا در ارسال مجدد کد'
+        general: err.message || 'خطا در ارسال مجدد کد',
       });
     }
   };
+
 
   const handleMainButton = () => {
     if (canResend) {

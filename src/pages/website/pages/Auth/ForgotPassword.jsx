@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getWebsiteIdBySlug } from '../../../../API/website';
+import { resendOTP } from '../../../../API/buyerAuth';
+
 const ForgotPassword = () => {
+    const navigate = useNavigate();
+    const { slug } = useParams();
     const [email, setEmail] = useState('');
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // اعتبارسنجی فیلدها
         const newErrors = {};
         if (!email.trim()) {
             newErrors.email = 'ایمیل ضروری است';
@@ -20,23 +26,44 @@ const ForgotPassword = () => {
 
         if (Object.keys(newErrors).length === 0) {
             setLoading(true);
+
             try {
-                // شبیه‌سازی API call
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                const websiteResponse = await getWebsiteIdBySlug(slug);
+                const websiteId = websiteResponse?.website_id;
+
+                if (!websiteId) throw new Error("Website ID یافت نشد.");
+
+                console.log("Calling Resend OTP:", { email, websiteId });
+
+                await resendOTP({ email, websiteId });
 
                 setSuccess(true);
                 setErrors({});
 
+                setTimeout(() => {
+                    navigate(`/${slug}/forgot-password-otp`, {
+                        state: { email, websiteId }
+                    });
+                }, 2000);
+
             } catch (error) {
-                console.error("Forget password failed:", error);
-                setErrors({
-                    general: error.message || 'خطا در ارسال ایمیل بازیابی'
-                });
+                console.error("Resend OTP failed:", error);
+
+                let errorMessage = error.message || 'خطا در ارسال کد بازیابی';
+                if (error.response?.data?.detail) {
+                    errorMessage = Array.isArray(error.response.data.detail)
+                        ? error.response.data.detail.map(err => err.msg || err.message).join(', ')
+                        : error.response.data.detail;
+                }
+
+                setErrors({ general: errorMessage });
             } finally {
                 setLoading(false);
             }
         }
     };
+
+
 
     return (
         <div className="min-h-screen bg-cover bg-center relative" style={{ backgroundImage: "url('/public/website/backHomoShop 1.png')" }}>
@@ -70,7 +97,7 @@ const ForgotPassword = () => {
 
                         {/* نمایش خطاهای کلی */}
                         {errors.general && (
-                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 break-words">
                                 {errors.general}
                             </div>
                         )}
@@ -92,7 +119,6 @@ const ForgotPassword = () => {
                             {/* دکمه ارسال */}
                             <button
                                 type="submit"
-                                onClick={handleSubmit}
                                 disabled={loading}
                                 className={`w-full py-4 bg-black/80 backdrop-blur-sm text-white font-bold rounded-3xl hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-300 border border-white/10 hover:scale-[1.02] active:scale-[0.98] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
@@ -103,7 +129,10 @@ const ForgotPassword = () => {
                         {/* لینک بازگشت به صفحه ورود */}
                         <div className="mt-6 text-center text-sm text-black/80">
                             <span>رمز عبور خود را به یاد آوردید؟ </span>
-                            <button className="text-black hover:text-black/80 underline transition-colors duration-300">
+                            <button
+                                onClick={() => navigate(`/${slug}/login`)}
+                                className="text-black hover:text-black/80 underline transition-colors duration-300"
+                            >
                                 ورود
                             </button>
                         </div>
