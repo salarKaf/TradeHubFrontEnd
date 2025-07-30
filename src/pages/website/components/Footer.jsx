@@ -268,7 +268,7 @@ const Footer = () => {
                 href="/"
                 className="text-blue-600 font-semibold hover:underline transition-colors"
               >
-                Tarde Hub
+                Trade Hub
               </a>
             </p>
 
