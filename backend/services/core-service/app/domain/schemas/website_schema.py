@@ -37,6 +37,7 @@ class WebsiteUpdateSchema(BaseModel):
     store_policy: Optional[List[PoilicySchema]]  = None 
     store_slogan: Optional[str] = None
     welcome_text: Optional[str] = None
+    about_us: Optional[str] = None
     guide_page: Optional[str] = None
     social_links: Optional[SocialLinksSchema] = None
     faqs: Optional[List[FAQSchema]] = None
@@ -49,6 +50,7 @@ class WebsiteResponseSchema(BaseModel):
     business_name: str
     welcome_text: Optional[str] = None
     guide_page: Optional[str] = None
+    about_us: Optional[str] = None
     store_policy: Optional[List[PoilicySchema]]  = None 
     store_slogan: Optional[str] = None
     social_links: Optional[SocialLinksSchema] = None
