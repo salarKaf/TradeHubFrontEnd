@@ -56,6 +56,7 @@ class Website(Base):
     store_policy = Column(JSONB, nullable=True)
     store_slogan = Column(Text, nullable=True)
     guide_page = Column(Text, nullable=True)
+    about_us = Column(Text, nullable=True)
     social_links = Column(JSONB, nullable=True)
     faqs = Column(JSONB, nullable=True)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)

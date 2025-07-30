@@ -19,6 +19,7 @@ class Website(Base):
     welcome_text = Column(Text, nullable=True)
     guide_page = Column(Text, nullable=True)
     social_links = Column(JSONB, nullable=True)
+    about_us = Column(Text, nullable=True)
     faqs = Column(JSONB, nullable=True)
     total_sales = Column(BigInteger, default=0)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
