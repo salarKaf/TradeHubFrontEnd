@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // ✅ اضافه کردن useParams
-import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X , ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X, ShoppingBag } from 'lucide-react';
 import { getActivePlan } from '../../../../API/website.js';
 import CommentsSystem from './ProductCommentList';
 import QuestionAnswerSystem from './ProductQuestionList';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById, getItemImages, getItemImageById, getItemRating } from '../../../../API/Items'; // ✅ import کردن API functions
-
+import { addItemToCart, getMyCart, removeOneFromCart, deleteItemFromCart } from '../../../../API/cart.jsx';
+import { addToFavorites, removeFromFavorites, isItemInFavorites, getFavoriteIdByItemId } from '../../../../API/favorites';
 const ProductShow = () => {
-    const { productId } = useParams(); // ✅ گرفتن productId از URL
-
+    const { productId, slug } = useParams(); // 👈 slug رو هم بگیر
+    const navigate = useNavigate(); // 👈 navigate رو تعریف کن
     const [selectedImage, setSelectedImage] = useState(0);
     const [isFavorite, setIsFavorite] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
@@ -21,10 +22,166 @@ const ProductShow = () => {
     const [productRating, setProductRating] = useState(0);
 
 
+    const [cartItems, setCartItems] = useState([]);
+    const [isInCart, setIsInCart] = useState(false);
+    const [cartQuantity, setCartQuantity] = useState(0);
+    const [cartItemId, setCartItemId] = useState(null);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+
 
     const [hasPro, setHasPro] = useState(false);
     const [planLoading, setPlanLoading] = useState(true);
 
+    const [favoriteId, setFavoriteId] = useState(null);
+
+    // چک کردن وضعیت علاقه‌مندی
+    useEffect(() => {
+        const checkFavoriteStatus = async () => {
+            try {
+                const websiteId = localStorage.getItem('current_store_website_id');
+                const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+                if (!token || !productId) return;
+
+                const isFav = await isItemInFavorites(productId, websiteId);
+                setIsFavorite(isFav);
+
+                if (isFav) {
+                    const favId = await getFavoriteIdByItemId(productId, websiteId);
+                    setFavoriteId(favId);
+                }
+            } catch (error) {
+                console.warn('خطا در چک کردن وضعیت علاقه‌مندی:', error);
+            }
+        };
+
+        if (productId) {
+            checkFavoriteStatus();
+        }
+    }, [productId]);
+
+
+    // چک کردن وضعیت سبد خرید
+    useEffect(() => {
+        const checkCartStatus = async () => {
+            try {
+                const websiteId = localStorage.getItem('current_store_website_id');
+                const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+                if (!token || !productId) return;
+
+                const cartItems = await getMyCart();
+                const currentItem = cartItems.find(item => item.item_id === productId);
+
+                if (currentItem) {
+                    setIsInCart(true);
+                    setCartQuantity(currentItem.quantity);
+                    setCartItemId(currentItem.id);
+                } else {
+                    setIsInCart(false);
+                    setCartQuantity(0);
+                    setCartItemId(null);
+                }
+            } catch (error) {
+                console.error('خطا در چک کردن وضعیت سبد خرید:', error);
+            }
+        };
+
+        if (productId) {
+            checkCartStatus();
+        }
+    }, [productId]);
+
+    const handleFavoriteToggle = async () => {
+        try {
+            const websiteId = localStorage.getItem('current_store_website_id');
+            const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+            if (!token) {
+                alert('برای افزودن به علاقه‌مندی‌ها باید وارد شوید');
+                return;
+            }
+
+            if (isFavorite && favoriteId) {
+                await removeFromFavorites(favoriteId, websiteId);
+                setIsFavorite(false);
+                setFavoriteId(null);
+            } else {
+                const result = await addToFavorites(productId, websiteId);
+                setIsFavorite(true);
+                setFavoriteId(result.id);
+            }
+        } catch (error) {
+            console.error('خطا در تغییر وضعیت علاقه‌مندی:', error);
+            alert('خطا در تغییر وضعیت علاقه‌مندی');
+        }
+    };
+
+    // افزودن به سبد خرید
+    const handleAddToCart = async () => {
+        try {
+            setIsAddingToCart(true);
+            const websiteId = localStorage.getItem('current_store_website_id');
+            const token = localStorage.getItem(`buyer_token_${websiteId}`);
+
+            if (!token) {
+                alert('برای افزودن به سبد خرید باید وارد شوید');
+                return;
+            }
+
+            await addItemToCart(productId);
+            setIsInCart(true);
+            setCartQuantity(1);
+            alert('محصول با موفقیت به سبد خرید اضافه شد!');
+
+            // دوباره چک کردن وضعیت سبد
+            const cartItems = await getMyCart();
+            const currentItem = cartItems.find(item => item.item_id === productId);
+            if (currentItem) {
+                setCartItemId(currentItem.id);
+            }
+        } catch (error) {
+            console.error('خطا در افزودن به سبد خرید:', error);
+            alert('خطا در افزودن محصول به سبد خرید');
+        } finally {
+            setIsAddingToCart(false);
+        }
+    };
+
+    // افزایش تعداد
+    const handleIncreaseQuantity = async () => {
+        try {
+            await addItemToCart(productId);
+            setCartQuantity(prev => prev + 1);
+        } catch (error) {
+            console.error('خطا در افزایش تعداد:', error);
+            alert('خطا در افزایش تعداد محصول');
+        }
+    };
+
+    // کاهش تعداد
+    const handleDecreaseQuantity = async () => {
+        try {
+            if (cartQuantity > 1) {
+                await removeOneFromCart(cartItemId);
+                setCartQuantity(prev => prev - 1);
+            } else {
+                await deleteItemFromCart(cartItemId);
+                setIsInCart(false);
+                setCartQuantity(0);
+                setCartItemId(null);
+            }
+        } catch (error) {
+            console.error('خطا در کاهش تعداد:', error);
+            alert('خطا در کاهش تعداد محصول');
+        }
+    };
+
+    // رفتن به صفحه سبد خرید
+    const handleGoToCart = () => {
+        navigate(`/${slug}/cart`);
+    };
     // ✅ useEffect برای بارگذاری اطلاعات محصول
     useEffect(() => {
         const loadProductData = async () => {
@@ -337,7 +494,7 @@ const ProductShow = () => {
 
                         <div className="flex gap-4 pt-28 justify-end">
                             <button
-                                onClick={() => setIsFavorite(!isFavorite)}
+                                onClick={handleFavoriteToggle}  // 👈 این رو تغییر بده
                                 className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all ${isFavorite
                                     ? 'border-red-500 text-red-500 bg-red-50'
                                     : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-500'
@@ -347,10 +504,47 @@ const ProductShow = () => {
                                 افزودن به علاقه‌مندی‌ها
                             </button>
 
-                            <button className="flex items-center gap-2 px-8 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all">
-                                <ShoppingCart className="w-5 h-5" />
-                                خرید فوری
-                            </button>
+                            {isInCart ? (
+                                <div className="flex gap-2">
+                                    {/* کنترل تعداد */}
+                                    <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden">
+                                        <button
+                                            onClick={handleDecreaseQuantity}
+                                            className="px-4 py-3 hover:bg-gray-100 transition-colors"
+                                        >
+                                            -
+                                        </button>
+                                        <span className="px-4 py-3 bg-gray-50 font-bold">{cartQuantity}</span>
+                                        <button
+                                            onClick={handleIncreaseQuantity}
+                                            className="px-4 py-3 hover:bg-gray-100 transition-colors"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+
+                                    {/* دکمه رفتن به سبد خرید */}
+                                    <button
+                                        onClick={handleGoToCart}
+                                        className="flex items-center gap-2 px-8 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all"
+                                    >
+                                        <ShoppingCart className="w-5 h-5" />
+                                        مشاهده سبد خرید
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleAddToCart}
+                                    disabled={isAddingToCart}
+                                    className={`flex items-center gap-2 px-8 py-3 rounded-lg transition-all ${isAddingToCart
+                                        ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                        : 'bg-green-500 hover:bg-green-600 text-white'
+                                        }`}
+                                >
+                                    <ShoppingCart className="w-5 h-5" />
+                                    {isAddingToCart ? 'در حال افزودن...' : 'افزودن به سبد خرید'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
