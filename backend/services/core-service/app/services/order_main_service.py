@@ -144,6 +144,7 @@ class OrderMainService(BaseService):
                 order_id=order.order_id,
                 website_id=order.website_id,
                 buyer_id=order.buyer_id,
+                buyer_name=buyer.name,
                 status=order.status,
                 total_price=order.total_price,
                 created_at=order.created_at,
