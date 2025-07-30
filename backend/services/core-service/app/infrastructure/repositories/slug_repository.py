@@ -22,3 +22,11 @@ class SlugRepository:
     
     def get_slug_by_website_id(self, website_id: UUID) -> Optional[UUID]:
         return self.db.query(SlugModel).filter_by(website_id=website_id).first()
+
+
+    def update_slug_by_website_id(self, website_id: UUID, new_slug: str):
+        slug = self.db.query(SlugModel).filter_by(website_id=website_id).first()
+        slug.slug = new_slug
+        self.db.add(slug)
+        self.db.commit()
+        self.db.refresh(slug)

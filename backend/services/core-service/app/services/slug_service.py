@@ -23,3 +23,6 @@ class SlugService:
 
     async def get_slug_by_website_id(self, website_id: UUID) -> Optional[UUID]:
         return self.slug_repo.get_slug_by_website_id(website_id)
+    
+    async def update_slug(self, website_id: UUID, new_slug: str) -> None:
+        return self.slug_repo.update_slug_by_website_id(website_id, new_slug)
