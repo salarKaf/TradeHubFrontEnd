@@ -77,3 +77,22 @@ export const getProductCount  = async (websiteId) => {
 };
 
 
+
+
+
+export const getLatestOrders = async (websiteId, sortBy = 'latest') => {
+  try {
+    const response = await axios.get(
+      `${coreBaseURL}/websites/orders/invoice-table/${websiteId}?sort_by=${sortBy}`,
+      {
+        headers: {
+          'accept': 'application/json',
+        },
+      }
+    );
+    return response.data; // این باید آرایه‌ای از سفارشات باشه
+  } catch (error) {
+    console.error('خطا در دریافت آخرین سفارشات:', error);
+    return [];
+  }
+};

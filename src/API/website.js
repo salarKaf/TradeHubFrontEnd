@@ -271,3 +271,17 @@ export const getStoreSlug = async (websiteId) => {
     return 'store';
   }
 };
+
+
+
+
+
+export const updateSlug = async (websiteId, newSlug) => {
+  const response = await axios.put(`${coreBaseURL}/slug/update-slug`, null, {
+    params: {
+      website_id: websiteId,
+      new_slug: newSlug
+    }
+  });
+  return response.data;
+};

@@ -14,6 +14,7 @@ import { FaChevronDown, FaChevronLeft } from "react-icons/fa";
 import { uploadLogo, uploadBanner, getWebsiteById, getStoreSlug } from '../../../API/website';
 import { useParams } from "react-router-dom";
 import { updateWebsitePartial } from '../../../API/website';
+import { updateSlug } from '../../../API/website'; // اضافه کن به importها
 
 const StoreHeaderSettings = () => {
   const [open, setOpen] = useState(true);
@@ -34,7 +35,7 @@ const StoreHeaderSettings = () => {
       try {
         // گرفتن اطلاعات اصلی وبسایت
         const websiteData = await getWebsiteById(websiteId);
-        
+
         // گرفتن slug (آدرس) وبسایت
         let storeSlug = "";
         try {
@@ -42,7 +43,7 @@ const StoreHeaderSettings = () => {
         } catch (slugError) {
           console.warn("خطا در دریافت slug:", slugError);
         }
-        
+
         const currentValues = {
           name: websiteData.business_name || "",
           slogan: websiteData.store_slogan || "",
@@ -110,19 +111,24 @@ const StoreHeaderSettings = () => {
       }
 
       if (type === "text") {
-        const payload = {
-          website_id: websiteId,
-        };
+        if (key === "address") {
+          // 👇 آدرس فروشگاه (slug) را با API مخصوص آپدیت می‌کنیم
+          await updateSlug(websiteId, textValues.address);
+        } else {
+          // 👇 سایر فیلدهای متنی با API عمومی آپدیت می‌شن
+          const payload = {
+            website_id: websiteId,
+          };
 
-        if (key === "name") {
-          payload.business_name = textValues.name;
-        } else if (key === "slogan") {
-          payload.store_slogan = textValues.slogan;
-        } else if (key === "address") {
-          payload.store_address = textValues.address;
+          if (key === "name") {
+            payload.business_name = textValues.name;
+          } else if (key === "slogan") {
+            payload.store_slogan = textValues.slogan;
+          }
+
+          await updateWebsitePartial(websiteId, payload);
         }
 
-        await updateWebsitePartial(websiteId, payload);
         setOriginalValues(prev => ({ ...prev, [key]: textValues[key] }));
         setEditingField(null);
       }
@@ -133,6 +139,7 @@ const StoreHeaderSettings = () => {
       console.error(error);
     }
   };
+
 
   const getFieldName = (key) => {
     const names = {

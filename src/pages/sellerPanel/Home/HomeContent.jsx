@@ -5,9 +5,8 @@ import { FiBell } from 'react-icons/fi'; // آیکن نوتیفیکیشن
 import { Line } from 'react-chartjs-2';
 import { useParams } from 'react-router-dom';
 import { getActivePlan } from '../../../API/website';
-import { getLatestOrders } from '../../../API/orders'; // آدرس مناسب پروژه‌ت رو بزن
 import { getNewestItems, getItemSalesCount, getItemRevenue } from "../../../API/Items";
-import { getTotalRevenue, getTotalSalesCount, getProductCount, getLast6MonthsSales } from '../../../API/dashboard';
+import { getTotalRevenue, getTotalSalesCount, getProductCount, getLast6MonthsSales, getLatestOrders } from '../../../API/dashboard';
 
 import {
   Chart as ChartJS,
@@ -212,11 +211,11 @@ const HomeContent = () => {
             </thead>
             <tbody>
               {data.recentOrders.length > 0 ? (
-                data.recentOrders.map((order, index) => (
+                data.recentOrders.slice(0, 4).map((order, index) => (
                   <tr key={index} className="border-t border-black border-opacity-10 text-center">
-                    <td className="py-3">{new Date(order.date).toLocaleDateString('fa-IR')}</td>
-                    <td className="py-3">{order.id}</td>
-                    <td className="py-3">{(order.total_price || 0).toLocaleString()} تومان</td>
+                    <td className="py-3">{order.created_at}</td> {/* تاریخ از سرور آماده است */}
+                    <td className="py-3">{order.order_number}</td>
+                    <td className="py-3">{Number(order.total_price).toLocaleString()} تومان</td>
                   </tr>
                 ))
               ) : (
@@ -227,6 +226,7 @@ const HomeContent = () => {
                 </tr>
               )}
             </tbody>
+
           </table>
           <a className='p-10 text-cyan-700' href={`/orders/${websiteId}`} > مشاهده کل سفارشات   &gt; </a>
         </div>
@@ -243,13 +243,14 @@ const HomeContent = () => {
             </thead>
             <tbody>
               {data.bestProducts.length > 0 ? (
-                data.bestProducts.map((order, index) => (
-                  <tr key={index} className="border-t border-black border-opacity-10 text-center">
-                    <td className="py-3">{order.name}</td>
-                    <td className="py-3">{order.Numsale}</td>
-                    <td className="py-3">{Number(order.amount ?? 0).toLocaleString()} تومان</td>
-                  </tr>
-                ))
+                
+                  data.bestProducts.slice(0, 4).map((order, index) => (
+                    <tr key={index} className="border-t border-black border-opacity-10 text-center">
+                      <td className="py-3">{order.name}</td>
+                      <td className="py-3">{order.Numsale}</td>
+                      <td className="py-3">{Number(order.amount ?? 0).toLocaleString()} تومان</td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan="3" className="py-8 text-center text-gray-500">

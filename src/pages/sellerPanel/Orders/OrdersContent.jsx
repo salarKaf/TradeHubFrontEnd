@@ -28,7 +28,7 @@ const OrderContent = () => {
 
                 const mapped = paidOrders.map((order) => ({
                     id: order.order_id,
-                    orderNumber: `ORD-${order.created_at.slice(0, 10)}`,
+                    orderNumber: order.order_number,
                     date: new Date(order.created_at).toLocaleDateString('fa-IR'),
                     products: order.order_items.map(item => ({
                         name: item.item_name,
