@@ -90,7 +90,9 @@ class OrderMainService(BaseService):
         
         logger.info(f"Getting order ...")
         order = await self.order_service.get_order_by_id(order_id)
-        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+
         order_items_response = []
         for item in order.order_items:
             item_obj = await self.item_service.get_item_by_id(item.item_id)
