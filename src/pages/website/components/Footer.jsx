@@ -1,71 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Mail, Phone, MapPin, Clock, ChevronLeft, X, Instagram, Youtube, Linkedin } from "lucide-react";
+import { ChevronLeft, Phone, MessageCircle, Users, FileText } from "lucide-react";
 import InstagramIcon from "/public/website/Icon(1).png";
 import telegramIcon from "/public/website/icons8-telegram-48(1).png";
+import { getWebsiteById } from "../../../API/website";
+import { useSlugNavigation } from "../../website/pages/Slug/useSlugNavigation";
 
 const Footer = () => {
   const [footerData, setFooterData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { getPageUrl } = useSlugNavigation();
 
-  // شبیه‌سازی دریافت اطلاعات از بک‌اند
   useEffect(() => {
-    // شبیه‌سازی API call
     const fetchFooterData = async () => {
       try {
-        // در پروژه واقعی این‌جا API call شما قرار می‌گیره
-        // const response = await fetch('/api/footer-info');
-        // const data = await response.json();
+        const websiteId = localStorage.getItem("current_store_website_id");
+        if (!websiteId) throw new Error("Website ID not found");
 
-        // نمونه داده (شبیه‌سازی response از بک‌اند)
-        const mockData = {
-          contactInfo: {
-            phone: "021-88776655",
-            email: "info@tardeHub.com",
-          },
+        const data = await getWebsiteById(websiteId);
 
-          socialLinks: {
-            instagram: "https://instagram.com/tardeHub",
-            telegram: "https://t.me/tardeHub",
+        setFooterData({
+          phone: data?.social_links?.phone || "",
+          instagram: data?.social_links?.instagram || "",
+          telegram: data?.social_links?.telegram || "",
+          faqs: (data?.faqs || []).slice(0, 3),
+          slogan: data?.store_slogan || "با ما تجربه‌ای متفاوت از خرید داشته باشید",
+          websiteId,
+        });
 
-          },
-          quickLinks: [
-            {
-              title: "قوانین و مقررات",
-              url: "/terms",
-              items: [
-                { name: "قبل از خرید با قوانین فروشگاه ما آشنا شوید", url: "/terms/purchase" }
-              ]
-            }
-          ],
-          faq: {
-            title: "سوالات متداول",
-            questions: [
-              { question: "متن سوال اول", answer: "پاسخ سوال اول", url: "/faq/1" },
-              { question: "متن سوال دوم", answer: "پاسخ سوال دوم", url: "/faq/2" },
-              { question: "متن سوال سوم", answer: "پاسخ سوال سوم", url: "/faq/3" }
-            ],
-            viewAllUrl: "/faq"
-          },
-          aboutUs: {
-            title: "درباره ما",
-            description: "توضیح کوتاه در مورد فروشگاه و خدمات ارائه شده",
-            fullUrl: "/about"
-          },
-          companyInfo: {
-            name: "Tarde Hub",
-            description: "این پنل فروشگاهی به‌صورت اختصاصی توسط تیم Tarde Hub طراحی شده است.",
-            rights: "کلیه حقوق به این تیم می‌باشد."
-          }
-        };
-
-        // شبیه‌سازی تاخیر شبکه
-        setTimeout(() => {
-          setFooterData(mockData);
-          setLoading(false);
-        }, 1000);
-
-      } catch (error) {
-        console.error('خطا در بارگذاری اطلاعات فوتر:', error);
+        setLoading(false);
+      } catch (err) {
+        console.error("❌ خطا در گرفتن اطلاعات فوتر:", err);
+        setError(err.message);
         setLoading(false);
       }
     };
@@ -75,171 +41,239 @@ const Footer = () => {
 
   if (loading) {
     return (
-      <div className="bg-white text-black py-12 font-rubik">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            <span className="mr-3">در حال بارگذاری...</span>
+      <div className="bg-gradient-to-br from-slate-50 to-slate-100 font-rubik border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+
+            {/* لودر بخش تماس */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-slate-200 rounded-full animate-pulse"></div>
+                <div className="h-6 bg-slate-200 rounded w-40 animate-pulse"></div>
+              </div>
+
+              <div className="rounded-lg p-4 shadow-sm border border-slate-200">
+                <div className="h-4 bg-slate-200 rounded w-32 mb-2 animate-pulse"></div>
+                <div className="h-6 bg-slate-200 rounded w-36 animate-pulse"></div>
+              </div>
+
+              <div className="rounded-lg p-4 shadow-sm border border-slate-200">
+                <div className="h-4 bg-slate-200 rounded w-28 mb-3 animate-pulse"></div>
+                <div className="flex gap-4">
+                  <div className="w-6 h-6 bg-slate-200 rounded animate-pulse"></div>
+                  <div className="w-7 h-7 bg-slate-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* لودر بخش قوانین و سوالات */}
+            <div className="space-y-8">
+              <div className="rounded-lg p-6 shadow-sm border border-slate-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div>
+                  <div className="h-5 bg-slate-200 rounded w-32 animate-pulse"></div>
+                </div>
+                <div className="h-4 bg-slate-200 rounded w-full animate-pulse"></div>
+              </div>
+
+              <div className="rounded-lg p-6 shadow-sm border border-slate-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div>
+                  <div className="h-5 bg-slate-200 rounded w-28 animate-pulse"></div>
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="h-4 bg-slate-200 rounded w-full animate-pulse"></div>
+                  <div className="h-4 bg-slate-200 rounded w-3/4 animate-pulse"></div>
+                  <div className="h-4 bg-slate-200 rounded w-5/6 animate-pulse"></div>
+                </div>
+                <div className="h-4 bg-slate-200 rounded w-20 animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* لودر بخش شعار */}
+            <div className="rounded-lg p-6 shadow-sm border border-slate-200 h-fit">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div>
+                <div className="h-5 bg-slate-200 rounded w-28 animate-pulse"></div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="h-4 bg-slate-200 rounded w-full animate-pulse"></div>
+                <div className="h-4 bg-slate-200 rounded w-4/5 animate-pulse"></div>
+                <div className="h-4 bg-slate-200 rounded w-3/5 animate-pulse"></div>
+              </div>
+
+              <div className="h-4 bg-slate-200 rounded w-24 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* لودر فوتر پایین */}
+        <div className="border-t border-slate-200 py-8">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center space-y-3">
+              <div className="h-4 bg-slate-200 rounded w-48 mx-auto animate-pulse"></div>
+              <div className="h-3 bg-slate-200 rounded w-32 mx-auto animate-pulse"></div>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  if (!footerData) {
+  if (error || !footerData) {
     return (
-      <div className="bg-white text-black py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>خطا در بارگذاری اطلاعات فوتر</p>
-        </div>
+      <div className="w-full py-12 text-center text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg mx-4">
+        خطا در بارگذاری اطلاعات فوتر: {error}
       </div>
     );
   }
 
   return (
-    <footer className="bg-gradient-to-b bg-white text-black">
-      {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <footer className="bg-gradient-to-br from-slate-50/5 to-slate-600/5 text-slate-800 font-rubik border-t border-slate-200">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
 
-          {/* Contact Info Section */}
+          {/* بخش تماس */}
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                <div className="w-6 h-6 bg-white rounded transform rotate-45"></div>
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <Phone className="text-blue-600" size={20} />
               </div>
-              <h3 className="text-xl font-bold">تماس با ما</h3>
+              <h3 className="text-xl font-bold text-slate-700">ارتباط با فروشنده</h3>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-black hover:text-black transition-colors">
-                <Phone size={18} className="text-blue-400" />
-                <span>شماره تماس فروشنده: {footerData.contactInfo.phone}</span>
+            {footerData.phone && (
+              <div className="rounded-lg p-4 shadow-sm ">
+                <p className="text-sm text-slate-600 mb-2">شماره تماس فروشنده:</p>
+                <p className="font-semibold text-slate-800 text-lg direction-ltr">
+                  {footerData.phone}
+                </p>
               </div>
+            )}
 
-              <div className="flex items-center gap-3 text-black hover:text-black transition-colors">
-                <Mail size={18} className="text-blue-400" />
-                <span>ایمیل فروشنده: {footerData.contactInfo.email}</span>
+            {/* شبکه های اجتماعی */}
+            {(footerData.instagram || footerData.telegram) && (
+              <div className="rounded-lg p-4 shadow-sm ">
+                <p className="text-sm text-slate-600 mb-3">شبکه‌های اجتماعی:</p>
+                <div className="flex gap-4">
+                  {footerData.instagram && (
+                    <a
+                      href={footerData.instagram}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:scale-110 transition-transform duration-200"
+                    >
+                      <img src={InstagramIcon} alt="Instagram" className="w-6 h-6" />
+                    </a>
+                  )}
+                  {footerData.telegram && (
+                    <a
+                      href={footerData.telegram}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:scale-110 transition-transform duration-200"
+                    >
+                      <img src={telegramIcon} alt="Telegram" className="w-7 h-7" />
+                    </a>
+                  )}
+                </div>
               </div>
-
-
-            </div>
-
-            {/* Social Links */}
-            <div className="pt-6">
-              <div className="flex gap-1">
-                {footerData.socialLinks.instagram && (
-                  <a
-                    href={footerData.socialLinks.instagram}
-                    className="w-10 h-10  rounded-lg flex items-center justify-center transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src={InstagramIcon} alt="Instagram" className="w-5 h-5" />
-                  </a>
-                )}
-                {footerData.socialLinks.telegram && (
-                  <a
-                    href={footerData.socialLinks.telegram}
-                    className="w-10 h-10   rounded-lg flex items-center justify-center transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src={telegramIcon} alt="YouTube" className="w-8 h-8" />
-                  </a>
-                )}
-              </div>
-            </div>
-
+            )}
           </div>
 
-          {/* Quick Links & FAQ Section */}
+          {/* سوالات متداول و قوانین */}
           <div className="space-y-8">
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-xl font-bold mb-6">قوانین و مقررات</h3>
-              <div className="space-y-3">
-                {footerData.quickLinks.map((section, index) => (
-                  <div key={index}>
-                    {section.items.map((item, itemIndex) => (
-                      <a
-                        key={itemIndex}
-                        href={item.url}
-                        className="block text-black hover:text-black hover:pr-2 transition-all duration-200"
-                      >
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
-                ))}
-                <a
-                  href="/terms/all"
-                  className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors mt-4"
-                >
-                  <span className="ml-1">مطالعه</span>
-                  <ChevronLeft size={16} />
-                </a>
+
+            {/* قوانین */}
+            <div className="rounded-lg p-6 shadow-sm ">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                  <FileText className="text-amber-600" size={16} />
+                </div>
+                <h3 className="text-lg font-bold text-slate-700">قوانین و مقررات</h3>
               </div>
+              <a
+                href={getPageUrl("rules")}
+                className="block text-slate-600 hover:text-blue-600 transition-colors duration-200 text-sm leading-relaxed"
+              >
+                قبل از خرید با قوانین فروشگاه ما آشنا شوید
+              </a>
             </div>
 
-            {/* FAQ Section */}
-            <div>
-              <h3 className="text-xl font-bold mb-6">{footerData.faq.title}</h3>
-              <div className="space-y-3">
-                {footerData.faq.questions.map((faq, index) => (
-                  <a
-                    key={index}
-                    href={faq.url}
-                    className="block text-black hover:text-black hover:pr-2 transition-all duration-200"
-                  >
-                    {faq.question}
-                  </a>
-                ))}
+            {/* سوالات */}
+            {footerData.faqs.length > 0 && (
+              <div className="rounded-lg p-6 shadow-sm ">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <MessageCircle className="text-green-600" size={16} />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-700">سوالات متداول</h3>
+                </div>
+
+                <div className="space-y-3 mb-4">
+                  {footerData.faqs.map((faq, index) => (
+                    <a
+                      key={index}
+                      href={getPageUrl("about") + `#q${index + 1}`}
+                      className="block text-slate-600 hover:text-blue-600 transition-colors duration-200 text-sm py-1 border-b border-slate-100 last:border-0"
+                    >
+                      {faq.question}
+                    </a>
+                  ))}
+                </div>
+
                 <a
-                  href={footerData.faq.viewAllUrl}
-                  className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors mt-4"
+                  href={getPageUrl("about")}
+                  className="inline-flex items-center text-blue-500 hover:text-blue-600 text-sm font-medium transition-colors duration-200"
                 >
                   <span className="ml-1">نمایش همه</span>
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={14} />
                 </a>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* About Us Section */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold">{footerData.aboutUs.title}</h3>
-            <p className="text-black leading-relaxed">
-              {footerData.aboutUs.description}
+          {/* شعار فروشگاه */}
+          <div className="rounded-lg p-6 shadow-sm  h-fit">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                <Users className="text-purple-600" size={16} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-700">شعار فروشگاه</h3>
+            </div>
+
+            <p className="text-slate-600 leading-relaxed mb-4 text-sm">
+              {footerData.slogan}
             </p>
+
             <a
-              href={footerData.aboutUs.fullUrl}
-              className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+              href={getPageUrl("about")}
+              className="inline-flex items-center text-blue-500 hover:text-blue-600 text-sm font-medium transition-colors duration-200"
             >
-              <span className="ml-1">ادامه مطلب</span>
-              <ChevronLeft size={16} />
+              <span className="ml-1">بیشتر بدانید</span>
+              <ChevronLeft size={14} />
             </a>
           </div>
         </div>
       </div>
 
-      {/* Footer Bottom */}
-      <div className=" bg-white">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="text-center space-y-2">
-            <p className="text-black">
-              این پنل فروشگاهی به‌صورت اختصاصی توسط تیم{" "}
+      {/* فوتر پایین */}
+      <div className="border-t border-slate-200 py-8">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-3">
+            <p className="text-sm text-slate-500">
+              طراحی شده توسط{" "}
               <a
                 href="/"
-                className="text-blue-950 font-bold hover:underline hover:text-blue-800 transition-colors"
+                className="text-blue-600 font-semibold hover:underline transition-colors"
               >
-                {footerData.companyInfo.name}
-              </a>{" "}
-              طراحی شده است.
+                Tarde Hub
+              </a>
             </p>
 
-            <p className="text-gray-400 text-sm">
-              {footerData.companyInfo.rights}
+            <p className="text-xs text-slate-400">
+              کلیه حقوق محفوظ است © {new Date().getFullYear()}
             </p>
           </div>
         </div>
