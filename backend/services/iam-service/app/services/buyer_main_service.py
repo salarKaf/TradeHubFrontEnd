@@ -105,11 +105,11 @@ class RegisterService(BaseService):
         otp = self.otp_service.send_otp(resend_otp_schema.email)
 
         logger.info(f"OTP resent to email {resend_otp_schema.email}")
-        # return ResendOTPResponseSchema(
-        #     email=resend_otp_schema.email,
-        #     OTP=otp,
-        #     message="OTP sent to email",
-        # )
+        return ResendOTPResponseSchema(
+            email=resend_otp_schema.email,
+            OTP=otp,
+            message="OTP sent to email",
+        )
 
 
     async def verify_otp_forget_password(
