@@ -33,60 +33,38 @@ ChartJS.register(
 
 // تابع تعیین رنگ نمودار بر اساس روند داده‌ها
 const getChartTrendColor = (dataPoints) => {
-  if (!dataPoints || dataPoints.length === 0) {
+  if (!dataPoints || dataPoints.length < 2) {
     return {
-      border: 'rgba(75, 192, 192, 1)',
-      background: 'rgba(75, 192, 192, 0.2)'
+      border: 'rgba(107, 114, 128, 1)', // خاکستری
+      background: 'rgba(107, 114, 128, 0.2)'
     };
   }
 
-  // محاسبه میانگین تغییرات
-  let totalChange = 0;
-  let changeCount = 0;
+  const first = dataPoints[0];
+  const last = dataPoints[dataPoints.length - 1];
 
-  for (let i = 1; i < dataPoints.length; i++) {
-    if (dataPoints[i - 1] !== 0) { // جلوگیری از تقسیم بر صفر
-      const change = (dataPoints[i] - dataPoints[i - 1]) / dataPoints[i - 1];
-      totalChange += change;
-      changeCount++;
-    }
-  }
-
-  const averageChange = changeCount > 0 ? totalChange / changeCount : 0;
-
-  // تعیین رنگ بر اساس روند
-  if (averageChange > 0.1) {
-    // روند صعودی قوی - سبز
+  // مقایسه ساده بین اولین و آخرین مقدار برای تشخیص روند
+  if (last > first) {
+    // روند صعودی - سبز
     return {
       border: 'rgba(34, 197, 94, 1)',
       background: 'rgba(34, 197, 94, 0.2)'
     };
-  } else if (averageChange > 0) {
-    // روند صعودی ملایم - آبی سبز
-    return {
-      border: 'rgba(59, 130, 246, 1)',
-      background: 'rgba(59, 130, 246, 0.2)'
-    };
-  } else if (averageChange < -0.1) {
-    // روند نزولی قوی - قرمز
+  } else if (last < first) {
+    // روند نزولی - قرمز
     return {
       border: 'rgba(239, 68, 68, 1)',
       background: 'rgba(239, 68, 68, 0.2)'
     };
-  } else if (averageChange < 0) {
-    // روند نزولی ملایم - نارنجی
-    return {
-      border: 'rgba(245, 158, 11, 1)',
-      background: 'rgba(245, 158, 11, 0.2)'
-    };
   } else {
-    // روند ثابت - خاکستری
+    // بدون تغییر خاص - خاکستری
     return {
       border: 'rgba(107, 114, 128, 1)',
       background: 'rgba(107, 114, 128, 0.2)'
     };
   }
 };
+
 
 const HomeContent = () => {
   const { websiteId } = useParams();
@@ -108,17 +86,19 @@ const HomeContent = () => {
       try {
         const website_Id = websiteId;
 
-        // اول پلن کاربر رو بگیر
+        // دریافت پلن کاربر
         const activePlan = await getActivePlan(website_Id);
         setPlanType(activePlan?.plan?.name || null);
 
-        // حالا فقط اگه پلن Pro بود، داده نمودار رو بگیر
+        // دریافت داده‌های نمودار فقط اگر پلن Pro باشه
         let last6MonthSales = [];
         if (activePlan?.plan?.name === "Pro") {
           last6MonthSales = await getLast6MonthsSales(website_Id);
 
-          const labels = last6MonthSales.map(item => item.month);
-          const dataPoints = last6MonthSales.map(item => item.revenue);
+          // برعکس کردن ترتیب داده‌ها (از قدیم به جدید)
+          const reversedSales = [...last6MonthSales].reverse();
+          const labels = reversedSales.map(item => item.month);
+          const dataPoints = reversedSales.map(item => item.revenue);
           const trendColors = getChartTrendColor(dataPoints);
 
           setSalesChartData({
@@ -135,7 +115,7 @@ const HomeContent = () => {
           });
         }
 
-        // بقیه داده‌ها رو هم بگیر (بدون وابستگی به نوع پلن)
+        // دریافت سایر داده‌ها
         const [
           revenue,
           salesCount,
@@ -175,8 +155,10 @@ const HomeContent = () => {
         console.error("❌ خطا در گرفتن داده داشبورد:", error);
       }
     };
+
     if (websiteId) fetchDashboardData();
   }, [websiteId]);
+
 
   return (
     <div>
