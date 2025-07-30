@@ -1,37 +1,37 @@
 import { iamBaseURL } from "./api";
 
 export const verifyOtp = async ({ otp, email }) => {
-    const response = await fetch(`${iamBaseURL}/users/VerifyOTP`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ otp, email }),
-    });
+  const response = await fetch(`${iamBaseURL}/users/VerifyOTP`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ otp, email }),
+  });
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'OTP verification failed');
-    }
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'OTP verification failed');
+  }
 
-    return response.json();
+  return response.json();
 };
 
 export const resendOtp = async (email) => {
-    const response = await fetch(`${iamBaseURL}/users/ResendOTP`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-    });
+  const response = await fetch(`${iamBaseURL}/users/ResendOTP`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Resend OTP failed');
-    }
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Resend OTP failed');
+  }
 
-    return response.json();
+  return response.json();
 };
 
 
@@ -69,19 +69,19 @@ export async function login({ email, password }) {
 
 // تابع جدید برای چک کردن پلن فعال
 export const getMe = async () => {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${iamBaseURL}/users/Me`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching Read user:', error);
-        throw error;
-    }
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${iamBaseURL}/users/Me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Read user:', error);
+    throw error;
+  }
 };
 
 
@@ -121,4 +121,66 @@ export const changeUserProfile = async ({ first_name, last_name, token }) => {
   );
 
   return response.data;
+};
+
+
+
+// این تابع‌ها رو به فایل auth.jsx اضافه کن
+
+// ارسال ایمیل برای فراموشی رمز عبور
+export const sendForgotPasswordOTP = async (email) => {
+  const response = await fetch(`${iamBaseURL}/users/ResendOTP`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to send forgot password OTP');
+  }
+
+  return response.json();
+};
+
+// تایید OTP برای فراموشی رمز عبور
+export const verifyForgotPasswordOTP = async ({ otp, email }) => {
+  const response = await fetch(`${iamBaseURL}/users/VerifyOTPForgetPassword`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ otp, email }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'OTP verification failed');
+  }
+
+  return response.json();
+};
+
+// تغییر رمز عبور با OTP
+export const resetPasswordWithOTP = async ({ email, new_password, confirm_password }) => {
+  const response = await fetch(`${iamBaseURL}/users/ForgetPassword`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      password: new_password,
+      confirm_password
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Password reset failed');
+  }
+
+  return response.json();
 };

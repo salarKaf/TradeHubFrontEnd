@@ -13,6 +13,10 @@ import PaymentCallback from './pages/TradePages/Plans/components/PaymentCallback
 import PaymentResult from './pages/TradePages/Plans/components/PaymentResult.jsx';
 import OTPForm from "./pages/TradePages/OTPForm"
 import Slug from "./pages/TradePages/slug";
+// در فایل App.jsx، این import ها رو اضافه کن:
+import ForgotPasswordSeller from "./pages/TradePages/ForgotPasswordSeller";
+import ForgotPasswordOTPSeller from "./pages/TradePages/ForgotPasswordOTPSeller.jsx";
+import ResetPasswordSeller from "./pages/TradePages/ResetPasswordSeller.jsx";
 
 // Seller Panel Pages
 import HomeSeller from "./pages/sellerPanel/Home/Home";
@@ -36,6 +40,9 @@ import SignUp from '../src/pages/website/pages/Auth/SignUp';
 import Login from '../src/pages/website/pages/Auth/Login.jsx';
 import ProductAfterPurchase from './pages/website/pages/Cart/ProductAfterPurchase.jsx';
 import OTPFormBuyer from './pages/website/pages/Auth/OTPFormBuyer.jsx'
+import ForgotPassword from './pages/website/pages/Auth/ForgotPassword';
+import ForgotPasswordOTP from './pages/website/pages/Auth/ForgotPasswordOTP';
+import ResetPassword from './pages/website/pages/Auth/ResetPassword';
 import PaymentCallbackOrder from './pages/website/pages/Orders/PaymentCallbackOrder.jsx';
 // Slug Handler Component
 import SlugHandler from '../src/pages/website/pages/SlugHandler.jsx';
@@ -62,7 +69,9 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/storeForm" element={<CreateStore />} />
-
+        <Route path="/forgot-password" element={<ForgotPasswordSeller />} />
+        <Route path="/forgot-password-otp" element={<ForgotPasswordOTPSeller />} />
+        <Route path="/reset-password" element={<ResetPasswordSeller />} />
         <Route path="/OTPForm" element={<OTPForm />} />
         <Route path="/payment/callback" element={<PaymentCallback />} />
         <Route path="/payment-result" element={<PaymentResult />} />
@@ -97,6 +106,9 @@ export default function App() {
               <Route path="login" element={<Login />} />
               <Route path="order/product/:orderId" element={<ProductAfterPurchase />} />
               <Route path="otp-verification" element={<OTPFormBuyer />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="forgot-password-otp" element={<ForgotPasswordOTP />} />
+              <Route path="reset-password" element={<ResetPassword />} />
 
             </Routes>
           </WebsiteProvider>

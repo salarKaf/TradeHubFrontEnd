@@ -55,7 +55,7 @@ export default function LoginForm() {
             } catch (slugError) {
                 console.error('❌ Error checking slug:', slugError);
                 navigate(`/Slug/${websiteId}`);
-                
+
             }
 
             try {
@@ -236,6 +236,17 @@ export default function LoginForm() {
                                     "وارد شوید"
                                 )}
                             </button>
+
+
+                            {/* قسمت فراموشی رمز عبور - این رو بعد از دکمه Submit اضافه کن */}
+                            <div className="text-center pt-4">
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-[#EABF9F] font-medium font-rubik hover:underline text-sm"
+                                >
+                                    رمز عبور را فراموش کرده‌اید؟
+                                </Link>
+                            </div>
 
                         </div>
                     </form>

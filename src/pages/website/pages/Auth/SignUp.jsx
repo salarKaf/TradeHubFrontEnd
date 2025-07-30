@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { registerBuyer } from '../../../../API/buyerAuth'; // مسیر رو درست کن
 import { useParams } from 'react-router-dom';
-import { getWebsiteIdBySlug, getWebsiteById, getLogo, getBanner } from "../../../../API/website";
+import { getWebsiteIdBySlug} from "../../../../API/website.js";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'; // این خط را اضافه کنید
 const SignUp = () => {
