@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Annotated
 from uuid import UUID
-from app.domain.schemas.order_schema import OrderCreateSchema, OrderResponseSchema
+from app.domain.schemas.order_schema import OrderCreateSchema, OrderResponseSchema, OrderFactorResponseSchema
 from app.domain.schemas.token_schema import TokenDataSchema
 from app.services.order_main_service import OrderMainService
 from app.services.auth_services.buyer_auth_service import get_current_buyer
@@ -56,7 +56,7 @@ async def get_order_by_id(
     return order_response
 
 
-@order_router.get("/orders/{website_id}", response_model=List[OrderResponseSchema], status_code=status.HTTP_201_CREATED)
+@order_router.get("/orders/{website_id}", response_model=List[OrderFactorResponseSchema], status_code=status.HTTP_201_CREATED)
 async def get_orders_by_website_id(
     website_id: UUID,
     current_user: Annotated[TokenDataSchema, Depends(get_current_user)],

@@ -5,7 +5,9 @@ from app.services.base_service import BaseService
 from app.services.order_service import OrderService
 from app.services.item_service import ItemService
 from app.services.user_service import UserService
-from app.domain.schemas.order_schema import OrderResponseSchema, OrderItemResponseSchema
+from app.services.buyer_service import BuyerService
+
+from app.domain.schemas.order_schema import OrderResponseSchema, OrderItemResponseSchema, OrderFactorResponseSchema
 from app.domain.models.order_model import Order
 from loguru import logger
 from typing import Annotated
@@ -14,6 +16,7 @@ class OrderMainService(BaseService):
     def __init__(self,  
         order_service : Annotated[OrderService, Depends()],
         user_service : Annotated[UserService, Depends()],
+        buyer_service : Annotated[BuyerService, Depends()],
         item_service : Annotated[ItemService, Depends()],
         coupon_service : Annotated[CouponMainService, Depends()],
         ):
@@ -22,6 +25,7 @@ class OrderMainService(BaseService):
         self.user_service = user_service
         self.item_service = item_service
         self.coupon_service = coupon_service
+        self.buyer_service = buyer_service
 
     async def create_order(self, buyer_id: UUID, website_id: UUID) -> OrderResponseSchema:
         
@@ -111,7 +115,7 @@ class OrderMainService(BaseService):
         )
         
 
-    async def get_orders_by_website_id(self,website_id: UUID) -> OrderResponseSchema:
+    async def get_orders_by_website_id(self,website_id: UUID) -> OrderFactorResponseSchema:
         
         logger.info(f"Getting order ...")
         orders: List[Order] = await self.order_service.get_orders_by_website_id(website_id)
@@ -120,8 +124,10 @@ class OrderMainService(BaseService):
         for order in orders:
             order_items_response = []
             for item in order.order_items:
+                buyer = await self.buyer_service.get_buyer_by_id(order.buyer_id)
                 item_obj = await self.item_service.get_item_by_id(item.item_id)
                 item_name = item_obj.name if item_obj else "null"
+                order_number = f"{order.created_at.strftime('%Y%m%d')}-{buyer.email.split('@')[0]}-{int(order.total_price)}"
 
                 order_items_response.append(OrderItemResponseSchema(
                     order_item_id=item.order_item_id,
@@ -131,7 +137,8 @@ class OrderMainService(BaseService):
                     price=item.price,
                 ))
 
-            response.append(OrderResponseSchema(
+            response.append(OrderFactorResponseSchema(
+                order_number = order_number,
                 order_id=order.order_id,
                 website_id=order.website_id,
                 buyer_id=order.buyer_id,

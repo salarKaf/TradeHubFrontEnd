@@ -19,7 +19,9 @@ class OrderItemResponseSchema(BaseModel):
     class Config:
         from_attributes=True
 
-class OrderResponseSchema(BaseModel):
+
+class OrderFactorResponseSchema(BaseModel):
+    order_number:str
     order_id: UUID
     website_id: UUID
     buyer_id: UUID
@@ -31,4 +33,14 @@ class OrderResponseSchema(BaseModel):
     class Config:
         from_attributes=True
 
+class OrderResponseSchema(BaseModel):
+    order_id: UUID
+    website_id: UUID
+    buyer_id: UUID
+    status: str
+    total_price: Decimal
+    created_at: datetime
+    order_items: List[OrderItemResponseSchema]
 
+    class Config:
+        from_attributes=True
