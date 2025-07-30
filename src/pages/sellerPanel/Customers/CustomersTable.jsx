@@ -7,7 +7,7 @@ const CustomersTable = ({ Customers, getOrdersForCustomer }) => {
             <div className="rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <TableHeader />
                 <div className="px-6 py-8 text-center text-gray-500">
-                    مشتری ای با این نام پیدا نشد
+                    مشتری ای پیدا نشد
                 </div>
             </div>
         );

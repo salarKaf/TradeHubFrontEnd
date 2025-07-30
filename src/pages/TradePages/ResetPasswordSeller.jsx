@@ -123,7 +123,7 @@ export default function ResetPasswordSeller() {
                             <div className="relative w-fit">
                                 <div
                                     className="absolute w-4 h-4 bg-[#EABF9F] rounded-full blur-sm z-0"
-                                    style={{ top: "17px", right: "280px" }}
+                                    style={{ top: "17px", right: "230px" }}
                                 ></div>
                                 <h1 className="relative z-10 text-2xl md:text-4xl font-rubik font-bold text-FAF3E0">
                                     رمز عبور جدید

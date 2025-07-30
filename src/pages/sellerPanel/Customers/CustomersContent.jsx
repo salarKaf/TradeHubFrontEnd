@@ -3,6 +3,9 @@ import Pagination from './Pagination';
 import CustomersHeader from './CustomersHeader';
 import CustomersTable from './CustomersTable';
 import CustomersToolbar from './CustomersToolbar';
+import { useEffect } from 'react';
+import { fetchCustomerSummary } from '../../../API/customers'; // مسیر درست
+import { useParams } from 'react-router-dom';
 
 const CustomersContent = () => {
     const [isOpenTable, setIsOpenTable] = useState(true);
@@ -10,105 +13,39 @@ const CustomersContent = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('newest');
 
-    // داده‌های مشتریان
-    const [Customers, setCustomers] = useState([
-        {
-            id: 1,
-            name: 'علی احمدی',
-            email: 'ali.ahmadi@example.com',
-            phone: '09123456789',
-            totalPurchases: 12450000,
-            orderCount: 23,
-            itemsCount: 67,
-            monthlyPurchase: 2100000,
-            monthlyOrderCount:50,
+    const [Customers, setCustomers] = useState([]);
+    const { slug } = useParams(); // یا از props هم می‌تونه بیاد
 
-            isLoyalCustomer: true,
-            joinDate: '1402/03/15',
-            dateAdded: '2024-06-15' // تاریخ عضویت برای مرتب‌سازی
-        },
-        {
-            id: 2,
-            email: 'fateme.rezaei@example.com',
-            phone: '09987654321',
-            totalPurchases: 8750000,
-            orderCount: 15,
-            itemsCount: 42,
-            monthlyPurchase: 1500000,
-            monthlyOrderCount:50,
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const websiteId = localStorage.getItem('website_id') || slug;
+                const token = localStorage.getItem('token');
 
-            isLoyalCustomer: true,
-            joinDate: '1402/05/22',
-            dateAdded: '2024-08-22'
-        },
-        {
-            id: 3,
-            email: 'mohammad.hosseini@example.com',
-            phone: '09112233445',
-            totalPurchases: 3200000,
-            orderCount: 8,
-            itemsCount: 18,
-            monthlyPurchase: 650000,
-            isLoyalCustomer: false,
-            monthlyOrderCount:50,
+                if (!websiteId || !token) {
+                    console.warn('Website ID یا توکن یافت نشد.');
+                    return;
+                }
 
-            joinDate: '1403/02/10',
-            dateAdded: '2024-05-10'
-        },
-        {
-            id: 4,
-            email: 'zahra.karimi@example.com',
-            phone: '09334455667',
-            totalPurchases: 15800000,
-            orderCount: 31,
-            itemsCount: 89,
-            monthlyPurchase: 2800000,
-            monthlyOrderCount:50,
+                const buyers = await fetchCustomerSummary(websiteId, token);
 
-            isLoyalCustomer: true,
-            joinDate: '1401/12/05',
-            dateAdded: '2024-03-05'
-        },
-        {
-            id: 5,
-            email: 'amir.nouri@example.com',
-            phone: '09556677889',
-            totalPurchases: 5400000,
-            orderCount: 1200,
-            itemsCount: 28,
-            monthlyPurchase: 900000,
-            monthlyOrderCount: 50,
-            isLoyalCustomer: false,
-            joinDate: '1403/01/18',
-            dateAdded: '2024-04-18'
-        },
-        {
-            id: 6,
-            email: 'maryam.akbari@example.com',
-            phone: '09111222333',
-            totalPurchases: 22300000,
-            orderCount: 45,
-            itemsCount: 120,
-            monthlyPurchase: 3500000,
-            monthlyOrderCount: 50,
-            isLoyalCustomer: true,
-            joinDate: '1401/08/12',
-            dateAdded: '2024-11-12'
-        },
-        {
-            id: 7,
-            email: 'hasan.mohammadi@example.com',
-            phone: '09333444555',
-            totalPurchases: 1800000,
-            orderCount: 6,
-            itemsCount: 12,
-            monthlyPurchase: 400000,
-            monthlyOrderCount:50,
-            isLoyalCustomer: false,
-            joinDate: '1403/03/25',
-            dateAdded: '2024-12-25'
-        }
-    ]);
+                const mapped = buyers.map((item, index) => ({
+                    id: index + 1,
+                    email: item.buyer_email,
+                    totalPurchases: item.total_amount,
+                    orderCount: item.total_orders,
+                }));
+
+                setCustomers(mapped);
+            } catch (err) {
+                console.error('خطا در دریافت لیست مشتریان:', err);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
 
     // سفارشات برای هر مشتری
     const getOrdersForCustomer = (customerId) => {
@@ -157,10 +94,8 @@ const CustomersContent = () => {
     // فیلتر و مرتب‌سازی مشتریان
     const filteredAndSortedCustomers = useMemo(() => {
         let filtered = Customers.filter(customer =>
-            customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            customer.phone.includes(searchTerm)
+            (customer?.email || '').toLowerCase().includes(searchTerm.toLowerCase())
         );
-
         // مرتب‌سازی
         if (sortBy === 'highest_purchase') {
             // مرتب‌سازی بر اساس بیشترین مبلغ خرید (بالاترین اول)

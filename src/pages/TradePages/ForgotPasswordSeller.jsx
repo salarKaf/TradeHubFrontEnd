@@ -79,7 +79,7 @@ export default function ForgotPasswordSeller() {
                             <div className="relative w-fit">
                                 <div
                                     className="absolute w-4 h-4 bg-[#EABF9F] rounded-full blur-sm z-0"
-                                    style={{ top: "17px", right: "280px" }}
+                                    style={{ top: "17px", right: "240px" }}
                                 ></div>
                                 <h1 className="relative z-10 text-2xl md:text-4xl font-rubik font-bold text-FAF3E0">
                                     بازیابی رمز عبور
@@ -135,8 +135,8 @@ export default function ForgotPasswordSeller() {
                         </div>
                     </form>
 
-                    <div className="text-center pt-6 border-t border-gray-700 border-opacity-30">
-                        <p className="text-sm font-rubik text-gray-300 mb-4">
+                    <div className="flex justify-center text-center pt-6 border-t border-gray-700 border-opacity-30">
+                        <p className="text-sm font-rubik text-gray-300 mb-4 ml-2">
                             رمز عبور خود را به یاد آوردید؟
                         </p>
                         <Link 

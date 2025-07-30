@@ -218,8 +218,20 @@ export default function LoginForm() {
                                     </svg>
                                 )}
                             </button>
-                        </div>
 
+
+
+                            {/* قسمت فراموشی رمز عبور - این رو بعد از دکمه Submit اضافه کن */}
+
+                        </div>
+                        <div className="">
+                            <Link
+                                to="/forgot-password"
+                                className="text-[#EABF9F] font-medium font-rubik hover:underline text-sm"
+                            >
+                                رمز عبور را فراموش کرده‌اید؟
+                            </Link>
+                        </div>
                         <div className="flex justify-center pt-4">
                             <button
                                 type="submit"
@@ -238,15 +250,7 @@ export default function LoginForm() {
                             </button>
 
 
-                            {/* قسمت فراموشی رمز عبور - این رو بعد از دکمه Submit اضافه کن */}
-                            <div className="text-center pt-4">
-                                <Link
-                                    to="/forgot-password"
-                                    className="text-[#EABF9F] font-medium font-rubik hover:underline text-sm"
-                                >
-                                    رمز عبور را فراموش کرده‌اید؟
-                                </Link>
-                            </div>
+
 
                         </div>
                     </form>

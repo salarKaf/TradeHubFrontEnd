@@ -183,7 +183,7 @@ export default function ForgotPasswordOTPSeller() {
                             <div className="relative w-fit">
                                 <div
                                     className="absolute w-4 h-4 bg-[#EABF9F] rounded-full blur-sm z-0"
-                                    style={{ top: "17px", right: "280px" }}
+                                    style={{ top: "17px", right: "240px" }}
                                 ></div>
                                 <h1 className="relative z-10 text-2xl md:text-4xl font-rubik font-bold text-FAF3E0">
                                     تایید کد بازیابی
@@ -223,7 +223,7 @@ export default function ForgotPasswordOTPSeller() {
                                 {formatTime(timer)}
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-3 flex justify-center   ">
                                 <button
                                     type="button"
                                     onClick={handleMainButton}
