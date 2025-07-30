@@ -45,9 +45,9 @@ import ForgotPasswordOTP from './pages/website/pages/Auth/ForgotPasswordOTP';
 import ResetPassword from './pages/website/pages/Auth/ResetPassword';
 import PaymentCallbackOrder from './pages/website/pages/Orders/PaymentCallbackOrder.jsx';
 // Slug Handler Component
-import SlugHandler from '../src/pages/website/pages/SlugHandler.jsx';
+import SlugHandler from '../src/pages/website/pages/Slug/SlugHandler.jsx';
 
-import { WebsiteProvider } from '../src/pages/website/pages/WebsiteProvider.jsx';
+import { WebsiteProvider } from '../src/pages/website/pages/Slug/WebsiteProvider.jsx';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function App() {

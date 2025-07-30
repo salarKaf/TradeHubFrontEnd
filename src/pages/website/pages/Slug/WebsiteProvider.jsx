@@ -1,7 +1,7 @@
 // pages/website/pages/WebsiteProvider.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
-import { getWebsiteIdBySlug } from '../../../API/website.js';
+import { getWebsiteIdBySlug } from '/src/API/website.js';
 
 const WebsiteContext = createContext();
 
@@ -11,7 +11,7 @@ export const WebsiteProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [slugLoading, setSlugLoading] = useState(true);
-  
+
   const { slug } = useParams();
   const location = useLocation();
 
@@ -35,9 +35,9 @@ export const WebsiteProvider = ({ children }) => {
     try {
       setSlugLoading(true);
       console.log('🚀 WebsiteProvider: Fetching website ID for slug:', slug);
-      
+
       const response = await getWebsiteIdBySlug(slug);
-      
+
       if (response && response.website_id) {
         console.log('✅ WebsiteProvider: Website ID from slug:', response.website_id);
         setWebsiteId(response.website_id);

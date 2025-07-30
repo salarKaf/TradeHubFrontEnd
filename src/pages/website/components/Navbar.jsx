@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import SearchBar from "./SearchBar";
-import { useSlugNavigation } from '../../website/pages/useSlugNavigation';
+import { useSlugNavigation } from '../../website/pages/Slug/useSlugNavigation';
 import { useState, useEffect } from "react"
 import { getMyCart } from '../../../API/cart'
 const Navbar = () => {

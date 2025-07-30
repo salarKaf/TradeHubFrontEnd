@@ -1,7 +1,7 @@
 // pages/website/pages/SlugHandler.jsx
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getWebsiteIdBySlug } from '../../../API/website.js';
+import { getWebsiteIdBySlug } from '/src/API/website.js';
 
 const SlugHandler = () => {
   const { slug } = useParams();
@@ -20,10 +20,10 @@ const SlugHandler = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         console.log('Fetching website ID for slug:', slug);
         const response = await getWebsiteIdBySlug(slug);
-       
+
         if (response && response.website_id) {
           // اگر آیدی پیدا شد، کاربر رو به صفحه اصلی فروشگاه هدایت کن
           navigate(`/${slug}/home`, {
