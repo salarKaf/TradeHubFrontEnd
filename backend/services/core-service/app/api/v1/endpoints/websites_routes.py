@@ -238,7 +238,6 @@ async def get_latest_orders(
 @website_router.get("/items/best-selling/{website_id}")
 async def best_selling_items(
     website_id: UUID,
-    current_user: Annotated[TokenDataSchema, Depends(get_current_user)],
     website_service: Annotated[WebsiteMainService, Depends()],
 ):
     return await website_service.get_best_selling_items(website_id, limit=4)
