@@ -15,3 +15,10 @@ class TokenDataSchema(BaseModel):
     email: str
     class Config:
         from_attributes = True
+
+
+class AdminTokenDataSchema(BaseModel):
+    admin_id: UUID
+    email: str
+    class Config:
+        from_attributes = True        
