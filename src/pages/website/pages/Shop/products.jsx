@@ -4,7 +4,7 @@ import ProductCard from "../Home/ProductCard";
 import { getWebsiteIdBySlug } from "../../../../API/website";
 import { getNewestItems, getItemsByCategoryId, getItemsBySubcategoryId } from "../../../../API/Items";
 import { getWebsiteCategories, getSubcategoriesByCategoryId, getItemCountByCategoryId } from "../../../../API/category";
-import { addItemToCart } from "../../../../API/cart"; // اضافه کردن import
+import { addItemToCart } from "../../../../API/cart";
 import { FaChevronDown, FaChevronUp, FaFilter, FaExclamationTriangle } from "react-icons/fa";
 
 const Products = () => {
@@ -18,7 +18,7 @@ const Products = () => {
     const [subcategories, setSubcategories] = useState({});
     const [categoryItemCounts, setCategoryItemCounts] = useState({});
     const [openCategory, setOpenCategory] = useState(null);
-    const [priceFilter, setPriceFilter] = useState(100);
+    const [priceRange, setPriceRange] = useState([0, 10000000]); // از 0 تا 10 میلیون
     const [sortOption, setSortOption] = useState("جدیدترین");
     const [currentPage, setCurrentPage] = useState(1);
     const [activeFilter, setActiveFilter] = useState(null);
@@ -107,15 +107,19 @@ const Products = () => {
                 response = [];
             }
 
-            const formatted = response.map((item, index) => ({
+            // ✅ فیلتر کردن محصولات موجود
+            const availableItems = response.filter(item => item.is_available === true);
+
+            const formatted = availableItems.map((item, index) => ({
                 id: item.item_id || index,
                 name: item.name,
-                price: item.price ? `${parseInt(item.price).toLocaleString('fa-IR')} تومان` : "",
+                price: parseInt(item.price) || 0,
                 image: item.image_url || "",
-                rating: 5,
-                discount: item.discount_active && item.discount_percent ? `${item.discount_percent}%` : undefined,
-                originalPrice: item.discount_active && item.discount_price ? `${parseInt(item.discount_price).toLocaleString('fa-IR')} تومان` : undefined,
-                soldOut: !item.is_available
+                rating: parseInt(item.rating) || 5,
+                discount: item.discount_active && item.discount_percent ? parseInt(item.discount_percent) : null,
+                discountedPrice: item.discount_active && item.discount_price ? parseInt(item.discount_price) : null,
+                soldOut: false, // چون همه محصولات فیلتر شده موجود هستن
+                stock: item.stock || 0
             }));
 
             setProducts(formatted);
@@ -153,7 +157,6 @@ const Products = () => {
         }
     };
 
-    // ✅ اضافه کردن تابع افزودن به سبد خرید
     const handleAddToCart = async (productId) => {
         if (!websiteId || !productId) {
             console.error("Website ID or Product ID is missing");
@@ -161,44 +164,60 @@ const Products = () => {
         }
 
         try {
-            await addItemToCart( productId);
-            // می‌تونی اینجا پیام موفقیت نمایش بدی یا state مربوط به سبد خرید رو آپدیت کنی
+            await addItemToCart(productId);
             console.log("محصول با موفقیت به سبد خرید اضافه شد");
         } catch (error) {
             console.error("خطا در افزودن محصول به سبد خرید:", error);
         }
     };
 
-    const extractPrice = (priceStr) => parseInt(priceStr.replace(/[^\d]/g, ""));
+    // ✅ فیلتر قیمت و مرتب‌سازی اصلاح شده
+    const getFilteredAndSortedProducts = () => {
+        let filtered = [...products];
 
-    const getSortedProducts = () => {
-        let sorted = [...products];
+        // فیلتر قیمت
+        filtered = filtered.filter((product) => {
+            const productPrice = product.discountedPrice || product.price;
+            return productPrice >= priceRange[0] && productPrice <= priceRange[1];
+        });
+
+        // مرتب‌سازی
         switch (sortOption) {
             case "ارزان‌ترین":
-                sorted.sort((a, b) => extractPrice(a.price) - extractPrice(b.price));
+                filtered.sort((a, b) => {
+                    const priceA = a.discountedPrice || a.price;
+                    const priceB = b.discountedPrice || b.price;
+                    return priceA - priceB;
+                });
                 break;
             case "گران‌ترین":
-                sorted.sort((a, b) => extractPrice(b.price) - extractPrice(a.price));
+                filtered.sort((a, b) => {
+                    const priceA = a.discountedPrice || a.price;
+                    const priceB = b.discountedPrice || b.price;
+                    return priceB - priceA;
+                });
                 break;
             case "تخفیف‌دار":
-                sorted = sorted.filter((item) => item.discount);
+                filtered = filtered.filter((item) => item.discount);
                 break;
             case "پرفروش‌ترین":
-                sorted.sort((a, b) => b.rating - a.rating);
+                filtered.sort((a, b) => b.rating - a.rating);
                 break;
             default:
+                // جدیدترین - ترتیب اصلی
                 break;
         }
-        return sorted;
+
+        return filtered;
     };
 
     const paginatedProducts = () => {
-        const sorted = getSortedProducts();
+        const filtered = getFilteredAndSortedProducts();
         const start = (currentPage - 1) * productsPerPage;
-        return sorted.slice(start, start + productsPerPage);
+        return filtered.slice(start, start + productsPerPage);
     };
 
-    const totalPages = Math.ceil(getSortedProducts().length / productsPerPage);
+    const totalPages = Math.ceil(getFilteredAndSortedProducts().length / productsPerPage);
 
     const toggleCategory = (categoryId) => {
         setOpenCategory(prev => (prev === categoryId ? null : categoryId));
@@ -214,6 +233,14 @@ const Products = () => {
 
     const handleResetFilters = () => {
         loadProducts(websiteId);
+        setPriceRange([0, 10000000]);
+        setSortOption("جدیدترین");
+    };
+
+    // ✅ فرمت نمایش قیمت
+    const formatPrice = (price) => {
+        if (!price) return "0 ریال";
+        return `${price.toLocaleString('fa-IR')} ریال`;
     };
 
     if (loading) return (
@@ -255,8 +282,9 @@ const Products = () => {
                                     {categories.map((cat) => (
                                         <div key={cat.id} className="border-b border-gray-100 pb-2">
                                             <button
-                                                className={`w-full text-right font-medium flex justify-between items-center p-2 rounded hover:bg-gray-100 ${activeFilter?.type === 'category' && activeFilter.id === cat.id ? 'bg-blue-50 text-blue-600' : ''
-                                                    }`}
+                                                className={`w-full text-right font-medium flex justify-between items-center p-2 rounded hover:bg-gray-100 ${
+                                                    activeFilter?.type === 'category' && activeFilter.id === cat.id ? 'bg-blue-50 text-blue-600' : ''
+                                                }`}
                                                 onClick={() => handleCategoryClick(cat.id)}
                                             >
                                                 <div className="flex items-center">
@@ -283,8 +311,9 @@ const Products = () => {
                                                     {subcategories[cat.id].map((subItem) => (
                                                         <li
                                                             key={subItem.id}
-                                                            className={`cursor-pointer p-2 rounded hover:bg-gray-100 flex justify-between items-center ${activeFilter?.type === 'subcategory' && activeFilter.id === subItem.id ? 'bg-blue-50 text-blue-600' : ''
-                                                                }`}
+                                                            className={`cursor-pointer p-2 rounded hover:bg-gray-100 flex justify-between items-center ${
+                                                                activeFilter?.type === 'subcategory' && activeFilter.id === subItem.id ? 'bg-blue-50 text-blue-600' : ''
+                                                            }`}
                                                             onClick={() => handleSubcategoryClick(subItem.id)}
                                                         >
                                                             <span>{subItem.name}</span>
@@ -298,20 +327,38 @@ const Products = () => {
                             )}
                         </div>
 
-                        {/* فیلتر قیمت */}
+                        {/* ✅ فیلتر قیمت دو طرفه ساده */}
                         <div className="mt-6">
                             <h3 className="text-lg font-semibold mb-3">محدوده قیمت</h3>
-                            <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                value={priceFilter}
-                                onChange={(e) => setPriceFilter(e.target.value)}
-                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                            />
-                            <div className="flex justify-between text-sm text-gray-600 mt-1">
-                                <span>۰ تومان</span>
-                                <span>{priceFilter} میلیون تومان</span>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs text-gray-600 block mb-1">از:</label>
+                                    <input
+                                        type="number"
+                                        value={priceRange[0]}
+                                        onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                                        placeholder="حداقل قیمت"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs text-gray-600 block mb-1">تا:</label>
+                                    <input
+                                        type="number"
+                                        value={priceRange[1]}
+                                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 10000000])}
+                                        placeholder="حداکثر قیمت"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+
+                                <div className="text-center">
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                                        {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -352,7 +399,7 @@ const Products = () => {
                         </div>
                     </div>
 
-                    {products.length === 0 ? (
+                    {getFilteredAndSortedProducts().length === 0 ? (
                         <div className="text-center py-12">
                             <div className="inline-block bg-gray-100 p-6 rounded-full mb-4">
                                 <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -360,15 +407,13 @@ const Products = () => {
                                 </svg>
                             </div>
                             <h3 className="text-lg font-medium text-gray-700">محصولی یافت نشد</h3>
-                            <p className="text-gray-500 mt-1">هیچ محصولی در این دسته‌بندی وجود ندارد.</p>
-                            {activeFilter && (
-                                <button
-                                    onClick={handleResetFilters}
-                                    className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium"
-                                >
-                                    مشاهده همه محصولات
-                                </button>
-                            )}
+                            <p className="text-gray-500 mt-1">با فیلترهای انتخابی هیچ محصولی پیدا نشد.</p>
+                            <button
+                                onClick={handleResetFilters}
+                                className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                            >
+                                حذف فیلترها
+                            </button>
                         </div>
                     ) : (
                         <>
@@ -377,9 +422,9 @@ const Products = () => {
                                     <div key={product.id}>
                                         <ProductCard 
                                             {...product} 
-                                            websiteId={websiteId} // ✅ اضافه کردن websiteId
+                                            websiteId={websiteId}
                                             onClick={handleProductClick}
-                                            onAddToCart={handleAddToCart} // ✅ اضافه کردن تابع افزودن به سبد خرید
+                                            onAddToCart={handleAddToCart}
                                         />
                                     </div>
                                 ))}
@@ -400,8 +445,9 @@ const Products = () => {
                                         <button
                                             key={i}
                                             onClick={() => setCurrentPage(i + 1)}
-                                            className={`px-4 py-2 rounded border ${currentPage === i + 1 ? "bg-blue-600 text-white border-blue-600" : "bg-white"
-                                                }`}
+                                            className={`px-4 py-2 rounded border ${
+                                                currentPage === i + 1 ? "bg-blue-600 text-white border-blue-600" : "bg-white"
+                                            }`}
                                         >
                                             {i + 1}
                                         </button>
