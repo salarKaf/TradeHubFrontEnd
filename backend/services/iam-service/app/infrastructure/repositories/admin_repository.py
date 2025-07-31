@@ -29,6 +29,6 @@ class AdminRepository:
             logger.warning(f"⚠️ admin {admin_id} not found")
             return None
 
-    def get_user_by_id(self, admin_id: UUID) -> Admin:
+    def get_admin_by_id(self, admin_id: UUID) -> Admin:
         logger.info(f"📥 Fetching Admin with id: {admin_id}")
         return self.db.query(Admin).filter(Admin.admin_id == admin_id).first()

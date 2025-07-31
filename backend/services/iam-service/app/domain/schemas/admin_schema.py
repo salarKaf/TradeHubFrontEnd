@@ -13,6 +13,9 @@ class ForgetPasswordSchema(BaseModel):
     password: str
     confirm_password: str    
 
+class AdminResponseSchema(BaseModel):
+    admin_id: UUID
+    email: str
 
 class ResetPasswordSchema(BaseModel):
     email: str

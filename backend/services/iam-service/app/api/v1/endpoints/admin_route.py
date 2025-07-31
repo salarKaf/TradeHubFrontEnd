@@ -1,4 +1,4 @@
-from  app.domain.schemas.admin_schema import AdminLoginSchema, ResetPasswordSchema, VerifyOTPResponseSchema, VerifyOTPSchema, ForgetPasswordSchema, ResendOTPResponseSchema, ResendOTPSchema
+from  app.domain.schemas.admin_schema import AdminLoginSchema, AdminResponseSchema, VerifyOTPResponseSchema, VerifyOTPSchema, ForgetPasswordSchema, ResendOTPResponseSchema, ResendOTPSchema
 from  app.domain.schemas.token_schema import TokenSchema, TokenDataSchema
 from  app.services.auth_services.auth_service import AuthService
 from  app.services.admin_service import AdminService
@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from loguru import logger
-
+from app.domain.models.admin_model import Admin
 admin_router = APIRouter()
 
 @admin_router.post("/login", response_model=TokenSchema, status_code=status.HTTP_200_OK)
@@ -64,3 +64,11 @@ async def forget_password(
 ):
     logger.info(f'🔃 Changing admin password for admin {admin_data.email}')
     return await admin_service.change_admin_password(admin_data.email, dict(admin_data))   
+
+
+
+
+@admin_router.get("/Me", response_model=AdminResponseSchema, status_code=status.HTTP_200_OK)
+async def read_me(current_admin: Admin = Depends(get_current_admin)) -> AdminResponseSchema:
+    logger.info(f"📥 Getting admin with email {current_admin.email}")
+    return current_admin
