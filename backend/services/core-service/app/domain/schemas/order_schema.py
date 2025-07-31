@@ -25,6 +25,7 @@ class OrderFactorResponseSchema(BaseModel):
     order_id: UUID
     website_id: UUID
     buyer_id: UUID
+    buyer_email: str
     status: str
     total_price: Decimal
     created_at: datetime
