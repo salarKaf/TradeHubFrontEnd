@@ -174,3 +174,17 @@ class AdminMainService:
         return result
 
 
+    async def get_monthly_revenue_growth(self) -> float:
+        now = datetime.utcnow()
+        start_of_month = now.replace(day=1)
+        start_of_prev_month = (start_of_month - timedelta(days=1)).replace(day=1)
+        start_of_next_month = (start_of_month + timedelta(days=32)).replace(day=1)
+
+        current_month_income = await self.plan_service.get_earned_amount_by_month(start_of_month, start_of_next_month)
+        last_month_income = await self.plan_service.get_earned_amount_by_month(start_of_prev_month, start_of_month)
+
+        if not last_month_income:
+            return 0.0
+
+        growth = ((current_month_income - last_month_income) / last_month_income) * 100
+        return round(growth, 2)

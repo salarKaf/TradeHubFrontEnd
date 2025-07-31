@@ -93,3 +93,10 @@ async def get_plan_purchase_stats(
     current_admin: Annotated[AdminTokenDataSchema,Depends(get_current_admin)],
 ):
     return await admin_main_service.get_plan_purchase_stats()
+
+@admin_router.get("/dashboard/monthly-growth", response_model=float)
+async def get_monthly_revenue_growth(
+    admin_main_service: Annotated[AdminMainService, Depends()],
+    current_admin: Annotated[AdminTokenDataSchema, Depends(get_current_admin)],
+):
+    return await admin_main_service.get_monthly_revenue_growth()
