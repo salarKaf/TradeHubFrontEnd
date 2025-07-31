@@ -6,7 +6,7 @@ import { Line } from 'react-chartjs-2';
 import { useParams } from 'react-router-dom';
 import { getActivePlan } from '../../../API/website';
 import { getNewestItems, getItemSalesCount, getItemRevenue } from "../../../API/Items";
-import { getTotalRevenue, getTotalSalesCount, getProductCount, getLast6MonthsSales, getLatestOrders } from '../../../API/dashboard';
+import { getLatestAnnouncements, getTotalRevenue, getTotalSalesCount, getProductCount, getLast6MonthsSales, getLatestOrders } from '../../../API/dashboard';
 
 import {
   Chart as ChartJS,
@@ -80,6 +80,7 @@ const HomeContent = () => {
   const [planType, setPlanType] = useState(null); // "Basic" یا "Pro"
   const [salesChartData, setSalesChartData] = useState(null);
 
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -88,6 +89,17 @@ const HomeContent = () => {
         // دریافت پلن کاربر
         const activePlan = await getActivePlan(website_Id);
         setPlanType(activePlan?.plan?.name || null);
+        let announcements = [];
+        if (activePlan?.plan?.name === "Pro") {
+          // 📥 دریافت اعلان‌های دارای متن (یعنی نظر جدید)
+          const res = await getLatestAnnouncements(website_Id);
+          announcements = res
+            .filter(item => item.text)
+            .map(item => ({
+              message: item.text ,
+              date: item.date
+            }));
+        }
 
         // دریافت داده‌های نمودار فقط اگر پلن Pro باشه
         let last6MonthSales = [];
@@ -148,7 +160,9 @@ const HomeContent = () => {
           totalProducts: productCount?.items_count || 0,
           recentOrders: latestOrders || [],
           bestProducts: newestItems || [],
+          announcements: announcements || []
         }));
+
 
       } catch (error) {
         console.error("❌ خطا در گرفتن داده داشبورد:", error);
@@ -204,9 +218,9 @@ const HomeContent = () => {
           <table className="w-full table-auto mb-6">
             <thead>
               <tr className="my-10">
-                <th className="p-2 ">تاریخ</th>
-                <th className="p-2 ">شناسه سفارش</th>
-                <th className="p-2 ">مبلغ</th>
+                <th className="p-2">تاریخ</th>
+                <th className="p-2">شناسه سفارش</th>
+                <th className="p-2">مبلغ</th>
               </tr>
             </thead>
             <tbody>
@@ -236,21 +250,21 @@ const HomeContent = () => {
           <table className="w-full table-auto mb-6">
             <thead>
               <tr className="my-10">
-                <th className="p-2 ">نام محصول</th>
-                <th className="p-2 ">تعداد فروش</th>
-                <th className='p-2 '>مبلغ</th>
+                <th className="p-2">نام محصول</th>
+                <th className="p-2">تعداد فروش</th>
+                <th className="p-2">مبلغ</th>
               </tr>
             </thead>
             <tbody>
               {data.bestProducts.length > 0 ? (
-                
-                  data.bestProducts.slice(0, 4).map((order, index) => (
-                    <tr key={index} className="border-t border-black border-opacity-10 text-center">
-                      <td className="py-3">{order.name}</td>
-                      <td className="py-3">{order.Numsale}</td>
-                      <td className="py-3">{Number(order.amount ?? 0).toLocaleString()} تومان</td>
-                    </tr>
-                  ))
+
+                data.bestProducts.slice(0, 4).map((order, index) => (
+                  <tr key={index} className="border-t border-black border-opacity-10 text-center">
+                    <td className="py-3">{order.name}</td>
+                    <td className="py-3">{order.Numsale}</td>
+                    <td className="py-3">{Number(order.amount ?? 0).toLocaleString()} تومان</td>
+                  </tr>
+                ))
               ) : (
                 <tr>
                   <td colSpan="3" className="py-8 text-center text-gray-500">
@@ -272,12 +286,14 @@ const HomeContent = () => {
             <div>
               {data.announcements.length > 0 ? (
                 data.announcements.map((announcement, index) => (
-                  <div key={index} className="py-1 px-5 mb-4 flex justify-between">
-                    <div className='px-3'>
-                      <p className="text-md pb-1">{announcement.message}</p>
-                      <p className="text-gray-500">{announcement.date}</p>
+                  <div key={index} className="py-3 px-5 mb-3 flex items-center justify-between rounded-lg shadow-sm transition-colors">
+                    <FiBell className="w-5 h-5 text-gray-500 ml-4" />
+                    <div className="flex-1 text-right">
+                      <p className="text-md font-modam">
+                        دیدگاه جدیدی راجع به محصول "<span className="font-semibold">{announcement.message}</span>" ثبت شد
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">{announcement.date}</p>
                     </div>
-                    <FiBell className='w-5 h-5'></FiBell>
                   </div>
                 ))
               ) : (
@@ -285,10 +301,8 @@ const HomeContent = () => {
                   اعلانی وجود ندارد
                 </div>
               )}
+
             </div>
-            {data.announcements.length > 0 && (
-              <a className='p-10 text-cyan-700' href='/orders'>   مشاهده کل اعلانات    &gt;   </a>
-            )}
           </div>
         )}
 

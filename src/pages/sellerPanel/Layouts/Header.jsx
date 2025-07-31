@@ -1,7 +1,8 @@
 import { getActivePlan } from '../../../API/website'; // مسیر فایل API رو بذار
-import {getMe} from '../../../API/auth';
+import { getMe } from '../../../API/auth';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getLatestAnnouncements } from '../../../API/dashboard';
 
 const Header = () => {
   const [planData, setPlanData] = useState(null);
@@ -10,6 +11,7 @@ const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoutConfirmationOpen, setIsLogoutConfirmationOpen] = useState(false);
   const [notificationsCount, setNotificationsCount] = useState(50);
+  const [notifications, setNotifications] = useState([]);
 
   const navigate = useNavigate();
 
@@ -23,6 +25,12 @@ const Header = () => {
         ]);
         setPlanData(plan);
         setUserEmail(me.email);
+        const announcements = await getLatestAnnouncements(websiteId);
+        const filtered = announcements.filter(a => a.text); // فقط اونایی که متن دارن
+
+        setNotifications(filtered);
+        setNotificationsCount(filtered.length); // شمارش
+
       } catch (error) {
         console.error("❌ خطا در دریافت اطلاعات:", error);
         navigate("/login"); // اگر توکن مشکل داشت
@@ -94,24 +102,44 @@ const Header = () => {
 
       {/* پروفایل و نوتیفیکیشن */}
       <div className="flex-1 flex items-center justify-end space-x-4">
-        <div className="relative">
-          <img
-            src='/SellerPanel/notif.png'
-            className="text-white text-xl cursor-pointer"
-            onClick={toggleNotifications}
-          />
-          <span className="absolute top-0 right-0 bg-[#1E212D] text-[#EABF9F] text-sm font-krona font-semibold rounded-full px-1">{notificationsCount}</span>
+        {planData?.plan?.name === "Pro" && (
+          <div className="relative">
+            <img
+              src='/SellerPanel/notif.png'
+              className="text-white text-xl cursor-pointer w-12 h-12"
+              onClick={toggleNotifications}
+            />
+            <span className="absolute top-0 right-0 bg-[#1E212D] text-[#EABF9F] text-sm font-krona font-semibold rounded-full px-1">
+              {notificationsCount}
+            </span>
 
-          {isNotificationsOpen && (
-            <div className="absolute left-0 mt-2 w-96 bg-white text-black rounded-lg shadow-lg max-h-60 overflow-y-auto z-[60]">
-              <h3 className="font-semibold my-5 mr-7">آخرین نوتیفیکیشن‌ها</h3>
-              <ul>
-                <li className="py-5 px-4 border-b border-gray-200">سفارش جدید از فروشگاه 1</li>
-                <li className="py-5 px-4 border-b border-gray-200">محصول جدید اضافه شد</li>
-              </ul>
-            </div>
-          )}
-        </div>
+            {isNotificationsOpen && (
+              <div className="absolute left-0 top-12 w-96 z-[60]">
+                {/* مثلث بالا */}
+                <div className="absolute top-[-10px] left-8 w-4 h-4 bg-white/30 border border-white/40 rotate-45 rounded-sm shadow-md z-[-1]"></div>
+
+                {/* باکس اصلی نوتیف */}
+                <div className="backdrop-blur-md bg-white/30 border border-white/40 text-black rounded-xl shadow-2xl max-h-60 overflow-y-auto p-4">
+                  <h3 className="font-semibold mb-4">آخرین نوتیفیکیشن‌ها</h3>
+                  <ul>
+                    {notifications.length > 0 ? (
+                      notifications.map((item, idx) => (
+                        <li key={idx} className="py-4 border-b border-white/30 text-sm">
+                          دیدگاه جدید برای <span className="font-semibold">{item.text}</span> ثبت شد
+                          <div className="text-xs text-gray-100/60 mt-1">{item.date}</div>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="py-4 text-gray-200">اعلان جدیدی نیست</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            )}
+  
+          </div>
+        )}
+
 
         <div className="relative">
           <img

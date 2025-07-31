@@ -11,7 +11,7 @@ const getAuthHeader = () => {
 };
 
 // گرفتن مجموع درآمد
-export  const getTotalRevenue = async (websiteId) => {
+export const getTotalRevenue = async (websiteId) => {
   try {
     const response = await axios.get(
       `${coreBaseURL}/websites/sales/total-revenue/${websiteId}`,
@@ -62,7 +62,7 @@ export const getLast6MonthsSales = async (websiteId) => {
 
 
 
-export const getProductCount  = async (websiteId) => {
+export const getProductCount = async (websiteId) => {
   try {
     const response = await axios.get(
       `${coreBaseURL}/items/items/count/${websiteId}`,
@@ -93,6 +93,29 @@ export const getLatestOrders = async (websiteId, sortBy = 'latest') => {
     return response.data; // این باید آرایه‌ای از سفارشات باشه
   } catch (error) {
     console.error('خطا در دریافت آخرین سفارشات:', error);
+    return [];
+  }
+};
+
+
+
+
+// API/announcement.js
+
+export const getLatestAnnouncements = async (websiteId) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await axios.get(`${coreBaseURL}/websites/announcements/latest/${websiteId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data || [];
+  } catch (error) {
+    console.error("خطا در دریافت اعلان‌ها:", error);
     return [];
   }
 };
