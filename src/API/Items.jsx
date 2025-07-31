@@ -256,3 +256,16 @@ export const createReview = async ({ website_id, item_id, rating, text }) => {
         throw error;
     }
 };
+
+
+
+
+export const getBestSellingItems = async (websiteId) => {
+  try {
+    const res = await axios.get(`${coreBaseURL}/websites/items/best-selling/${websiteId}`);
+    return res.data || [];
+  } catch (err) {
+    console.error("Error fetching best-selling items:", err);
+    return [];
+  }
+};
