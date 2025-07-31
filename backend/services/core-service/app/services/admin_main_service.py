@@ -7,7 +7,7 @@ from typing import Annotated, List
 from fastapi import Depends
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-
+from app.utils.date_utils import get_jalali_month_year
 
 class AdminMainService:
     def __init__(self,
@@ -140,7 +140,7 @@ class AdminMainService:
             end = (m + relativedelta(months=1))
 
             revenue = await self.plan_service.get_earned_amount_by_month(start, end)
-            label = f"{start.year}/{start.month:02d}"  
+            label = get_jalali_month_year(start)
 
             result["labels"].append(label)
             result["values"].append(revenue or 0)
