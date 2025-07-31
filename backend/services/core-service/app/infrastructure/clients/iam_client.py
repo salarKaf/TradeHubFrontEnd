@@ -3,7 +3,7 @@ from uuid import UUID
 from loguru import logger
 from fastapi import Depends
 from app.core.configs.config import get_settings, Settings
-from app.domain.schemas.token_schema import TokenDataSchema
+from app.domain.schemas.token_schema import TokenDataSchema, AdminTokenDataSchema
 from app.infrastructure.clients.http_client import HTTPClient
 
 
@@ -40,7 +40,7 @@ class IAMClient:
             return TokenDataSchema(**response.json())        
 
 
-    async def validate_admin_token(self, token: str) -> TokenDataSchema:
+    async def validate_admin_token(self, token: str) -> AdminTokenDataSchema:
         headers = {"Authorization": f"Bearer {token}"}
         async with self.http_client as client:
             response = await client.get(
@@ -48,4 +48,4 @@ class IAMClient:
             )
             response.raise_for_status()
             logger.info(f"Token {token} validated")
-            return TokenDataSchema(**response.json())                
+            return AdminTokenDataSchema(**response.json())                
