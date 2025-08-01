@@ -37,8 +37,9 @@ export default function ProductGrid() {
 
         const productsData = await getNewestItems(slugResponse.website_id, 6);
         console.log('✅ ProductGrid: Products received:', productsData);
+        const availableItems = productsData.filter(item => item.is_available === true);
 
-        const formattedProducts = productsData.map((item, index) => ({
+        const formattedProducts = availableItems.map((item, index) => ({
           id: item.item_id || index + 1,
           name: item.name || "محصول بدون نام",
           price: item.price ? parseInt(item.price) : 0,
@@ -47,6 +48,7 @@ export default function ProductGrid() {
           discount: item.discount_active && item.discount_percent > 0 ? item.discount_percent : null,
           discountedPrice: item.discount_active && item.discount_price ? parseInt(item.discount_price) : null,
         }));
+
 
 
         setProducts(formattedProducts);
