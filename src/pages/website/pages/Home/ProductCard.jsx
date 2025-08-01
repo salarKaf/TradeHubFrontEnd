@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Heart, Eye, ShoppingCart } from "lucide-react";
 import { addItemToCart } from "../../../../API/cart";
 import { addToFavorites, removeFromFavorites, isItemInFavorites, getFavoriteIdByItemId } from "../../../../API/favorites";
+import { getMyCart } from '../../../../API/cart';
 import { useParams, useNavigate } from 'react-router-dom';
+import { deleteItemFromCart, removeOneFromCart } from "../../../../API/cart"; // ⬅ یادت نره این بالا ایمپورت کنی
 
 const ProductCard = ({
   product,
@@ -21,32 +23,81 @@ const ProductCard = ({
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isUpdatingFavorite, setIsUpdatingFavorite] = useState(false);
   const [favoriteId, setFavoriteId] = useState(null);
+  const [cartItem, setCartItem] = useState(null);
+  const [isUpdatingQuantity, setIsUpdatingQuantity] = useState(false);
+
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  // ✅ چک کردن وضعیت علاقه‌مندی هنگام بارگذاری کامپوننت
+
+
   useEffect(() => {
-    const checkFavoriteStatus = async () => {
+    const checkStates = async () => {
+      const currentWebsiteId = websiteId || localStorage.getItem('current_store_website_id');
+      const token = localStorage.getItem(`buyer_token_${currentWebsiteId}`);
+      if (!token || !id) return;
+
       try {
-        const currentWebsiteId = websiteId || localStorage.getItem('current_store_website_id');
-        const token = localStorage.getItem(`buyer_token_${currentWebsiteId}`);
-
-        if (!token || !id) return;
-
+        // بررسی علاقه‌مندی
         const isFavorite = await isItemInFavorites(id, currentWebsiteId);
         setIsLiked(isFavorite);
-
         if (isFavorite) {
           const favId = await getFavoriteIdByItemId(id, currentWebsiteId);
           setFavoriteId(favId);
         }
+
+        // بررسی سبد خرید
+        const items = await getMyCart();
+        const itemInCart = items.find(item => String(item.item_id) === String(id));
+        setCartItem(itemInCart || null);
+
+
       } catch (error) {
-        console.warn('خطا در چک کردن وضعیت علاقه‌مندی:', error);
+        console.warn('خطا در بررسی وضعیت‌ها:', error);
       }
     };
 
-    checkFavoriteStatus();
+    checkStates();
+
+    // 🔄 گوش دادن به بروزرسانی سبد
+    window.addEventListener('cartUpdated', checkStates);
+
+    return () => {
+      window.removeEventListener('cartUpdated', checkStates);
+    };
   }, [id, websiteId]);
+
+
+  const handleQuantityChange = async (newQuantity) => {
+    if (!cartItem) return;
+
+    setIsUpdatingQuantity(true); // 🔄 لود شروع
+
+    const currentWebsiteId = websiteId || localStorage.getItem('current_store_website_id');
+
+    try {
+      if (newQuantity <= 0) {
+        await deleteItemFromCart(cartItem.id);
+        setCartItem(null);
+      } else if (newQuantity < cartItem.quantity) {
+        await removeOneFromCart(cartItem.id);
+      } else {
+        await addItemToCart(id, newQuantity);
+      }
+
+      const items = await getMyCart();
+      const updatedItem = items.find(item => String(item.item_id) === String(id));
+      setCartItem(updatedItem || null);
+
+      window.dispatchEvent(new Event("cartUpdated"));
+    } catch (error) {
+      console.error('❌ خطا در تغییر تعداد:', error);
+    } finally {
+      setIsUpdatingQuantity(false); // ✅ لود تموم شد
+    }
+  };
+
+
 
   // محاسبه قیمت تخفیف‌دار
   const calculateDiscountedPrice = (originalPrice, discountPercent) => {
@@ -77,34 +128,23 @@ const ProductCard = ({
         return;
       }
 
-      console.log('🛒 Adding to cart:', { id, currentWebsiteId, token });
-
       const result = await addItemToCart(id, currentWebsiteId, 1, token);
 
-      console.log('✅ Product added to cart successfully:', result);
+      const items = await getMyCart(); // ❗️اینجا اصلاح شد
+      const itemInCart = items.find(item => String(item.item_id) === String(id));
+      setCartItem(itemInCart || null);
 
-      if (onAddToCart) {
-        onAddToCart(id, result);
-      }
       window.dispatchEvent(new Event("cartUpdated"));
 
       alert('محصول با موفقیت به سبد خرید اضافه شد!');
-
     } catch (error) {
       console.error('❌ Error adding to cart:', error);
-
-      if (error.message.includes('401') || error.message.includes('unauthorized')) {
-        alert('توکن شما منقضی شده. لطفاً دوباره وارد شوید');
-        navigate(`/${slug}/login`);
-      } else if (error.message.includes('stock')) {
-        alert('متأسفانه این محصول در انبار موجود نیست');
-      } else {
-        alert('خطا در افزودن محصول به سبد خرید. لطفاً دوباره تلاش کنید');
-      }
     } finally {
       setIsAddingToCart(false);
     }
   };
+
+
 
   // ✅ Handle favorites toggle
   const handleFavoriteToggle = async () => {
@@ -154,16 +194,44 @@ const ProductCard = ({
       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-2xl z-10">
         {/* Add to Cart Button - Center */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <button
-            onClick={handleAddToCart}
-            disabled={isAddingToCart}
-            className={`opacity-0 group-hover:opacity-100 bg-black text-white px-4 py-2 rounded-full font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex items-center gap-2 hover:bg-gray-800 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-          >
-            <ShoppingCart size={18} />
-            {isAddingToCart ? 'در حال افزودن...' : 'افزودن به سبد'}
-          </button>
+          {cartItem ? (
+            <div className="flex gap-2 items-center bg-white px-3 py-1 rounded-full shadow-md min-w-[100px] justify-center">
+              {isUpdatingQuantity ? (
+                <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-800 rounded-full animate-spin" />
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleQuantityChange(cartItem.quantity - 1)}
+                    disabled={isUpdatingQuantity}
+                    className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold"
+                  >
+                    −
+                  </button>
+                  <span className="font-bold text-gray-800">{cartItem.quantity}</span>
+                  <button
+                    onClick={() => handleQuantityChange(cartItem.quantity + 1)}
+                    disabled={isUpdatingQuantity}
+                    className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-900 text-white text-lg font-bold"
+                  >
+                    +
+                  </button>
+                </>
+              )}
+            </div>
+  
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              disabled={isAddingToCart}
+              className={`opacity-0 group-hover:opacity-100 bg-black text-white px-4 py-2 rounded-full font-medium transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex items-center gap-2 hover:bg-gray-800 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+            >
+              <ShoppingCart size={18} />
+              {isAddingToCart ? 'در حال افزودن...' : 'افزودن به سبد'}
+            </button>
+          )}
         </div>
+
 
         {/* Action Buttons - Bottom Full Width */}
         <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 flex transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
