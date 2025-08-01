@@ -86,6 +86,7 @@ const ProductCard = ({
       if (onAddToCart) {
         onAddToCart(id, result);
       }
+      window.dispatchEvent(new Event("cartUpdated"));
 
       alert('محصول با موفقیت به سبد خرید اضافه شد!');
 
@@ -170,8 +171,8 @@ const ProductCard = ({
             onClick={handleFavoriteToggle}
             disabled={isUpdatingFavorite}
             className={`flex items-center justify-center gap-1 px-3 py-2 w-1/2 mr-1 rounded-lg transition-all duration-200 ${isLiked
-                ? 'bg-black text-red-400 hover:bg-gray-800'
-                : 'bg-black text-white hover:bg-gray-800'
+              ? 'bg-black text-red-400 hover:bg-gray-800'
+              : 'bg-black text-white hover:bg-gray-800'
               } ${isUpdatingFavorite ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
@@ -203,7 +204,7 @@ const ProductCard = ({
         {/* Discount Badge */}
         {discount && (
           <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg z-20">
-            {discount}% 
+            {discount}%
           </span>
         )}
       </div>

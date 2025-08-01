@@ -102,3 +102,30 @@ export const deleteItemFromCart = async (cartItemId) => {
         throw error;
     }
 };
+
+
+
+
+
+export const getMyCartItem = async () => {
+  try {
+    const websiteId = localStorage.getItem('current_store_website_id');
+    if (!websiteId) throw new Error('Store website ID not found');
+
+    const response = await api.get('/carts/my_cart');
+    // فیلتر کردن آیتم‌ها بر اساس website_id
+    const filteredItems = response.data.filter(item => item.website_id === websiteId);
+    return { items: filteredItems }; // 🔴 تغییر اینجا
+  } catch (error) {
+    console.error('Error fetching cart:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data
+    });
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem('buyer_access_token');
+    }
+    throw error;
+  }
+};

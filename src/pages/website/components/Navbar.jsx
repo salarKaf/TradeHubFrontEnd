@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { useSlugNavigation } from '../../website/pages/Slug/useSlugNavigation';
 import { useState, useEffect } from "react"
-import { getMyCart } from '../../../API/cart'
+import { getMyCartItem } from '../../../API/cart'
 const Navbar = () => {
   const navLinks = [
     { label: "صفحه نخست", path: "home" },
@@ -16,24 +16,37 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // 🔴 تغییر ۴: بررسی لاگین فقط برای فروشگاه فعلی
     const websiteId = localStorage.getItem('current_store_website_id');
     const token = websiteId ? localStorage.getItem(`buyer_token_${websiteId}`) : null;
     setIsLoggedIn(!!token);
 
     if (token) fetchCartCount();
+
+    // 🟡 گوش دادن به رویداد
+    const handleCartUpdate = () => {
+      if (token) fetchCartCount();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    // پاکسازی
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
   }, []);
+
 
 
   const fetchCartCount = async () => {
     try {
-      const cart = await getMyCart();
+      const cart = await getMyCartItem();
       const count = cart.items ? cart.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
       setCartCount(count);
     } catch (error) {
       console.error("خطا در دریافت سبد خرید:", error);
     }
   };
+
 
   const { getPageUrl } = useSlugNavigation();
 
@@ -101,3 +114,17 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
