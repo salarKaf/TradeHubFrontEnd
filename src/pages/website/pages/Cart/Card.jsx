@@ -154,18 +154,22 @@ export default function Card() {
       try {
         const data = await getMyOrders();
 
-        const formatted = data.map(order => ({
-          id: order.order_id,
-          date: new Date(order.created_at).toLocaleDateString('fa-IR'),
-          total: order.total_price ? parseFloat(order.total_price) : 0,
-          items: order.order_items.map(item => ({
-            name: `آیتم ${item.item_id.substring(0, 6)}`,
-            price: item.price ? parseFloat(item.price) : 0,
-            quantity: item.quantity || 1,
-            itemId: item.item_id,
-          })),
-          status: order.status
-        }));
+        const formatted = data
+          .filter(order => order.status === 'Paid') // فقط سفارش‌های پرداخت‌شده
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // جدیدترین‌ها اول
+          .map(order => ({
+            id: order.order_id,
+            date: new Date(order.created_at).toLocaleDateString('fa-IR'),
+            total: order.total_price ? parseFloat(order.total_price) : 0,
+            items: order.order_items.map(item => ({
+              name: `آیتم ${item.item_id.substring(0, 6)}`,
+              price: item.price ? parseFloat(item.price) : 0,
+              quantity: item.quantity || 1,
+              itemId: item.item_id,
+            })),
+            status: order.status
+          }));
+
 
         setPreviousOrders(formatted);
       } catch (err) {
