@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { getOrderWithProduct } from '../../../../API/orders';
+import { getProductById, getItemRating } from '../../../../API/Items'; // اگر نیست
 
 const PurchasedProduct = () => {
     const [selectedImage, setSelectedImage] = useState(0);
@@ -14,33 +15,46 @@ const PurchasedProduct = () => {
     const [loading, setLoading] = useState(true);
     const { orderId } = useParams();
 
-    const rating = 4.4;
-    const buyers = 9;
+    const [rating, setRating] = useState(0);
+    const [buyers, setBuyers] = useState(0);
+
+
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const data = await getOrderWithProduct(orderId);
-                console.log('🟢 محصول دریافت‌شده:', data.product);
 
-                // ⛔ اگر سفارش لغو شده بود، بفرست به صفحه نمایش محصول عمومی
                 if (data?.order?.status === "Canceled") {
-                    const slug = window.location.pathname.split('/')[1]; // مثلاً /myshop/product/...
+                    const slug = window.location.pathname.split('/')[1];
                     window.location.href = `/${slug}/product/${data.product.item_id}`;
                     return;
                 }
 
                 setProduct(data.product);
                 setPriceAtPurchase(data.priceAtPurchase);
+
+                // ✅ گرفتن اطلاعات کامل محصول
+                const fullProductData = await getProductById(data.product.item_id);
+                setBuyers(fullProductData?.sales_count || 0);
+
+                // ✅ گرفتن امتیاز
+                try {
+                    const ratingData = await getItemRating(data.product.item_id);
+                    setRating(ratingData?.rating || 0);
+                } catch (ratingErr) {
+                    console.warn("خطا در دریافت امتیاز:", ratingErr);
+                }
+
             } catch (err) {
                 console.error('❌ خطا در دریافت اطلاعات سفارش:', err);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, [orderId]);
-
 
 
     const productImages = [
