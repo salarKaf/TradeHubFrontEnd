@@ -289,7 +289,21 @@ export default function Card() {
           setLoadingCoupons(true);
           try {
             const couponsData = await getCouponsByWebsiteInStore(websiteId);
-            setAvailableCoupons(couponsData || []);
+
+            const now = new Date();
+
+            const activeCoupons = (couponsData || []).filter(coupon => {
+              const expiration = new Date(coupon.expiration_date);
+              const notExpired = expiration > now;
+              const usageRemaining = (coupon.usage_limit || 0) > (coupon.times_used || 0);
+              return notExpired && usageRemaining;
+            });
+
+            setAvailableCoupons(activeCoupons);
+
+
+            setAvailableCoupons(activeCoupons);
+            ;
           } catch (error) {
             console.error('خطا در دریافت کوپن‌ها:', error);
             setAvailableCoupons([]);
