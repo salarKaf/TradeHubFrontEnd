@@ -290,7 +290,7 @@ const CartSection = ({
                         {/* نام محصول */}
                         <div className="text-center">
                           <span className="font-bold text-gray-800 text-sm">
-                            {item.name || `محصول ${item.itemId.substring(0, 8)}`}
+                            {item.name}
                           </span>
                         </div>
 

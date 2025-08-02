@@ -149,38 +149,59 @@ export default function Card() {
     fetchFavorites();
   }, [isLoggedIn]);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await getMyOrders();
+useEffect(() => {
+  const fetchOrders = async () => {
+    try {
+      const data = await getMyOrders();
 
-        const formatted = data
+      const formatted = await Promise.all(
+        data
           .filter(order => order.status === 'Paid') // فقط سفارش‌های پرداخت‌شده
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // جدیدترین‌ها اول
-          .map(order => ({
-            id: order.order_id,
-            date: new Date(order.created_at).toLocaleDateString('fa-IR'),
-            total: order.total_price ? parseFloat(order.total_price) : 0,
-            items: order.order_items.map(item => ({
-              name: `آیتم ${item.item_id.substring(0, 6)}`,
-              price: item.price ? parseFloat(item.price) : 0,
-              quantity: item.quantity || 1,
-              itemId: item.item_id,
-            })),
-            status: order.status
-          }));
+          .map(async (order) => {
+            const detailedItems = await Promise.all(
+              order.order_items.map(async (item) => {
+                try {
+                  const product = await getProductById(item.item_id);
+                  return {
+                    name: product?.name || `محصول ${item.item_id.substring(0, 6)}`,
+                    price: parseFloat(item.price) || 0,
+                    quantity: item.quantity || 1,
+                    itemId: item.item_id,
+                  };
+                } catch (err) {
+                  console.error("⛔️ Failed to fetch product name:", err);
+                  return {
+                    name: `محصول ${item.item_id.substring(0, 6)}`,
+                    price: parseFloat(item.price) || 0,
+                    quantity: item.quantity || 1,
+                    itemId: item.item_id,
+                  };
+                }
+              })
+            );
 
+            return {
+              id: order.order_id,
+              date: new Date(order.created_at).toLocaleDateString('fa-IR'),
+              total: parseFloat(order.total_price) || 0,
+              items: detailedItems,
+              status: order.status,
+            };
+          })
+      );
 
-        setPreviousOrders(formatted);
-      } catch (err) {
-        console.error('خطا در دریافت سفارش‌ها:', err);
-      }
-    };
-
-    if (isLoggedIn) {
-      fetchOrders();
+      setPreviousOrders(formatted);
+    } catch (err) {
+      console.error('⛔️ خطا در دریافت سفارش‌ها:', err);
     }
-  }, [isLoggedIn]);
+  };
+
+  if (isLoggedIn) {
+    fetchOrders();
+  }
+}, [isLoggedIn]);
+
 
   // چک کردن لاگین و بارگذاری سبد خرید
   useEffect(() => {
