@@ -5,7 +5,7 @@ from app.core.config.config import get_settings
 try:
     config = get_settings()
     client = AsyncIOMotorClient(config.DATABASE_URL)
-    db = client[config.DATABASE_NAME]
+    db = client.get_default_database()
     logger.info("Connected to database")
 except Exception as e:
     logger.error(f"Error connecting to database: {e}")

@@ -20,11 +20,9 @@ class Settings(BaseSettings):
     JWT_ALGORITHM : str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     OTP_EXPIRE_TIME: int = 3600
-    DATABASE_URL: str =  "mongodb://mongo:27017" 
-    # DATABASE_URL: str = "mongodb://localhost:27017"
+    DATABASE_URL: str = "mongodb://root:nrpIGXLvSytodcIrtyxLE5V7@mongo:27017/my-app?authSource=admin"
     FILE_STORAGE_PATH: str = "app/media"
-    IAM_URL: str = "http://iam"
-    # IAM_URL: str = "http://127.0.0.1:8000"
+    IAM_URL: str = "https://tradehub-iam.liara.run"
 
     GRPC_PORT: int = 50051
 
