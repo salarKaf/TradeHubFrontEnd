@@ -115,35 +115,37 @@ const Header = () => {
       />
 
       {/* محتوا */}
-      <div className="absolute inset-0 flex flex-col items-start justify-center text-right px-4 z-10 mr-32">
-        {/* لوگو و نام */}
-        <div className="flex items-end mb-6">
+      <div className="absolute inset-0 flex flex-col items-start justify-center text-right px-4 z-10 mr-4 sm:mr-8 md:mr-16 lg:mr-32">
+
+        {/* لوگو و نام فروشگاه - همیشه افقی */}
+        <div className="flex items-center mb-6 gap-2">
           <img
             src={logoImage}
             alt="لوگو فروشگاه"
-            className="w-14 h-14 mt-8 ml-2"
-            style={{ alignSelf: 'flex-end' }}
+            className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain"
             onError={(e) => {
               if (e.target.src !== defaultLogoImage) {
                 e.target.src = defaultLogoImage;
               }
             }}
           />
-          <h1 className="text-4xl font-bold text-black">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black">
             فروشگاه اینترنتی <span>{storeName}</span>
           </h1>
         </div>
 
-        {/* شعار */}
-        <div className="mt-20 mr-16 mb-6 flex flex-col items-start">
-          <p className="font-medium text-black text-lg">{storeSlogan}</p>
-          <div className="relative mt-4 w-full max-w-lg h-8">
-            <div className="absolute w-[580px] h-px bg-black top-2"></div>
-            <div className="absolute w-[620px] h-px bg-black top-8 right-10"></div>
+        {/* شعار - فقط در md به بالا نمایش داده میشه */}
+        <div className="hidden md:flex mt-12 mb-6 flex-col items-start mr-0 md:mr-16">
+          <p className="font-medium text-black text-base md:text-lg">{storeSlogan}</p>
+          <div className="relative mt-4 w-full max-w-xs sm:max-w-sm md:max-w-lg h-8">
+            <div className="absolute w-[300px] sm:w-[400px] md:w-[580px] h-px bg-black top-2"></div>
+            <div className="absolute w-[320px] sm:w-[420px] md:w-[620px] h-px bg-black top-8 right-4 sm:right-6 md:right-10"></div>
           </div>
         </div>
       </div>
     </div>
+
+
   );
 };
 
