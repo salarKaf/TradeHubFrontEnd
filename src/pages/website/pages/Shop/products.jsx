@@ -244,9 +244,9 @@ const Products = () => {
     };
 
     if (loading) return (
-        <div className="text-center p-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
-            <p className="mt-2 text-gray-600">در حال بارگذاری...</p>
+        <div className="relative w-full h-[calc(100vh-5rem)] font-rubik flex flex-col items-center justify-center text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 border-t-transparent mb-6"></div>
+            <p className="text-gray-700 text-lg font-medium">در حال بارگذاری محصولات...</p>
         </div>
     );
 
@@ -282,9 +282,8 @@ const Products = () => {
                                     {categories.map((cat) => (
                                         <div key={cat.id} className="border-b border-gray-100 pb-2">
                                             <button
-                                                className={`w-full text-right font-medium flex justify-between items-center p-2 rounded hover:bg-gray-100 ${
-                                                    activeFilter?.type === 'category' && activeFilter.id === cat.id ? 'bg-blue-50 text-blue-600' : ''
-                                                }`}
+                                                className={`w-full text-right font-medium flex justify-between items-center p-2 rounded hover:bg-gray-100 ${activeFilter?.type === 'category' && activeFilter.id === cat.id ? 'bg-blue-50 text-blue-600' : ''
+                                                    }`}
                                                 onClick={() => handleCategoryClick(cat.id)}
                                             >
                                                 <div className="flex items-center">
@@ -311,9 +310,8 @@ const Products = () => {
                                                     {subcategories[cat.id].map((subItem) => (
                                                         <li
                                                             key={subItem.id}
-                                                            className={`cursor-pointer p-2 rounded hover:bg-gray-100 flex justify-between items-center ${
-                                                                activeFilter?.type === 'subcategory' && activeFilter.id === subItem.id ? 'bg-blue-50 text-blue-600' : ''
-                                                            }`}
+                                                            className={`cursor-pointer p-2 rounded hover:bg-gray-100 flex justify-between items-center ${activeFilter?.type === 'subcategory' && activeFilter.id === subItem.id ? 'bg-blue-50 text-blue-600' : ''
+                                                                }`}
                                                             onClick={() => handleSubcategoryClick(subItem.id)}
                                                         >
                                                             <span>{subItem.name}</span>
@@ -330,7 +328,7 @@ const Products = () => {
                         {/* ✅ فیلتر قیمت دو طرفه ساده */}
                         <div className="mt-6">
                             <h3 className="text-lg font-semibold mb-3">محدوده قیمت</h3>
-                            
+
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-xs text-gray-600 block mb-1">از:</label>
@@ -420,8 +418,8 @@ const Products = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                 {paginatedProducts().map((product) => (
                                     <div key={product.id}>
-                                        <ProductCard 
-                                            {...product} 
+                                        <ProductCard
+                                            {...product}
                                             websiteId={websiteId}
                                             onClick={handleProductClick}
                                             onAddToCart={handleAddToCart}
@@ -445,9 +443,8 @@ const Products = () => {
                                         <button
                                             key={i}
                                             onClick={() => setCurrentPage(i + 1)}
-                                            className={`px-4 py-2 rounded border ${
-                                                currentPage === i + 1 ? "bg-blue-600 text-white border-blue-600" : "bg-white"
-                                            }`}
+                                            className={`px-4 py-2 rounded border ${currentPage === i + 1 ? "bg-blue-600 text-white border-blue-600" : "bg-white"
+                                                }`}
                                         >
                                             {i + 1}
                                         </button>

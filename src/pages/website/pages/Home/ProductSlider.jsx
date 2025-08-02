@@ -4,11 +4,13 @@ import { useParams } from "react-router-dom";
 import { getWebsiteIdBySlug } from "../../../../API/website";
 import { getBestSellingItems } from "../../../../API/Items";
 import { getItemImages, getItemImageById } from "../../../../API/Items";
+import { useNavigate } from "react-router-dom";
 
 const ProductSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState([]);
   const { slug } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,8 +153,10 @@ const ProductSlider = () => {
         </div>
 
         <div className="mt-8 mb-5">
-          <button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-3 rounded-full font-bold text-base transition-all duration-300 transform hover:scale-105 shadow-xl">
-            مشاهده همه محصولات
+          <button
+            onClick={() => slug && navigate(`/${slug}/shop`)}
+            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-3 rounded-full font-bold text-base transition-all duration-300 transform hover:scale-105 shadow-xl">
+            وارد فروشگاه ما شوید
           </button>
         </div>
       </div>

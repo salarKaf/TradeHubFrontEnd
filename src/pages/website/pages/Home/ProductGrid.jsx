@@ -12,9 +12,7 @@ export default function ProductGrid() {
   const [error, setError] = useState(null);
   const [websiteId, setWebsiteId] = useState(null);
 
-  const defaultProducts = [
-    // داده‌های پیش‌فرض
-  ];
+  const defaultProducts = [];
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -138,9 +136,13 @@ export default function ProductGrid() {
 
       {products.length > 0 && (
         <div className="text-center mt-16">
-          <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+          <button
+            onClick={() => slug && navigate(`/${slug}/shop`)}
+            className="bg-gradient-to-r from-[#0f172a] to-[#1e293b] hover:from-[#1e293b] hover:to-[#0f172a] text-white px-8 py-3 rounded-full font-bold text-base transition-all duration-300 transform hover:scale-105 shadow-xl"
+          >
             مشاهده همه محصولات
           </button>
+
         </div>
       )}
     </div>
