@@ -9,7 +9,7 @@ const CouponsSection = ({
   applyCoupon
 }) => {
   return (
-    <section id="coupons-section" className="scroll-mt-24">
+    <section id="coupons-section" className="scroll-mt-24 font-Kahroba">
       <div className="flex items-center gap-3 mb-8">
         <div className="p-3 bg-gray-800 rounded-xl">
           <Ticket className="w-8 h-8 text-white" />

@@ -13,6 +13,10 @@ module.exports = {
         jua: ["Jua", "sans-serif"],
         fredoka: ['Fredoka', 'cursive'],
         modam: ['Modam', 'sans-serif'],
+        mahoor: ['mahoor', 'sans-serif'],
+        Kahroba: ['Kahroba', 'sans-serif'],
+
+
       },
 
       animation: {

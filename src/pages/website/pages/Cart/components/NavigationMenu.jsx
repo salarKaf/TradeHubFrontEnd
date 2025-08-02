@@ -3,7 +3,7 @@ import { ShoppingCart, Ticket, Package, Heart } from 'lucide-react';
 
 const NavigationMenu = ({ activePlan, scrollToSection }) => {
   return (
-    <div className="bg-white shadow-lg md:sticky md:top-0 z-50 border-b border-gray-200">
+    <div className="bg-white shadow-lg md:sticky md:top-0 z-50 border-b border-gray-200 font-Kahroba font-semibold ">
       <div className="max-w-6xl mx-auto px-3 py-4 md:px-4 md:py-5">
         {/* Mobile Layout - Vertical Stack */}
         <div className="md:hidden flex flex-col gap-3">

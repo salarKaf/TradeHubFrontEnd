@@ -31,6 +31,98 @@
 }
 
 
+
+@font-face {
+  font-family: 'mahoor';
+  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'mahoor';
+  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+
+
+@font-face {
+  font-family: 'mahoor';
+  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+
+@font-face {
+  font-family: 'mahoor';
+  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
+@font-face {
+  font-family: 'mahoor';
+  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-ExtraBold.woff2  ') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+@font-face {
+  font-family: 'Kahroba';
+  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ B-EHC.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Kahroba';
+  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ M-EHC.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Kahroba';
+  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ SB-ELC.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Kahroba';
+  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ L-EHC.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Kahroba';
+  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ RG.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

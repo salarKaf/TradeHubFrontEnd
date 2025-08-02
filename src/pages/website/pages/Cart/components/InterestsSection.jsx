@@ -10,7 +10,7 @@ const InterestsSection = ({
   handleFavoriteChange
 }) => {
   return (
-    <section id="interests-section" className="scroll-mt-24">
+    <section id="interests-section " className="scroll-mt-24 font-Kahroba">
       <div className="flex items-center gap-3 mb-8">
         <div className="p-3 bg-gray-800 rounded-xl">
           <Heart className="w-8 h-8 text-white" />

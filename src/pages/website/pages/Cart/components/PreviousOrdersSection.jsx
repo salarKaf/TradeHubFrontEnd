@@ -8,7 +8,7 @@ const PreviousOrdersSection = ({
   slug
 }) => {
   return (
-    <section id="previous-section" className="scroll-mt-24">
+    <section id="previous-section" className="scroll-mt-24 font-Kahroba">
       <div className="flex items-center gap-3 mb-8">
         <div className="p-3 bg-gray-800 rounded-xl">
           <Package className="w-8 h-8 text-white" />
@@ -28,7 +28,6 @@ const PreviousOrdersSection = ({
               </div>
               <div className="text-left">
                 <p className="text-2xl font-bold text-gray-800">{formatPrice(order.total)}</p>
-                <p className="text-sm text-gray-500">{order.items.length} محصول</p>
               </div>
             </div>
 
