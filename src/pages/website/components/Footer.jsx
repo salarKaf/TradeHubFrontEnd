@@ -174,7 +174,7 @@ const Footer = () => {
                       rel="noreferrer"
                       className="hover:scale-110 transition-transform duration-200"
                     >
-                      <img src={telegramIcon} alt="Telegram" className="w-7 h-7" />
+                      <img src={telegramIcon} alt="Telegram" className="w-7 h-7 -mt-[0.5px]" />
                     </a>
                   )}
                 </div>
@@ -240,7 +240,7 @@ const Footer = () => {
               <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                 <Users className="text-purple-600" size={16} />
               </div>
-              <h3 className="text-lg font-bold text-slate-700">شعار فروشگاه</h3>
+              <h3 className="text-lg font-bold text-slate-700"> درباره ی ما</h3>
             </div>
 
             <p className="text-slate-600 leading-relaxed mb-4 text-sm">

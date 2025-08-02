@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getWebsiteIdBySlug } from "../../../../API/website";
 import { getBestSellingItems } from "../../../../API/Items";
+import { getItemImages, getItemImageById } from "../../../../API/Items";
 
 const ProductSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -17,17 +18,34 @@ const ProductSlider = () => {
         const websiteData = await getWebsiteIdBySlug(slug);
         const bestSelling = await getBestSellingItems(websiteData.website_id);
 
-        // تبدیل داده API به فرمت مورد نیاز اسلایدر
-        const formatted = bestSelling.map((item) => ({
-          id: item.item_id,
-          name: item.product_name,
-          price: `${item.total_amount.toLocaleString('fa-IR')} ریال`,
-          image: "/api/placeholder/400/400" // اگر تصویر نداری فعلاً همین رو بذار
-        }));
+        const formatted = await Promise.all(
+          bestSelling.map(async (item) => {
+            let imageUrl = "/public/website/Image(1).png"; // پیش‌فرض
+
+            try {
+              const images = await getItemImages(item.item_id);
+              const mainImage = images.find(img => img.is_main) || images[0];
+
+              if (mainImage) {
+                const url = await getItemImageById(mainImage.image_id);
+                imageUrl = url;
+              }
+            } catch (imgErr) {
+              console.warn("⚠️ خطا در بارگذاری تصویر محصول:", imgErr);
+            }
+
+            return {
+              id: item.item_id,
+              name: item.product_name,
+              price: `${item.total_amount.toLocaleString('fa-IR')} ریال`,
+              image: imageUrl,
+            };
+          })
+        );
 
         setProducts(formatted);
       } catch (err) {
-        console.error("خطا در بارگذاری اسلایدر:", err);
+        console.error("❌ خطا در بارگذاری اسلایدر:", err);
       }
     };
 
@@ -91,33 +109,16 @@ const ProductSlider = () => {
           <div className="relative overflow-hidden p-6">
             <div className="flex items-center justify-center">
               <div className="text-center">
-                <div className="relative mx-auto mb-4">
-                  <div className="absolute inset-0 w-64 h-64 mx-auto">
-                    <div className="w-full h-full bg-white/20 rounded-full shadow-xl flex items-center justify-center overflow-hidden border-4 border-white/30 backdrop-blur-sm transform scale-75 opacity-40 -rotate-12">
+                <div className="relative flex items-center justify-center mb-4">
+                  <div className="relative mx-8">
+                    <div className="w-64 h-64 bg-white rounded-full shadow-2xl flex items-center justify-center overflow-hidden border-6 border-white/70 backdrop-blur-sm z-10">
                       <img
-                        src={products[getPrevSlideIndex()].image}
-                        alt={products[getPrevSlideIndex()].name}
-                        className="w-40 h-40 object-cover rounded-2xl"
+                        src={products[currentSlide].image}
+                        alt={products[currentSlide].name}
+                        className="w-full h-full object-cover"
+                        style={{ objectFit: 'cover' }}
                       />
                     </div>
-                  </div>
-
-                  <div className="absolute inset-0 w-64 h-64 mx-auto">
-                    <div className="w-full h-full bg-white/20 rounded-full shadow-xl flex items-center justify-center overflow-hidden border-4 border-white/30 backdrop-blur-sm transform scale-75 opacity-40 rotate-12 translate-x-8">
-                      <img
-                        src={products[getNextSlideIndex()].image}
-                        alt={products[getNextSlideIndex()].name}
-                        className="w-40 h-40 object-cover rounded-2xl"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="relative w-64 h-64 bg-white rounded-full shadow-2xl flex items-center justify-center overflow-hidden border-6 border-white/70 backdrop-blur-sm mx-auto z-10">
-                    <img
-                      src={products[currentSlide].image}
-                      alt={products[currentSlide].name}
-                      className="w-48 h-48 object-cover rounded-2xl transform hover:scale-105 transition-transform duration-300"
-                    />
                   </div>
                 </div>
 

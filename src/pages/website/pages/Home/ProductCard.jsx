@@ -5,6 +5,7 @@ import { addToFavorites, removeFromFavorites, isItemInFavorites, getFavoriteIdBy
 import { getMyCart } from '../../../../API/cart';
 import { useParams, useNavigate } from 'react-router-dom';
 import { deleteItemFromCart, removeOneFromCart } from "../../../../API/cart"; // ⬅ یادت نره این بالا ایمپورت کنی
+import { getItemImages, getItemImageById } from '../../../../API/Items';
 
 const ProductCard = ({
   product,
@@ -29,6 +30,36 @@ const ProductCard = ({
   const { slug } = useParams();
   const navigate = useNavigate();
 
+  const [mainImage, setMainImage] = useState(null); // ✅ عکس اصلی
+
+  useEffect(() => {
+    const fetchMainImage = async () => {
+      try {
+        const images = await getItemImages(id);
+
+        if (!images || images.length === 0) {
+          setMainImage(null);
+          return;
+        }
+
+        const main = images.find(img => img.is_main) || images[0];
+
+        try {
+          const url = await getItemImageById(main.image_id);
+          setMainImage(url);
+        } catch (imgErr) {
+          console.warn("خطا در دریافت عکس:", imgErr);
+          setMainImage(null); // نمایش دیفالت
+        }
+
+      } catch (error) {
+        console.warn("خطا در گرفتن لیست عکس:", error);
+        setMainImage(null); // نمایش دیفالت
+      }
+    };
+
+    if (id) fetchMainImage();
+  }, [id]);
 
 
   useEffect(() => {
@@ -218,7 +249,7 @@ const ProductCard = ({
                 </>
               )}
             </div>
-  
+
           ) : (
             <button
               onClick={handleAddToCart}
@@ -263,10 +294,12 @@ const ProductCard = ({
       <div className="relative mb-4 overflow-hidden rounded-xl">
         <div className="h-52 flex items-center justify-center bg-gray-50">
           <img
-            src={image || "/public/website/Image(1).png"}
+            src={mainImage || image || "/public/website/Image(1).png"}
             alt={name}
             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+            onError={(e) => { e.target.src = "/public/website/Image(1).png"; }}
           />
+
         </div>
 
         {/* Discount Badge */}

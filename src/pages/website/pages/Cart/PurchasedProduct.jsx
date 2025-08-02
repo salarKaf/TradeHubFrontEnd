@@ -3,6 +3,9 @@ import {
     Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, Search, X,
     Link, CheckCircle
 } from 'lucide-react';
+
+import { getItemImages, getItemImageById } from '../../../../API/Items';
+
 import { useParams } from 'react-router-dom';
 import { getOrderWithProduct } from '../../../../API/orders';
 import { getProductById, getItemRating } from '../../../../API/Items'; // اگر نیست
@@ -14,17 +17,21 @@ const PurchasedProduct = () => {
     const [priceAtPurchase, setPriceAtPurchase] = useState(null);
     const [loading, setLoading] = useState(true);
     const { orderId } = useParams();
+    const [productImages, setProductImages] = useState([]);
+
 
     const [rating, setRating] = useState(0);
     const [buyers, setBuyers] = useState(0);
 
 
-
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
+
                 const data = await getOrderWithProduct(orderId);
 
+                // اگر سفارش کنسل شده بود، کاربر رو بفرست به صفحه محصول
                 if (data?.order?.status === "Canceled") {
                     const slug = window.location.pathname.split('/')[1];
                     window.location.href = `/${slug}/product/${data.product.item_id}`;
@@ -34,16 +41,42 @@ const PurchasedProduct = () => {
                 setProduct(data.product);
                 setPriceAtPurchase(data.priceAtPurchase);
 
-                // ✅ گرفتن اطلاعات کامل محصول
+                // گرفتن اطلاعات کامل محصول برای تعداد خریدار
                 const fullProductData = await getProductById(data.product.item_id);
                 setBuyers(fullProductData?.sales_count || 0);
 
-                // ✅ گرفتن امتیاز
+                // گرفتن امتیاز
                 try {
                     const ratingData = await getItemRating(data.product.item_id);
                     setRating(ratingData?.rating || 0);
                 } catch (ratingErr) {
-                    console.warn("خطا در دریافت امتیاز:", ratingErr);
+                    console.warn("⚠️ خطا در دریافت امتیاز:", ratingErr);
+                }
+
+                // گرفتن تصاویر محصول
+                try {
+                    const images = await getItemImages(data.product.item_id);
+
+                    if (!images || images.length === 0) {
+                        setProductImages(['/public/website/Image(1).png']);
+                    } else {
+                        const imageUrls = await Promise.all(
+                            images.map(async (img) => {
+                                try {
+                                    const url = await getItemImageById(img.image_id);
+                                    return { url, isMain: img.is_main };
+                                } catch {
+                                    return { url: '/public/website/Image(1).png', isMain: false };
+                                }
+                            })
+                        );
+
+                        const sorted = imageUrls.sort((a, b) => b.isMain - a.isMain);
+                        setProductImages(sorted.map(img => img.url));
+                    }
+                } catch (imgErr) {
+                    console.warn("⚠️ خطا در گرفتن تصاویر محصول:", imgErr);
+                    setProductImages(['/website/default-product.png']);
                 }
 
             } catch (err) {
@@ -57,12 +90,8 @@ const PurchasedProduct = () => {
     }, [orderId]);
 
 
-    const productImages = [
-        '/public/website/a3655ad2f99985ab6b83020118c028d9 1.png',
-        '/public/website/a3655ad2f99985ab6b83020118c028d9 1.png',
-        '/public/website/a3655ad2f99985ab6b83020118c028d9 1.png',
-        '/public/website/a3655ad2f99985ab6b83020118c028d9 1.png'
-    ];
+
+
 
     const getStars = (rating) => {
         const fullStars = Math.floor(rating);
@@ -128,7 +157,9 @@ const PurchasedProduct = () => {
                                 src={productImages[selectedImage]}
                                 alt="محصول"
                                 className="w-full h-96 object-cover"
+                                onError={(e) => { e.target.src = '/website/default-product.png'; }}
                             />
+
                             <button
                                 className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all"
                                 onClick={handlePrevImage}
@@ -156,7 +187,12 @@ const PurchasedProduct = () => {
                                     onClick={() => setSelectedImage(index)}
                                     className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'}`}
                                 >
-                                    <img src={image} alt={`تصویر ${index + 1}`} className="w-full h-full object-cover" />
+                                    <img
+                                        src={image}
+                                        alt={`تصویر ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => { e.target.src = '/public/website/Image(1).png'; }}
+                                    />
                                 </button>
                             ))}
                         </div>

@@ -185,57 +185,60 @@ const ProductShow = () => {
     // ✅ useEffect برای بارگذاری اطلاعات محصول
     useEffect(() => {
         const loadProductData = async () => {
+            setLoading(true);
             try {
-                setLoading(true);
-                // چک کردن پلن فعال
+                // 1. دریافت اطلاعات محصول
+                const product = await getProductById(productId);
+                setProductData(product);
+
+                // 2. دریافت پلن فعال بر اساس website_id
                 try {
-                    const websiteId = productData?.website_id || localStorage.getItem('current_store_website_id');
+                    const websiteId = product?.website_id || localStorage.getItem('current_store_website_id');
                     const activePlan = await getActivePlan(websiteId);
-                    setHasPro(activePlan?.is_active && activePlan?.plan?.name === 'Pro'); console.log(hasPro)
+                    setHasPro(activePlan?.is_active && activePlan?.plan?.name === 'Pro');
                 } catch (planError) {
-                    console.warn("خطا در دریافت پلن:", planError);
+                    console.warn("⚠️ خطا در دریافت پلن:", planError);
                     setHasPro(false);
                 } finally {
                     setPlanLoading(false);
                 }
 
-                // دریافت اطلاعات محصول
-                const product = await getProductById(productId);
-                setProductData(product);
-
-                // دریافت تصاویر محصول
+                // 3. دریافت تصاویر محصول
                 try {
                     const images = await getItemImages(productId);
-                    const imageUrls = await Promise.all(
-                        images.map(async (img) => {
-                            const url = await getItemImageById(img.image_id);
-                            return { url, isMain: img.is_main };
-                        })
-                    );
-
-                    // مرتب کردن تصاویر - تصویر اصلی اول
-                    const sortedImages = imageUrls.sort((a, b) => b.isMain - a.isMain);
-                    setProductImages(sortedImages.map(img => img.url));
+                    if (images.length === 0) {
+                        setProductImages(['/public/website/Image(1).png']);
+                    } else {
+                        const imageUrls = await Promise.all(
+                            images.map(async (img) => {
+                                try {
+                                    const url = await getItemImageById(img.image_id);
+                                    return { url, isMain: img.is_main };
+                                } catch (err) {
+                                    console.warn("⚠️ خطا در بارگذاری تصویر:", err);
+                                    return { url: '/website/default-product.png', isMain: false };
+                                }
+                            })
+                        );
+                        const sorted = imageUrls.sort((a, b) => b.isMain - a.isMain);
+                        setProductImages(sorted.map(i => i.url));
+                    }
                 } catch (imgError) {
-                    console.warn("خطا در بارگذاری تصاویر:", imgError);
-                    // در صورت عدم وجود تصویر، یک تصویر پیش‌فرض قرار بده
+                    console.warn("⚠️ خطا کلی در دریافت تصاویر:", imgError);
                     setProductImages(['/website/default-product.png']);
                 }
 
-                // دریافت امتیاز محصول
-                // دریافت امتیاز محصول
-                // دریافت امتیاز محصول
+                // 4. دریافت امتیاز محصول
                 try {
                     const rating = await getItemRating(productId);
-                    console.log('Rating from API:', rating);
-                    setProductRating(rating.rating || 0); // تغییر از average_rating به rating
+                    setProductRating(rating.rating || 0);
                 } catch (ratingError) {
-                    console.warn("خطا در دریافت امتیاز:", ratingError);
-                    setProductRating(productData.rating || 0);
+                    console.warn("⚠️ خطا در دریافت امتیاز:", ratingError);
+                    setProductRating(0);
                 }
 
             } catch (err) {
-                console.error("خطا در بارگذاری محصول:", err);
+                console.error("❌ خطا در بارگذاری محصول:", err);
                 setError("خطا در بارگذاری اطلاعات محصول");
             } finally {
                 setLoading(false);
@@ -471,7 +474,7 @@ const ProductShow = () => {
                                 onClick={() => scrollToSection('comments')}
                                 className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
                             >
-                                نظرات ({productData.reviews_count || 0})
+                                نظرات 
                             </button>
 
                             {/* دکمه پرسش‌ها فقط برای پلن پرو */}
@@ -480,7 +483,7 @@ const ProductShow = () => {
                                     onClick={() => scrollToSection('questions')}
                                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
                                 >
-                                    پرسش‌ها ({productData.questions_count || 0})
+                                    پرسش‌ها 
                                 </button>
                             )}
 
@@ -570,7 +573,6 @@ const ProductShow = () => {
                             <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r from-black via-gray-600 to-gray-800 rounded-full text-white">
                                 دیدگاه‌ها
                             </div>
-                            <span className="text-sm text-gray-500">({productData.reviews_count || 0} دیدگاه)</span>
                         </div>
                     </div>
                     <div className="flex-1 border-t-[1.4px] border-gray-800 mr-[27px] mb-10"></div>
@@ -583,7 +585,6 @@ const ProductShow = () => {
                             <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r from-black via-gray-600 to-gray-800 rounded-full text-white">
                                 پرسش‌ها
                             </div>
-                            <span className="text-sm text-gray-500">({productData.questions_count || 0} پرسش)</span>
                         </div>
                     </div>
                     <div className="flex-1 border-t-[1.4px] border-gray-800 mr-[27px] mb-10"></div>

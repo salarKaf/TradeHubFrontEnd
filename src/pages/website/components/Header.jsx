@@ -139,7 +139,7 @@ const Header = () => {
           <p className="font-medium text-black text-lg">{storeSlogan}</p>
           <div className="relative mt-4 w-full max-w-lg h-8">
             <div className="absolute w-[580px] h-px bg-black top-2"></div>
-            <div className="absolute w-[120px] h-px bg-black top-6"></div>
+            <div className="absolute w-[620px] h-px bg-black top-8 right-10"></div>
           </div>
         </div>
       </div>
