@@ -66,7 +66,6 @@ const CouponManagement = () => {
     }
 
     // فرمت کردن عدد با سه رقمی جدا کردن
-
     const formatNumber = (value) => {
         if (!value) return '';
         // حذف همه کاراکترهای غیرعددی
@@ -160,31 +159,31 @@ const CouponManagement = () => {
     };
 
     return (
-        <div className="p-4 mb-6">
-            <div className="bg-white font-modam rounded-xl border-2 border-black border-opacity-20">
+        <div className="p-3 md:p-4 mb-6">
+            <div className="font-modam rounded-xl border-2 border-black border-opacity-20">
                 {/* هدر */}
-                <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <FiTag className="text-2xl text-blue-600" />
-                        <h2 className="text-2xl font-semibold text-zinc-600">مدیریت کوپن‌های تخفیف</h2>
-                        <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">Pro</span>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center p-4 md:p-6 border-b border-gray-200 gap-3 md:gap-0">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <FiTag className="text-xl md:text-2xl text-blue-600" />
+                        <h2 className="text-lg md:text-2xl font-semibold text-zinc-600">مدیریت کوپن‌های تخفیف</h2>
+                        <span className="bg-blue-100 text-blue-800 text-sm md:text-base px-2 py-1 rounded-full">Pro</span>
                     </div>
 
                     <button
                         onClick={() => setShowCreateForm(!showCreateForm)}
-                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="flex items-center justify-center gap-2 bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base w-full md:w-auto"
                     >
-                        <FiPlus />
+                        <FiPlus className="text-sm md:text-base" />
                         کوپن جدید
                     </button>
                 </div>
 
                 {/* فرم ساخت کوپن */}
                 {showCreateForm && (
-                    <div className="p-6 bg-gray-50 border-b border-gray-200">
-                        <form onSubmit={handleCreateCoupon} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="p-4 md:p-6 bg-gray-50 border-b border-gray-200">
+                        <form onSubmit={handleCreateCoupon} className="space-y-4 md:space-y-0 md:grid md:grid-cols-4 md:gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">
                                     کد کوپن <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -192,13 +191,13 @@ const CouponManagement = () => {
                                     placeholder="مثال: SUMMER2025"
                                     value={formData.code}
                                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">
                                     مبلغ تخفیف <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
@@ -210,17 +209,17 @@ const CouponManagement = () => {
                                             const formattedValue = formatNumber(e.target.value);
                                             setFormData({ ...formData, discount_amount: formattedValue });
                                         }}
-                                        className="w-full p-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full p-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
                                         required
                                     />
-                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm md:text-base text-gray-500">
                                         ریال
                                     </span>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">
                                     تاریخ انقضا <span className="text-red-500">*</span>
                                 </label>
                                 <JalaliDatePicker
@@ -234,29 +233,29 @@ const CouponManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">حد استفاده</label>
+                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">حد استفاده</label>
                                 <input
                                     type="number"
                                     placeholder="0 = نامحدود"
                                     value={formData.usage_limit}
                                     onChange={(e) => setFormData({ ...formData, usage_limit: e.target.value })}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
                                     min="0"
                                 />
                             </div>
 
-                            <div className="md:col-span-4 flex gap-2">
+                            <div className="md:col-span-4 flex flex-col md:flex-row gap-2">
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                                    className="bg-green-600 text-white px-4 md:px-6 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 text-sm md:text-base order-2 md:order-1"
                                 >
                                     {loading ? 'در حال ساخت...' : 'ساخت کوپن'}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setShowCreateForm(false)}
-                                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                                    className="bg-gray-500 text-white px-4 md:px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm md:text-base order-1 md:order-2"
                                 >
                                     لغو
                                 </button>
@@ -266,19 +265,19 @@ const CouponManagement = () => {
                 )}
 
                 {/* لیست کوپن‌ها */}
-                <div className="p-6">
+                <div className="p-4 md:p-6">
                     {coupons.length > 0 ? (
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <table className="w-full min-w-[700px]">
                                 <thead>
                                     <tr className="border-b border-gray-200">
-                                        <th className="text-right py-3 px-2">کد کوپن</th>
-                                        <th className="text-right py-3 px-2">مبلغ تخفیف</th>
-                                        <th className="text-right py-3 px-2">تاریخ انقضا</th>
-                                        <th className="text-right py-3 px-2">سقف استفاده</th>
-                                        <th className="text-right py-3 px-2">استفاده شده</th>
-                                        <th className="text-right py-3 px-2">وضعیت</th>
-                                        <th className="text-right py-3 px-2">عملیات</th>
+                                        <th className="text-right py-3 px-2 text-sm md:text-base font-semibold">کد کوپن</th>
+                                        <th className="text-right py-3 px-2 text-sm md:text-base font-semibold">مبلغ تخفیف</th>
+                                        <th className="text-right py-3 px-2 text-sm md:text-base font-semibold">تاریخ انقضا</th>
+                                        <th className="text-right py-3 px-2 text-sm md:text-base font-semibold">سقف استفاده</th>
+                                        <th className="text-right py-3 px-2 text-sm md:text-base font-semibold">استفاده شده</th>
+                                        <th className="text-right py-3 px-2 text-sm md:text-base font-semibold">وضعیت</th>
+                                        <th className="text-right py-3 px-2 text-sm md:text-base font-semibold">عملیات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -288,26 +287,26 @@ const CouponManagement = () => {
 
                                         return (
                                             <tr key={coupon.coupon_id} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="py-3 px-2 font-mono font-semibold text-blue-600">{coupon.code}</td>
+                                                <td className="py-3 px-2 font-mono font-semibold text-blue-600 text-sm md:text-md">{coupon.code}</td>
                                                 <td className="py-3 px-2">
                                                     <div className="flex items-center gap-1">
-                                                        {Number(coupon.discount_amount).toLocaleString('fa-IR')}
+                                                        <span className="text-sm md:text-base">{Number(coupon.discount_amount).toLocaleString('fa-IR')}</span>
                                                         <span className="text-sm text-gray-700">ریال</span>
                                                     </div>
                                                 </td>
 
                                                 <td className="py-3 px-2">
                                                     <div className="flex items-center gap-1">
-                                                        <FiCalendar className="text-sm" />
-                                                        {new Date(coupon.expiration_date).toLocaleDateString('fa-IR')}
+                                                        <FiCalendar className="text-sm md:text-md" />
+                                                        <span className="text-sm md:text-base">{new Date(coupon.expiration_date).toLocaleDateString('fa-IR')}</span>
                                                     </div>
                                                 </td>
-                                                <td className="py-3 px-2">
+                                                <td className="py-3 px-2 text-sm md:text-base">
                                                     {coupon.usage_limit === 0 ? 'نامحدود' : coupon.usage_limit.toLocaleString('fa-IR')}
                                                 </td>
-                                                <td className="py-3 px-2">{coupon.times_used.toLocaleString('fa-IR')}</td>
+                                                <td className="py-3 px-2 text-sm md:text-base">{coupon.times_used.toLocaleString('fa-IR')}</td>
                                                 <td className="py-3 px-2">
-                                                    <span className={`px-2 py-1 rounded-full text-xs ${isExpired || isLimitReached
+                                                    <span className={`px-2 py-1 rounded-full text-sm ${isExpired || isLimitReached
                                                         ? 'bg-red-100 text-red-800'
                                                         : 'bg-green-100 text-green-800'
                                                         }`}>
@@ -320,7 +319,7 @@ const CouponManagement = () => {
                                                         className="text-red-600 hover:bg-red-100 p-1 rounded transition-colors"
                                                         title="حذف کوپن"
                                                     >
-                                                        <FiTrash2 />
+                                                        <FiTrash2 className="text-sm md:text-base" />
                                                     </button>
                                                 </td>
                                             </tr>
@@ -330,10 +329,10 @@ const CouponManagement = () => {
                             </table>
                         </div>
                     ) : (
-                        <div className="text-center py-12 text-gray-500">
-                            <FiTag className="text-4xl mx-auto mb-4 opacity-50" />
-                            <p>هنوز کوپن تخفیفی ساخته نشده است</p>
-                            <p className="text-sm mt-1">برای شروع، روی دکمه "کوپن جدید" کلیک کنید</p>
+                        <div className="text-center py-8 md:py-12 text-gray-500">
+                            <FiTag className="text-3xl md:text-4xl mx-auto mb-4 opacity-50" />
+                            <p className="text-sm md:text-base">هنوز کوپن تخفیفی ساخته نشده است</p>
+                            <p className="text-sm md:text-base mt-1">برای شروع، روی دکمه "کوپن جدید" کلیک کنید</p>
                         </div>
                     )}
                 </div>
