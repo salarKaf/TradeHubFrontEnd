@@ -130,7 +130,7 @@ const AppearanceContent = () => {
                 </div>
             )}
 
-            <h1 className="font-modam mt-5 text-lg">
+            <h1 className="font-modam mt-5 text-md md:text-lg">
                 در این داشبورد میتوانید تغییراتی را در ظاهر صفحه ای که به مشتریان خود نشان میدهید اعمال کنید.
             </h1>
 

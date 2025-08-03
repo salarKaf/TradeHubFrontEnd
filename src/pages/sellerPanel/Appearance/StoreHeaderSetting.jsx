@@ -185,6 +185,7 @@ const StoreHeaderSettings = () => {
       key: "address",
       placeholder: "آدرس فروشگاه خود را در اینجا وارد کنید.",
       isEditable: true,
+      description: " برای دسترسی به فروشگاه خود این آدرس را به صورت آدرس/ در امتداد آدرس سایت اصلی وارد کنید ",
     },
   ];
 
@@ -228,9 +229,9 @@ const StoreHeaderSettings = () => {
       {open && (
         <div className="space-y-6 px-5 pt-6">
           {fields.map((field, idx) => (
-            <div key={idx} className="flex flex-col md:flex-row md:items-center gap-16">
+            <div key={idx} className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-16">
               {/* Label + Dot */}
-              <div className="flex items-center gap-2 w-full md:w-[240px]">
+              <div className="flex items-center gap-2 w-full lg:w-[240px]">
                 <span className="relative w-2 h-2">
                   <span className="absolute inset-0 rounded-full bg-[#1E212D] opacity-80" />
                 </span>
@@ -240,94 +241,105 @@ const StoreHeaderSettings = () => {
               </div>
 
               {/* Input Group */}
-              <div className="flex items-center gap-2 flex-1 max-w-md">
-                {field.type === "file" ? (
-                  <label className="flex items-center justify-between border border-[#d6c2aa] rounded-lg px-3 py-2 w-full bg-white cursor-pointer hover:bg-[#fff7ec] text-sm text-gray-700">
-                    <span className="truncate">
-                      {fileNames[field.key] || field.placeholder}
-                    </span>
-                    <Upload className="w-5 h-5 text-[#1E212D]" />
-                    <input
-                      type="file"
-                      accept={field.accept}
-                      className="hidden"
-                      onChange={e => handleFileChange(e, field.key)}
-                    />
-                  </label>
-                ) : field.isEditable ? (
-                  // فیلدهای قابل ویرایش (نام، شعار، آدرس)
-                  <>
-                    {editingField === field.key ? (
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="flex items-center gap-2 w-full max-w-md">
+                  {field.type === "file" ? (
+                    <label className="flex items-center justify-between border border-[#d6c2aa] rounded-lg px-3 py-2 w-full bg-white cursor-pointer hover:bg-[#fff7ec] text-sm text-gray-700">
+                      <span className="truncate">
+                        {fileNames[field.key] || field.placeholder}
+                      </span>
+                      <Upload className="w-5 h-5 text-[#1E212D]" />
                       <input
-                        type="text"
-                        placeholder={field.placeholder}
-                        value={textValues[field.key]}
-                        onChange={e => handleTextChange(e, field.key)}
-                        className="flex-1 px-3 py-2 border border-[#d6c2aa] rounded-lg bg-white text-sm focus:outline-none max-w-md"
-                        autoFocus
+                        type="file"
+                        accept={field.accept}
+                        className="hidden"
+                        onChange={e => handleFileChange(e, field.key)}
                       />
-                    ) : (
-                      <div className="flex-1 px-3 py-2 border border-[#d6c2aa] rounded-lg bg-gray-50 text-sm max-w-md">
-                        {textValues[field.key] || (
-                          <span className="text-gray-400 italic">
-                            {getFieldName(field.key)} تنظیم نشده است
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <input
-                    type="text"
-                    placeholder={field.placeholder}
-                    value={textValues[field.key]}
-                    onChange={e => handleTextChange(e, field.key)}
-                    className="flex-1 px-3 py-2 border border-[#d6c2aa] rounded-lg bg-white text-sm focus:outline-none max-w-md"
-                  />
-                )}
+                    </label>
+                  ) : field.isEditable ? (
+                    // فیلدهای قابل ویرایش (نام، شعار، آدرس)
+                    <>
+                      {editingField === field.key ? (
+                        <input
+                          type="text"
+                          placeholder={field.placeholder}
+                          value={textValues[field.key]}
+                          onChange={e => handleTextChange(e, field.key)}
+                          className="flex-1 px-3 py-2 border border-[#d6c2aa] rounded-lg bg-white text-sm focus:outline-none w-full max-w-md"
+                          autoFocus
+                        />
+                      ) : (
+                        <div className="flex-1 px-3 py-2 border border-[#d6c2aa] rounded-lg bg-gray-50 text-sm w-full max-w-md">
+                          {textValues[field.key] || (
+                            <span className="text-gray-400 italic">
+                              {getFieldName(field.key)} تنظیم نشده است
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder={field.placeholder}
+                      value={textValues[field.key]}
+                      onChange={e => handleTextChange(e, field.key)}
+                      className="flex-1 px-3 py-2 border border-[#d6c2aa] rounded-lg bg-white text-sm focus:outline-none w-full max-w-md"
+                    />
+                  )}
 
-                {/* Action Buttons */}
-                {field.isEditable ? (
-                  <>
-                    {editingField === field.key ? (
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 shrink-0">
+                    {field.isEditable ? (
                       <>
-                        {/* Save Button */}
-                        <button
-                          onClick={() => handleSave(field.key, field.type)}
-                          title="ذخیره تغییرات"
-                          className="p-2 rounded-md bg-green-100 border border-green-300 hover:bg-green-200 transition"
-                        >
-                          <Save className="w-4 h-4 text-green-600" />
-                        </button>
-                        {/* Cancel Button */}
-                        <button
-                          onClick={() => cancelEditing(field.key)}
-                          title="انصراف"
-                          className="p-2 rounded-md bg-red-100 border border-red-300 hover:bg-red-200 transition"
-                        >
-                          <X className="w-4 h-4 text-red-600" />
-                        </button>
+                        {editingField === field.key ? (
+                          <>
+                            {/* Save Button */}
+                            <button
+                              onClick={() => handleSave(field.key, field.type)}
+                              title="ذخیره تغییرات"
+                              className="p-2 rounded-md bg-green-100 border border-green-300 hover:bg-green-200 transition"
+                            >
+                              <Save className="w-4 h-4 text-green-600" />
+                            </button>
+                            {/* Cancel Button */}
+                            <button
+                              onClick={() => cancelEditing(field.key)}
+                              title="انصراف"
+                              className="p-2 rounded-md bg-red-100 border border-red-300 hover:bg-red-200 transition"
+                            >
+                              <X className="w-4 h-4 text-red-600" />
+                            </button>
+                          </>
+                        ) : (
+                          // Edit Button
+                          <button
+                            onClick={() => startEditing(field.key)}
+                            title="ویرایش"
+                            className="p-2 rounded-md bg-[#fff0d9] border border-[#d6c2aa] hover:bg-[#f7e5cc] transition"
+                          >
+                            <Edit className="w-4 h-4 text-[#1E212D]" />
+                          </button>
+                        )}
                       </>
                     ) : (
-                      // Edit Button
+                      // Save Button for file fields
                       <button
-                        onClick={() => startEditing(field.key)}
-                        title="ویرایش"
+                        onClick={() => handleSave(field.key, field.type)}
+                        title="برای ثبت تغییرات کلیک کنید"
                         className="p-2 rounded-md bg-[#fff0d9] border border-[#d6c2aa] hover:bg-[#f7e5cc] transition"
                       >
-                        <Edit className="w-4 h-4 text-[#1E212D]" />
+                        <Save className="w-4 h-4 text-[#1E212D]" />
                       </button>
                     )}
-                  </>
-                ) : (
-                  // Save Button for file fields
-                  <button
-                    onClick={() => handleSave(field.key, field.type)}
-                    title="برای ثبت تغییرات کلیک کنید"
-                    className="p-2 rounded-md bg-[#fff0d9] border border-[#d6c2aa] hover:bg-[#f7e5cc] transition"
-                  >
-                    <Save className="w-4 h-4 text-[#1E212D]" />
-                  </button>
+                  </div>
+                </div>
+
+                {/* Description for address field */}
+                {field.description && (
+                  <p className="text-xs text-gray-500 mt-1 max-w-md">
+                    {field.description}
+                  </p>
                 )}
               </div>
             </div>
