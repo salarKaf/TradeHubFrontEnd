@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "/src/API/auth.jsx";
-import { getMyWebsite, getActivePlan, getStoreSlug } from "/src/API/website"; // اضافه کردن getStoreSlug
+import { getMyWebsite, getActivePlan, getStoreSlug } from "/src/API/website"; 
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -26,32 +26,26 @@ export default function LoginForm() {
 
             const website = await getMyWebsite();
 
-            // 1️⃣ اگر وبسایت نداشت، بره به StoreForm
             if (!website?.website_id) {
                 navigate("/StoreForm");
                 return;
             }
 
-            // ذخیره وبسایت آیدی
             const websiteId = website.website_id;
             localStorage.setItem("website_id", websiteId);
 
 
-            // 🆕 چک کردن اسلاگ
-            // 🆕 چک کردن اسلاگ
             try {
                 console.log(websiteId);
                 const slug = await getStoreSlug(websiteId);
                 console.log('Slug from API:', slug);
 
-                // شرط اصلاح شده - فقط اگر اسلاگ خالی یا 'store' بود به صفحه Slug برود
                 if (!slug || slug.trim() === '' || slug.toLowerCase() === 'store') {
                     navigate(`/Slug/${websiteId}`);
                 } else {
-                    // اگر اسلاگ معتبر دارد (نه خالی و نه 'store')
                     navigate(`/HomeSeller/${websiteId}`);
                 }
-                return; // حتماً return کنید تا کد بعدی اجرا نشود
+                return; 
             } catch (slugError) {
                 console.error('❌ Error checking slug:', slugError);
                 navigate(`/Slug/${websiteId}`);
@@ -59,14 +53,11 @@ export default function LoginForm() {
             }
 
             try {
-                // 2️⃣ چک کردن پلن فعال
                 const activePlan = await getActivePlan(websiteId);
 
                 if (activePlan?.plan?.name === "Basic" || activePlan?.plan?.name === "Pro") {
-                    // ✅ اگر پلن Basic یا Pro بود، وارد پنل فروشنده می‌شه
                     navigate(`/HomeSeller/${websiteId}`);
                 } else {
-                    // ⚠️ اگر پلن غیر از Basic/Pro بود یا اصلاً پلن نداشت، بره به انتخاب پلن
                     navigate(`/PricingPlans/${websiteId}`);
                 }
 
@@ -87,7 +78,7 @@ export default function LoginForm() {
                 setErrorMsg(detail || "خطا در ورود. لطفاً اطلاعات را بررسی کنید.");
             }
         } finally {
-            setIsLoading(false); // پایان لودینگ
+            setIsLoading(false); 
         }
     };
 
@@ -95,7 +86,6 @@ export default function LoginForm() {
 
     return (
         <>
-            {/* Header - responsive */}
             <div className="absolute top-4 md:top-7 right-4 md:right-14 flex justify-start cursor-pointer z-20 gap-8 md:gap-32">
                 <div className="flex gap-1">
                     <img src="/TradePageimages/shop_logo.png" alt="logo" className="w-4 h-4 md:w-5 md:h-5 mt-1" />
@@ -114,7 +104,6 @@ export default function LoginForm() {
                     backgroundColor: "black",
                 }}
             >
-                {/* SVG - فقط در دسکتاپ نمایش داده می‌شود */}
                 <svg
                     className="absolute top-0 bottom-0 h-full hidden lg:block"
                     style={{ right: "51%", zIndex: 10 }}

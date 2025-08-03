@@ -25,7 +25,6 @@ export default function SignupForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // بررسی اینکه پسوردها یکی هستن
         if (formData.password !== formData.confirmPassword) {
             showAlert("رمز عبور و تکرار آن یکسان نیست.", 'error');
             return;
@@ -34,7 +33,7 @@ export default function SignupForm() {
         setIsLoading(true);
 
         try {
-            const response = await axios.post("http://iam.localhost/api/v1/users/Register", {
+            const response = await axios.post("https://iam-tradehub.liara.run/api/v1/users/Register", {
                 first_name: formData.firstName,
                 last_name: formData.lastName,
                 email: formData.email,
@@ -109,7 +108,6 @@ export default function SignupForm() {
                     backgroundColor: "black",
                 }}
             >
-                {/* SVG فقط در حالت دسکتاپ نمایش داده می‌شود */}
                 <svg
                     className="absolute top-0 bottom-0 h-full hidden lg:block"
                     style={{ right: "51%", zIndex: 10 }}

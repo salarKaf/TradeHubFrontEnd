@@ -5,7 +5,6 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
 
     return (
         <div className={`relative group ${plan.popular ? 'transform scale-105' : ''}`}>
-            {/* Glow Effect */}
             <div className={`absolute inset-0 rounded-3xl ${
                 plan.popular
                     ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20'
@@ -14,7 +13,6 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                     : 'bg-gradient-to-r from-blue-500/10 to-purple-500/10'
             } blur-xl group-hover:blur-2xl transition-all duration-300`}></div>
 
-            {/* Card */}
             <div className={`relative bg-white/10 backdrop-blur-xl rounded-3xl border ${
                 plan.popular
                     ? 'border-purple-500/30 shadow-purple-500/20'
@@ -23,35 +21,30 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                     : 'border-white/20'
             } shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 flex flex-col`}>
 
-                {/* Popular Badge */}
                 {plan.popular && (
                     <div className="absolute top-0 right-0 bg-gradient-to-l from-purple-500 to-pink-500 text-white px-8 py-3 rounded-bl-3xl shadow-lg z-10">
                         <span className="text-sm font-bold">{plan.badge}</span>
                     </div>
                 )}
 
-                {/* Free Badge */}
                 {plan.isFree && (
                     <div className="absolute top-0 right-0 bg-gradient-to-l from-green-500 to-emerald-500 text-white px-8 py-3 rounded-bl-3xl shadow-lg z-10">
                         <span className="text-sm font-bold">{plan.badge}</span>
                     </div>
                 )}
 
-                {/* Regular Badge */}
                 {!plan.popular && !plan.isFree && (
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg z-10">
                         {plan.badge}
                     </div>
                 )}
 
-                {/* Plan Header */}
                 <div className="p-8 text-center relative min-h-[200px] flex flex-col justify-center">
                     <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent rounded-t-3xl"></div>
                     <div className="relative">
                         <h3 className="text-3xl font-bold mb-2 text-white">{plan.name}</h3>
                         <p className="text-gray-300 mb-4">{plan.subtitle}</p>
 
-                        {/* Price Section */}
                         <div className="mb-4">
                             {plan.isFree ? (
                                 <div className="flex items-center justify-center gap-1">
@@ -75,7 +68,6 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                     </div>
                 </div>
 
-                {/* Features */}
                 <div className="p-6 flex-1 flex flex-col">
                     <div className="flex-1">
                         <h4 className="font-bold text-lg text-white mb-4">✨ امکانات شامل:</h4>
@@ -93,7 +85,6 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                         </ul>
                     </div>
 
-                    {/* CTA Button */}
                     <div className="mt-6 pt-4">
                         <button
                             onClick={() => onSelect(plan.id)}
@@ -130,7 +121,6 @@ const PricingCard = ({ plan, onSelect, isProcessing, selectedPlan }) => {
                             )}
                         </button>
 
-                        {/* Trust Indicators */}
                         <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
                             <div className="flex items-center gap-1">
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

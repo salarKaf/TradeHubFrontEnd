@@ -11,9 +11,7 @@ const Home = () => {
       <div className="py-8 md:py-12 px-4 md:px-6 lg:px-16 xl:px-24">
         <div className="max-w-6xl mx-auto space-y-12 md:space-y-16">
 
-          {/* بخش ابتدایی: عکس و معرفی */}
           <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-12">
-            {/* تصویر */}
             <div className="md:w-1/2 w-full flex justify-center">
               <img
                 src="/public/TradePageimages/Picsart_25-04-10_19-01-52-544 1.png"
@@ -36,16 +34,13 @@ const Home = () => {
             </div>
           </div>
 
-          {/* معرفی و تیتر خدمات با تراز افقی هم‌راستا */}
           <div className="flex justify-between items-center mt-16 md:mt-20">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800 relative w-fit after:content-[''] after:absolute after:-bottom-2 after:right-0 after:translate-y-full after:w-[150%] after:h-[1px] after:bg-black">
               معرفی
             </h2>
           </div>
 
-          {/* پاراگراف معرفی با تصویر */}
           <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8 font-modam">
-            {/* متن */}
             <div className="md:w-1/2 w-full text-right text-base md:text-lg leading-relaxed md:leading-loose text-gray-700 mt-3 md:mt-5">
               <p className="mb-4">
                 <strong>TradeHub</strong> به شما این امکان را می‌دهد که فروشگاه آنلاین خود را بدون کدنویسی راه‌اندازی کنید، محصولاتتان را به‌صورت خودکار بفروشید، و فرآیندهای پرداخت و تحویل را بدون دردسر مدیریت نمایید.
@@ -55,7 +50,6 @@ const Home = () => {
               </p>
             </div>
 
-            {/* تصویر */}
             <div className="md:w-1/2 w-full">
               <img
                 src="/TradePageimages/93896ad38974f1825b3f1ae41fe3b6ad 1.png"
@@ -69,7 +63,6 @@ const Home = () => {
             آشنایی با خدمات
           </h2>
 
-          {/* کارت‌های خدمات */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-8 md:gap-y-10 mt-8 md:mt-12">
             {[
               {
@@ -123,7 +116,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* نوار صورتی تمام عرض */}
       <div className="bg-[#EABF9F] py-16 md:py-20 flex flex-col items-center justify-center text-center">
         <div className="max-w-4xl mx-auto px-4 md:px-6">
           <h2 className="text-xl md:text-2xl lg:text-4xl font-bold text-gray-800 mb-4 md:mb-6">
@@ -143,7 +135,6 @@ const Home = () => {
       <div className="py-8 md:py-12 px-4 md:px-6 lg:px-16 xl:px-24">
         <div className="max-w-6xl mx-auto space-y-12 md:space-y-16">
 
-          {/* بخش مشکلات و راه‌حل‌ها */}
           <div className="py-12 md:py-16 rounded-2xl px-4 md:px-6 space-y-8 md:space-y-12 text-right">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800">
               مشکلات فروش فایل‌های دیجیتال؟ <span className="text-gray-800">راه‌حل‌ها در TradeHub!</span>
@@ -192,12 +183,10 @@ const Home = () => {
         </div>
       </div>
 
-      {/* فوتر */}
       <footer className="bg-gray-900 text-white py-12 md:py-16 mt-16 md:mt-20">
         <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-16 xl:px-24">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
 
-            {/* بخش اول - درباره TradeHub */}
             <div className="text-right">
               <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-[#EABF9F]">TradeHub</h3>
               <p className="text-gray-300 text-base md:text-lg leading-relaxed mb-4 md:mb-6">
@@ -208,7 +197,6 @@ const Home = () => {
               </div>
             </div>
 
-            {/* بخش دوم - لینک‌های مفید */}
             <div className="text-right">
               <h4 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-[#EABF9F]">خدمات ما</h4>
               <ul className="space-y-2 md:space-y-3 text-gray-300 text-sm md:text-base">
@@ -220,12 +208,10 @@ const Home = () => {
               </ul>
             </div>
 
-            {/* بخش سوم - اطلاعات تماس */}
             <div className="text-right">
               <h4 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-[#EABF9F]">ارتباط با ما</h4>
               <div className="space-y-3 md:space-y-4 text-gray-300 text-sm md:text-base">
 
-                {/* ایمیل */}
                 <div className="flex items-center justify-end gap-2 md:gap-3 hover:text-[#EABF9F] transition">
                   <span className="break-all">salarikosar5@gmail.com</span>
                   <svg className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -233,7 +219,6 @@ const Home = () => {
                   </svg>
                 </div>
 
-                {/* تلفن */}
                 <div className="flex items-center justify-end gap-2 md:gap-3 hover:text-[#EABF9F] transition">
                   <span>09013870885</span>
                   <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -241,7 +226,6 @@ const Home = () => {
                   </svg>
                 </div>
 
-                {/* تلگرام */}
                 <div className="flex items-center justify-end gap-2 md:gap-3 hover:text-[#EABF9F] transition">
                   <span dir="ltr">@salari_k28</span>
                   <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -253,7 +237,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* خط جدا کننده */}
           <div className="border-t border-gray-700 mt-8 md:mt-12 pt-6 md:pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-400 text-center md:text-right text-sm md:text-base">

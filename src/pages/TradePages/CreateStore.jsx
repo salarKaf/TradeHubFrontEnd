@@ -33,13 +33,13 @@ export default function CreateStore() {
       return;
     }
 
-    setIsCreating(true); // شروع لودینگ
+    setIsCreating(true); 
 
     try {
       const result = await createWebsite(storeName);
       console.log("📦 نتیجه‌ی برگشتی از createWebsite:", result);
 
-      const websiteId = result.website_id; // ⬅️ استخراج ID صحیح
+      const websiteId = result.website_id; 
 
       if (!websiteId) {
         alert("❌ خطا: ساخت فروشگاه موفق نبود. شناسه برگشت داده نشد.");
@@ -58,7 +58,7 @@ export default function CreateStore() {
       console.error("❌ خطا در ساخت فروشگاه:", err);
       alert("خطایی رخ داد، لطفاً مجدد تلاش کنید.");
     } finally {
-      setIsCreating(false); // پایان لودینگ
+      setIsCreating(false); 
     }
   };
 
@@ -78,7 +78,6 @@ export default function CreateStore() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-[linear-gradient(to_bottom,_#1E212D_0%,_#1E212D_35%,_#626C93_100%)] font-rubik">
-      {/* حباب‌های تزئینی */}
       <div className="absolute w-64 h-64 bg-[#ddb19cb2] opacity-20 rounded-full blur-xl top-4 right-20 animate-bubble4" />
       <div className="absolute w-80 h-80 bg-[#eac09fb2] opacity-20 rounded-full blur-xl top-4 left-36 animate-bubble1" />
       <div className="absolute w-60 h-60 bg-[#525A7B] opacity-100 rounded-full blur-3xl bottom-20 right-20 animate-bubble2" />
@@ -90,7 +89,6 @@ export default function CreateStore() {
         <div className="absolute -top-3 -right-3 w-full h-full rounded-3xl bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-xl z-10" />
 
         <div className="relative z-20 bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-2xl rounded-3xl p-10 space-y-6 text-right text-[#EABF9F]">
-          {/* فیلد نام فروشگاه */}
           <div className="flex flex-col items-end w-full">
             <div className="flex items-center justify-between w-full">
               <label className="ml-4 text-white font-bold text-base">
@@ -115,7 +113,6 @@ export default function CreateStore() {
             )}
           </div>
 
-          {/* فیلد لوگو */}
           <div className="flex items-center justify-between relative">
             <label className="text-white font-bold text-base ml-4 flex items-center">
               لوگوی فروشگاه خود را وارد کنید

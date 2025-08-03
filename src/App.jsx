@@ -44,7 +44,6 @@ import ForgotPassword from './pages/website/pages/Auth/ForgotPassword';
 import ForgotPasswordOTP from './pages/website/pages/Auth/ForgotPasswordOTP';
 import ResetPassword from './pages/website/pages/Auth/ResetPassword';
 import PaymentCallbackOrder from './pages/website/pages/Orders/PaymentCallbackOrder.jsx';
-// Slug Handler Component
 import SlugHandler from '../src/pages/website/pages/Slug/SlugHandler.jsx';
 
 import { WebsiteProvider } from '../src/pages/website/pages/Slug/WebsiteProvider.jsx';
@@ -53,7 +52,6 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 export default function App() {
   const location = useLocation();
 
-  // مسیرهایی که باید Navbar نمایش داده بشه (صفحات اصلی پلتفرم)
   const showNavbarPaths = ["/", "/about", "/contact", "/pricing", "/portfolio"];
   const shouldShowNavbar = showNavbarPaths.includes(location.pathname);
 
@@ -184,7 +182,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        {/* مسیرهای فروشگاه با اسلاگ - تغییر کلیدی اینجاست */}
         <Route path="/website/orders/payment-callback" element={<PaymentCallbackOrder />} />
 
         <Route path="/:slug" element={<SlugHandler />} />

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// API functions
 const fetchPlans = async () => {
     const token = localStorage.getItem("token");
     const response = await fetch('/api/v1/plan/get-all-plans/', {
@@ -37,7 +36,7 @@ const checkPaymentStatus = async () => {
 };
 
 const PaymentResultPage = () => {
-    const [paymentStatus, setPaymentStatus] = useState(null); // 'success', 'failed', 'pending'
+    const [paymentStatus, setPaymentStatus] = useState(null); 
     const [planData, setPlanData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -52,10 +51,9 @@ const PaymentResultPage = () => {
         const isCallback = urlParams.has('status') || urlParams.has('success') || urlParams.has('order_id');
         
         if (isCallback) {
-            // Handle payment callback
             checkPaymentStatus()
                 .then(data => {
-                    setPaymentStatus(data.status || 'success'); // assuming API returns {status: 'success'/'failed'/'pending'}
+                    setPaymentStatus(data.status || 'success'); 
                     if (data.plan) {
                         setPlanData(data.plan);
                     }
@@ -67,7 +65,6 @@ const PaymentResultPage = () => {
                     setLoading(false);
                 });
         } else {
-            // Load plans from API and set default status
             fetchPlans()
                 .then(plans => {
                     console.log('Available plans:', plans);
@@ -76,16 +73,13 @@ const PaymentResultPage = () => {
                     let selectedPlan = null;
                     
                     if (planParam) {
-                        // Try to find by ID first (UUID format)
                         selectedPlan = plans.find(p => p.id === planParam);
                         
-                        // If not found by ID, try to find by name (for backward compatibility)
                         if (!selectedPlan) {
                             selectedPlan = plans.find(p => p.name.toLowerCase() === planParam.toLowerCase());
                         }
                     }
                     
-                    // Default to first plan if none found
                     if (!selectedPlan && plans.length > 0) {
                         selectedPlan = plans[0];
                     }
@@ -93,11 +87,10 @@ const PaymentResultPage = () => {
                     console.log('Selected plan:', selectedPlan);
                     setPlanData(selectedPlan);
                     
-                    // If we have a plan parameter but no plan found, show failed
                     if (planParam && !selectedPlan) {
                         setPaymentStatus('failed');
                     } else {
-                        setPaymentStatus('success'); // default for demo
+                        setPaymentStatus('success'); 
                     }
                     
                     setLoading(false);

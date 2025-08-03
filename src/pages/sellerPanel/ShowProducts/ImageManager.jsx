@@ -86,7 +86,7 @@ const ImageManager = ({
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://media.localhost/api/v1/item/upload_item_images/${productId}`,
+                `https://media-tradehub.liara.run/api/v1/item/upload_item_images/${productId}`,
                 formData,
                 {
                     headers: {

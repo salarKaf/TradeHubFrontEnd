@@ -19,7 +19,6 @@ export default function ResetPasswordSeller() {
     const email = location.state?.email;
     const otp = location.state?.otp;
 
-    // اگر ایمیل یا OTP نداشت، برگرد به صفحه اول
     useEffect(() => {
         if (!email || !otp) {
             navigate("/forgot-password");
@@ -38,7 +37,6 @@ export default function ResetPasswordSeller() {
         e.preventDefault();
         setErrorMsg(null);
 
-        // اعتبارسنجی
         if (!formData.new_password || !formData.confirm_password) {
             setErrorMsg("لطفاً همه فیلدها را پر کنید");
             return;
@@ -66,7 +64,6 @@ export default function ResetPasswordSeller() {
 
             setShowSuccessModal(true);
 
-            // بعد از 3 ثانیه به صفحه لاگین برود
             setTimeout(() => {
                 navigate("/login");
             }, 3000);
@@ -135,7 +132,6 @@ export default function ResetPasswordSeller() {
                         </p>
                     </div>
 
-                    {/* نمایش خطا */}
                     {errorMsg && (
                         <div className="bg-red-100 border border-red-400 text-red-800 text-sm rounded px-4 py-2 font-rubik">
                             {errorMsg}
@@ -143,7 +139,6 @@ export default function ResetPasswordSeller() {
                     )}
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
-                        {/* رمز عبور جدید */}
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
@@ -187,7 +182,6 @@ export default function ResetPasswordSeller() {
                             </button>
                         </div>
 
-                        {/* تایید رمز عبور */}
                         <div className="relative">
                             <input
                                 type={showConfirmPassword ? "text" : "password"}

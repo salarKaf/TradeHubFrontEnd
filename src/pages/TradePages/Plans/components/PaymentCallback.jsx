@@ -11,11 +11,9 @@ const PaymentCallback = () => {
     useEffect(() => {
         const processPaymentCallback = async () => {
             try {
-                // گرفتن status از URL
                 const status = searchParams.get('Status') || searchParams.get('status');
                 console.log('🔥 Processing payment callback, status:', status);
 
-                // گرفتن websiteId از localStorage یا از referrer
                 let websiteId = null;
                 try {
                     const paymentInfo = JSON.parse(localStorage.getItem('payment_info') || '{}');
@@ -24,7 +22,6 @@ const PaymentCallback = () => {
                     console.log('LocalStorage payment info not found');
                 }
 
-                // اگر websiteId از localStorage نگرفتیم، از referrer بگیریم
                 if (!websiteId) {
                     const referrer = document.referrer;
                     if (referrer && referrer.includes('PricingPlans/')) {
@@ -32,7 +29,6 @@ const PaymentCallback = () => {
                     }
                 }
 
-                // بررسی وضعیت پرداخت
                 if (status === 'success' || status === 'OK') {
                     setPaymentResult({
                         success: true,
@@ -47,7 +43,6 @@ const PaymentCallback = () => {
                     });
                 }
 
-                // پاک کردن اطلاعات پرداخت از localStorage
                 localStorage.removeItem('payment_info');
 
             } catch (error) {
@@ -62,19 +57,15 @@ const PaymentCallback = () => {
             }
         };
 
-        // تاخیر 1 ثانیه برای نمایش loading
         setTimeout(processPaymentCallback, 1000);
     }, [searchParams]);
 
     const handleContinue = () => {
         if (paymentResult?.success && paymentResult?.websiteId) {
-            // موفق -> برو به rules
             navigate(`/rules/${paymentResult.websiteId}`);
         } else if (paymentResult?.websiteId) {
-            // ناموفق -> برگرد به pricing
             navigate(`/PricingPlans/${paymentResult.websiteId}`);
         } else {
-            // اگر websiteId نداریم، به صفحه اصلی برو
             navigate('/');
         }
     };

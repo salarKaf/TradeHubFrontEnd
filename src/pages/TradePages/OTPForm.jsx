@@ -3,7 +3,7 @@ import { verifyOtp, resendOtp } from '/src/API/auth.jsx';
 import { useLocation } from "react-router-dom";
 
 export default function OTPForm() {
-    const location = useLocation(); // ✅ این باید قبل از هر استفاده باشه
+    const location = useLocation(); 
 
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const fromSignup = location.state?.fromSignup;
@@ -15,7 +15,6 @@ export default function OTPForm() {
 
     const [email, setEmail] = useState(location.state?.email || localStorage.getItem("pendingEmail"));
 
-    // Timer effect
     useEffect(() => {
         if (timer > 0) {
             const countdown = setTimeout(() => {
@@ -44,7 +43,6 @@ export default function OTPForm() {
         }
     }, []);
 
-    // Format timer to MM:SS
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -57,7 +55,6 @@ export default function OTPForm() {
             newOtp[index] = value;
             setOtp(newOtp);
 
-            // Auto focus next input (left to right)
             if (value && index < 5) {
                 const nextInput = document.getElementById(`otp-${index + 1}`);
                 if (nextInput) nextInput.focus();
@@ -69,11 +66,9 @@ export default function OTPForm() {
         if (e.key === 'Backspace') {
             const newOtp = [...otp];
             if (otp[index]) {
-                // Clear current input
                 newOtp[index] = '';
                 setOtp(newOtp);
             } else if (index > 0) {
-                // Move to previous input and clear it
                 newOtp[index - 1] = '';
                 setOtp(newOtp);
                 const prevInput = document.getElementById(`otp-${index - 1}`);
@@ -94,7 +89,6 @@ export default function OTPForm() {
             }
             setOtp(newOtp);
 
-            // Focus the next empty input or the last one
             const nextIndex = Math.min(digits.length, 5);
             const nextInput = document.getElementById(`otp-${nextIndex}`);
             if (nextInput) nextInput.focus();
@@ -107,12 +101,12 @@ export default function OTPForm() {
             const data = await verifyOtp({ otp: otpCode, email });
             console.log(data);
 
-            setShowSuccessModal(true); // ✅ پیام موفقیت‌آمیز رو نمایش بده
+            setShowSuccessModal(true); 
             localStorage.setItem("token", data.access_token);
 
             setTimeout(() => {
                 window.location.href = "/storeForm";
-            }, 2500); // ⏱ بعد از 2.5 ثانیه برو به PricingPlans
+            }, 2500); 
 
         } catch (err) {
             alert(err.message);
@@ -141,10 +135,8 @@ export default function OTPForm() {
 
     const handleMainButton = () => {
         if (canResend) {
-            // Timer finished - resend code
             handleResendCode();
         } else {
-            // Timer still running - verify code
             const otpCode = otp.join('');
             if (otpCode.length !== 6) {
                 setShowErrorModal(true);
@@ -176,7 +168,6 @@ export default function OTPForm() {
                     backgroundColor: "black",
                 }}
             >
-                {/* SVG فقط در حالت دسکتاپ نمایش داده می‌شود */}
                 <svg
                     className="absolute top-0 bottom-0 h-full hidden lg:block"
                     style={{ right: "51%", zIndex: 10 }}

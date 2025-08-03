@@ -14,14 +14,12 @@ export default function ForgotPasswordOTPSeller() {
     
     const email = location.state?.email;
 
-    // اگر ایمیل نداشت، برگرد به صفحه قبل
     useEffect(() => {
         if (!email) {
             navigate("/forgot-password");
         }
     }, [email, navigate]);
 
-    // Timer effect
     useEffect(() => {
         if (timer > 0) {
             const countdown = setTimeout(() => {
@@ -33,7 +31,6 @@ export default function ForgotPasswordOTPSeller() {
         }
     }, [timer]);
 
-    // Format timer to MM:SS
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -46,7 +43,6 @@ export default function ForgotPasswordOTPSeller() {
             newOtp[index] = value;
             setOtp(newOtp);
 
-            // Auto focus next input
             if (value && index < 5) {
                 const nextInput = document.getElementById(`otp-${index + 1}`);
                 if (nextInput) nextInput.focus();
@@ -98,7 +94,6 @@ export default function ForgotPasswordOTPSeller() {
         try {
             await verifyForgotPasswordOTP({ otp: otpCode, email });
             
-            // انتقال به صفحه تغییر رمز عبور
             navigate("/reset-password", { 
                 state: { 
                     email: email, 

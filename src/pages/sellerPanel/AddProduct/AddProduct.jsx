@@ -8,7 +8,6 @@ import CategoryDropdown from '../ShowProducts/CategoryDropdown';
 
 const AddProduct = () => {
     const { websiteId } = useParams();
-    // این تابع‌ها رو اینجا تعریف کن
     const formatNumberForDisplay = (value) => {
         if (!value) return '';
         const cleanNumber = value.toString().replace(/[^\d]/g, '');
@@ -19,7 +18,6 @@ const AddProduct = () => {
         if (!value) return 0;
         return parseInt(value.toString().replace(/,/g, ''), 10);
     };
-    // وضعیت برای فیلدها و تصاویر
     const [productData, setProductData] = useState({
         name: '',
         price: '',
@@ -31,21 +29,18 @@ const AddProduct = () => {
         discount: ''
     });
 
-    // تصاویر انتخاب شده برای آپلود
     const [selectedImages, setSelectedImages] = useState([]);
     const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
 
     const [errors, setErrors] = useState({});
     const [newlyCreatedItemId, setNewlyCreatedItemId] = useState(null);
     const [categoryTree, setCategoryTree] = useState({});
-    const [categoryIdMap, setCategoryIdMap] = useState({}); // اسم به آیدی
+    const [categoryIdMap, setCategoryIdMap] = useState({}); 
     const [showSubcategory, setShowSubcategory] = useState(false);
 
-    // وضعیت آپلود تصاویر
     const [isUploadingImages, setIsUploadingImages] = useState(false);
     const [uploadStatus, setUploadStatus] = useState(null);
 
-    // وضعیت‌های جدید برای بهبود UI
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -79,7 +74,6 @@ const AddProduct = () => {
         if (websiteId) fetchCategories();
     }, [websiteId]);
 
-    // نمایش پیام موفقیت
     const showMessage = (type, text) => {
         setMessageText(text);
         if (type === 'success') {
@@ -91,13 +85,11 @@ const AddProduct = () => {
         }
     };
 
-    // تغییرات ورودی‌ها
     const handleChange = (e) => {
         const { name, value } = e.target;
 
         let newValue = value;
 
-        // برای فیلد قیمت، فرمت کردن با کاما
         if (name === 'price') {
             newValue = formatNumberForDisplay(value);
         }
@@ -107,7 +99,6 @@ const AddProduct = () => {
             [name]: newValue
         });
 
-        // پاک کردن خطا وقتی کاربر شروع به تایپ می‌کند
         if (errors[name]) {
             setErrors({
                 ...errors,
@@ -116,15 +107,13 @@ const AddProduct = () => {
         }
     };
 
-    // تغییر دسته‌بندی و چک کردن زیردسته
     const handleCategoryChange = (category) => {
         setProductData({
             ...productData,
             category,
-            subcategory: '' // ریست زیردسته
+            subcategory: '' 
         });
 
-        // بررسی اینکه آیا زیردسته دارد
         const parts = category.split('/');
         if (parts.length === 1 && categoryTree[parts[0]]) {
             const hasSubcategories = Object.keys(categoryTree[parts[0]]).length > 0;
@@ -133,7 +122,6 @@ const AddProduct = () => {
             setShowSubcategory(false);
         }
 
-        // پاک کردن خطا
         if (errors.category) {
             setErrors({
                 ...errors,
@@ -142,7 +130,6 @@ const AddProduct = () => {
         }
     };
 
-    // انتخاب تصاویر
     const handleImageSelect = (e) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
@@ -157,23 +144,19 @@ const AddProduct = () => {
         e.target.value = '';
     };
 
-    // حذف تصویر از لیست انتخاب شده
     const removeSelectedImage = (imageId) => {
         const updatedImages = selectedImages.filter(img => img.id !== imageId);
         setSelectedImages(updatedImages);
 
-        // اگر تصویر اصلی حذف شد، اولین تصویر را اصلی قرار بده
         if (primaryImageIndex >= updatedImages.length) {
             setPrimaryImageIndex(0);
         }
     };
 
-    // تنظیم تصویر اصلی
     const setPrimaryImage = (index) => {
         setPrimaryImageIndex(index);
     };
 
-    // اعتبارسنجی فیلدها
     const validateFields = () => {
         const newErrors = {};
 
@@ -194,7 +177,6 @@ const AddProduct = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // آپلود تصاویر پس از ساخت محصول
     const uploadImages = async (itemId) => {
         if (selectedImages.length === 0) return { success: true };
 
@@ -203,12 +185,10 @@ const AddProduct = () => {
 
         const formData = new FormData();
 
-        // اضافه کردن فایل‌ها
         selectedImages.forEach(image => {
             formData.append('files', image.file);
         });
 
-        // اضافه کردن فلگ‌های is_main
         selectedImages.forEach((image, index) => {
             formData.append('is_main_flags', index === primaryImageIndex ? 'true' : 'false');
         });
@@ -216,7 +196,7 @@ const AddProduct = () => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://media.localhost/api/v1/item/upload_item_images/${itemId}`,
+                `https://media-tradehub.liara.run/api/v1/item/upload_item_images/${itemId}`,
                 formData,
                 {
                     headers: {
@@ -242,31 +222,25 @@ const AddProduct = () => {
         }
     };
 
-    // ذخیره تغییرات
     const handleSave = async () => {
         if (!validateFields()) return;
 
         setIsLoading(true);
 
-        // تعیین آیدی دسته‌بندی
         let categoryId;
         let subcategoryId = null;
 
-        // بررسی اینکه آیا زیردسته انتخاب شده یا نه
         const categoryParts = productData.category.split('/');
 
         if (categoryParts.length === 2) {
-            // زیردسته انتخاب شده
             const mainCategory = categoryParts[0];
             const subCategory = categoryParts[1];
 
             categoryId = categoryIdMap[mainCategory];
             subcategoryId = categoryIdMap[`${mainCategory}/${subCategory}`];
         } else if (categoryParts.length === 1) {
-            // فقط دسته اصلی انتخاب شده
             categoryId = categoryIdMap[productData.category];
 
-            // اگر زیردسته در فرم انتخاب شده باشد
             if (productData.subcategory) {
                 subcategoryId = categoryIdMap[`${productData.category}/${productData.subcategory}`];
             }
@@ -289,7 +263,6 @@ const AddProduct = () => {
             stock: 1000000,
         };
 
-        // اگر زیردسته انتخاب شده، به payload اضافه کن
         if (subcategoryId) {
             payload.subcategory_id = subcategoryId;
         }
@@ -300,7 +273,6 @@ const AddProduct = () => {
 
             setNewlyCreatedItemId(itemId);
 
-            // اگر تصاویر انتخاب شده‌اند، آنها را آپلود کن
             if (selectedImages.length > 0) {
                 const uploadResult = await uploadImages(itemId);
                 if (uploadResult.success) {
@@ -312,7 +284,6 @@ const AddProduct = () => {
                 showMessage('success', "محصول با موفقیت ایجاد شد!");
             }
 
-            // ریست کردن فرم
             setProductData({
                 name: '',
                 price: '',
@@ -324,7 +295,6 @@ const AddProduct = () => {
                 discount: ''
             });
 
-            // پاک کردن تصاویر پس از موفقیت کامل
             setTimeout(() => {
                 setSelectedImages([]);
                 setPrimaryImageIndex(0);
@@ -340,7 +310,6 @@ const AddProduct = () => {
 
     return (
         <div className="p-3 md:p-6 min-h-screen">
-            {/* پیام‌های وضعیت */}
             {showSuccessMessage && (
                 <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 md:px-6 py-3 md:py-4 rounded-lg shadow-lg z-50 flex items-center gap-2 md:gap-3 animate-bounce text-sm md:text-base max-w-[90vw]">
                     <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-green-600 rounded-full">
@@ -359,7 +328,6 @@ const AddProduct = () => {
                 </div>
             )}
 
-            {/* برگشت به صفحه قبلی */}
             <button
                 onClick={() => window.history.back()}
                 className="flex items-center mb-4 md:mb-6 text-blue-500 hover:text-blue-700 text-sm md:text-base"
@@ -368,15 +336,12 @@ const AddProduct = () => {
                 برگشت به صفحه قبل
             </button>
 
-            {/* فرم اطلاعات محصول */}
             <div className="p-3 md:p-6 font-modam">
                 <p className="text-sm md:text-lg mb-6 md:mb-12">فروشنده‌ی گرامی! پس از ویرایش و یا افزودن اطلاعات محصول برای ذخیره شدن و اعمال تغییرات دکمه‌ی ذخیره را بزنید.</p>
                 <h2 className="text-xl md:text-2xl font-semibold mb-6 md:mb-12">اطلاعات محصول</h2>
 
                 <div className="flex flex-col lg:flex-row gap-6 lg:gap-24 justify-center">
-                    {/* بخش تصاویر */}
                     <div className="flex flex-col items-center space-y-4 w-full lg:w-1/3">
-                        {/* تصویر اصلی */}
                         <div className="w-full max-w-[420px] aspect-square bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden">
                             {selectedImages.length > 0 ? (
                                 <img
@@ -392,7 +357,6 @@ const AddProduct = () => {
                             )}
                         </div>
 
-                        {/* تصاویر کوچک */}
                         <div className="flex items-center gap-2 flex-wrap justify-center max-w-full">
                             {selectedImages.map((image, index) => (
                                 <div key={image.id} className="relative group">
@@ -405,7 +369,6 @@ const AddProduct = () => {
                                             } ${index === primaryImageIndex ? 'ring-2 ring-green-400' : ''}`}
                                         onClick={() => setPrimaryImage(index)}
                                     />
-                                    {/* دکمه حذف */}
                                     <button
                                         onClick={() => removeSelectedImage(image.id)}
                                         className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -413,7 +376,6 @@ const AddProduct = () => {
                                     >
                                         <FaTimes />
                                     </button>
-                                    {/* نشانگر تصویر اصلی */}
                                     {index === primaryImageIndex && (
                                         <div className="absolute bottom-0 left-0 bg-green-500 text-white text-xs px-1 rounded-tr-md">
                                             اصلی
@@ -422,7 +384,6 @@ const AddProduct = () => {
                                 </div>
                             ))}
 
-                            {/* دکمه افزودن تصویر */}
                             <label className="w-12 h-12 md:w-16 md:h-16 border-2 border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
                                 <FaPlus className="text-gray-400 text-xs md:text-sm mb-1" />
                                 <span className="text-xs text-gray-500 hidden md:block">افزودن</span>
@@ -437,9 +398,7 @@ const AddProduct = () => {
                         </div>
                     </div>
 
-                    {/* بخش فرم */}
                     <div className="space-y-4 md:space-y-6 w-full lg:w-2/4">
-                        {/* نام محصول */}
                         <div className="font-modam text-base md:text-lg">
                             <div className="relative">
                                 <input
@@ -456,7 +415,6 @@ const AddProduct = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-2 font-modam text-base md:text-lg">
-                            {/* قیمت محصول */}
                             <div className="w-full sm:w-[30%]">
                                 <div className="relative">
                                     <input
@@ -472,7 +430,6 @@ const AddProduct = () => {
                                 {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
                             </div>
 
-                            {/* دسته بندی محصول */}
                             <div className="w-full sm:w-[70%] md:mt-2">
                                 <CategoryDropdown
                                     value={productData.category}
@@ -485,7 +442,6 @@ const AddProduct = () => {
                             </div>
                         </div>
 
-                        {/* زیردسته بندی (فقط اگر نیاز باشد) */}
                         {showSubcategory && (
                             <div className="font-modam text-base md:text-lg">
                                 <select
@@ -504,7 +460,6 @@ const AddProduct = () => {
                             </div>
                         )}
 
-                        {/* لینک محصول دیجیتال */}
                         <div className="font-modam text-base md:text-lg">
                             <div className="relative">
                                 <input
@@ -520,7 +475,6 @@ const AddProduct = () => {
                             {errors.link && <p className="text-red-500 text-sm mt-1">{errors.link}</p>}
                         </div>
 
-                        {/* توضیحات محصول */}
                         <div className="font-modam text-base md:text-lg">
                             <textarea
                                 name="description"
@@ -535,7 +489,6 @@ const AddProduct = () => {
                     </div>
                 </div>
 
-                {/* توضیحات پس از خرید */}
                 <div className="mx-0 md:mx-16 my-6 md:my-12">
                     <div className="ml-auto mb-4 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-sm md:text-lg w-full md:w-72 text-white py-3 md:py-4 px-4 md:px-6 rounded-full shadow-md text-center">
                         توضیحات پس از خرید محصول
@@ -550,7 +503,6 @@ const AddProduct = () => {
                     />
                 </div>
 
-                {/* دکمه ذخیره تغییرات */}
                 <div className="flex justify-center md:justify-end mt-6 px-0 md:pl-16">
                     <button
                         onClick={handleSave}
@@ -572,7 +524,6 @@ const AddProduct = () => {
                 </div>
             </div>
 
-            {/* نوتیفیکیشن وضعیت آپلود تصاویر */}
             {uploadStatus === 'uploading' && (
                 <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-[90vw]">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

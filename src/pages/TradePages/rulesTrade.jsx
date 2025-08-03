@@ -6,12 +6,9 @@ export default function RulesTrade() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   
-  // اگر websiteId از URL parameter می‌آید
   const { websiteId } = useParams();
   
-  // یا اگر از جای دیگری می‌آید، می‌توانید آن را دریافت کنید
-  // const websiteId = localStorage.getItem('websiteId'); // مثال
-  // const websiteId = 'your-website-id'; // مثال ثابت
+
 
   const handleNextClick = (e) => {
     e.preventDefault();
@@ -33,15 +30,11 @@ export default function RulesTrade() {
       <div className="absolute w-52 h-52 bg-[#b6897353] opacity-35 rounded-full blur-2xl top-1/2 left-20 animate-bubble3" />
       <div className="absolute w-48 h-48 bg-[#faf3e061] opacity-15 rounded-full blur-3xl bottom-10 left-1/3 animate-bubble4" />
 
-      {/* فرم‌ها به سبک ورق برعکس */}
       <div className="relative w-full max-w-3xl">
-        {/* فرم پشت سوم (بالا-راست) */}
         <div className="absolute -top-6 -right-6 w-full h-full rounded-3xl bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-xl z-0" />
 
-        {/* فرم وسطی دوم (وسط) */}
         <div className="absolute -top-3 -right-3 w-full h-full rounded-3xl bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-xl z-10" />
 
-        {/* فرم اصلی جلویی (پایین-چپ) */}
         <div className="relative z-20 bg-[#8D8D8D33] border border-[#00000080] backdrop-blur-xl shadow-2xl rounded-3xl p-10 space-y-6 text-right text-white">
 
           <h1 className="text-2xl font-semibold mb-6 text-center text-gray-100">
@@ -111,12 +104,10 @@ export default function RulesTrade() {
             </label>
           </div>
           
-          {/* پیام خطا */}
           {error && (
             <p className="text-red-500 text-sm mb-4 text-right">{error}</p>
           )}
           
-          {/* دکمه وسط */}
           <div className="flex justify-center pt-6">
             <button
               onClick={handleNextClick}

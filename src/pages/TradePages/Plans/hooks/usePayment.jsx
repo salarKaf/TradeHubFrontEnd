@@ -4,7 +4,6 @@ import axios from 'axios';
 const usePayment = () => {
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
-    // درخواست پرداخت برای پلن های پولی
     const callPaymentApi = async (planId, websiteId) => {
         try {
             setIsProcessingPayment(true);
@@ -13,9 +12,9 @@ const usePayment = () => {
             console.log('🔥 Sending payment request for plan:', planId, 'website:', websiteId);
 
             const response = await axios.post(
-                `http://tradehub.localhost/api/v1/payment/plan_payment_request/${planId}`,
+                `https://core-tradehub.liara.run/api/v1/payment/plan_payment_request/${planId}`,
                 {
-                    website_id: websiteId // 🔥 اضافه کردن website_id در body
+                    website_id: websiteId 
                 },
                 {
                     headers: {
@@ -29,14 +28,12 @@ const usePayment = () => {
             const paymentUrl = response.data?.payment_url;
 
             if (paymentUrl) {
-                // 🔥 ذخیره اطلاعات پرداخت در localStorage برای callback
                 localStorage.setItem('payment_info', JSON.stringify({
                     planId: planId,
                     websiteId: websiteId,
                     timestamp: Date.now()
                 }));
 
-                // هدایت به درگاه پرداخت
                 window.location.href = paymentUrl;
                 return { success: true };
             } else {
@@ -70,7 +67,6 @@ const usePayment = () => {
         }
     };
 
-    // درخواست تست رایگان (اگر نیاز باشه)
     const callFreeTrialApi = async (websiteId) => {
         try {
             setIsProcessingPayment(true);
@@ -79,7 +75,7 @@ const usePayment = () => {
             console.log('🔥 Sending free trial request for website:', websiteId);
 
             const response = await axios.post(
-                `http://tradehub.localhost/api/v1/payment/order_request`,
+                `https://core-tradehub.liara.run/api/v1/payment/order_request`,
                 {
                     website_id: websiteId
                 },
@@ -117,7 +113,6 @@ const usePayment = () => {
         }
     };
 
-    // فعال‌سازی پلن رایگان با نمایش پیام موفقیت و هدایت
     const activateFreePlan = async (websiteId) => {
         try {
             setIsProcessingPayment(true);
@@ -126,7 +121,7 @@ const usePayment = () => {
             console.log('🔥 Activating free plan for website:', websiteId);
 
             const response = await axios.post(
-                `http://tradehub.localhost/api/v1/plan/activate-free-plan?website_id=${websiteId}`,
+                `https://core-tradehub.liara.run/api/v1/plan/activate-free-plan?website_id=${websiteId}`,
                 {},
                 {
                     headers: {
@@ -138,10 +133,8 @@ const usePayment = () => {
 
             console.log("✅ Free plan activated:", response.data);
             
-            // 🎉 نمایش پیام موفقیت
             alert('🎉 تبریک! پلن رایگان شما با موفقیت فعال شد!\nهم‌اکنون می‌توانید از تمام امکانات به مدت ۷ روز استفاده کنید.');
             
-            // ⏱️ هدایت کاربر بعد از یک ثانیه
             setTimeout(() => 1000);
             
             return { success: true, data: response.data };
@@ -173,7 +166,6 @@ const usePayment = () => {
         }
     };
 
-    // بررسی وضعیت callback پرداخت
     const checkPaymentCallback = async (authority, status, websiteId, planId) => {
         try {
             const token = localStorage.getItem("token");
@@ -186,7 +178,7 @@ const usePayment = () => {
             });
 
             const response = await axios.get(
-                `http://tradehub.localhost/api/v1/payment/plan_payment/callback`,
+                `https://core-tradehub.liara.run/api/v1/payment/plan_payment/callback`,
                 {
                     params: {
                         website_id: websiteId,
@@ -202,14 +194,12 @@ const usePayment = () => {
 
             console.log('✅ Payment callback response:', response.data);
             
-            // پاک کردن اطلاعات پرداخت از localStorage
             localStorage.removeItem('payment_info');
             
             return { success: true, data: response.data };
         } catch (error) {
             console.error('❌ Payment callback error:', error);
             
-            // پاک کردن اطلاعات پرداخت از localStorage
             localStorage.removeItem('payment_info');
             
             return { success: false, error: error.response?.data };

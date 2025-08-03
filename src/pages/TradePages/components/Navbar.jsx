@@ -3,10 +3,8 @@ import { Link } from "react-router-dom";
 export default function Navbar() {
   return (
     <div className="relative w-full bg-[#FFF7E7]">
-      {/* پس‌زمینه - در موبایل مستطیل، در دسکتاپ SVG */}
       <div className="absolute top-0 left-0 w-full h-[85px] bg-[#1E212D] md:bg-transparent z-0"></div>
       
-      {/* منحنی پس‌زمینه فقط در دسکتاپ */}
       <svg
         className="hidden md:block absolute top-0 left-0 w-full h-[178px] z-0"
         viewBox="0 0 1440 178"
@@ -59,10 +57,8 @@ export default function Navbar() {
         </g>
       </svg>
 
-      {/* نوبار */}
       <div className="relative z-10 flex justify-between items-center px-4 md:px-8 py-4 md:py-6 text-[#FAF3E0]">
         
-        {/* دکمه‌های ورود و ثبت نام - سمت چپ */}
         <div className="flex gap-3 md:gap-4">
           <Link
             to="/login"
@@ -77,11 +73,9 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* لوگو - سمت راست */}
         <div className="text-center">
           <h1 className="text-[#EABF9F] text-[20px] md:text-[25px] font-krona mt-2">Trade Hub</h1>
 
-          {/* خطوط زیر متن - فقط در دسکتاپ */}
           <div className="hidden md:flex justify-center items-center gap-3 mt-3">
             <div className="w-10 h-px bg-[#FAF3E0]"></div>
             <div className="w-32 h-px bg-[#FAF3E0]"></div>

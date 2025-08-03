@@ -36,7 +36,6 @@ const PricingPlans = () => {
             return;
         }
 
-        // جلوگیری از کلیک مجدد
         if (isProcessingPayment) {
             console.log('Payment already in progress...');
             return;
@@ -60,11 +59,9 @@ const PricingPlans = () => {
             } else {
                 console.log('🔥 Processing paid plan payment...');
                 
-                // برای پلن های پولی، callPaymentApi خودش کاربر رو به درگاه هدایت می‌کنه
                 await callPaymentApi(selectedPlanData.apiId, websiteId);
                 
-                // اگر به اینجا رسیدیم، یعنی مشکلی پیش اومده
-                // چون اگر موفق بود، کاربر به درگاه هدایت میشه
+
             }
         } catch (error) {
             console.error('❌ Payment error:', error);
@@ -73,7 +70,6 @@ const PricingPlans = () => {
                 setPaymentSuccess(false);
                 setShowPaymentResult(true);
             } else {
-                // برای پلن های پولی، error handling در usePayment انجام میشه
                 alert('خطا در پردازش پرداخت. لطفاً دوباره تلاش کنید.');
             }
         } finally {

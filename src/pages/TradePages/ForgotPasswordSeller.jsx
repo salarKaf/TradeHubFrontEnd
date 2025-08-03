@@ -22,7 +22,6 @@ export default function ForgotPasswordSeller() {
         try {
             await sendForgotPasswordOTP(email);
             
-            // انتقال به صفحه OTP با ایمیل
             navigate("/forgot-password-otp", { 
                 state: { email: email } 
             });

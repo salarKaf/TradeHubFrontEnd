@@ -9,9 +9,8 @@ const usePlans = (websiteId) => {
         try {
             const token = localStorage.getItem("token");
 
-            // چک می‌کنیم آیا پلنی قبلاً خریداری شده یا نه
             const checkRes = await axios.get(
-                `http://tradehub.localhost/api/v1/plan/check-plan-history/?website_id=${websiteId}`,
+                `https://core-tradehub.liara.run/api/v1/plan/check-plan-history/?website_id=${websiteId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -21,9 +20,8 @@ const usePlans = (websiteId) => {
 
             const hasBoughtPlan = checkRes.data?.has_bought;
 
-            // گرفتن لیست پلن‌ها
             const response = await axios.get(
-                'http://tradehub.localhost/api/v1/plan/get-all-plans/',
+                'https://core-tradehub.liara.run/api/v1/plan/get-all-plans/',
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
