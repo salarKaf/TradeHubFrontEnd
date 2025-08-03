@@ -321,21 +321,21 @@ const AddProduct = () => {
     };
 
     return (
-        <div className="p-6 min-h-screen">
+        <div className="p-3 md:p-6 min-h-screen">
             {/* پیام‌های وضعیت */}
             {showSuccessMessage && (
-                <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 animate-bounce">
-                    <div className="flex items-center justify-center w-8 h-8 bg-green-600 rounded-full">
-                        <FaCheck className="text-sm" />
+                <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 md:px-6 py-3 md:py-4 rounded-lg shadow-lg z-50 flex items-center gap-2 md:gap-3 animate-bounce text-sm md:text-base max-w-[90vw]">
+                    <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-green-600 rounded-full">
+                        <FaCheck className="text-xs md:text-sm" />
                     </div>
                     <span className="font-medium">{messageText}</span>
                 </div>
             )}
 
             {showErrorMessage && (
-                <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 animate-bounce">
-                    <div className="flex items-center justify-center w-8 h-8 bg-red-600 rounded-full">
-                        <FaTimes className="text-sm" />
+                <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 md:px-6 py-3 md:py-4 rounded-lg shadow-lg z-50 flex items-center gap-2 md:gap-3 animate-bounce text-sm md:text-base max-w-[90vw]">
+                    <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-red-600 rounded-full">
+                        <FaTimes className="text-xs md:text-sm" />
                     </div>
                     <span className="font-medium">{messageText}</span>
                 </div>
@@ -344,22 +344,22 @@ const AddProduct = () => {
             {/* برگشت به صفحه قبلی */}
             <button
                 onClick={() => window.history.back()}
-                className="flex items-center mb-6 text-blue-500 hover:text-blue-700"
+                className="flex items-center mb-4 md:mb-6 text-blue-500 hover:text-blue-700 text-sm md:text-base"
             >
                 <FaArrowLeft className="mr-2" />
                 برگشت به صفحه قبل
             </button>
 
             {/* فرم اطلاعات محصول */}
-            <div className="p-6 font-modam">
-                <p className="text-lg mb-12">فروشنده‌ی گرامی! پس از ویرایش و یا افزودن اطلاعات محصول برای ذخیره شدن و اعمال تغییرات دکمه‌ی ذخیره را بزنید.</p>
-                <h2 className="text-2xl font-semibold mb-12">اطلاعات محصول</h2>
+            <div className="p-3 md:p-6 font-modam">
+                <p className="text-sm md:text-lg mb-6 md:mb-12">فروشنده‌ی گرامی! پس از ویرایش و یا افزودن اطلاعات محصول برای ذخیره شدن و اعمال تغییرات دکمه‌ی ذخیره را بزنید.</p>
+                <h2 className="text-xl md:text-2xl font-semibold mb-6 md:mb-12">اطلاعات محصول</h2>
 
-                <div className="flex gap-24 justify-center">
+                <div className="flex flex-col lg:flex-row gap-6 lg:gap-24 justify-center">
                     {/* بخش تصاویر */}
-                    <div className="flex flex-col items-center space-y-4 w-1/3">
+                    <div className="flex flex-col items-center space-y-4 w-full lg:w-1/3">
                         {/* تصویر اصلی */}
-                        <div className="w-[420px] h-[420px] bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden">
+                        <div className="w-full max-w-[420px] aspect-square bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden">
                             {selectedImages.length > 0 ? (
                                 <img
                                     src={selectedImages[primaryImageIndex]?.preview}
@@ -367,21 +367,21 @@ const AddProduct = () => {
                                     className="object-cover w-full h-full"
                                 />
                             ) : (
-                                <div className="text-center text-gray-500">
-                                    <p className="text-lg mb-2">تصاویر محصول</p>
-                                    <p className="text-sm">تصاویر خود را انتخاب کنید</p>
+                                <div className="text-center text-gray-500 p-4">
+                                    <p className="text-base md:text-lg mb-2">تصاویر محصول</p>
+                                    <p className="text-xs md:text-sm">تصاویر خود را انتخاب کنید</p>
                                 </div>
                             )}
                         </div>
 
                         {/* تصاویر کوچک */}
-                        <div className="flex items-center gap-2 flex-wrap max-w-72">
+                        <div className="flex items-center gap-2 flex-wrap justify-center max-w-full">
                             {selectedImages.map((image, index) => (
                                 <div key={image.id} className="relative group">
                                     <img
                                         src={image.preview}
                                         alt={`تصویر ${index + 1}`}
-                                        className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${
+                                        className={`w-12 h-12 md:w-16 md:h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${
                                             index === primaryImageIndex
                                                 ? 'border-blue-500'
                                                 : 'border-gray-300 hover:border-blue-300'
@@ -392,7 +392,7 @@ const AddProduct = () => {
                                     <button
                                         onClick={() => removeSelectedImage(image.id)}
                                         className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        style={{ fontSize: '10px' }}
+                                        style={{ fontSize: '8px' }}
                                     >
                                         <FaTimes />
                                     </button>
@@ -406,9 +406,9 @@ const AddProduct = () => {
                             ))}
 
                             {/* دکمه افزودن تصویر */}
-                            <label className="w-16 h-16 border-2 border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                                <FaPlus className="text-gray-400 text-sm mb-1" />
-                                <span className="text-xs text-gray-500">افزودن</span>
+                            <label className="w-12 h-12 md:w-16 md:h-16 border-2 border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
+                                <FaPlus className="text-gray-400 text-xs md:text-sm mb-1" />
+                                <span className="text-xs text-gray-500 hidden md:block">افزودن</span>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -421,42 +421,42 @@ const AddProduct = () => {
                     </div>
 
                     {/* بخش فرم */}
-                    <div className="space-y-6 w-2/4">
+                    <div className="space-y-4 md:space-y-6 w-full lg:w-2/4">
                         {/* نام محصول */}
-                        <div className="font-modam text-lg">
+                        <div className="font-modam text-base md:text-lg">
                             <div className="relative">
                                 <input
                                     type="text"
                                     name="name"
                                     value={productData.name}
                                     onChange={handleChange}
-                                    className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-16 mt-2 ${errors.name ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
+                                    className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-12 md:h-16 mt-2 ${errors.name ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
                                     placeholder="نام محصول"
                                 />
-                                <FaAsterisk className="absolute left-4 top-6 text-red-500 text-xs" />
+                                <FaAsterisk className="absolute left-4 top-4 md:top-6 text-red-500 text-xs" />
                             </div>
                             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                         </div>
 
-                        <div className="flex gap-2 font-modam text-lg">
+                        <div className="flex flex-col sm:flex-row gap-2 font-modam text-base md:text-lg">
                             {/* قیمت محصول */}
-                            <div className="w-[30%]">
+                            <div className="w-full sm:w-[30%]">
                                 <div className="relative">
                                     <input
                                         type="text"
                                         name="price"
                                         value={productData.price}
                                         onChange={handleChange}
-                                        className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-16 mt-2 ${errors.price ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
+                                        className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-12 md:h-16 mt-2 ${errors.price ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
                                         placeholder="قیمت محصول"
                                     />
-                                    <FaAsterisk className="absolute left-4 top-6 text-red-500 text-xs" />
+                                    <FaAsterisk className="absolute left-4 top-4 md:top-6 text-red-500 text-xs" />
                                 </div>
                                 {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
                             </div>
 
                             {/* دسته بندی محصول */}
-                            <div className="w-[70%]">
+                            <div className="w-full sm:w-[70%]">
                                 <CategoryDropdown
                                     value={productData.category}
                                     onChange={handleCategoryChange}
@@ -470,12 +470,12 @@ const AddProduct = () => {
 
                         {/* زیردسته بندی (فقط اگر نیاز باشد) */}
                         {showSubcategory && (
-                            <div className="font-modam text-lg">
+                            <div className="font-modam text-base md:text-lg">
                                 <select
                                     name="subcategory"
                                     value={productData.subcategory}
                                     onChange={handleChange}
-                                    className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-16 mt-2"
+                                    className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-12 md:h-16 mt-2"
                                 >
                                     <option value="">انتخاب زیردسته</option>
                                     {categoryTree[productData.category] && 
@@ -488,51 +488,51 @@ const AddProduct = () => {
                         )}
 
                         {/* لینک محصول دیجیتال */}
-                        <div className="font-modam text-lg">
+                        <div className="font-modam text-base md:text-lg">
                             <div className="relative">
                                 <input
                                     type="text"
                                     name="link"
                                     value={productData.link}
                                     onChange={handleChange}
-                                    className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-16 mt-2 ${errors.link ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
+                                    className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-12 md:h-16 mt-2 ${errors.link ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
                                     placeholder="لینک محصول دیجیتال"
                                 />
-                                <FaAsterisk className="absolute left-4 top-6 text-red-500 text-xs" />
+                                <FaAsterisk className="absolute left-4 top-4 md:top-6 text-red-500 text-xs" />
                             </div>
                             {errors.link && <p className="text-red-500 text-sm mt-1">{errors.link}</p>}
                         </div>
 
                         {/* توضیحات محصول */}
-                        <div className="font-modam text-lg">
+                        <div className="font-modam text-base md:text-lg">
                             <textarea
                                 name="description"
                                 value={productData.description}
                                 onChange={handleChange}
-                                className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-36 mt-2"
+                                className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-24 md:h-36 mt-2"
                                 placeholder="توضیحات محصول"
                                 rows="4"
                             />
                         </div>
 
-                        <div className="flex justify-between items-center font-modam">
-                            <div>
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center font-modam gap-4">
+                            <div className="text-sm md:text-base">
                                 <p>آیا میخواهید تخفیفی برای این محصول قائل شوید؟</p>
                                 <p>درصد مورد نظر خود را در فیلد رو به رو وارد کنید.</p>
                             </div>
 
                             {/* درصد تخفیف */}
-                            <div className="w-[50%]">
+                            <div className="w-full md:w-[50%]">
                                 <div className="relative">
                                     <input
                                         type="text"
                                         name="discount"
                                         value={productData.discount}
                                         onChange={handleChange}
-                                        className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-16 mt-2 pr-12"
+                                        className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-12 md:h-16 mt-2 pr-12"
                                         placeholder="درصد تخفیف"
                                     />
-                                    <img src='/SellerPanel/Products/icons8-discount-64 1(1).png' className="absolute right-4 top-6 text-gray-500" alt="discount icon" />
+                                    <img src='/SellerPanel/Products/icons8-discount-64 1(1).png' className="absolute right-4 top-4 md:top-6 text-gray-500" alt="discount icon" />
                                 </div>
                             </div>
                         </div>
@@ -540,26 +540,26 @@ const AddProduct = () => {
                 </div>
 
                 {/* توضیحات پس از خرید */}
-                <div className="mx-16 my-12">
-                    <div className="ml-auto mb-4 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-lg w-64 text-white py-4 px-6 rounded-full shadow-md">
+                <div className="mx-0 md:mx-16 my-6 md:my-12">
+                    <div className="ml-auto mb-4 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-sm md:text-lg w-full md:w-64 text-white py-3 md:py-4 px-4 md:px-6 rounded-full shadow-md text-center">
                         توضیحات پس از خرید محصول
                     </div>
                     <textarea
                         name="additionalInfo"
                         value={productData.additionalInfo}
                         onChange={handleChange}
-                        className="bg-[#fbf7ed] w-full px-6 py-6 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-36"
+                        className="bg-[#fbf7ed] w-full px-4 md:px-6 py-4 md:py-6 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-24 md:h-36"
                         placeholder="توضیحات خود را در اینجا وارد کنید."
                         rows="4"
                     />
                 </div>
 
                 {/* دکمه ذخیره تغییرات */}
-                <div className="flex justify-end mt-6 pl-16">
+                <div className="flex justify-center md:justify-end mt-6 px-0 md:pl-16">
                     <button
                         onClick={handleSave}
                         disabled={isLoading || isUploadingImages}
-                        className="bg-[#eac09f87] text-[#1E212D] border-[0.2px] border-[#1e212d8b] shadow-inner py-2 px-4 rounded-lg flex items-center hover:bg-[#B68973] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-[#eac09f87] text-[#1E212D] border-[0.2px] border-[#1e212d8b] shadow-inner py-2 px-4 md:px-6 rounded-lg flex items-center hover:bg-[#B68973] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base w-full md:w-auto justify-center"
                     >
                         {isLoading ? (
                             <>
@@ -578,21 +578,21 @@ const AddProduct = () => {
 
             {/* نوتیفیکیشن وضعیت آپلود تصاویر */}
             {uploadStatus === 'uploading' && (
-                <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2">
+                <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-[90vw]">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     <span>در حال آپلود تصاویر...</span>
                 </div>
             )}
 
             {uploadStatus === 'success' && (
-                <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2">
+                <div className="fixed bottom-4 right-4 bg-green-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-[90vw]">
                     <FaCheck />
                     <span>تصاویر با موفقیت آپلود شدند</span>
                 </div>
             )}
 
             {uploadStatus === 'error' && (
-                <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2">
+                <div className="fixed bottom-4 right-4 bg-red-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-[90vw]">
                     <FaTimes />
                     <span>خطا در آپلود تصاویر. دوباره تلاش کنید</span>
                 </div>

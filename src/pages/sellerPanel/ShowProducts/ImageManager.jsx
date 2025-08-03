@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { FaTimes, FaTrashAlt, FaPlus, FaChevronLeft, FaChevronRight, FaExpand, FaCheck } from "react-icons/fa";
 import { getItemImages, getItemImageById } from '../../../API/Items';
 import axios from 'axios';
-import { deleteItemImage } from '../../../API/Items'; // بالای فایل
+import { deleteItemImage } from '../../../API/Items';
 import { setMainItemImage } from '../../../API/Items';
-
 
 const ImageManager = ({
     productId,
@@ -25,7 +24,6 @@ const ImageManager = ({
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
 
-
     // دریافت تصاویر از بک‌اند
     useEffect(() => {
         const fetchImages = async () => {
@@ -37,14 +35,13 @@ const ImageManager = ({
                         return {
                             url,
                             isMain: img.is_main,
-                            imageId: img.image_id // این مهمه!
-
+                            imageId: img.image_id
                         };
                     })
                 );
 
                 const sortedImages = imageUrls.sort((a, b) => b.isMain - a.isMain);
-                const imagesList = sortedImages; // نگه داشتن کل اطلاعات (url + imageId + isMain)
+                const imagesList = sortedImages;
                 const primaryIndex = imageUrls.findIndex(img => img.isMain) ?? 0;
 
                 setImages(imagesList);
@@ -174,16 +171,14 @@ const ImageManager = ({
 
             setTimeout(() => setShowPrimarySetConfirm(false), 2000);
         } catch (err) {
-            // خطا در حال حاضر در API فایل لاگ شده، اگر بخوای می‌تونی نوتیفیکیشن هم بزاری
+            // خطا در حال حاضر در API فایل لاگ شده
         }
     };
-
 
     // حذف تصویر
     const confirmDeleteImage = (index) => {
         setShowDeleteConfirm(index);
     };
-
 
     const deleteImage = async () => {
         const targetImage = images[showDeleteConfirm];
@@ -193,10 +188,10 @@ const ImageManager = ({
             return;
         }
 
-        setIsDeleting(true); // شروع spinner
+        setIsDeleting(true);
 
         try {
-            await deleteItemImage(targetImage.imageId); // حذف از سرور
+            await deleteItemImage(targetImage.imageId);
 
             // حذف از state
             const newImages = images.filter((_, i) => i !== showDeleteConfirm);
@@ -229,12 +224,10 @@ const ImageManager = ({
             setTimeout(() => setDeleteSuccess(false), 3000);
         } catch (err) {
             console.error("❌ خطا در حذف تصویر:", err);
-            // می‌تونی خطا رو تو یه نوتیفیکیشن جداگانه هم نشون بدی
         } finally {
             setIsDeleting(false);
         }
     };
-
 
     // ناوبری تصاویر
     const prevImage = () => {
@@ -247,9 +240,9 @@ const ImageManager = ({
 
     return (
         <>
-            <div className={`flex flex-col items-center space-y-4 w-1/3 ${className}`}>
+            <div className={`flex flex-col items-center space-y-4 w-full max-w-md mx-auto ${className}`}>
                 {/* تصویر اصلی */}
-                <div className="w-[420px] h-[420px] relative bg-gray-100 border border-gray-300 rounded-lg overflow-hidden">
+                <div className="w-full aspect-square max-w-[420px] relative bg-gray-100 border border-gray-300 rounded-lg overflow-hidden">
                     {images.length > 0 ? (
                         <>
                             <img
@@ -263,15 +256,15 @@ const ImageManager = ({
                                 <>
                                     <button
                                         onClick={prevImage}
-                                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
+                                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 z-10"
                                     >
-                                        <FaChevronLeft />
+                                        <FaChevronLeft className="text-sm md:text-base" />
                                     </button>
                                     <button
                                         onClick={nextImage}
-                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
+                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 z-10"
                                     >
-                                        <FaChevronRight />
+                                        <FaChevronRight className="text-sm md:text-base" />
                                     </button>
                                 </>
                             )}
@@ -279,7 +272,7 @@ const ImageManager = ({
                             {/* دکمه تنظیم به عنوان اصلی */}
                             <button
                                 onClick={setPrimaryImage}
-                                className={`absolute bottom-2 left-2 px-3 py-1 text-xs rounded-md transition-all ${currentImageIndex === primaryImageIndex
+                                className={`absolute bottom-2 left-2 px-2 md:px-3 py-1 text-xs rounded-md transition-all ${currentImageIndex === primaryImageIndex
                                     ? 'bg-green-600 text-white'
                                     : 'bg-blue-600 text-white hover:bg-blue-700'
                                     }`}
@@ -287,36 +280,40 @@ const ImageManager = ({
                                 {currentImageIndex === primaryImageIndex ? (
                                     <span className="flex items-center gap-1">
                                         <FaCheck className="text-xs" />
-                                        عکس اصلی
+                                        <span className="hidden sm:inline">عکس اصلی</span>
+                                        <span className="sm:hidden">اصلی</span>
                                     </span>
                                 ) : (
-                                    'تنظیم اصلی'
+                                    <>
+                                        <span className="hidden sm:inline">تنظیم اصلی</span>
+                                        <span className="sm:hidden">اصلی</span>
+                                    </>
                                 )}
                             </button>
 
                             {/* دکمه تمام صفحه */}
                             <button
                                 onClick={() => setIsFullscreen(true)}
-                                className="absolute bottom-2 right-2 bg-gray-700 bg-opacity-70 text-white p-2 rounded-md hover:bg-opacity-90"
+                                className="absolute bottom-2 right-2 bg-gray-700 bg-opacity-70 text-white p-1.5 md:p-2 rounded-md hover:bg-opacity-90"
                             >
-                                <FaExpand />
+                                <FaExpand className="text-xs md:text-sm" />
                             </button>
                         </>
                     ) : (
-                        <div className="flex items-center justify-center w-96 h-96 text-gray-400">
-                            <span>هیچ تصویری انتخاب نشده</span>
+                        <div className="flex items-center justify-center w-full h-full text-gray-400">
+                            <span className="text-sm md:text-base text-center px-4">هیچ تصویری انتخاب نشده</span>
                         </div>
                     )}
                 </div>
 
                 {/* تصاویر کوچک */}
-                <div className="flex items-center gap-2 flex-wrap max-w-72">
+                <div className="flex items-center gap-2 flex-wrap justify-center max-w-full overflow-x-auto pb-2">
                     {images.map((image, index) => (
-                        <div key={index} className="relative group">
+                        <div key={index} className="relative group flex-shrink-0">
                             <img
                                 src={image.url}
                                 alt={`تصویر کوچک ${index + 1}`}
-                                className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${index === currentImageIndex
+                                className={`w-12 h-12 md:w-16 md:h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${index === currentImageIndex
                                     ? 'border-blue-500 opacity-100'
                                     : 'border-gray-300 opacity-70 hover:opacity-100'
                                     } ${index === primaryImageIndex ? 'ring-2 ring-green-400' : ''}`}
@@ -326,7 +323,7 @@ const ImageManager = ({
                             <button
                                 onClick={() => confirmDeleteImage(index)}
                                 className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                style={{ fontSize: '10px' }}
+                                style={{ fontSize: '8px' }}
                             >
                                 <FaTrashAlt />
                             </button>
@@ -335,9 +332,9 @@ const ImageManager = ({
 
                     {/* دکمه افزودن تصویر */}
                     {!selectedImageFile ? (
-                        <label className="w-16 h-16 border-2 border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <FaPlus className="text-gray-400 text-sm mb-1" />
-                            <span className="text-xs text-gray-500">افزودن</span>
+                        <label className="w-12 h-12 md:w-16 md:h-16 border-2 border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all flex-shrink-0">
+                            <FaPlus className="text-gray-400 text-xs mb-0.5" />
+                            <span className="text-xs text-gray-500 hidden md:block">افزودن</span>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -346,9 +343,9 @@ const ImageManager = ({
                             />
                         </label>
                     ) : (
-                        <div className="flex flex-col items-center gap-2">
+                        <div className="flex flex-col items-center gap-2 flex-shrink-0">
                             {/* پیش‌نمایش تصویر انتخاب شده */}
-                            <div className="w-16 h-16 border-2 border-blue-400 rounded-md overflow-hidden">
+                            <div className="w-12 h-12 md:w-16 md:h-16 border-2 border-blue-400 rounded-md overflow-hidden">
                                 <img
                                     src={URL.createObjectURL(selectedImageFile)}
                                     alt="پیش‌نمایش"
@@ -361,12 +358,12 @@ const ImageManager = ({
                                 <button
                                     onClick={uploadImage}
                                     disabled={isUploading}
-                                    className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                    className="px-1.5 md:px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                                 >
                                     {isUploading ? (
                                         <>
-                                            <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
-                                            <span>ارسال...</span>
+                                            <div className="w-2 h-2 md:w-3 md:h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                                            <span className="hidden sm:inline">ارسال...</span>
                                         </>
                                     ) : (
                                         'ارسال'
@@ -376,9 +373,10 @@ const ImageManager = ({
                                 <button
                                     onClick={cancelUpload}
                                     disabled={isUploading}
-                                    className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 disabled:opacity-50"
+                                    className="px-1.5 md:px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 disabled:opacity-50"
                                 >
-                                    انصراف
+                                    <span className="hidden sm:inline">انصراف</span>
+                                    <span className="sm:hidden">×</span>
                                 </button>
                             </div>
                         </div>
@@ -388,8 +386,8 @@ const ImageManager = ({
 
             {/* مودال تمام صفحه */}
             {isFullscreen && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
-                    <div className="relative max-w-4xl max-h-4xl">
+                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+                    <div className="relative max-w-full max-h-full">
                         <img
                             src={images[currentImageIndex].url}
                             alt={`تصویر بزرگ ${currentImageIndex + 1}`}
@@ -397,24 +395,24 @@ const ImageManager = ({
                         />
                         <button
                             onClick={() => setIsFullscreen(false)}
-                            className="absolute top-4 right-4 bg-white bg-opacity-20 text-white p-2 rounded-full hover:bg-opacity-30"
+                            className="absolute top-2 md:top-4 right-2 md:right-4 bg-white bg-opacity-20 text-white p-2 rounded-full hover:bg-opacity-30"
                         >
-                            <FaTimes />
+                            <FaTimes className="text-sm md:text-base" />
                         </button>
 
                         {images.length > 1 && (
                             <>
                                 <button
                                     onClick={prevImage}
-                                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 text-white p-3 rounded-full hover:bg-opacity-30"
+                                    className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 text-white p-2 md:p-3 rounded-full hover:bg-opacity-30"
                                 >
-                                    <FaChevronLeft />
+                                    <FaChevronLeft className="text-sm md:text-base" />
                                 </button>
                                 <button
                                     onClick={nextImage}
-                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 text-white p-3 rounded-full hover:bg-opacity-30"
+                                    className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 text-white p-2 md:p-3 rounded-full hover:bg-opacity-30"
                                 >
-                                    <FaChevronRight />
+                                    <FaChevronRight className="text-sm md:text-base" />
                                 </button>
                             </>
                         )}
@@ -424,32 +422,29 @@ const ImageManager = ({
 
             {/* مودال تایید حذف */}
             {showDeleteConfirm !== null && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-bold mb-4 text-center">تایید حذف</h3>
-                        <p className="text-gray-600 mb-6 text-center">آیا مطمئن هستید که می‌خواهید این تصویر را حذف کنید؟</p>
-                        <div className="flex justify-center gap-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white p-4 md:p-6 rounded-lg max-w-sm w-full">
+                        <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4 text-center">تایید حذف</h3>
+                        <p className="text-gray-600 mb-4 md:mb-6 text-center text-sm md:text-base">آیا مطمئن هستید که می‌خواهید این تصویر را حذف کنید؟</p>
+                        <div className="flex justify-center gap-3 md:gap-4">
                             <button
                                 onClick={() => setShowDeleteConfirm(null)}
-                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                                className="px-3 md:px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors text-sm md:text-base"
                             >
                                 انصراف
                             </button>
 
-
                             <button
                                 onClick={deleteImage}
                                 disabled={isDeleting}
-                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex items-center justify-center gap-2 min-w-[80px]"
+                                className="px-3 md:px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex items-center justify-center gap-2 min-w-[60px] md:min-w-[80px] text-sm md:text-base"
                             >
                                 {isDeleting ? (
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    <div className="w-3 h-3 md:w-4 md:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 ) : (
                                     "حذف"
                                 )}
                             </button>
-
-
                         </div>
                     </div>
                 </div>
@@ -457,35 +452,33 @@ const ImageManager = ({
 
             {/* نوتیفیکیشن تنظیم عکس اصلی */}
             {showPrimarySetConfirm && (
-                <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2">
-                    <FaCheck />
+                <div className="fixed top-4 right-4 bg-green-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-xs">
+                    <FaCheck className="flex-shrink-0" />
                     <span>عکس به عنوان تصویر اصلی تنظیم شد</span>
                 </div>
             )}
 
             {/* نوتیفیکیشن وضعیت آپلود */}
             {uploadStatus === 'success' && (
-                <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2">
-                    <FaCheck />
+                <div className="fixed top-4 right-4 bg-green-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-xs">
+                    <FaCheck className="flex-shrink-0" />
                     <span>تصویر با موفقیت آپلود شد</span>
                 </div>
             )}
 
             {uploadStatus === 'error' && (
-                <div className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2">
-                    <FaTimes />
+                <div className="fixed top-4 right-4 bg-red-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-xs">
+                    <FaTimes className="flex-shrink-0" />
                     <span>خطا در آپلود تصویر. دوباره تلاش کنید</span>
                 </div>
             )}
 
-
             {deleteSuccess && (
-                <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md z-50 flex items-center gap-2 shadow-lg">
-                    <FaCheck />
+                <div className="fixed top-4 right-4 bg-green-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 shadow-lg text-sm md:text-base max-w-xs">
+                    <FaCheck className="flex-shrink-0" />
                     <span>تصویر با موفقیت حذف شد</span>
                 </div>
             )}
-
         </>
     );
 };

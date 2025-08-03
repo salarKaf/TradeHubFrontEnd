@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import jalaliday from 'jalaliday';
 dayjs.extend(jalaliday);
 import { getItemSalesCount, getItemRevenue, getItemReviews } from '../../../API/Items';
-import { getActivePlan } from '../../../API/website'; // ✅ درست
+import { getActivePlan } from '../../../API/website';
 import JalaliDatePicker from './JalaliDatePicker';
 
 function convertJalaliToGregorian({ year, month, day }) {
@@ -23,19 +23,13 @@ function convertJalaliToGregorian({ year, month, day }) {
         .toDate();
 }
 
-
 const ShowProduct = () => {
-
-
     const { productId, websiteId } = useParams();
 
-
-    const reviewsData = [
-    ];
+    const reviewsData = [];
 
     const [reviews, setReviews] = useState(reviewsData);
     const [planType, setPlanType] = useState(null);
-
 
     // تابع اضافه کردن پاسخ جدید به نظر
     const handleAddReply = (reviewId, newReply) => {
@@ -106,17 +100,6 @@ const ShowProduct = () => {
         );
     };
 
-
-
-
-
-
-
-
-
-
-
-
     // وضعیت برای فیلدها و تصاویر
     const [productData, setProductData] = useState({
         discountExpiresAt: null,
@@ -135,17 +118,11 @@ const ShowProduct = () => {
         isBestSeller: false,
         discount: '',
         discountActive: false,
-
     });
 
     const [errors, setErrors] = useState({});
 
-
-
-
-
     // شبیه‌سازی دریافت اطلاعات محصول از بک‌اند
-    // تو useEffect اول، جایی که داده‌های محصول رو میگیری:
     useEffect(() => {
         const fetchProductData = async () => {
             try {
@@ -187,11 +164,6 @@ const ShowProduct = () => {
                             day: Number(dayjs(data.discount_expires_at).calendar('jalali').format('DD')),
                         }
                         : null,
-
-
-
-
-
                 });
                 console.log('📆 formatted date for calendar:', {
                     year: Number(dayjs(data.discount_expires_at).calendar('jalali').format('YYYY')),
@@ -206,16 +178,13 @@ const ShowProduct = () => {
         fetchProductData();
     }, [productId]);
 
-
-
-
     useEffect(() => {
         const fetchRating = async () => {
             try {
                 const ratingData = await getItemRating(productId);
                 setProductData(prev => ({
                     ...prev,
-                    rating: ratingData.rating || 0  // تغییر از average_rating به rating
+                    rating: ratingData.rating || 0
                 }));
             } catch (error) {
                 console.error("❌ خطا در دریافت امتیاز:", error);
@@ -226,8 +195,6 @@ const ShowProduct = () => {
             fetchRating();
         }
     }, [productId]);
-
-
 
     useEffect(() => {
         const fetchSalesAndRevenue = async () => {
@@ -255,9 +222,6 @@ const ShowProduct = () => {
         }
     }, [productId]);
 
-
-
-
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -265,7 +229,7 @@ const ShowProduct = () => {
 
                 const formatted = raw.map((r) => ({
                     id: r.review_id,
-                    userName: "خریدار",
+                    userName: r.buyer_name, // تغییر این خط
                     createdAt: r.created_at,
                     rating: r.rating,
                     text: r.text,
@@ -283,9 +247,6 @@ const ShowProduct = () => {
         if (productId) fetchReviews();
     }, [productId]);
 
-
-
-
     useEffect(() => {
         const fetchPlan = async () => {
             try {
@@ -298,14 +259,6 @@ const ShowProduct = () => {
         };
         if (websiteId) fetchPlan();
     }, [websiteId]);
-
-
-
-
-
-
-
-
 
     // تغییرات ورودی‌ها
     const handleChange = (e) => {
@@ -333,7 +286,6 @@ const ShowProduct = () => {
         }
     };
 
-
     // اعتبارسنجی فیلدها
     const validateFields = () => {
         const newErrors = {};
@@ -355,12 +307,6 @@ const ShowProduct = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-
-
-
-
-
-    // ذخیره تغییرات
     // ذخیره تغییرات
     const handleSave = async () => {
         if (!validateFields()) return;
@@ -393,7 +339,6 @@ const ShowProduct = () => {
         }
     };
 
-
     // رندر ستاره‌های امتیاز
     const renderRatingStars = () => {
         const stars = [];
@@ -415,41 +360,38 @@ const ShowProduct = () => {
 
     return (
         <>
-            <div className="p-6 min-h-screen">
+            <div className="p-4 md:p-6 min-h-screen">
                 {/* برگشت به صفحه قبلی */}
                 <button
                     onClick={() => window.history.back()}
-                    className="flex items-center mb-6 text-blue-500 hover:text-blue-700"
+                    className="flex items-center mb-4 md:mb-6 text-blue-500 hover:text-blue-700"
                 >
                     <FaArrowLeft className="mr-2" />
                     برگشت به صفحه قبل
                 </button>
 
                 {/* بخش اطلاعات محصول */}
-                <div className=" rounded-lg p-6 mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">اطلاعات محصول</h2>
+                <div className="rounded-lg p-4 md:p-6 mb-4 md:mb-6">
+                    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4 gap-4">
+                        <h2 className="text-lg md:text-xl font-bold">اطلاعات محصول</h2>
 
                         {/* وضعیت پرفروش بودن */}
                         {productData.isBestSeller && (
-                            <div className="flex items-center px-10 py-5 border-black border-opacity-50 rounded-lg">
-                                <span className="font-modam font-medium text-lg px-2">از پرفروش های فروشگاه شما</span>
-                                <img className='w-10 h-10' src='/public/SellerPanel/Products/icons8-instagram-check-mark-50 2.png'></img>
+                            <div className="flex items-center px-4 md:px-10 py-3 md:py-5 border-black border-opacity-50 rounded-lg">
+                                <span className="font-modam font-medium text-sm md:text-lg px-2">از پرفروش های فروشگاه شما</span>
+                                <img className='w-8 h-8 md:w-10 md:h-10' src='/public/SellerPanel/Products/icons8-instagram-check-mark-50 2.png'></img>
                             </div>
                         )}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* امتیاز محصول */}
-                        {/* دومین کارت */}
-                        {/* دومین کارت */}
                         <InfoCard
                             title={(productData.rating || 0).toFixed(1)}
                             subtitle="امتیاز کسب شده از خریداران"
                             logo="/public/SellerPanel/Products/stars.png"
                             titleColor="text-green-700"
                         />
-
 
                         <InfoCard
                             title={(productData.salesCount ?? 0).toLocaleString()}
@@ -464,98 +406,93 @@ const ShowProduct = () => {
                             logo="/public/SellerPanel/Home/icons8-package-64(1).png"
                             titleColor="text-black"
                         />
-
-
                     </div>
                 </div>
 
                 {/* فرم ویرایش محصول */}
-                <div className="p-6 font-modam">
-                    <p className="text-lg mb-12">فروشنده‌ی گرامی! پس از ویرایش و یا افزودن اطلاعات محصول برای ذخیره شدن و اعمال تغییرات دکمه‌ی ذخیره را بزنید.</p>
-                    <h2 className="text-2xl font-semibold mb-12">ویرایش محصول</h2>
+                <div className="p-4 md:p-6 font-modam">
+                    <p className="text-sm md:text-lg mb-8 md:mb-12">فروشنده‌ی گرامی! پس از ویرایش و یا افزودن اطلاعات محصول برای ذخیره شدن و اعمال تغییرات دکمه‌ی ذخیره را بزنید.</p>
+                    <h2 className="text-xl md:text-2xl font-semibold mb-8 md:mb-12">ویرایش محصول</h2>
 
-                    <div className="flex gap-24 justify-center">
+                    <div className="flex flex-col xl:flex-row gap-8 xl:gap-24 xl:justify-center">
                         {/* بخش تصاویر */}
-                        <ImageManager
-                            productId={productId}
-                            onImagesChange={(imageData) => {
-                                setProductData(prev => ({
-                                    ...prev,
-                                    images: imageData.images,
-                                    primaryImageIndex: imageData.primaryImageIndex
-                                }));
-                            }}
-                        />
-
+                        <div className="w-full xl:w-auto flex justify-center">
+                            <ImageManager
+                                productId={productId}
+                                onImagesChange={(imageData) => {
+                                    setProductData(prev => ({
+                                        ...prev,
+                                        images: imageData.images,
+                                        primaryImageIndex: imageData.primaryImageIndex
+                                    }));
+                                }}
+                            />
+                        </div>
 
                         {/* بخش فرم */}
-                        <div className="space-y-6 w-2/4">
+                        <div className="space-y-6 w-full xl:w-2/4">
                             {/* نام محصول */}
-                            <div className="font-modam text-lg">
+                            <div className="font-modam text-sm md:text-lg">
                                 <div className="relative">
                                     <input
                                         type="text"
                                         name="name"
                                         value={productData.name}
                                         onChange={handleChange}
-                                        className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-16 mt-2 ${errors.name ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
+                                        className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-12 md:h-16 mt-2 ${errors.name ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
                                         placeholder="نام محصول"
                                     />
-                                    <FaAsterisk className="absolute left-4 top-6 text-red-500 text-xs" />
+                                    <FaAsterisk className="absolute left-4 top-4 md:top-6 text-red-500 text-xs" />
                                 </div>
                                 {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                             </div>
 
-                            <div className="flex gap-2 font-modam text-lg">
+                            <div className="flex flex-col md:flex-row gap-2 font-modam text-sm md:text-lg">
                                 {/* قیمت محصول */}
-                                <div className="w-[30%]">
+                                <div className="w-full md:w-[30%]">
                                     <div className="relative">
                                         <input
                                             type="text"
                                             name="price"
                                             value={productData.price}
                                             onChange={handleChange}
-                                            className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-16 mt-2 ${errors.price ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
+                                            className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-12 md:h-16 mt-2 ${errors.price ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
                                             placeholder="قیمت محصول"
                                         />
-                                        <FaAsterisk className="absolute left-4 top-6 text-red-500 text-xs" />
+                                        <FaAsterisk className="absolute left-4 top-4 md:top-6 text-red-500 text-xs" />
                                     </div>
                                     {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
                                 </div>
 
                                 {/* دسته بندی محصول */}
-
-
-                                <div className="w-[70%]">
+                                <div className="w-full md:w-[70%]">
                                     <input
                                         type="text"
                                         value={productData.category}
                                         disabled
-                                        className="bg-gray-100 w-full px-4 py-2 border border-gray-300 rounded-3xl h-16 mt-2 text-gray-500 cursor-not-allowed"
+                                        className="bg-gray-100 w-full px-4 py-2 border border-gray-300 rounded-3xl h-12 md:h-16 mt-2 text-gray-500 cursor-not-allowed"
                                     />
                                 </div>
-
-
                             </div>
 
                             {/* لینک محصول دیجیتال */}
-                            <div className="font-modam text-lg">
+                            <div className="font-modam text-sm md:text-lg">
                                 <div className="relative">
                                     <input
                                         type="text"
                                         name="link"
                                         value={productData.link}
                                         onChange={handleChange}
-                                        className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-16 mt-2 ${errors.link ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
+                                        className={`bg-[#fbf7ed] w-full px-4 py-2 border shadow-sm rounded-3xl h-12 md:h-16 mt-2 ${errors.link ? 'border-red-500' : 'border-gray-800 border-opacity-40'}`}
                                         placeholder="لینک محصول دیجیتال"
                                     />
-                                    <FaAsterisk className="absolute left-4 top-6 text-red-500 text-xs" />
+                                    <FaAsterisk className="absolute left-4 top-4 md:top-6 text-red-500 text-xs" />
                                 </div>
                                 {errors.link && <p className="text-red-500 text-sm mt-1">{errors.link}</p>}
                             </div>
 
                             {/* وضعیت فعال بودن محصول */}
-                            <div className="font-modam text-lg flex items-center gap-4">
+                            <div className="font-modam text-sm md:text-lg flex items-center gap-4">
                                 <label className="flex items-center cursor-pointer">
                                     <div className="relative">
                                         <input
@@ -565,8 +502,8 @@ const ShowProduct = () => {
                                             onChange={handleChange}
                                             className="sr-only"
                                         />
-                                        <div className={`block w-14 h-8 rounded-full ${productData.isActive ? 'bg-green-500' : 'bg-gray-600'}`}></div>
-                                        <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition ${productData.isActive ? 'transform translate-x-6' : ''}`}></div>
+                                        <div className={`block w-12 md:w-14 h-6 md:h-8 rounded-full ${productData.isActive ? 'bg-green-500' : 'bg-gray-600'}`}></div>
+                                        <div className={`dot absolute left-1 top-1 bg-white w-4 md:w-6 h-4 md:h-6 rounded-full transition ${productData.isActive ? 'transform translate-x-5 md:translate-x-6' : ''}`}></div>
                                     </div>
                                     <div className="mr-3 text-gray-700">
                                         {productData.isActive ? 'محصول فعال' : 'محصول غیرفعال'}
@@ -575,29 +512,26 @@ const ShowProduct = () => {
                             </div>
 
                             {/* توضیحات محصول */}
-                            <div className="font-modam text-lg">
+                            <div className="font-modam text-sm md:text-lg">
                                 <textarea
                                     name="description"
                                     value={productData.description}
                                     onChange={handleChange}
-                                    className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-36 mt-2"
+                                    className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-28 md:h-36 mt-2"
                                     placeholder="توضیحات محصول"
                                     rows="4"
                                 />
                             </div>
 
-                            {/* اطلاعات اضافی */}
-
-
                             {/* بخش تخفیف */}
-                            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-2xl p-6 font-modam">
-                                <div className="flex justify-between items-start mb-6">
+                            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-2xl p-4 md:p-6 font-modam">
+                                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-4 md:mb-6 gap-4">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <img src='/SellerPanel/Products/icons8-discount-64 1(1).png' className="w-8 h-8" />
-                                            <h3 className="text-xl font-semibold text-gray-800">تنظیمات تخفیف</h3>
+                                            <img src='/SellerPanel/Products/icons8-discount-64 1(1).png' className="w-6 h-6 md:w-8 md:h-8" />
+                                            <h3 className="text-lg md:text-xl font-semibold text-gray-800">تنظیمات تخفیف</h3>
                                         </div>
-                                        <p className="text-gray-600 text-sm">
+                                        <p className="text-gray-600 text-xs md:text-sm">
                                             با فعال کردن تخفیف، درصد و تاریخ انقضای مورد نظر خود را تعیین کنید
                                         </p>
                                     </div>
@@ -613,14 +547,14 @@ const ShowProduct = () => {
                                                     onChange={handleChange}
                                                     className="sr-only"
                                                 />
-                                                <div className={`block w-16 h-8 rounded-full shadow-inner ${productData.discountActive
+                                                <div className={`block w-14 md:w-16 h-6 md:h-8 rounded-full shadow-inner ${productData.discountActive
                                                     ? 'bg-gradient-to-r from-green-400 to-green-500'
                                                     : 'bg-gray-400'
                                                     }`}></div>
-                                                <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow transition-transform duration-200 ${productData.discountActive ? 'transform translate-x-8' : ''
+                                                <div className={`dot absolute left-1 top-1 bg-white w-4 md:w-6 h-4 md:h-6 rounded-full shadow transition-transform duration-200 ${productData.discountActive ? 'transform translate-x-6 md:translate-x-8' : ''
                                                     }`}></div>
                                             </div>
-                                            <div className="mr-3 font-medium text-gray-700">
+                                            <div className="mr-3 font-medium text-gray-700 text-sm md:text-base">
                                                 {productData.discountActive ? 'تخفیف فعال' : 'تخفیف غیرفعال'}
                                             </div>
                                         </label>
@@ -629,10 +563,10 @@ const ShowProduct = () => {
 
                                 {/* فیلدهای تخفیف */}
                                 {productData.discountActive && (
-                                    <div className="grid grid-cols-2 gap-6 mt-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
                                         {/* درصد تخفیف */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                                 درصد تخفیف
                                             </label>
                                             <div className="relative">
@@ -641,21 +575,20 @@ const ShowProduct = () => {
                                                     name="discount"
                                                     value={productData.discount}
                                                     onChange={handleChange}
-                                                    className="bg-white w-full px-4 py-3 pl-12 border border-orange-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 rounded-xl transition-colors"
+                                                    className="bg-white w-full px-4 py-2 md:py-3 pl-10 md:pl-12 border border-orange-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 rounded-xl transition-colors text-sm md:text-base"
                                                     placeholder="مثال: 25"
                                                     min="1"
                                                     max="100"
                                                 />
-                                                <div className="absolute left-3 top-3 flex items-center gap-1">
-                                                    <span className="text-orange-500 font-bold">%</span>
+                                                <div className="absolute left-3 top-2 md:top-3 flex items-center gap-1">
+                                                    <span className="text-orange-500 font-bold text-sm md:text-base">%</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* تاریخ انقضای تخفیف */}
-                                        {/* تاریخ انقضای تخفیف (شمسی) */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                                 تاریخ انقضا (شمسی)
                                             </label>
                                             <div className="relative z-10">
@@ -669,9 +602,6 @@ const ShowProduct = () => {
                                                     }}
                                                     placeholder="انتخاب تاریخ انقضا"
                                                 />
-
-
-
                                             </div>
                                             {productData.discountExpiresAt && (
                                                 <p className="text-xs text-gray-500 mt-1">
@@ -679,23 +609,22 @@ const ShowProduct = () => {
                                                 </p>
                                             )}
                                         </div>
-
                                     </div>
                                 )}
 
                                 {/* پیش‌نمایش قیمت با تخفیف */}
                                 {productData.discountActive && productData.discount && productData.price && (
-                                    <div className="mt-6 p-4 bg-white rounded-xl border-2 border-dashed border-orange-200">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">پیش‌نمایش قیمت:</span>
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-lg line-through text-gray-400">
+                                    <div className="mt-4 md:mt-6 p-3 md:p-4 bg-white rounded-xl border-2 border-dashed border-orange-200">
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                            <span className="text-xs md:text-sm text-gray-600">پیش‌نمایش قیمت:</span>
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                                                <span className="text-sm md:text-lg line-through text-gray-400">
                                                     {Number(productData.price).toLocaleString()} تومان
                                                 </span>
-                                                <span className="text-xl font-bold text-green-600">
+                                                <span className="text-lg md:text-xl font-bold text-green-600">
                                                     {(Number(productData.price) * (1 - Number(productData.discount) / 100)).toLocaleString()} تومان
                                                 </span>
-                                                <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-bold">
+                                                <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs md:text-sm font-bold w-fit">
                                                     {productData.discount}% تخفیف
                                                 </span>
                                             </div>
@@ -706,36 +635,31 @@ const ShowProduct = () => {
                         </div>
                     </div>
 
-                    {/* توضیحات پس از خرید  */}
-
-                    <div className="mx-16 my-0">
-                        <div className="ml-auto mb-0 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-lg w-64 h-4/5 text-white py-4 px-6 rounded-full shadow-md">
-                            توضیحات پس از خرید محصول
+                    {/* توضیحات پس از خرید */}
+                    <div className="mx-4 md:mx-8 lg:mx-16 my-6 md:my-8">
+                        <div className="ml-auto mb-4 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-sm md:text-lg w-full sm:w-80 md:w-80 lg:w-64  text-white py-5 md:py-4 px-4 md:px-2 rounded-full shadow-md text-center">                            توضیحات پس از خرید محصول
                         </div>
                         <textarea
                             name="additionalInfo"
                             value={productData.additionalInfo}
                             onChange={handleChange}
-                            className="bg-[#fbf7ed] w-full px-6 py-6 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-36"
+                            className="bg-[#fbf7ed] w-full px-4 md:px-6 py-4 md:py-6 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-28 md:h-36 text-sm md:text-base"
                             placeholder="توضیحات خود را در اینجا وارد کنید."
                             rows="4"
                         />
                     </div>
 
-
                     {/* دکمه ذخیره تغییرات */}
-                    <div className="flex justify-end mt-6 pl-16">
+                    <div className="flex justify-center md:justify-end mt-6 px-4 md:pl-16">
                         <button
                             onClick={handleSave}
-                            className="bg-[#eac09f87] text-[#1E212D] border-[0.2px] border-[#1e212d8b] shadow-inner py-2 px-4 rounded-lg flex items-center hover:bg-[#B68973] transition-colors"
+                            className="bg-[#eac09f87] text-[#1E212D] border-[0.2px] border-[#1e212d8b] shadow-inner py-2 md:py-2 px-4 md:px-4 rounded-lg flex items-center hover:bg-[#B68973] transition-colors text-sm md:text-base"
                         >
                             <FaSave className="mr-2" />
                             ذخیره تغییرات
                         </button>
                     </div>
                 </div>
-
-
 
                 <div>
                     {/* سایر اجزای صفحه محصول */}
@@ -756,15 +680,8 @@ const ShowProduct = () => {
                 />
 
             </div>
-
-
-
-
-
-        </ >
+        </>
     );
 };
 
-
 export default ShowProduct;
-
