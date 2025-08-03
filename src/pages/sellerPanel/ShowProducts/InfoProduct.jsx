@@ -30,7 +30,21 @@ const ShowProduct = () => {
 
     const [reviews, setReviews] = useState(reviewsData);
     const [planType, setPlanType] = useState(null);
+    // تابع برای فرمت کردن عدد برای نمایش
+    const formatNumberForDisplay = (value) => {
+        if (!value) return '';
+        // حذف همه چیز غیر از اعداد
+        const cleanNumber = value.toString().replace(/[^\d]/g, '');
+        // اضافه کردن کاما هر سه رقم
+        return cleanNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
 
+    // تابع برای تبدیل به عدد خالص برای ارسال به بک
+    const parseNumberForBackend = (value) => {
+        if (!value) return 0;
+        // حذف کاما و تبدیل به عدد
+        return parseInt(value.toString().replace(/,/g, ''), 10);
+    };
     // تابع اضافه کردن پاسخ جدید به نظر
     const handleAddReply = (reviewId, newReply) => {
         setReviews(prevReviews =>
@@ -41,6 +55,9 @@ const ShowProduct = () => {
             )
         );
     };
+
+
+
 
     // تابع لایک کردن نظر
     const handleLikeReview = (reviewId) => {
@@ -100,6 +117,8 @@ const ShowProduct = () => {
         );
     };
 
+
+
     // وضعیت برای فیلدها و تصاویر
     const [productData, setProductData] = useState({
         discountExpiresAt: null,
@@ -142,7 +161,7 @@ const ShowProduct = () => {
 
                 setProductData({
                     name: data.name || '',
-                    price: data.price || '',
+                    price: data.price ? formatNumberForDisplay(data.price.toString()) : '',
                     category: fullCategoryPath,
                     link: data.delivery_url || '',
                     description: data.description || '',
@@ -265,6 +284,12 @@ const ShowProduct = () => {
         const { name, value, type, checked } = e.target;
 
         let newValue = type === 'checkbox' ? checked : value;
+
+        // برای فیلد قیمت، فرمت کردن با کاما
+        if (name === 'price') {
+            newValue = formatNumberForDisplay(value);
+        }
+
         let updatedData = {
             ...productData,
             [name]: newValue,
@@ -314,7 +339,7 @@ const ShowProduct = () => {
         const payload = {
             name: productData.name,
             description: productData.description,
-            price: Number(productData.price),
+            price: parseNumberForBackend(productData.price), // اینجا عدد خالص میفرستی
             delivery_url: productData.link,
             post_purchase_note: productData.additionalInfo,
             is_available: productData.isActive,
@@ -619,10 +644,10 @@ const ShowProduct = () => {
                                             <span className="text-xs md:text-sm text-gray-600">پیش‌نمایش قیمت:</span>
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                                                 <span className="text-sm md:text-lg line-through text-gray-400">
-                                                    {Number(productData.price).toLocaleString()} تومان
+                                                    {parseNumberForBackend(productData.price).toLocaleString()} ریال
                                                 </span>
                                                 <span className="text-lg md:text-xl font-bold text-green-600">
-                                                    {(Number(productData.price) * (1 - Number(productData.discount) / 100)).toLocaleString()} تومان
+                                                    {(parseNumberForBackend(productData.price) * (1 - Number(productData.discount) / 100)).toLocaleString()} ریال
                                                 </span>
                                                 <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs md:text-sm font-bold w-fit">
                                                     {productData.discount}% تخفیف

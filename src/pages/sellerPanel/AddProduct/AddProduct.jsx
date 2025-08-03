@@ -8,7 +8,17 @@ import CategoryDropdown from '../ShowProducts/CategoryDropdown';
 
 const AddProduct = () => {
     const { websiteId } = useParams();
+    // این تابع‌ها رو اینجا تعریف کن
+    const formatNumberForDisplay = (value) => {
+        if (!value) return '';
+        const cleanNumber = value.toString().replace(/[^\d]/g, '');
+        return cleanNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
 
+    const parseNumberForBackend = (value) => {
+        if (!value) return 0;
+        return parseInt(value.toString().replace(/,/g, ''), 10);
+    };
     // وضعیت برای فیلدها و تصاویر
     const [productData, setProductData] = useState({
         name: '',
@@ -30,11 +40,11 @@ const AddProduct = () => {
     const [categoryTree, setCategoryTree] = useState({});
     const [categoryIdMap, setCategoryIdMap] = useState({}); // اسم به آیدی
     const [showSubcategory, setShowSubcategory] = useState(false);
-    
+
     // وضعیت آپلود تصاویر
     const [isUploadingImages, setIsUploadingImages] = useState(false);
     const [uploadStatus, setUploadStatus] = useState(null);
-    
+
     // وضعیت‌های جدید برای بهبود UI
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -84,9 +94,17 @@ const AddProduct = () => {
     // تغییرات ورودی‌ها
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        let newValue = value;
+
+        // برای فیلد قیمت، فرمت کردن با کاما
+        if (name === 'price') {
+            newValue = formatNumberForDisplay(value);
+        }
+
         setProductData({
             ...productData,
-            [name]: value
+            [name]: newValue
         });
 
         // پاک کردن خطا وقتی کاربر شروع به تایپ می‌کند
@@ -143,7 +161,7 @@ const AddProduct = () => {
     const removeSelectedImage = (imageId) => {
         const updatedImages = selectedImages.filter(img => img.id !== imageId);
         setSelectedImages(updatedImages);
-        
+
         // اگر تصویر اصلی حذف شد، اولین تصویر را اصلی قرار بده
         if (primaryImageIndex >= updatedImages.length) {
             setPrimaryImageIndex(0);
@@ -184,7 +202,7 @@ const AddProduct = () => {
         setUploadStatus('uploading');
 
         const formData = new FormData();
-        
+
         // اضافه کردن فایل‌ها
         selectedImages.forEach(image => {
             formData.append('files', image.file);
@@ -209,7 +227,7 @@ const AddProduct = () => {
             );
 
             setUploadStatus('success');
-            
+
             setTimeout(() => setUploadStatus(null), 3000);
 
             return { success: true };
@@ -236,18 +254,18 @@ const AddProduct = () => {
 
         // بررسی اینکه آیا زیردسته انتخاب شده یا نه
         const categoryParts = productData.category.split('/');
-        
+
         if (categoryParts.length === 2) {
             // زیردسته انتخاب شده
             const mainCategory = categoryParts[0];
             const subCategory = categoryParts[1];
-            
+
             categoryId = categoryIdMap[mainCategory];
             subcategoryId = categoryIdMap[`${mainCategory}/${subCategory}`];
         } else if (categoryParts.length === 1) {
             // فقط دسته اصلی انتخاب شده
             categoryId = categoryIdMap[productData.category];
-            
+
             // اگر زیردسته در فرم انتخاب شده باشد
             if (productData.subcategory) {
                 subcategoryId = categoryIdMap[`${productData.category}/${productData.subcategory}`];
@@ -265,7 +283,7 @@ const AddProduct = () => {
             category_id: categoryId,
             name: productData.name,
             description: productData.description,
-            price: Number(productData.price),
+            price: parseNumberForBackend(productData.price),
             delivery_url: productData.link,
             post_purchase_note: productData.additionalInfo,
             stock: 1000000,
@@ -305,7 +323,7 @@ const AddProduct = () => {
                 additionalInfo: '',
                 discount: ''
             });
-            
+
             // پاک کردن تصاویر پس از موفقیت کامل
             setTimeout(() => {
                 setSelectedImages([]);
@@ -381,11 +399,10 @@ const AddProduct = () => {
                                     <img
                                         src={image.preview}
                                         alt={`تصویر ${index + 1}`}
-                                        className={`w-12 h-12 md:w-16 md:h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${
-                                            index === primaryImageIndex
-                                                ? 'border-blue-500'
-                                                : 'border-gray-300 hover:border-blue-300'
-                                        } ${index === primaryImageIndex ? 'ring-2 ring-green-400' : ''}`}
+                                        className={`w-12 h-12 md:w-16 md:h-16 object-cover rounded-md cursor-pointer border-2 transition-all ${index === primaryImageIndex
+                                            ? 'border-blue-500'
+                                            : 'border-gray-300 hover:border-blue-300'
+                                            } ${index === primaryImageIndex ? 'ring-2 ring-green-400' : ''}`}
                                         onClick={() => setPrimaryImage(index)}
                                     />
                                     {/* دکمه حذف */}
@@ -456,7 +473,7 @@ const AddProduct = () => {
                             </div>
 
                             {/* دسته بندی محصول */}
-                            <div className="w-full sm:w-[70%]">
+                            <div className="w-full sm:w-[70%] md:mt-2">
                                 <CategoryDropdown
                                     value={productData.category}
                                     onChange={handleCategoryChange}
@@ -478,7 +495,7 @@ const AddProduct = () => {
                                     className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-12 md:h-16 mt-2"
                                 >
                                     <option value="">انتخاب زیردسته</option>
-                                    {categoryTree[productData.category] && 
+                                    {categoryTree[productData.category] &&
                                         Object.keys(categoryTree[productData.category]).map(subcat => (
                                             <option key={subcat} value={subcat}>{subcat}</option>
                                         ))
@@ -515,33 +532,12 @@ const AddProduct = () => {
                             />
                         </div>
 
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center font-modam gap-4">
-                            <div className="text-sm md:text-base">
-                                <p>آیا میخواهید تخفیفی برای این محصول قائل شوید؟</p>
-                                <p>درصد مورد نظر خود را در فیلد رو به رو وارد کنید.</p>
-                            </div>
-
-                            {/* درصد تخفیف */}
-                            <div className="w-full md:w-[50%]">
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        name="discount"
-                                        value={productData.discount}
-                                        onChange={handleChange}
-                                        className="bg-[#fbf7ed] w-full px-4 py-2 border border-gray-800 border-opacity-40 shadow-sm rounded-3xl h-12 md:h-16 mt-2 pr-12"
-                                        placeholder="درصد تخفیف"
-                                    />
-                                    <img src='/SellerPanel/Products/icons8-discount-64 1(1).png' className="absolute right-4 top-4 md:top-6 text-gray-500" alt="discount icon" />
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 {/* توضیحات پس از خرید */}
                 <div className="mx-0 md:mx-16 my-6 md:my-12">
-                    <div className="ml-auto mb-4 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-sm md:text-lg w-full md:w-64 text-white py-3 md:py-4 px-4 md:px-6 rounded-full shadow-md text-center">
+                    <div className="ml-auto mb-4 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-sm md:text-lg w-full md:w-72 text-white py-3 md:py-4 px-4 md:px-6 rounded-full shadow-md text-center">
                         توضیحات پس از خرید محصول
                     </div>
                     <textarea
