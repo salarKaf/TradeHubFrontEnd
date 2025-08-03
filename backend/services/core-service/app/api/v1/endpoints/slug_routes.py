@@ -10,8 +10,8 @@ slug_router = APIRouter()
 
 @slug_router.post("/slug")
 async def create_slug(new_slug: CreateSlugInput, service: Annotated[SlugMainService, Depends()]):
-    await service.create_slug(data.slug, data.website_id)
-    return {"slug": data.slug, "website_id": data.website_id}
+    await service.create_slug(new_slug.slug, new_slug.website_id)
+    return {"slug": new_slug.slug, "website_id": new_slug.website_id}
 
 
 @slug_router.get("/slug/{slug}")
