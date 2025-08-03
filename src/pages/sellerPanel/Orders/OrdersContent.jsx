@@ -36,7 +36,7 @@ const OrderContent = () => {
                         item_id: item.item_id, // 👈 حتماً این رو اضافه کن
 
                     })),
-                    customer: order.buyer_id,
+                    customer: order.buyer_email, // 👈 این خط رو تغییر بده از buyer_id به buyer_email
                     totalAmount: parseInt(order.total_price).toLocaleString('fa-IR'),
                     dateAdded: new Date(order.created_at),
                 }));

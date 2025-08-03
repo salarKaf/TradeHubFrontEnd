@@ -10,8 +10,8 @@ const Header = () => {
 
 
   // تصاویر پیش‌فرض
-  const defaultBackgroundImage = "public/website/Group 432.png";
-  const defaultLogoImage = "public/website/Picsart_25-04-16_19-30-26-995 1.png";
+  const defaultBackgroundImage = "/public/website/Group 432.png";
+  const defaultLogoImage = "/website/Picsart_25-04-16_19-30-26-995 1.png";
   const defaultStoreName = "ویترین";
   const defaultSubSlogan = "خرید امن محصولات اینترنتی با کیفیت و بهترین قیمت در سریع‌ترین زمان ممکن";
 

@@ -172,10 +172,10 @@ const Category = () => {
                                             </div>
 
                                             {/* فروش */}
-                                            <div className="col-span-2 flex items-center gap-2">
+                                            {/* <div className="col-span-2 flex items-center gap-2">
                                                 <FaShoppingCart className="text-green-500" />
                                                 <span className="text-gray-600">{product.sales} فروش</span>
-                                            </div>
+                                            </div> */}
 
                                             {/* قیمت */}
                                             <div className="col-span-2 flex items-center gap-2">
@@ -238,10 +238,10 @@ const Category = () => {
                                             </div>
                                             
                                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-                                                <div className="flex items-center gap-2">
+                                                {/* <div className="flex items-center gap-2">
                                                     <FaShoppingCart className="text-green-500" />
                                                     <span className="text-gray-600">{product.sales} فروش</span>
-                                                </div>
+                                                </div> */}
                                                 <div className="flex items-center gap-2">
                                                     <FaTag className="text-orange-500" />
                                                     <span className="font-medium text-gray-900">{product.price} تومان</span>
@@ -269,10 +269,10 @@ const Category = () => {
                                 <FaBox className="text-blue-500" />
                                 <span>تعداد محصولات: {products.length}</span>
                             </div>
-                            <div className="flex items-center gap-1">
+                            {/* <div className="flex items-center gap-1">
                                 <FaShoppingCart className="text-green-500" />
                                 <span>مجموع فروش: {products.reduce((sum, p) => sum + p.sales, 0)}</span>
-                            </div>
+                            </div> */}
                         </div>
                         <button
                             onClick={() => setShowProductsModal(false)}
@@ -908,9 +908,9 @@ const Category = () => {
                             />
                             {error && <div className="text-red-500 text-xs sm:text-sm mt-1 font-modam">{error}</div>}
                         </td>
-                        <td className="py-2 px-2 sm:px-4">
+                        {/* <td className="py-2 px-2 sm:px-4">
                             <span className="text-sm sm:text-base">0 فروش</span>
-                        </td>
+                        </td> */}
                         <td className="py-2 px-2 sm:px-4">
                             <div className="flex gap-1 sm:gap-2 justify-end">
                                 <button

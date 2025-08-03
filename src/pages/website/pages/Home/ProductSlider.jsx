@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getWebsiteIdBySlug } from "../../../../API/website";
-import { getBestSellingItems } from "../../../../API/Items";
+import { getBestSellingItems, getProductById } from "../../../../API/Items";
 import { getItemImages, getItemImageById } from "../../../../API/Items";
 import { useNavigate } from "react-router-dom";
 
@@ -20,8 +20,28 @@ const ProductSlider = () => {
         const websiteData = await getWebsiteIdBySlug(slug);
         const bestSelling = await getBestSellingItems(websiteData.website_id);
 
+        // چک کردن هر محصول و گرفتن جزئیات کامل
+        const activeProducts = [];
+        
+        for (const item of bestSelling) {
+          try {
+            // گرفتن جزئیات کامل محصول
+            const productDetails = await getProductById(item.item_id);
+            
+            // اگر محصول فعال بود، اضافه کن
+            if (productDetails.is_available === true) {
+              activeProducts.push({
+                ...item,
+                ...productDetails // ترکیب اطلاعات
+              });
+            }
+          } catch (error) {
+            console.warn(`⚠️ خطا در گرفتن جزئیات محصول ${item.item_id}:`, error);
+          }
+        }
+
         const formatted = await Promise.all(
-          bestSelling.map(async (item) => {
+          activeProducts.map(async (item) => {
             let imageUrl = "/public/website/Image(1).png"; // پیش‌فرض
 
             try {
@@ -66,12 +86,10 @@ const ProductSlider = () => {
     setCurrentSlide(index);
   };
 
-  const getNextSlideIndex = () => {
-    return (currentSlide + 1) % products.length;
-  };
-
-  const getPrevSlideIndex = () => {
-    return (currentSlide - 1 + products.length) % products.length;
+  const handleProductView = (productId) => {
+    if (slug && productId) {
+      navigate(`/${slug}/product/${productId}`);
+    }
   };
 
   if (products.length === 0) return null;
@@ -154,9 +172,9 @@ const ProductSlider = () => {
 
         <div className="mt-8 mb-5">
           <button
-            onClick={() => slug && navigate(`/${slug}/shop`)}
+            onClick={() => handleProductView(products[currentSlide].id)}
             className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-3 rounded-full font-bold text-base transition-all duration-300 transform hover:scale-105 shadow-xl">
-            وارد فروشگاه ما شوید
+            مشاهده محصول
           </button>
         </div>
       </div>

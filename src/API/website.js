@@ -13,8 +13,8 @@ export const createWebsite = async (business_name) => {
       guide_page: "",
       store_policy: [
         {
-          section: "string",
-          subsection: "string",
+          section: "",
+          subsection: "",
         },
       ],
       store_slogan: "",

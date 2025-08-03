@@ -36,12 +36,24 @@ const TermsAndConditions = () => {
     return FileText; // آیکون پیش‌فرض
   };
 
+  // بررسی اینکه آیا قانون معتبر است یا نه
+  const isValidPolicy = (policy) => {
+    return policy && 
+           policy.section && 
+           policy.section.trim() !== '' && 
+           policy.subsection && 
+           policy.subsection.trim() !== '';
+  };
+
   useEffect(() => {
     const fetchPolicy = async () => {
       try {
         const { website_id } = await getWebsiteIdBySlug(slug);
         const data = await getWebsiteById(website_id);
-        setPolicies(data?.store_policy || []);
+        
+        // فیلتر کردن قوانین معتبر
+        const validPolicies = (data?.store_policy || []).filter(isValidPolicy);
+        setPolicies(validPolicies);
       } catch (err) {
         console.error("❌ خطا در دریافت قوانین:", err);
       } finally {
@@ -58,6 +70,19 @@ const TermsAndConditions = () => {
         <div className="text-center space-y-3">
           <div className="animate-spin rounded-full h-12 w-12 mx-auto"></div>
           <p className="text-gray-600 text-lg">در حال بارگذاری قوانین...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // اگر هیچ قانون معتبری وجود نداشت
+  if (policies.length === 0) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-12 font-Kahroba bg-gray-30 min-h-screen">
+        <div className="bg-white rounded-xl shadow-md p-6 sm:p-8 text-center mr-0 sm:mr-10">
+          <Scale className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">قوانین و مقرراتی تعریف نشده</h3>
+          <p className="text-sm sm:text-base text-gray-500">در حال حاضر قوانین و مقرراتی برای این فروشگاه تعریف نشده است.</p>
         </div>
       </div>
     );
@@ -87,47 +112,39 @@ const TermsAndConditions = () => {
 
       {/* لیست قوانین */}
       <div className="space-y-4 sm:space-y-6 mr-0 sm:mr-10">
-        {policies.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-6 sm:p-8 text-center">
-            <FileText className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">هیچ قانونی تعریف نشده</h3>
-            <p className="text-sm sm:text-base text-gray-500">در حال حاضر قوانین و مقرراتی برای این فروشگاه تعریف نشده است.</p>
-          </div>
-        ) : (
-          policies.map((item, index) => {
-            const IconComponent = getIconForPolicy(item.section);
-            
-            return (
-              <div 
-                key={index} 
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border hover:border-blue-200"
-              >
-                <div className="p-4 sm:p-6">
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    <div className="flex-shrink-0 p-1.5 sm:p-2 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg">
-                      <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-gray-900" />
-                    </div>
+        {policies.map((item, index) => {
+          const IconComponent = getIconForPolicy(item.section);
+          
+          return (
+            <div 
+              key={index} 
+              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border hover:border-blue-200"
+            >
+              <div className="p-4 sm:p-6">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="flex-shrink-0 p-1.5 sm:p-2 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg">
+                    <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-gray-900" />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight">
+                      {item.section}
+                    </h3>
                     
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight">
-                        {item.section}
-                      </h3>
-                      
-                      <div className="prose prose-gray max-w-none">
-                        <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                          {item.subsection}
-                        </p>
-                      </div>
+                    <div className="prose prose-gray max-w-none">
+                      <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                        {item.subsection}
+                      </p>
                     </div>
                   </div>
                 </div>
-                
-                {/* خط جداکننده زیبا */}
-                <div className="h-1 bg-gradient-to-r"></div>
               </div>
-            );
-          })
-        )}
+              
+              {/* خط جداکننده زیبا */}
+              <div className="h-1 bg-gradient-to-r"></div>
+            </div>
+          );
+        })}
       </div>
 
       {/* فوتر */}
