@@ -13,7 +13,7 @@ import PaymentCallback from './pages/TradePages/Plans/components/PaymentCallback
 import PaymentResult from './pages/TradePages/Plans/components/PaymentResult.jsx';
 import OTPForm from "./pages/TradePages/OTPForm"
 import Slug from "./pages/TradePages/slug";
-// در فایل App.jsx، این import ها رو اضافه کن:
+import ProtectedRoute  from './pages/sellerPanel/Layouts/ProtectedRoute.jsx'
 import ForgotPasswordSeller from "./pages/TradePages/ForgotPasswordSeller";
 import ForgotPasswordOTPSeller from "./pages/TradePages/ForgotPasswordOTPSeller.jsx";
 import ResetPasswordSeller from "./pages/TradePages/ResetPasswordSeller.jsx";
@@ -76,19 +76,114 @@ export default function App() {
         <Route path="/payment/callback" element={<PaymentCallback />} />
         <Route path="/payment-result" element={<PaymentResult />} />
 
-        {/* مسیرهای پنل فروشنده (بدون slug) */}
-        <Route path='/HomeSeller/:websiteId' element={<HomeSeller />} />
-        <Route path='/appearance/:websiteId' element={<Appearance />} />
-        <Route path='/profile/:websiteId' element={<Profile />} />
-        <Route path='/customers/:websiteId' element={<Customers />} />
-        <Route path='/orders/:websiteId' element={<Orders />} />
-        <Route path='/products/:websiteId' element={<Products />} />
-        <Route path='/seller/products/:websiteId/add' element={<AddProductaPage />} />
-        <Route path='/detailProduct/:websiteId/:productId' element={<ShowProductaPage />} />
-        <Route path='/ChangePassword/:websiteId' element={<ChangePasswordForm />} />
-        <Route path="/rules/:websiteId" element={<RulesTrade />} />
-        <Route path="/PricingPlans/:websiteId" element={<PricingPlans />} />
-        <Route path="/Slug/:websiteId" element={<Slug />} />  // برای تعریف اسلاگ توسط کاربر
+
+        <Route
+          path="/HomeSeller/:websiteId"
+          element={
+            <ProtectedRoute>
+              <HomeSeller />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/appearance/:websiteId"
+          element={
+            <ProtectedRoute>
+              <Appearance />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile/:websiteId"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customers/:websiteId"
+          element={
+            <ProtectedRoute>
+              <Customers />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders/:websiteId"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/products/:websiteId"
+          element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/seller/products/:websiteId/add"
+          element={
+            <ProtectedRoute>
+              <AddProductaPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/detailProduct/:websiteId/:productId"
+          element={
+            <ProtectedRoute>
+              <ShowProductaPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ChangePassword/:websiteId"
+          element={
+            <ProtectedRoute>
+              <ChangePasswordForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/rules/:websiteId"
+          element={
+            <ProtectedRoute>
+              <RulesTrade />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/PricingPlans/:websiteId"
+          element={
+            <ProtectedRoute>
+              <PricingPlans />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/Slug/:websiteId"
+          element={
+            <ProtectedRoute>
+              <Slug />
+            </ProtectedRoute>
+          }
+        />
         {/* مسیرهای فروشگاه با اسلاگ - تغییر کلیدی اینجاست */}
         <Route path="/website/orders/payment-callback" element={<PaymentCallbackOrder />} />
 
