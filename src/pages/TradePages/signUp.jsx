@@ -57,41 +57,41 @@ export default function SignupForm() {
 
     return (
         <>
-            <div className="absolute top-7 right-14 flex justify-start cursor-pointer z-20 gap-32">
+            <div className="absolute top-4 md:top-7 right-4 md:right-14 flex justify-start cursor-pointer z-20 gap-8 md:gap-32">
                 <div className="flex gap-1">
-                    <img src="/TradePageimages/shop_logo.png" alt="logo" className="w-5 h-5 mt-1" />
-                    <h1 className="font-jua text-lg text-[#EABF9F]">Trade Hub</h1>
+                    <img src="/TradePageimages/shop_logo.png" alt="logo" className="w-4 h-4 md:w-5 md:h-5 mt-1" />
+                    <h1 className="font-jua text-sm md:text-lg text-[#EABF9F]">Trade Hub</h1>
                 </div>
-                <a href="/" className="text-[#FAF3E0] text-lg font-rubik hover:underline">خانه</a>
+                <a href="/" className="text-[#FAF3E0] text-sm md:text-lg font-rubik hover:underline">خانه</a>
             </div>
 
             {/* Alert Component */}
             {alert && (
-                <div className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 ${
+                <div className={`fixed top-5 right-5 z-50 px-4 md:px-6 py-3 md:py-4 rounded-lg shadow-lg transition-all duration-300 max-w-xs md:max-w-none ${
                     alert.type === 'success' 
                         ? 'bg-green-500 text-white' 
                         : 'bg-red-500 text-white'
                 }`}>
-                    <div className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center ${
                             alert.type === 'success' ? 'bg-green-600' : 'bg-red-600'
                         }`}>
                             {alert.type === 'success' ? (
-                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-2 h-2 md:w-3 md:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                             ) : (
-                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-2 h-2 md:w-3 md:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
                             )}
                         </div>
-                        <span className="font-rubik">{alert.message}</span>
+                        <span className="font-rubik text-sm">{alert.message}</span>
                         <button 
                             onClick={() => setAlert(null)}
-                            className="ml-4 text-white hover:text-gray-200"
+                            className="ml-2 md:ml-4 text-white hover:text-gray-200"
                         >
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                             </svg>
                         </button>
@@ -100,7 +100,7 @@ export default function SignupForm() {
             )}
 
             <div
-                className="min-h-screen relative flex items-center justify-start px-8"
+                className="min-h-screen relative flex items-center justify-center md:justify-start px-4 md:px-8"
                 style={{
                     backgroundImage: "url('/TradePageimages/BG_signup.png')",
                     backgroundRepeat: "no-repeat",
@@ -109,8 +109,9 @@ export default function SignupForm() {
                     backgroundColor: "black",
                 }}
             >
+                {/* SVG فقط در حالت دسکتاپ نمایش داده می‌شود */}
                 <svg
-                    className="absolute top-0 bottom-0 h-full"
+                    className="absolute top-0 bottom-0 h-full hidden lg:block"
                     style={{ right: "51%", zIndex: 10 }}
                     width="259"
                     height="100%"
@@ -126,21 +127,21 @@ export default function SignupForm() {
                     />
                 </svg>
 
-                <div className="w-full max-w-lg space-y-6 p-8 rounded-3xl text-[#FAF3E0]">
-                    <div className="space-y-3 mt-12">
-                        <h2 className="text-lg text-[#EABF9F] font-rubik">به طور رایگان فروشگاه خود را بسازید!</h2>
+                <div className="w-full max-w-sm md:max-w-lg space-y-4 md:space-y-6 p-4 md:p-8 rounded-3xl text-[#FAF3E0]">
+                    <div className="space-y-2 md:space-y-3 mt-8 md:mt-12">
+                        <h2 className="text-sm md:text-lg text-[#EABF9F] font-rubik">به طور رایگان فروشگاه خود را بسازید!</h2>
                         <div className="relative inline-block w-fit">
                             <div className="relative w-fit">
                                 <div
-                                    className="absolute w-4 h-4 bg-[#EABF9F] rounded-full blur-sm z-0"
+                                    className="absolute w-4 h-4 bg-[#EABF9F] rounded-full blur-sm z-0 hidden md:block"
                                     style={{ top: "17px", right: "318px" }}
                                 ></div>
-                                <h1 className="relative z-10 text-2xl md:text-4xl font-rubik font-bold text-FAF3E0">
+                                <h1 className="relative z-10 text-xl md:text-2xl lg:text-4xl font-rubik font-bold text-FAF3E0">
                                     ساخت حساب جدید
                                 </h1>
                             </div>
                         </div>
-                        <p className="text-sm font-rubik text-gray-300">
+                        <p className="text-xs md:text-sm font-rubik text-gray-300">
                             در حال حاضر حساب دارید؟{" "}
                             <Link to="/login" className="text-[#EABF9F] font-medium font-rubik hover:underline">
                                 وارد شوید.
@@ -148,8 +149,8 @@ export default function SignupForm() {
                         </p>
                     </div>
 
-                    <form className="space-y-6" onSubmit={handleSubmit}>
-                        <div className="flex gap-3 mt-10">
+                    <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+                        <div className="flex flex-col md:flex-row gap-3 mt-6 md:mt-10">
                             <InputWithIcon
                                 placeholder="نام"
                                 icon="/TradePageimages/icons8-id-verified.png"
@@ -169,7 +170,7 @@ export default function SignupForm() {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
 
-                        <div className="flex gap-4">
+                        <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                             <PasswordInput
                                 placeholder="رمز عبور"
                                 show={showPassword}
@@ -186,12 +187,12 @@ export default function SignupForm() {
                             />
                         </div>
 
-                        <div className="flex justify-center pt-4">
+                        <div className="flex justify-center pt-3 md:pt-4">
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full 
-                                    transition-all duration-300 flex items-center justify-center gap-2 
+                                className={`w-32 md:w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full 
+                                    transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base
                                     ${isLoading 
                                         ? 'opacity-70 cursor-not-allowed' 
                                         : 'hover:bg-[#EABF9F] hover:text-[#1E1E1E]'
@@ -199,11 +200,12 @@ export default function SignupForm() {
                             >
                                 {isLoading ? (
                                     <>
-                                        <svg className="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-4 w-4 md:h-5 md:w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        <span>ارسال کد تایید</span>
+                                        <span className="hidden md:inline">ارسال کد تایید</span>
+                                        <span className="md:hidden">ارسال کد</span>
                                     </>
                                 ) : (
                                     'ایجاد حساب'
@@ -217,7 +219,7 @@ export default function SignupForm() {
             <img
                 src="/TradePageimages/icon-cart-shop.png"
                 alt="logo"
-                className="absolute bottom-6 left-6 w-20 h-auto z-10"
+                className="absolute bottom-3 left-3 md:bottom-6 md:left-6 w-12 h-auto md:w-20 z-10"
             />
         </>
     );
@@ -231,11 +233,11 @@ function InputWithIcon({ placeholder, icon, type = "text", value, onChange }) {
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
-                className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] text-[#1E212D] font-rubik font-medium placeholder:text-[#1E212D]
-                placeholder:font-rubik placeholder:text-base transition-all duration-300 ease-in-out focus:scale-[1.03] 
+                className="w-full h-10 md:h-12 px-3 md:px-4 py-2 pl-8 md:pl-10 rounded-xl bg-[#EABF9F] text-[#1E212D] font-rubik font-medium placeholder:text-[#1E212D]
+                placeholder:font-rubik placeholder:text-sm md:placeholder:text-base transition-all duration-300 ease-in-out focus:scale-[1.03] 
                 focus:outline-none focus:ring-2 focus:ring-[#1E212D] border border-[#1E212D]"
             />
-            <img src={icon} className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" alt="icon" />
+            <img src={icon} className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5" alt="icon" />
         </div>
     );
 }
@@ -248,17 +250,17 @@ function PasswordInput({ placeholder, show, toggle, value, onChange }) {
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
-                className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] text-[#1E212D] font-rubik font-medium placeholder:text-[#1E212D]
-                placeholder:font-rubik placeholder:text-base transition-all duration-300 ease-in-out focus:scale-[1.03] 
+                className="w-full h-10 md:h-12 px-3 md:px-4 py-2 pl-8 md:pl-10 rounded-xl bg-[#EABF9F] text-[#1E212D] font-rubik font-medium placeholder:text-[#1E212D]
+                placeholder:font-rubik placeholder:text-sm md:placeholder:text-base transition-all duration-300 ease-in-out focus:scale-[1.03] 
                 focus:outline-none focus:ring-2 focus:ring-[#1E212D] border border-[#1E212D]"
             />
-            <button type="button" onClick={toggle} className="absolute left-3 top-1/2 -translate-y-1/2">
+            <button type="button" onClick={toggle} className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="#1E212D"
-                    className="w-5 h-5"
+                    className="w-4 h-4 md:w-5 md:h-5"
                 >
                     {show ? (
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}

@@ -138,15 +138,8 @@ export default function LoginForm() {
                         <div className="relative inline-block w-fit">
                             <div className="relative w-fit">
                                 <div
-                                    className="absolute w-3 h-3 md:w-4 md:h-4 bg-[#EABF9F] rounded-full blur-sm z-0"
-                                    style={{ 
-                                        top: "12px", 
-                                        right: "240px",
-                                        "@media (min-width: 768px)": {
-                                            top: "17px",
-                                            right: "318px"
-                                        }
-                                    }}
+                                    className="absolute w-4 h-4 bg-[#EABF9F] rounded-full blur-sm z-0 hidden md:block"
+                                    style={{ top: "17px", right: "318px" }}
                                 ></div>
                                 <h1 className="relative z-10 text-xl md:text-2xl lg:text-4xl font-rubik font-bold text-FAF3E0">
                                     ساخت حساب جدید
