@@ -253,7 +253,7 @@ class OrderRepository:
             self.db.delete(order)
 
         self.db.commit()
-
+        self.db.close()
 
     def get_buyers_by_website_id(self, website_id: UUID) :
         buyers = self.db.query(Buyer).filter(Buyer.website_id == website_id).all()

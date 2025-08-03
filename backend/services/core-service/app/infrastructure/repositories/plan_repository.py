@@ -23,6 +23,7 @@ class PlanRepository:
         for plan in expired_plans:
             plan.is_active = False
         self.db.commit()
+        self.db.close()
         return expired_plans
 
     def get_active_plan_by_website_id(self, website_id: UUID) -> WebsitePlan:

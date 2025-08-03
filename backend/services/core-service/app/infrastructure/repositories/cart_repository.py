@@ -69,7 +69,7 @@ class CartRepository:
     for item in expired_items:
         self.db.delete(item)
     self.db.commit()
-
+    self.db.close()
 
   def remove_one_from_cart(self, cart_item_id: UUID):
     cart_item = self.db.query(CartItem).filter(CartItem.id == cart_item_id).first()
