@@ -45,8 +45,6 @@ const CustomersContent = () => {
         fetchData();
     }, []);
 
-
-
     // سفارشات برای هر مشتری
     const getOrdersForCustomer = (customerId) => {
         const allOrders = {
@@ -170,7 +168,7 @@ const CustomersContent = () => {
                 />
 
                 {isOpenTable && (
-                    <div className="p-6">
+                    <div className="p-3 sm:p-6">
                         <CustomersTable
                             Customers={currentCustomers}
                             getOrdersForCustomer={getOrdersForCustomer}

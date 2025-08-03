@@ -72,13 +72,13 @@ const ReportOrder = () => {
                                 <div className="flex justify-start flex-wrap gap-3 md:gap-4 mb-4">
                                     <SalesCard isLoading={true} />
                                 </div>
-                                
+
                                 {/* Additional Loading Cards for Pro plan simulation */}
                                 <div className="flex justify-start flex-wrap gap-3 md:gap-4">
                                     <SalesCard isLoading={true} />
                                     <SalesCard isLoading={true} />
                                 </div>
-                                
+
                                 {/* Loading Text */}
                                 <div className="text-center mt-6">
                                     <div className="inline-flex items-center gap-2 text-sm md:text-base text-gray-600">
@@ -97,14 +97,13 @@ const ReportOrder = () => {
                                     logo="/public/SellerPanel/Customers/icons8-numbers-50 2.png"
                                     desc=" "
                                 />
-                                
+
                                 {/* فقط برای پلن Pro */}
                                 {planType === 'Pro' && (
                                     <>
                                         <SalesCard
                                             title="میانگین خرید هر مشتری"
-                                            amount={stats.average?.average_order_per_buyer?.toLocaleString('fa-IR') || '0'}
-                                            logo="/public/SellerPanel/Customers/icons8-shopping-cart-48(2).png"
+                                            amount={`${stats.average?.average_order_per_buyer?.toLocaleString('fa-IR') || '0'} ریال`} logo="/public/SellerPanel/Customers/icons8-shopping-cart-48(2).png"
                                             desc=" "
                                         />
                                         <SalesCard
@@ -117,7 +116,7 @@ const ReportOrder = () => {
                                 )}
                             </div>
                         )}
-                        
+
                         {/* Plan Info */}
                         {!isLoading && planType !== 'Pro' && (
                             <div className="mt-6 p-3 md:p-4 bg-blue-50 border border-blue-200 rounded-lg">
