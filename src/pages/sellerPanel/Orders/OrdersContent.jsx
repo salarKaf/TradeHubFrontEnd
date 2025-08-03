@@ -4,7 +4,8 @@ import OrdersHeader from './OrdersHeader';
 import OrdersTable from './OrdersTable';
 import OrdersToolbar from './OrdersToolbar';
 import { useParams } from 'react-router-dom';
-import { getOrdersByWebsite } from '../../../API/orders'; // مسیر صحیح
+import { getOrdersByWebsite } from '../../../API/orders';
+
 const OrderContent = () => {
     const [isOpenTable, setIsOpenTable] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -12,9 +13,6 @@ const OrderContent = () => {
     const [sortBy, setSortBy] = useState('newest');
     const [expandedOrders, setExpandedOrders] = useState(new Set());
 
-
-
-    // در داخل OrderContent:
     const [orders, setOrders] = useState([]);
     const { websiteId } = useParams();
 
@@ -33,10 +31,9 @@ const OrderContent = () => {
                     products: order.order_items.map(item => ({
                         name: item.item_name,
                         amount: parseInt(item.price).toLocaleString('fa-IR'),
-                        item_id: item.item_id, // 👈 حتماً این رو اضافه کن
-
+                        item_id: item.item_id,
                     })),
-                    customer: order.buyer_email, // 👈 این خط رو تغییر بده از buyer_id به buyer_email
+                    customer: order.buyer_email,
                     totalAmount: parseInt(order.total_price).toLocaleString('fa-IR'),
                     dateAdded: new Date(order.created_at),
                 }));
@@ -49,8 +46,6 @@ const OrderContent = () => {
 
         if (websiteId) fetchOrders();
     }, [websiteId]);
-
-
 
     const itemsPerPage = 5;
 
@@ -148,7 +143,7 @@ const OrderContent = () => {
                 <OrdersHeader
                     isOpenTable={isOpenTable}
                     setIsOpenTable={setIsOpenTable}
-                    title="فاکتور سفارشات "
+                    title="فاکتور سفارشات"
                     logo="/public/SellerPanel/Orders/icons8-purchase-order-52 2.png"
                 />
 
@@ -162,7 +157,7 @@ const OrderContent = () => {
                 />
 
                 {isOpenTable && (
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                         <OrdersTable
                             orders={currentOrders}
                             expandedOrders={expandedOrders}
