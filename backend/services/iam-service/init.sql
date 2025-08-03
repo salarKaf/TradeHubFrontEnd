@@ -238,11 +238,11 @@ BEGIN
     FROM items
     WHERE item_id = NEW.item_id;
 
-    -- درج پیام با نام محصول
+    -- درج فقط نام محصول در ستون message
     INSERT INTO announcements (website_id, message)
     VALUES (
         _website_id,
-        format('مشتری جدید دیدگاهی راجع به محصول "%s" ثبت کرد.', _item_name)
+        _item_name
     );
 
     -- فقط 5 اعلان آخر برای هر سایت نگه داشته شود
@@ -258,6 +258,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 CREATE TRIGGER trigger_notify_review

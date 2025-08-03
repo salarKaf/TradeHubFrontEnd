@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 logger.info("Custom logging is configured.")
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from fastapi.security import OAuth2PasswordBearer
 from app.api.v1.endpoints.user_route import user_router
 from app.api.v1.endpoints.buyer_route import buyer_router
 from app.api.v1.endpoints.admin_route import admin_router

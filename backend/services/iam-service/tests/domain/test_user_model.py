@@ -1,4 +1,3 @@
-# tests/domain/test_user_model.py
 from app.domain.models.user_model import User
 
 def test_user_model_fields():

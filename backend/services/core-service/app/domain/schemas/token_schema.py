@@ -22,3 +22,11 @@ class AdminTokenDataSchema(BaseModel):
     email: str
     class Config:
         from_attributes = True        
+
+
+class BuyerTokenDataSchema(BaseModel):
+    buyer_id: UUID
+    name: str
+    email: str
+    class Config:
+        from_attributes = True
