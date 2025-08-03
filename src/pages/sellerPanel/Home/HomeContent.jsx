@@ -176,120 +176,125 @@ const HomeContent = () => {
   return (
     <div>
       <div className='mx-4 border-2 border-black border-opacity-20 rounded-lg'>
-        <h1 className="text-lg pr-5 my-4 font-modam"> به پنل فـروشنــدگان خوش آمدید. آمار و اطـلاعـات فروشـــگاه شما در یک نگاه.</h1>
+        <h1 className="text-sm lg:text-lg pr-5 my-4 font-modam"> به پنل فـروشنــدگان خوش آمدید. آمار و اطـلاعـات فروشـــگاه شما در یک نگاه.</h1>
       </div>
 
-      <div className="p-4 h-44 flex w-full justify-between">
-        {/* اولین کارت (بزرگترین) */}
-        <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full max-w-[450px] flex-grow">
+      <div className="p-4 h-auto lg:h-44 flex flex-col lg:flex-row w-full gap-4 lg:justify-between">
+        {/* اولین کارت */}
+        <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full lg:max-w-[450px]">
           <div>
-            <h2 className="text-3xl font-medium">{data.totalSales.toLocaleString()}</h2>
-            <p className="text-lg text-opacity-5 font-extralight">درآمد کل فروشگاه از ابتدا</p>
+            <h2 className="text-lg lg:text-3xl font-medium">{data.totalSales.toLocaleString()}</h2>
+            <p className="text-sm lg:text-lg text-opacity-5 font-extralight">درآمد کل فروشگاه از ابتدا</p>
           </div>
           <div>
-            <img src='/SellerPanel/Home/Frame 64.png' alt="sales" />
+            <img src='/SellerPanel/Home/Frame 64.png' alt="sales" className="w-12 h-12 lg:w-auto lg:h-auto" />
           </div>
         </div>
 
         {/* دومین کارت */}
-        <InfoCard
-          title={data.totalProducts.toLocaleString()}
-          subtitle="محصولات"
-          logo="/public/SellerPanel/Home/icons8-package-64(1).png"
-          titleColor="text-black"
-        />
-
-        {/* سومین کارت (کوچکترین) */}
-        <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full max-w-[300px] flex-grow">
+        <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full lg:max-w-[350px]">
           <div>
-            <h2 className="text-3xl font-medium">{data.totalOrders}</h2>
-            <p className="text-lg text-opacity-5 font-extralight">فروش</p>
+            <h2 className="text-lg lg:text-3xl font-medium">{data.totalProducts.toLocaleString()}</h2>
+            <p className="text-sm lg:text-lg text-opacity-5 font-extralight">محصولات</p>
           </div>
           <div>
-            <img src='/SellerPanel/Home/shoping-cart.png' alt="orders" />
+            <img src="/public/SellerPanel/Home/icons8-package-64(1).png" alt="products" className="w-12 h-12 lg:w-auto lg:h-auto" />
+          </div>
+        </div>
+
+        {/* سومین کارت */}
+        <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full lg:max-w-[300px]">
+          <div>
+            <h2 className="text-lg lg:text-3xl font-medium">{data.totalOrders}</h2>
+            <p className="text-sm lg:text-lg text-opacity-5 font-extralight">فروش</p>
+          </div>
+          <div>
+            <img src='/SellerPanel/Home/shoping-cart.png' alt="orders" className="w-12 h-12 lg:w-auto lg:h-auto" />
           </div>
         </div>
       </div>
 
-      <div className='p-4 flex justify-between'>
+      <div className='p-4 flex flex-col lg:flex-row gap-4 lg:gap-0 lg:justify-between'>
         {/* جدول آخرین سفارشات */}
-        <div className={`mb-6 pb-6 p-5 font-modam rounded-xl border-black border-opacity-20 border-2 ${planType === "Pro" ? "w-[55%]" : "w-[48%]"}`}>
-          <h2 className="text-2xl font-semibold mb-4 p-5 text-zinc-600">آخرین سفارشات</h2>
-          <table className="w-full table-auto mb-6">
-            <thead>
-              <tr className="my-10">
-                <th className="p-2">تاریخ</th>
-                <th className="p-2">شناسه سفارش</th>
-                <th className="p-2">مبلغ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.recentOrders.length > 0 ? (
-                data.recentOrders.slice(0, 4).map((order, index) => (
-                  <tr key={index} className="border-t border-black border-opacity-10 text-center">
-                    <td className="py-3">{order.created_at}</td> {/* تاریخ از سرور آماده است */}
-                    <td className="py-3">{order.order_number}</td>
-                    <td className="py-3">{Number(order.total_price).toLocaleString()} تومان</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="py-8 text-center text-gray-500">
-                    اطلاعاتی جهت نمایش وجود ندارد
-                  </td>
+        <div className={`mb-6 pb-6 p-5 font-modam rounded-xl border-black border-opacity-20 border-2 w-full ${planType === "Pro" ? "lg:w-[55%]" : "lg:w-[48%]"}`}>
+          <h2 className="text-xl lg:text-2xl font-semibold mb-4 p-5 text-zinc-600">آخرین سفارشات</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto mb-6 min-w-[300px]">
+              <thead>
+                <tr className="my-10">
+                  <th className="p-2 text-sm lg:text-base">تاریخ</th>
+                  <th className="p-2 text-sm lg:text-base">شناسه سفارش</th>
+                  <th className="p-2 text-sm lg:text-base">مبلغ</th>
                 </tr>
-              )}
-            </tbody>
-
-          </table>
-          <a className='p-10 text-cyan-700' href={`/orders/${websiteId}`} > مشاهده کل سفارشات   &gt; </a>
+              </thead>
+              <tbody>
+                {data.recentOrders.length > 0 ? (
+                  data.recentOrders.slice(0, 4).map((order, index) => (
+                    <tr key={index} className="border-t border-black border-opacity-10 text-center">
+                      <td className="py-3 text-xs lg:text-sm">{order.created_at}</td>
+                      <td className="py-3 text-xs lg:text-sm">{order.order_number}</td>
+                      <td className="py-3 text-xs lg:text-sm">{Number(order.total_price).toLocaleString()} ریال</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="py-8 text-center text-gray-500 text-sm lg:text-base">
+                      اطلاعاتی جهت نمایش وجود ندارد
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <a className='p-10 text-cyan-700 text-sm lg:text-base' href={`/orders/${websiteId}`} > مشاهده کل سفارشات   &gt; </a>
         </div>
 
-        <div className={`mb-6 pb-6 font-modam rounded-xl border-black border-opacity-20 border-2 ${planType === "Pro" ? "w-[42%]" : "w-[48%]"}`}>
-          <h2 className="text-2xl font-semibold mb-4 p-5 text-zinc-600">آخرین محصولات</h2>
-          <table className="w-full table-auto mb-6">
-            <thead>
-              <tr className="my-10">
-                <th className="p-2">نام محصول</th>
-                <th className="p-2">تعداد فروش</th>
-                <th className="p-2">مبلغ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.bestProducts.length > 0 ? (
-
-                data.bestProducts.slice(0, 4).map((order, index) => (
-                  <tr key={index} className="border-t border-black border-opacity-10 text-center">
-                    <td className="py-3">{order.name}</td>
-                    <td className="py-3">{order.Numsale}</td>
-                    <td className="py-3">{Number(order.amount ?? 0).toLocaleString()} تومان</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="py-8 text-center text-gray-500">
-                    اطلاعاتی جهت نمایش وجود ندارد
-                  </td>
+        <div className={`mb-6 pb-6 font-modam rounded-xl border-black border-opacity-20 border-2 w-full ${planType === "Pro" ? "lg:w-[42%]" : "lg:w-[48%]"}`}>
+          <h2 className="text-xl lg:text-2xl font-semibold mb-4 p-5 text-zinc-600">آخرین محصولات</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto mb-6 min-w-[300px]">
+              <thead>
+                <tr className="my-10">
+                  <th className="p-2 text-sm lg:text-base">نام محصول</th>
+                  <th className="p-2 text-sm lg:text-base">تعداد فروش</th>
+                  <th className="p-2 text-sm lg:text-base">مبلغ</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-          <a className='p-10 text-cyan-700' href={`/products/${websiteId}`}> مشاهده کل محصولات   &gt; </a>
+              </thead>
+              <tbody>
+                {data.bestProducts.length > 0 ? (
+                  data.bestProducts.slice(0, 4).map((order, index) => (
+                    <tr key={index} className="border-t border-black border-opacity-10 text-center">
+                      <td className="py-3 text-xs lg:text-sm">{order.name}</td>
+                      <td className="py-3 text-xs lg:text-sm">{order.Numsale}</td>
+                      <td className="py-3 text-xs lg:text-sm">{Number(order.amount ?? 0).toLocaleString()} ریال</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="py-8 text-center text-gray-500 text-sm lg:text-base">
+                      اطلاعاتی جهت نمایش وجود ندارد
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <a className='p-10 text-cyan-700 text-sm lg:text-base' href={`/products/${websiteId}`}> مشاهده کل محصولات   &gt; </a>
         </div>
       </div>
 
-      <div className='p-4 flex justify-between'>
+      <div className='p-4 flex flex-col lg:flex-row gap-4 lg:gap-0 lg:justify-between'>
         {/* اعلان‌های جدید - فقط برای Pro */}
         {planType === "Pro" && (
-          <div className="mb-6 w-[42%] font-modam rounded-xl border-black border-opacity-20 border-2">
-            <h2 className="text-2xl font-semibold mb-10 p-6 text-zinc-600">اعلان‌های جدید</h2>
+          <div className="mb-6 w-full lg:w-[42%] font-modam rounded-xl border-black border-opacity-20 border-2">
+            <h2 className="text-xl lg:text-2xl font-semibold mb-10 p-6 text-zinc-600">اعلان‌های جدید</h2>
             <div>
               {data.announcements.length > 0 ? (
                 data.announcements.map((announcement, index) => (
                   <div key={index} className="py-3 px-5 mb-3 flex items-center justify-between rounded-lg shadow-sm transition-colors">
-                    <FiBell className="w-5 h-5 text-gray-500 ml-4" />
+                    <FiBell className="w-5 h-5 text-gray-500 ml-4 flex-shrink-0" />
                     <div className="flex-1 text-right">
-                      <p className="text-md font-modam">
+                      <p className="text-sm lg:text-base font-modam">
                         دیدگاه جدیدی راجع به محصول "<span className="font-semibold">{announcement.message}</span>" ثبت شد
                       </p>
                       <p className="text-xs text-gray-400 mt-1">{announcement.date}</p>
@@ -297,59 +302,63 @@ const HomeContent = () => {
                   </div>
                 ))
               ) : (
-                <div className="py-8 text-center text-gray-500">
+                <div className="py-8 text-center text-gray-500 text-sm lg:text-base">
                   اعلانی وجود ندارد
                 </div>
               )}
-
             </div>
           </div>
         )}
 
         {planType === "Pro" && (
-          <div className='mb-6 pb-6 p-5 w-[55%] font-modam rounded-xl border-black border-opacity-20 border-2'>
-            <h2>نگاهی به میزان فروش 6 ماه اخیر</h2>
+          <div className='mb-6 pb-6 p-5 w-full lg:w-[55%] font-modam rounded-xl border-black border-opacity-20 border-2'>
+            <h2 className="text-lg lg:text-xl mb-4  font-semibold text-zinc-600">نگاهی به میزان فروش 6 ماه اخیر</h2>
 
             {salesChartData ? (
-              <Line
-                data={salesChartData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: false // این legend رو مخفی می‌کنه
-                    }
-                  },
-                  scales: {
-                    y: {
-                      type: 'linear',
-                      min: 0, // کف نمودار صفر باشه
-                      ticks: {
-                        callback: function (value) {
-                          const dataValues = salesChartData.datasets[0].data;
-                          const uniqueValues = [...new Set([0, ...dataValues])].sort((a, b) => a - b);
+              <div className="w-full overflow-x-auto">
+                <div className="min-w-[300px]">
+                  <Line
+                    data={salesChartData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: true,
+                      plugins: {
+                        legend: {
+                          display: false // این legend رو مخفی می‌کنه
+                        }
+                      },
+                      scales: {
+                        y: {
+                          type: 'linear',
+                          min: 0, // کف نمودار صفر باشه
+                          ticks: {
+                            callback: function (value) {
+                              const dataValues = salesChartData.datasets[0].data;
+                              const uniqueValues = [...new Set([0, ...dataValues])].sort((a, b) => a - b);
 
-                          if (uniqueValues.includes(value)) {
-                            return value.toLocaleString() + " ریال";
+                              if (uniqueValues.includes(value)) {
+                                return value.toLocaleString() + " ریال";
+                              }
+                              return null;
+                            },
+                            stepSize: null,
                           }
-                          return null;
-                        },
-                        stepSize: null,
+                        }
                       }
-                    }
-                  }
-                }}
-              />
+                    }}
+                  />
+                </div>
+              </div>
             ) : (
-              <p className='text-gray-400 pt-4'>در حال دریافت اطلاعات...</p>
+              <p className='text-gray-400 pt-4 text-sm lg:text-base'>در حال دریافت اطلاعات...</p>
             )}
           </div>
         )}
       </div>
 
-      <div className='flex h-24 mx-4 border-2 border-black border-opacity-20 rounded-lg items-center justify-between'>
-        <h1 className="text-lg pr-5 my-4 font-modam"> برای اضافــه کردن محصول جدید به فروشگاه خود روی دکمه رو به رو کلیک کنید.</h1>
-        <Link to={`/products/${websiteId}`} className="bg-[#1e202d] font-modam font-medium text-lg w-64 h-3/5 ml-32 text-white py-2 px-6 rounded-3xl shadow-md pt-3">
+      <div className='flex flex-col lg:flex-row h-auto lg:h-24 mx-4 border-2 border-black border-opacity-20 rounded-lg items-center justify-between p-4 lg:p-0 gap-4 lg:gap-0'>
+        <h1 className="text-base lg:text-lg pr-0 lg:pr-5 my-4 font-modam text-center lg:text-right"> برای اضافــه کردن محصول جدید به فروشگاه خود روی دکمه رو به رو کلیک کنید.</h1>
+        <Link to={`/products/${websiteId}`} className="bg-[#1e202d] font-modam font-medium text-base lg:text-lg w-full lg:w-64 h-12 lg:h-3/5 ml-0 lg:ml-32 text-white py-2 px-6 rounded-3xl shadow-md flex items-center justify-center">
           افــزودن مـحـصول جـدیـد +
         </Link>
       </div>
