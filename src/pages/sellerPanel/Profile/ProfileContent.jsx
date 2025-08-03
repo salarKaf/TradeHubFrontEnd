@@ -4,10 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getMe, changeUserProfile } from "../../../API/auth";
 
 const ProfileContent = () => {
-
-
   const { websiteId } = useParams();
-
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -50,11 +47,9 @@ const ProfileContent = () => {
     }
   };
 
-
   const handleEmailClick = () => {
     window.location.href = 'mailto:support@example.com';
   };
-
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -74,7 +69,7 @@ const ProfileContent = () => {
   }, []);
 
   return (
-    <div className="p-4 font-modam">
+    <div className="p-4 font-modam" style={{ maxWidth: '1200px', margin: '0 auto' }}>
       {/* Modal برای نمایش خطا */}
       {showAlert && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -197,7 +192,6 @@ const ProfileContent = () => {
               >
                 تغییر رمز عبور
               </button>
-
             </div>
           </div>
         </div>
@@ -212,7 +206,7 @@ const ProfileContent = () => {
 
           {/* متن توضیحی */}
           <div className=" rounded-lg p-4 mb-4">
-            <p className="text-gray-700 text-lg leading-relaxed font-rubik">
+            <p className="text-gray-700  text-md sm:text-lg leading-relaxed font-rubik">
               در صورت بروز هرگونه مشکل یا سوال، می‌توانید از طریق این بخش با تیم پشتیبانی در ارتباط باشید. لطفاً شرح دقیق مشکل یا درخواست خود را وارد کرده و برای بررسی و پاسخگویی سریع‌تر، اطلاعات لازم را کامل نمایید. ما در کوتاه‌ترین زمان ممکن به شما پاسخ خواهیم داد.
             </p>
           </div>
