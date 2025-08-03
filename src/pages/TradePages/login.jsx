@@ -95,16 +95,17 @@ export default function LoginForm() {
 
     return (
         <>
-            <div className="absolute top-7 right-14 flex justify-start cursor-pointer z-20  gap-32">
+            {/* Header - responsive */}
+            <div className="absolute top-4 md:top-7 right-4 md:right-14 flex justify-start cursor-pointer z-20 gap-8 md:gap-32">
                 <div className="flex gap-1">
-                    <img src="/TradePageimages/shop_logo.png" alt="logo" className="w-5 h-5 mt-1" />
-                    <h1 className="font-jua  text-lg text-[#EABF9F]"> Trade Hub</h1>
+                    <img src="/TradePageimages/shop_logo.png" alt="logo" className="w-4 h-4 md:w-5 md:h-5 mt-1" />
+                    <h1 className="font-jua text-base md:text-lg text-[#EABF9F]"> Trade Hub</h1>
                 </div>
-                <a href="/" className="text-[#FAF3E0] text-lg font-rubik hover:underline">خانه</a>
+                <a href="/" className="text-[#FAF3E0] text-base md:text-lg font-rubik hover:underline">خانه</a>
             </div>
 
             <div
-                className="min-h-screen relative flex items-center justify-start px-8"
+                className="min-h-screen relative flex items-center justify-center md:justify-start px-4 md:px-8"
                 style={{
                     backgroundImage: "url('/TradePageimages/BG_signup.png')",
                     backgroundRepeat: "no-repeat",
@@ -113,8 +114,9 @@ export default function LoginForm() {
                     backgroundColor: "black",
                 }}
             >
+                {/* SVG - فقط در دسکتاپ نمایش داده می‌شود */}
                 <svg
-                    className="absolute top-0 bottom-0 h-full"
+                    className="absolute top-0 bottom-0 h-full hidden lg:block"
                     style={{ right: "51%", zIndex: 10 }}
                     width="259"
                     height="100%"
@@ -130,21 +132,28 @@ export default function LoginForm() {
                     />
                 </svg>
 
-                <div className="w-full max-w-lg space-y-6 p-8 rounded-3xl text-[#FAF3E0]">
-                    <div className="space-y-3 mt-12">
-                        <h2 className="text-lg text-[#EABF9F] font-rubik">به طور رایگان فروشگاه خود را بسازید!</h2>
+                <div className="w-full max-w-sm md:max-w-lg space-y-4 md:space-y-6 p-4 md:p-8 rounded-3xl text-[#FAF3E0]">
+                    <div className="space-y-2 md:space-y-3 mt-8 md:mt-12">
+                        <h2 className="text-base md:text-lg text-[#EABF9F] font-rubik">به طور رایگان فروشگاه خود را بسازید!</h2>
                         <div className="relative inline-block w-fit">
                             <div className="relative w-fit">
                                 <div
-                                    className="absolute w-4 h-4 bg-[#EABF9F] rounded-full blur-sm z-0"
-                                    style={{ top: "17px", right: "318px" }}
+                                    className="absolute w-3 h-3 md:w-4 md:h-4 bg-[#EABF9F] rounded-full blur-sm z-0"
+                                    style={{ 
+                                        top: "12px", 
+                                        right: "240px",
+                                        "@media (min-width: 768px)": {
+                                            top: "17px",
+                                            right: "318px"
+                                        }
+                                    }}
                                 ></div>
-                                <h1 className="relative z-10 text-2xl md:text-4xl font-rubik font-bold text-FAF3E0">
+                                <h1 className="relative z-10 text-xl md:text-2xl lg:text-4xl font-rubik font-bold text-FAF3E0">
                                     ساخت حساب جدید
                                 </h1>
                             </div>
                         </div>
-                        <p className="text-sm font-rubik text-gray-300">
+                        <p className="text-xs md:text-sm font-rubik text-gray-300">
                             در حال حاضر حسابی ندارید؟{" "}
                             <Link to="/signUp" className="text-[#EABF9F] font-medium font-rubik hover:underline">
                                 ثبت نام کنید.
@@ -154,25 +163,25 @@ export default function LoginForm() {
 
                     {/* 🔴 نمایش خطا */}
                     {errorMsg && (
-                        <div className="bg-red-100 border border-red-400 text-red-800 text-sm rounded px-4 py-2 font-rubik">
+                        <div className="bg-red-100 border border-red-400 text-red-800 text-xs md:text-sm rounded px-3 md:px-4 py-2 font-rubik">
                             {errorMsg}
                         </div>
                     )}
 
-                    <form className="space-y-6" onSubmit={handleSubmit}>
+                    <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
                         <div className="relative">
                             <input
                                 type="email"
                                 placeholder="ایمیل"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] font-rubik font-medium text-[#1E212D]
-                                border border-[#EABF9F] placeholder:text-[#1E212D] placeholder:font-rubik placeholder:font-medium 
+                                className="w-full h-10 md:h-12 px-3 md:px-4 py-2 pl-8 md:pl-10 rounded-xl bg-[#EABF9F] font-rubik font-medium text-[#1E212D]
+                                border border-[#EABF9F] placeholder:text-[#1E212D] placeholder:font-rubik placeholder:font-medium placeholder:text-sm md:placeholder:text-base
                                 transition-all duration-300 ease-in-out focus:scale-[1.03] focus:ring-2 focus:ring-[#1E212D]"
                             />
                             <img
                                 src="/TradePageimages/icons8-email.png"
-                                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
+                                className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5"
                                 alt="email icon"
                             />
                         </div>
@@ -183,19 +192,19 @@ export default function LoginForm() {
                                 placeholder="رمز عبور"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="w-full h-12 px-4 py-2 pl-10 rounded-xl bg-[#EABF9F] font-rubik font-medium text-[#1E212D]
-                                border border-[#EABF9F] placeholder:text-[#1E212D] placeholder:font-rubik placeholder:font-medium
+                                className="w-full h-10 md:h-12 px-3 md:px-4 py-2 pl-8 md:pl-10 rounded-xl bg-[#EABF9F] font-rubik font-medium text-[#1E212D]
+                                border border-[#EABF9F] placeholder:text-[#1E212D] placeholder:font-rubik placeholder:font-medium placeholder:text-sm md:placeholder:text-base
                                 transition-all duration-300 ease-in-out focus:scale-[1.03] focus:ring-2 focus:ring-[#1E212D]"
                             />
                             <button
                                 type="button"
-                                className="absolute left-3 top-1/2 -translate-y-1/2"
+                                className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 {showPassword ? (
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        className="w-5 h-5"
+                                        className="w-4 h-4 md:w-5 md:h-5"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="#1E212D"
@@ -208,7 +217,7 @@ export default function LoginForm() {
                                 ) : (
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        className="w-5 h-5"
+                                        className="w-4 h-4 md:w-5 md:h-5"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="#1E212D"
@@ -218,49 +227,43 @@ export default function LoginForm() {
                                     </svg>
                                 )}
                             </button>
-
-
-
-                            {/* قسمت فراموشی رمز عبور - این رو بعد از دکمه Submit اضافه کن */}
-
                         </div>
+
                         <div className="">
                             <Link
                                 to="/forgot-password"
-                                className="text-[#EABF9F] font-medium font-rubik hover:underline text-sm"
+                                className="text-[#EABF9F] font-medium font-rubik hover:underline text-xs md:text-sm"
                             >
                                 رمز عبور را فراموش کرده‌اید؟
                             </Link>
                         </div>
-                        <div className="flex justify-center pt-4">
+
+                        <div className="flex justify-center pt-2 md:pt-4">
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full transition-all flex justify-center items-center gap-2 
+                                className={`w-32 md:w-40 border-2 border-[#EABF9F] text-[#EABF9F] font-bold py-2 rounded-full transition-all flex justify-center items-center gap-2 text-sm md:text-base
         ${isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#EABF9F] hover:text-[#1E1E1E]'}`}
                             >
                                 {isLoading ? (
                                     <>
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <div className="w-3 h-3 md:w-4 md:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                         <span>در حال ورود...</span>
                                     </>
                                 ) : (
                                     "وارد شوید"
                                 )}
                             </button>
-
-
-
-
                         </div>
                     </form>
                 </div>
             </div>
 
+            {/* Cart icon - responsive */}
             <img
                 src="/TradePageimages/icon-cart-shop.png"
                 alt="logo"
-                className="absolute bottom-6 left-6 w-20 h-auto z-10"
+                className="absolute bottom-4 md:bottom-6 left-4 md:left-6 w-12 h-auto md:w-20 z-10"
             />
         </>
     );
