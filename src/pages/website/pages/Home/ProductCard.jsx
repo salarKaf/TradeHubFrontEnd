@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Heart, Eye, ShoppingCart } from "lucide-react";
+import { Heart, Eye, ShoppingCart, Star } from "lucide-react";
 import { addItemToCart } from "../../../../API/cart";
 import { addToFavorites, removeFromFavorites, isItemInFavorites, getFavoriteIdByItemId } from "../../../../API/favorites";
 import { getMyCart } from '../../../../API/cart';
 import { useParams, useNavigate } from 'react-router-dom';
 import { deleteItemFromCart, removeOneFromCart } from "../../../../API/cart"; // ⬅ یادت نره این بالا ایمپورت کنی
-import { getItemImages, getItemImageById } from '../../../../API/Items';
+import { getItemImages, getItemImageById, getItemRating } from '../../../../API/Items';
 
 const ProductCard = ({
   product,
@@ -26,6 +26,7 @@ const ProductCard = ({
   const [favoriteId, setFavoriteId] = useState(null);
   const [cartItem, setCartItem] = useState(null);
   const [isUpdatingQuantity, setIsUpdatingQuantity] = useState(false);
+  const [actualRating, setActualRating] = useState(0); // ✅ امتیاز واقعی از API
 
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -61,6 +62,24 @@ const ProductCard = ({
     if (id) fetchMainImage();
   }, [id]);
 
+  // ✅ دریافت امتیاز واقعی از API
+  useEffect(() => {
+    const fetchRating = async () => {
+      try {
+        if (id) {
+          const ratingData = await getItemRating(id);
+          setActualRating(ratingData.rating || 0);
+        }
+      } catch (error) {
+        console.warn("خطا در دریافت امتیاز:", error);
+        setActualRating(0); // اگر خطا باشه، امتیاز 0 نشون بده
+      }
+    };
+
+    if (id) {
+      fetchRating();
+    }
+  }, [id]);
 
   useEffect(() => {
     const checkStates = async () => {
@@ -82,7 +101,6 @@ const ProductCard = ({
         const itemInCart = items.find(item => String(item.item_id) === String(id));
         setCartItem(itemInCart || null);
 
-
       } catch (error) {
         console.warn('خطا در بررسی وضعیت‌ها:', error);
       }
@@ -97,7 +115,6 @@ const ProductCard = ({
       window.removeEventListener('cartUpdated', checkStates);
     };
   }, [id, websiteId]);
-
 
   const handleQuantityChange = async (newQuantity) => {
     if (!cartItem) return;
@@ -128,8 +145,6 @@ const ProductCard = ({
     }
   };
 
-
-
   // محاسبه قیمت تخفیف‌دار
   const calculateDiscountedPrice = (originalPrice, discountPercent) => {
     if (!discountPercent || originalPrice === undefined || originalPrice === null) return null;
@@ -144,7 +159,6 @@ const ProductCard = ({
 
     return discountedPrice.toLocaleString('fa-IR') + ' ریال';
   };
-
 
   const handleAddToCart = async () => {
     try {
@@ -174,8 +188,6 @@ const ProductCard = ({
       setIsAddingToCart(false);
     }
   };
-
-
 
   // ✅ Handle favorites toggle
   const handleFavoriteToggle = async () => {
@@ -218,6 +230,21 @@ const ProductCard = ({
       setIsUpdatingFavorite(false);
     }
   };
+
+  // ✅ محاسبه ستاره‌ها بر اساس امتیاز واقعی
+  const getStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = (rating % 1) >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return {
+      fullStars,
+      hasHalfStar,
+      emptyStars
+    };
+  };
+
+  const { fullStars, hasHalfStar, emptyStars } = getStars(actualRating);
 
   return (
     <div className="group relative font-Kahroba bg-white shadow-lg rounded-2xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-2xl hover:scale-105">
@@ -263,7 +290,6 @@ const ProductCard = ({
           )}
         </div>
 
-
         {/* Action Buttons - Bottom Full Width */}
         <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 flex transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
           <button
@@ -299,7 +325,6 @@ const ProductCard = ({
             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
             onError={(e) => { e.target.src = "/public/website/Image(1).png"; }}
           />
-
         </div>
 
         {/* Discount Badge */}
@@ -341,13 +366,32 @@ const ProductCard = ({
           )}
         </div>
 
-        {/* Rating */}
+        {/* ✅ Rating با ستاره‌های درست */}
         <div className="flex justify-end items-center gap-1">
-          {[...Array(5)].map((_, i) => (
-            <span key={i} className={`text-lg ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}>
-              ★
-            </span>
+          {/* ستاره‌های پر */}
+          {[...Array(fullStars)].map((_, i) => (
+            <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           ))}
+
+          {/* ستاره نیمه‌پر */}
+          {hasHalfStar && (
+            <div className="relative">
+              <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
+              <div className="absolute inset-0 overflow-hidden w-1/2">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              </div>
+            </div>
+          )}
+
+          {/* ستاره‌های خالی */}
+          {[...Array(emptyStars)].map((_, i) => (
+            <Star key={i + fullStars + (hasHalfStar ? 1 : 0)} className="w-4 h-4 fill-gray-300 text-gray-300" />
+          ))}
+
+          {/* نمایش عدد امتیاز */}
+          <span className="text-sm text-gray-600 mr-1">
+            {actualRating > 0 ? actualRating.toFixed(1) : '۰'}
+          </span>
         </div>
       </div>
     </div>

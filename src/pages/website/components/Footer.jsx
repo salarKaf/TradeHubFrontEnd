@@ -130,7 +130,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-gradient-to-br from-slate-50/5 to-slate-600/5 text-slate-800 font-rubik border-t border-slate-200">
+    <footer className="bg-gradient-to-br from-slate-50/5 to-slate-600/5 text-slate-800 font-Kahroba border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
 
