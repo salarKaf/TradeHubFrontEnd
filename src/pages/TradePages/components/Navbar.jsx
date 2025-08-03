@@ -1,20 +1,14 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  const location = useLocation();
-
-  const links = [
-    { path: "/", label: "صفحه اصلی" },
-    { path: "/contact", label: "ارتباط ما" },
-    { path: "/pricing", label: "تعرفه ها" },
-    { path: "/portfolio", label: "نمونه کارها" },
-  ];
-
   return (
-    <div className="relative w-full">
-      {/* منحنی پس‌زمینه طبق SVG جدید */}
+    <div className="relative w-full bg-[#FFF7E7]">
+      {/* پس‌زمینه - در موبایل مستطیل، در دسکتاپ SVG */}
+      <div className="absolute top-0 left-0 w-full h-[85px] bg-[#1E212D] md:bg-transparent z-0"></div>
+      
+      {/* منحنی پس‌زمینه فقط در دسکتاپ */}
       <svg
-        className="absolute top-0 left-0 w-full h-[178px] z-0"
+        className="hidden md:block absolute top-0 left-0 w-full h-[178px] z-0"
         viewBox="0 0 1440 178"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -66,48 +60,34 @@ export default function Navbar() {
       </svg>
 
       {/* نوبار */}
-      <div className="relative z-10 flex justify-between items-center px-8 py-6 text-[#FAF3E0]">
-        <div className="flex gap-4">
+      <div className="relative z-10 flex justify-between items-center px-4 md:px-8 py-4 md:py-6 text-[#FAF3E0]">
+        
+        {/* دکمه‌های ورود و ثبت نام - سمت چپ */}
+        <div className="flex gap-3 md:gap-4">
           <Link
             to="/login"
-            className="border border-white text-white bg-transparent px-5 py-2 rounded-2xl font-bold hover:bg-white hover:text-[#1E212D] transition-all">
+            className="border border-white text-white bg-transparent px-4 md:px-5 py-2 rounded-2xl font-bold hover:bg-white hover:text-[#1E212D] transition-all text-sm md:text-base">
             ورود به حساب
           </Link>
           <Link
             to="/signup"
-            className="bg-[#EABF9F] text-[#1E212D] px-5 py-2 rounded-2xl font-bold hover:bg-[#f3d6bb] transition-all"
+            className="bg-[#EABF9F] text-[#1E212D] px-4 md:px-5 py-2 rounded-2xl font-bold hover:bg-[#f3d6bb] transition-all text-sm md:text-base"
           >
             شروع کنید
           </Link>
-
         </div>
 
-
-        <div className="flex space-x-8 rtl:space-x-reverse">
-          {links.map(({ path, label }) => {
-            const isActive = location.pathname === path;
-            return (
-              <Link
-                key={path}
-                to={path}
-                className={`font-rubik font-semibold hover:text-[#EABF9F] px-3 py-1 rounded transition-all
-                  ${isActive ? "border-2 border-[#EABF9F]  rounded-md " : ""}`}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </div>
-
+        {/* لوگو - سمت راست */}
         <div className="text-center">
-          <h1 className="text-[#EABF9F] text-[25px] font-krona mt-2">Trade Hub</h1>
+          <h1 className="text-[#EABF9F] text-[20px] md:text-[25px] font-krona mt-2">Trade Hub</h1>
 
-          {/* خطوط زیر متن */}
-          <div className="flex justify-center flex-d items-center gap-3 mt-3">
+          {/* خطوط زیر متن - فقط در دسکتاپ */}
+          <div className="hidden md:flex justify-center items-center gap-3 mt-3">
             <div className="w-10 h-px bg-[#FAF3E0]"></div>
             <div className="w-32 h-px bg-[#FAF3E0]"></div>
           </div>
         </div>
+
       </div>
     </div>
   );
