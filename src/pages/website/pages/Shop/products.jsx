@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ProductCard from "../Home/ProductCard";
 import { getWebsiteIdBySlug } from "../../../../API/website";
 import { getNewestItems, getItemsByCategoryId, getItemsBySubcategoryId } from "../../../../API/Items";
@@ -10,6 +10,7 @@ import { FaChevronDown, FaChevronUp, FaFilter, FaExclamationTriangle } from "rea
 const Products = () => {
     const navigate = useNavigate();
     const { slug } = useParams();
+    const [searchParams] = useSearchParams();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,11 +19,14 @@ const Products = () => {
     const [subcategories, setSubcategories] = useState({});
     const [categoryItemCounts, setCategoryItemCounts] = useState({});
     const [openCategory, setOpenCategory] = useState(null);
-    const [priceRange, setPriceRange] = useState([0, 10000000]); // از 0 تا 10 میلیون
+    const [priceRange, setPriceRange] = useState([0, 10000000]);
     const [sortOption, setSortOption] = useState("جدیدترین");
     const [currentPage, setCurrentPage] = useState(1);
     const [activeFilter, setActiveFilter] = useState(null);
     const productsPerPage = 9;
+
+    // دریافت پارامتر جستجو از URL
+    const searchQuery = searchParams.get('search') || '';
 
     // Fetch website ID and categories
     useEffect(() => {
@@ -89,6 +93,14 @@ const Products = () => {
         fetchWebsiteIdAndCategories();
     }, [slug]);
 
+    // ریست کردن فیلترها وقتی جستجو تغییر می‌کنه
+    useEffect(() => {
+        if (searchQuery) {
+            setActiveFilter({ type: 'search', query: searchQuery });
+            setCurrentPage(1);
+        }
+    }, [searchQuery]);
+
     const loadProducts = async (websiteId, categoryId = null, subcategoryId = null) => {
         try {
             let response;
@@ -100,14 +112,16 @@ const Products = () => {
                 setActiveFilter({ type: 'category', id: categoryId });
             } else {
                 response = await getNewestItems(websiteId, 100);
-                setActiveFilter(null);
+                if (!searchQuery) {
+                    setActiveFilter(null);
+                }
             }
 
             if (!Array.isArray(response)) {
                 response = [];
             }
 
-            // ✅ فیلتر کردن محصولات موجود
+            // فیلتر کردن محصولات موجود
             const availableItems = response.filter(item => item.is_available === true);
 
             const formatted = availableItems.map((item, index) => ({
@@ -118,8 +132,11 @@ const Products = () => {
                 rating: parseInt(item.rating) || 5,
                 discount: item.discount_active && item.discount_percent ? parseInt(item.discount_percent) : null,
                 discountedPrice: item.discount_active && item.discount_price ? parseInt(item.discount_price) : null,
-                soldOut: false, // چون همه محصولات فیلتر شده موجود هستن
-                stock: item.stock || 0
+                soldOut: false,
+                stock: item.stock || 0,
+                description: item.description || '',
+                category: item.category || '',
+                salesCount: parseInt(item.sales_count) || 0 // ✅ اضافه کردن sales_count
             }));
 
             setProducts(formatted);
@@ -171,9 +188,18 @@ const Products = () => {
         }
     };
 
-    // ✅ فیلتر قیمت و مرتب‌سازی اصلاح شده
+    // فیلتر قیمت، جستجو و مرتب‌سازی
     const getFilteredAndSortedProducts = () => {
         let filtered = [...products];
+
+        // فیلتر جستجو
+        if (searchQuery.trim()) {
+            filtered = filtered.filter(product =>
+                product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                product.category?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
 
         // فیلتر قیمت
         filtered = filtered.filter((product) => {
@@ -201,7 +227,7 @@ const Products = () => {
                 filtered = filtered.filter((item) => item.discount);
                 break;
             case "پرفروش‌ترین":
-                filtered.sort((a, b) => b.rating - a.rating);
+                filtered.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)); // ✅ استفاده از salesCount
                 break;
             default:
                 // جدیدترین - ترتیب اصلی
@@ -224,23 +250,54 @@ const Products = () => {
     };
 
     const handleCategoryClick = async (categoryId) => {
-        await loadProducts(websiteId, categoryId);
+        if (!searchQuery) {
+            await loadProducts(websiteId, categoryId);
+        }
     };
 
     const handleSubcategoryClick = async (subcategoryId) => {
-        await loadProducts(websiteId, null, subcategoryId);
+        if (!searchQuery) {
+            await loadProducts(websiteId, null, subcategoryId);
+        }
     };
 
     const handleResetFilters = () => {
-        loadProducts(websiteId);
+        if (searchQuery) {
+            // اگر در حالت جستجو هستیم، به صفحه shop بدون پارامتر برمی‌گردیم
+            navigate(`/${slug}/shop`);
+        } else {
+            loadProducts(websiteId);
+        }
         setPriceRange([0, 10000000]);
         setSortOption("جدیدترین");
     };
 
-    // ✅ فرمت نمایش قیمت
+    // فرمت نمایش قیمت با جداکننده
     const formatPrice = (price) => {
         if (!price) return "0 ریال";
-        return `${price.toLocaleString('fa-IR')} ریال`;
+        return `${price.toLocaleString('fa-IR')} ریال`; // ✅ جداکننده سه‌تایی
+    };
+
+    // فرمت نمایش اعداد برای input (بدون ریال)
+    const formatNumber = (num) => {
+        if (!num) return "";
+        return num.toLocaleString('fa-IR');
+    };
+
+    // تعیین عنوان صفحه
+    const getPageTitle = () => {
+        if (searchQuery) {
+            return `نتایج جستجو برای: "${searchQuery}"`;
+        }
+        if (activeFilter?.type === 'category') {
+            const category = categories.find(c => c.id === activeFilter.id);
+            return `محصولات ${category?.name || ''}`;
+        }
+        if (activeFilter?.type === 'subcategory') {
+            const subcategory = subcategories[openCategory]?.find(s => s.id === activeFilter.id);
+            return `محصولات ${subcategory?.name || ''}`;
+        }
+        return 'همه محصولات';
     };
 
     if (loading) return (
@@ -261,71 +318,74 @@ const Products = () => {
                             فیلترها
                         </h2>
 
-                        {activeFilter && (
+                        {(activeFilter || searchQuery) && (
                             <div className="mb-4">
                                 <button
                                     onClick={handleResetFilters}
                                     className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full flex items-center"
                                 >
-                                    حذف فیلترها
+                                    {searchQuery ? 'پاک کردن جستجو' : 'حذف فیلترها'}
                                 </button>
                             </div>
                         )}
 
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold mb-4">دسته‌بندی‌ها</h3>
+                        {/* نمایش دسته‌بندی‌ها فقط وقتی که در حالت جستجو نیستیم */}
+                        {!searchQuery && (
+                            <div className="mb-6">
+                                <h3 className="text-lg font-semibold mb-4">دسته‌بندی‌ها</h3>
 
-                            {categories.length === 0 ? (
-                                <p className="text-center text-gray-500 py-4">هیچ دسته‌بندی‌ای وجود ندارد</p>
-                            ) : (
-                                <div className="space-y-2">
-                                    {categories.map((cat) => (
-                                        <div key={cat.id} className="border-b border-gray-100 pb-2">
-                                            <button
-                                                className={`w-full text-right font-medium flex justify-between items-center p-2 rounded hover:bg-gray-100 ${activeFilter?.type === 'category' && activeFilter.id === cat.id ? 'bg-blue-50 text-blue-600' : ''
-                                                    }`}
-                                                onClick={() => handleCategoryClick(cat.id)}
-                                            >
-                                                <div className="flex items-center">
-                                                    <span>{cat.name}</span>
-                                                    <span className="text-xs bg-gray-200 rounded-full px-2 py-1 mr-2">
-                                                        {categoryItemCounts[cat.id] !== undefined ? categoryItemCounts[cat.id] : '...'}
-                                                    </span>
-                                                </div>
-                                                {(subcategories[cat.id] && subcategories[cat.id].length > 0) && (
-                                                    <span
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            toggleCategory(cat.id);
-                                                        }}
-                                                        className="text-gray-500 hover:text-gray-700"
-                                                    >
-                                                        {openCategory === cat.id ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
-                                                    </span>
-                                                )}
-                                            </button>
-
-                                            {openCategory === cat.id && subcategories[cat.id] && subcategories[cat.id].length > 0 && (
-                                                <ul className="pr-4 mt-1 space-y-1 text-sm text-gray-600">
-                                                    {subcategories[cat.id].map((subItem) => (
-                                                        <li
-                                                            key={subItem.id}
-                                                            className={`cursor-pointer p-2 rounded hover:bg-gray-100 flex justify-between items-center ${activeFilter?.type === 'subcategory' && activeFilter.id === subItem.id ? 'bg-blue-50 text-blue-600' : ''
-                                                                }`}
-                                                            onClick={() => handleSubcategoryClick(subItem.id)}
+                                {categories.length === 0 ? (
+                                    <p className="text-center text-gray-500 py-4">هیچ دسته‌بندی‌ای وجود ندارد</p>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {categories.map((cat) => (
+                                            <div key={cat.id} className="border-b border-gray-100 pb-2">
+                                                <button
+                                                    className={`w-full text-right font-medium flex justify-between items-center p-2 rounded hover:bg-gray-100 ${activeFilter?.type === 'category' && activeFilter.id === cat.id ? 'bg-blue-50 text-blue-600' : ''
+                                                        }`}
+                                                    onClick={() => handleCategoryClick(cat.id)}
+                                                >
+                                                    <div className="flex items-center">
+                                                        <span>{cat.name}</span>
+                                                        <span className="text-xs bg-gray-200 rounded-full px-2 py-1 mr-2">
+                                                            {categoryItemCounts[cat.id] !== undefined ? categoryItemCounts[cat.id] : '...'}
+                                                        </span>
+                                                    </div>
+                                                    {(subcategories[cat.id] && subcategories[cat.id].length > 0) && (
+                                                        <span
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCategory(cat.id);
+                                                            }}
+                                                            className="text-gray-500 hover:text-gray-700"
                                                         >
-                                                            <span>{subItem.name}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                                                            {openCategory === cat.id ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+                                                        </span>
+                                                    )}
+                                                </button>
 
-                        {/* ✅ فیلتر قیمت دو طرفه ساده */}
+                                                {openCategory === cat.id && subcategories[cat.id] && subcategories[cat.id].length > 0 && (
+                                                    <ul className="pr-4 mt-1 space-y-1 text-sm text-gray-600">
+                                                        {subcategories[cat.id].map((subItem) => (
+                                                            <li
+                                                                key={subItem.id}
+                                                                className={`cursor-pointer p-2 rounded hover:bg-gray-100 flex justify-between items-center ${activeFilter?.type === 'subcategory' && activeFilter.id === subItem.id ? 'bg-blue-50 text-blue-600' : ''
+                                                                    }`}
+                                                                onClick={() => handleSubcategoryClick(subItem.id)}
+                                                            >
+                                                                <span>{subItem.name}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* فیلتر قیمت */}
                         <div className="mt-6">
                             <h3 className="text-lg font-semibold mb-3">محدوده قیمت</h3>
 
@@ -333,9 +393,12 @@ const Products = () => {
                                 <div>
                                     <label className="text-xs text-gray-600 block mb-1">از:</label>
                                     <input
-                                        type="number"
-                                        value={priceRange[0]}
-                                        onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                                        type="text"
+                                        value={formatNumber(priceRange[0])}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/[^\d]/g, ''); // فقط اعداد
+                                            setPriceRange([parseInt(value) || 0, priceRange[1]]);
+                                        }}
                                         placeholder="حداقل قیمت"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
@@ -344,9 +407,12 @@ const Products = () => {
                                 <div>
                                     <label className="text-xs text-gray-600 block mb-1">تا:</label>
                                     <input
-                                        type="number"
-                                        value={priceRange[1]}
-                                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 10000000])}
+                                        type="text"
+                                        value={formatNumber(priceRange[1])}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/[^\d]/g, ''); // فقط اعداد
+                                            setPriceRange([priceRange[0], parseInt(value) || 10000000]);
+                                        }}
                                         placeholder="حداکثر قیمت"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
@@ -368,12 +434,14 @@ const Products = () => {
 
                     <div className="flex items-center justify-between mb-6 flex-wrap gap-4 ">
                         <h1 className="text-2xl font-bold text-gray-800">
-                            {activeFilter ?
-                                `محصولات ${activeFilter.type === 'category' ?
-                                    categories.find(c => c.id === activeFilter.id)?.name :
-                                    subcategories[openCategory]?.find(s => s.id === activeFilter.id)?.name}` :
-                                'همه محصولات'}
+                            {getPageTitle()}
                         </h1>
+
+                        {searchQuery && (
+                            <p className="text-gray-600 text-sm">
+                                {getFilteredAndSortedProducts().length} محصول یافت شد
+                            </p>
+                        )}
 
                         <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
                             <label htmlFor="sort" className="text-sm font-medium text-gray-700">
@@ -404,13 +472,20 @@ const Products = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-700">محصولی یافت نشد</h3>
-                            <p className="text-gray-500 mt-1">با فیلترهای انتخابی هیچ محصولی پیدا نشد.</p>
+                            <h3 className="text-lg font-medium text-gray-700">
+                                {searchQuery ? 'هیچ محصولی یافت نشد' : 'محصولی یافت نشد'}
+                            </h3>
+                            <p className="text-gray-500 mt-1">
+                                {searchQuery 
+                                    ? `متاسفانه برای جستجوی "${searchQuery}" نتیجه‌ای یافت نشد`
+                                    : 'با فیلترهای انتخابی هیچ محصولی پیدا نشد.'
+                                }
+                            </p>
                             <button
                                 onClick={handleResetFilters}
                                 className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium"
                             >
-                                حذف فیلترها
+                                {searchQuery ? 'پاک کردن جستجو' : 'حذف فیلترها'}
                             </button>
                         </div>
                     ) : (

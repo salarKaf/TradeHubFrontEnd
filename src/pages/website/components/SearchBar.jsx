@@ -1,16 +1,17 @@
-
-// SearchBar.js
+// SearchBar.js - اصلاح شده
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const { slug } = useParams(); // دریافت slug از URL
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      navigate(`/shop-website?search=${encodeURIComponent(searchTerm)}`);
+      // هدایت به صفحه shop همان slug با پارامتر search
+      navigate(`/${slug}/shop?search=${encodeURIComponent(searchTerm)}`);
       setSearchTerm("");
     }
   };
