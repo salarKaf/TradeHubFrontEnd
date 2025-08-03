@@ -20,7 +20,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM : str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     OTP_EXPIRE_TIME: int = 3600
-    DATABASE_URL: str = "mongodb://root:nrpIGXLvSytodcIrtyxLE5V7@mongo:27017/my-app?authSource=admin"
+    # DATABASE_URL: str = "mongodb://root:nrpIGXLvSytodcIrtyxLE5V7@mongo:27017/my-app?authSource=admin"
+    DATABASE_URL: str =  "mongodb://mongo:27017/shopify" 
     FILE_STORAGE_PATH: str = "app/media"
     # IAM_URL: str = "https://tradehub-iam.liara.run"
     IAM_URL: str = "http://iam" 
