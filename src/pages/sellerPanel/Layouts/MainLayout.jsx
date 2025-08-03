@@ -1,3 +1,6 @@
+// Sidebar.jsx
+
+
 // MainLayout.jsx
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
@@ -41,7 +44,7 @@ const MainLayout = ({ children }) => {
       {/* Header */}
       <Header />
 
-      <div className="flex relative">
+      <div className="flex relative" style={{ height: 'calc(100vh - 80px)' }}>
         {/* Mobile Menu Button */}
         {isMobile && (
           <button
@@ -63,12 +66,22 @@ const MainLayout = ({ children }) => {
         {/* Sidebar */}
         <div
           className={`
-            fixed lg:static top-0 left-0 h-screen bg-[#EABF9F] z-40 transition-transform duration-300 ease-in-out
+            fixed lg:static top-0 left-0 bg-[#EABF9F] z-40 transition-transform duration-300 ease-in-out
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-            w-64
+            w-64 h-full
           `}
+          style={{ 
+            height: isMobile ? '100vh' : '100%',
+            top: isMobile ? '0' : 'auto'
+          }}
         >
-          <div className="pt-20 lg:pt-0 h-full">
+          <div 
+            className="h-full" 
+            style={{ 
+              paddingTop: isMobile ? '80px' : '0',
+              height: isMobile ? '100vh' : '100%'
+            }}
+          >
             <Sidebar />
           </div>
         </div>
@@ -76,12 +89,12 @@ const MainLayout = ({ children }) => {
         {/* Main Content */}
         <div
           className={`
-            flex-1 min-h-screen transition-all duration-300 ease-in-out
+            flex-1 transition-all duration-300 ease-in-out overflow-auto
             ${!isMobile && isSidebarOpen ? 'lg:ml-0' : ''}
             ${isMobile ? 'w-full' : ''}
           `}
         >
-          <div className="p-4 lg:p-6 bg-[#FAF3E0] min-h-full overflow-auto">
+          <div className="p-4 lg:p-6 bg-[#FAF3E0] min-h-full">
             {children}
           </div>
         </div>

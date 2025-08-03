@@ -88,7 +88,7 @@ const Header = ({ isSidebarOpen, toggleSidebar, isMobile }) => {
               <span className="hidden sm:inline opacity-60">|</span>
               <span className="text-xs lg:text-sm">
                 {getDaysRemaining(planData.expires_at) > 0
-                  ? `${getDaysRemaining(planData.expires_at)} روز`
+                  ? `${getDaysRemaining(planData.expires_at)} روز مانده`
                   : "منقضی"}
               </span>
             </>
