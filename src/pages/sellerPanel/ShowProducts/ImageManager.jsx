@@ -242,68 +242,67 @@ const ImageManager = ({
         <>
             <div className={`flex flex-col items-center space-y-4 w-full max-w-md mx-auto ${className}`}>
                 {/* تصویر اصلی */}
-                <div className="w-full aspect-square max-w-[420px] relative bg-gray-100 border border-gray-300 rounded-lg overflow-hidden">
-                    {images.length > 0 ? (
-                        <>
-                            <img
-                                src={images[currentImageIndex].url}
-                                alt={`تصویر ${currentImageIndex + 1}`}
-                                className="object-cover w-full h-full"
-                            />
+                <div className="w-full aspect-square max-w-[420px] md:max-w-[600px] relative bg-gray-100 border border-gray-300 rounded-lg overflow-hidden">                    {images.length > 0 ? (
+                    <>
+                        <img
+                            src={images[currentImageIndex].url}
+                            alt={`تصویر ${currentImageIndex + 1}`}
+                            className="object-cover w-full h-full"
+                        />
 
-                            {/* دکمه‌های ناوبری */}
-                            {images.length > 1 && (
+                        {/* دکمه‌های ناوبری */}
+                        {images.length > 1 && (
+                            <>
+                                <button
+                                    onClick={prevImage}
+                                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 z-10"
+                                >
+                                    <FaChevronLeft className="text-sm md:text-base" />
+                                </button>
+                                <button
+                                    onClick={nextImage}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 z-10"
+                                >
+                                    <FaChevronRight className="text-sm md:text-base" />
+                                </button>
+                            </>
+                        )}
+
+                        {/* دکمه تنظیم به عنوان اصلی */}
+                        <button
+                            onClick={setPrimaryImage}
+                            className={`absolute bottom-2 left-2 px-2 md:px-3 py-1 text-xs rounded-md transition-all ${currentImageIndex === primaryImageIndex
+                                ? 'bg-green-600 text-white'
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                }`}
+                        >
+                            {currentImageIndex === primaryImageIndex ? (
+                                <span className="flex items-center gap-1">
+                                    <FaCheck className="text-xs" />
+                                    <span className="hidden sm:inline">عکس اصلی</span>
+                                    <span className="sm:hidden">اصلی</span>
+                                </span>
+                            ) : (
                                 <>
-                                    <button
-                                        onClick={prevImage}
-                                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 z-10"
-                                    >
-                                        <FaChevronLeft className="text-sm md:text-base" />
-                                    </button>
-                                    <button
-                                        onClick={nextImage}
-                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 z-10"
-                                    >
-                                        <FaChevronRight className="text-sm md:text-base" />
-                                    </button>
+                                    <span className="hidden sm:inline">تنظیم اصلی</span>
+                                    <span className="sm:hidden">اصلی</span>
                                 </>
                             )}
+                        </button>
 
-                            {/* دکمه تنظیم به عنوان اصلی */}
-                            <button
-                                onClick={setPrimaryImage}
-                                className={`absolute bottom-2 left-2 px-2 md:px-3 py-1 text-xs rounded-md transition-all ${currentImageIndex === primaryImageIndex
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                                    }`}
-                            >
-                                {currentImageIndex === primaryImageIndex ? (
-                                    <span className="flex items-center gap-1">
-                                        <FaCheck className="text-xs" />
-                                        <span className="hidden sm:inline">عکس اصلی</span>
-                                        <span className="sm:hidden">اصلی</span>
-                                    </span>
-                                ) : (
-                                    <>
-                                        <span className="hidden sm:inline">تنظیم اصلی</span>
-                                        <span className="sm:hidden">اصلی</span>
-                                    </>
-                                )}
-                            </button>
-
-                            {/* دکمه تمام صفحه */}
-                            <button
-                                onClick={() => setIsFullscreen(true)}
-                                className="absolute bottom-2 right-2 bg-gray-700 bg-opacity-70 text-white p-1.5 md:p-2 rounded-md hover:bg-opacity-90"
-                            >
-                                <FaExpand className="text-xs md:text-sm" />
-                            </button>
-                        </>
-                    ) : (
-                        <div className="flex items-center justify-center w-full h-full text-gray-400">
-                            <span className="text-sm md:text-base text-center px-4">هیچ تصویری انتخاب نشده</span>
-                        </div>
-                    )}
+                        {/* دکمه تمام صفحه */}
+                        <button
+                            onClick={() => setIsFullscreen(true)}
+                            className="absolute bottom-2 right-2 bg-gray-700 bg-opacity-70 text-white p-1.5 md:p-2 rounded-md hover:bg-opacity-90"
+                        >
+                            <FaExpand className="text-xs md:text-sm" />
+                        </button>
+                    </>
+                ) : (
+                    <div className="flex items-center justify-center w-full h-full text-gray-400">
+                        <span className="text-sm md:text-base text-center px-4">هیچ تصویری انتخاب نشده</span>
+                    </div>
+                )}
                 </div>
 
                 {/* تصاویر کوچک */}
