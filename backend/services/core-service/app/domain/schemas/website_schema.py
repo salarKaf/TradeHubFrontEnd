@@ -15,8 +15,8 @@ class SocialLinksSchema(BaseModel):
     instagram: Optional[str]
 
 class PoilicySchema(BaseModel):
-    section: str
-    subsection: str
+    section: Optional[str]
+    subsection: Optional[str]
 
 class WebsiteCreateSchema(BaseModel):
     business_name: str
