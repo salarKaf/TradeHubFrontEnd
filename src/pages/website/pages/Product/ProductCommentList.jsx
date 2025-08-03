@@ -138,7 +138,7 @@ const CommentsSystem = () => {
 
 
     return (
-        <div className="max-w-6xl mx-auto p-6 min-h-screen font-sans bg-gray-50/30" dir="rtl">
+        <div className="max-w-6xl mx-auto p-6 min-h-screen font-Kahroba bg-gray-50/30" dir="rtl">
             {loading ? (
                 <div className="flex justify-center items-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -173,12 +173,12 @@ const CommentsSystem = () => {
                     </div>
 
                     {/* محتوای اصلی */}
-                    <div className="flex-1">
+                    <div className="flex-1 font-Kahroba">
                         {/* کنترل‌ها */}
                         <div className="bg-white rounded-2xl  p-6 mb-6">
                             <div className="flex items-center justify-between gap-4">
                                 {/* فیلترها */}
-                                <div dir='ltr' className="flex items-center gap-2 font-sans">
+                                <div dir='ltr' className="flex items-center gap-2 ">
                                     <button
                                         onClick={() => handleSort('بالاترین امتیاز')}
                                         className={`px-4 py-2 rounded-lg transition-colors ${sortBy === 'بالاترین امتیاز'

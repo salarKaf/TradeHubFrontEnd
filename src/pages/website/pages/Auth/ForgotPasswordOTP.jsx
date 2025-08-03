@@ -14,6 +14,9 @@ const ForgotPasswordOTP = () => {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const inputRefs = useRef([]);
   const [email] = useState(location.state?.email || '');
@@ -82,6 +85,7 @@ const ForgotPasswordOTP = () => {
   const handleSubmit = async () => {
     const otpCode = otp.join('');
     if (otpCode.length !== 6) {
+      setErrorMessage('لطفاً کد 6 رقمی را کامل وارد کنید');
       setShowErrorModal(true);
       return;
     }
@@ -95,7 +99,8 @@ const ForgotPasswordOTP = () => {
       });
     } catch (error) {
       console.error('OTP verification failed:', error);
-      alert(error.message || 'کد تایید نامعتبر است');
+      setErrorMessage(error.message || 'کد تایید نامعتبر است');
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -106,14 +111,17 @@ const ForgotPasswordOTP = () => {
 
     setResendLoading(true);
     try {
-      await resendOTPForgetPassword({ email, websiteId });
+      // اصلاح پارامترهای ارسالی
+      await resendOTPForgetPassword(email, websiteId);
       setTimer(120);
       setCanResend(false);
       setOtp(['', '', '', '', '', '']);
-      alert('کد جدید ارسال شد!');
+      setSuccessMessage('کد جدید ارسال شد!');
+      setShowSuccessModal(true);
     } catch (error) {
       console.error('Resend OTP failed:', error);
-      alert(error.message || 'خطا در ارسال مجدد کد');
+      setErrorMessage(error.message || 'خطا در ارسال مجدد کد');
+      setShowErrorModal(true);
     } finally {
       setResendLoading(false);
     }
@@ -124,6 +132,7 @@ const ForgotPasswordOTP = () => {
     if (canResend) {
       handleResendCode();
     } else if (otpCode.length !== 6) {
+      setErrorMessage('لطفاً کد 6 رقمی را کامل وارد کنید');
       setShowErrorModal(true);
     } else {
       handleSubmit();
@@ -134,29 +143,24 @@ const ForgotPasswordOTP = () => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative"
+      className="min-h-screen bg-cover bg-center relative px-4 sm:px-6 lg:px-8 font-Kahroba"
       style={{ backgroundImage: "url('/public/website/backHomoShop 1.png')" }}
     >
-      {/* Logo */}
-      <div className="absolute top-8 left-8 z-20 flex items-center gap-3 font-rubik">
-        <h1 className="text-lg font-bold text-black">فروشگاه ویترین</h1>
-        <img src="/public/website/Picsart_25-04-16_19-30-26-995 1.png" alt="logo" className="w-10 h-12" />
-      </div>
 
       {/* Main container */}
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 p-8 rounded-2xl shadow-2xl w-full max-w-lg font-rubik">
+      <div className="flex font-Kahroba justify-center items-center min-h-screen py-8">
+        <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg ">
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 via-white/10 to-transparent pointer-events-none"></div>
           <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-white/20 pointer-events-none"></div>
 
           <div className="relative z-10">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-black mb-2">تایید کد بازیابی</h1>
-              <p className="text-black/80 text-sm">کد 6 رقمی ارسال شده به ایمیل {email} را وارد کنید</p>
+            <div className="text-center mb-6 sm:mb-8">
+              <h1 className="text-lg sm:text-2xl font-bold text-black mb-2">تایید کد بازیابی</h1>
+              <p className="text-black/80 text-xs sm:text-sm">کد 6 رقمی ارسال شده به ایمیل {email} را وارد کنید</p>
             </div>
 
             {/* OTP fields */}
-            <div className="flex justify-center gap-3 mb-8" dir="ltr">
+            <div className="flex justify-center gap-2 sm:gap-3 mb-6 sm:mb-8" dir="ltr">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -168,15 +172,15 @@ const ForgotPasswordOTP = () => {
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={handlePaste}
                   ref={(el) => (inputRefs.current[index] = el)}
-                  className="w-12 h-12 text-center text-xl font-bold rounded-xl bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 border-black/60 text-black transition-all duration-300 ease-in-out focus:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-black/80"
+                  className="w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-bold rounded-xl bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm border-2 border-black/60 text-black transition-all duration-300 ease-in-out focus:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-black/80"
                 />
               ))}
             </div>
 
             {/* Timer */}
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center gap-2 text-black font-bold text-lg">
-                <Clock size={20} />
+            <div className="text-center mb-4 sm:mb-6">
+              <div className="flex items-center justify-center gap-2 text-black font-bold text-base sm:text-lg">
+                <Clock size={16} className="sm:w-5 sm:h-5" />
                 <span>{formatTime(timer)}</span>
               </div>
             </div>
@@ -185,7 +189,7 @@ const ForgotPasswordOTP = () => {
             <button
               type="button"
               onClick={handleMainButton}
-              className={`w-full py-4 font-bold rounded-3xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-2 ${
+              className={`w-full py-3 sm:py-4 font-bold rounded-3xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-2 text-sm sm:text-base ${
                 canResend
                   ? 'bg-gradient-to-r from-blue-500/80 to-blue-600/80 backdrop-blur-sm text-white border-blue-400/50 hover:from-blue-600/90 hover:to-blue-700/90'
                   : isCodeComplete
@@ -194,37 +198,64 @@ const ForgotPasswordOTP = () => {
               }`}
               disabled={loading || resendLoading}
             >
-              {canResend ? 'ارسال مجدد کد بازیابی' : 'تایید کد'}
+              {loading ? 'در حال تایید...' : resendLoading ? 'در حال ارسال...' : canResend ? 'ارسال مجدد کد بازیابی' : 'تایید کد'}
             </button>
 
             {/* Back button */}
-            <div className="text-center mt-6 pt-6 border-t border-white/20">
+            <div className="text-center mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/20">
               <button
                 onClick={() => navigate(`/${slug}/forgot-password`)}
-                className="bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm text-black px-6 py-3 rounded-3xl hover:from-gray-500/50 hover:via-gray-600/40 hover:to-gray-700/50 hover:text-black/90 transition-all duration-300 border border-black/20"
+                className="bg-gradient-to-r from-gray-400/40 via-gray-500/30 to-gray-600/40 backdrop-blur-sm text-black px-4 sm:px-6 py-2 sm:py-3 rounded-3xl hover:from-gray-500/50 hover:via-gray-600/40 hover:to-gray-700/50 hover:text-black/90 transition-all duration-300 border border-black/20 text-xs sm:text-sm"
               >
                 بازگشت به صفحه قبل
               </button>
             </div>
           </div>
+
+          {/* Additional decorative elements */}
+          <div className="absolute -top-2 -right-2 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl"></div>
+          <div className="absolute -bottom-2 -left-2 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-lg"></div>
         </div>
       </div>
 
-      {/* Error Modal */}
-      {showErrorModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-8 rounded-2xl shadow-2xl max-w-md mx-4">
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-white/5 to-transparent pointer-events-none"></div>
 
             <div className="relative z-10 text-center space-y-4">
-              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-red-500/80 to-red-600/80 backdrop-blur-sm rounded-full flex items-center justify-center border border-red-400/50">
-                <XCircle size={32} className="text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-gradient-to-br from-green-500/80 to-green-600/80 backdrop-blur-sm rounded-full flex items-center justify-center border border-green-400/50">
+                <CheckCircle size={24} className="sm:w-8 sm:h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-black">خطا!</h3>
-              <p className="text-black/80">لطفاً کد 6 رقمی را کامل وارد کنید</p>
+              <h3 className="text-lg sm:text-xl font-bold text-black">موفق!</h3>
+              <p className="text-black/80 text-sm sm:text-base">{successMessage}</p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="bg-gradient-to-r from-green-500/80 to-green-600/80 backdrop-blur-sm text-white font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-3xl hover:from-green-600/90 hover:to-green-700/90 transition-all duration-300 transform hover:scale-105 border border-green-400/50 text-sm sm:text-base"
+              >
+                متوجه شدم
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-white/5 to-transparent pointer-events-none"></div>
+
+            <div className="relative z-10 text-center space-y-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-gradient-to-r from-red-500/80 to-red-600/80 backdrop-blur-sm rounded-full flex items-center justify-center border border-red-400/50">
+                <XCircle size={24} className="sm:w-8 sm:h-8 text-white" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-black">خطا!</h3>
+              <p className="text-black/80 text-sm sm:text-base break-words">{errorMessage}</p>
               <button
                 onClick={() => setShowErrorModal(false)}
-                className="bg-gradient-to-r from-red-500/80 to-red-600/80 backdrop-blur-sm text-white font-bold px-6 py-3 rounded-3xl hover:from-red-600/90 hover:to-red-700/90 transition-all duration-300 transform hover:scale-105 border border-red-400/50"
+                className="bg-gradient-to-r from-red-500/80 to-red-600/80 backdrop-blur-sm text-white font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-3xl hover:from-red-600/90 hover:to-red-700/90 transition-all duration-300 transform hover:scale-105 border border-red-400/50 text-sm sm:text-base"
               >
                 متوجه شدم
               </button>

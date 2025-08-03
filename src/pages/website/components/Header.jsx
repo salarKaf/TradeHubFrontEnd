@@ -101,7 +101,7 @@ const Header = () => {
   }
 
   return (
-    <div className="relative w-full h-[calc(100vh-5rem)] font-rubik">
+    <div className="font-Kahroba relative w-full h-[calc(100vh-5rem)]">
       {/* بنر */}
       <img
         src={backgroundImage}

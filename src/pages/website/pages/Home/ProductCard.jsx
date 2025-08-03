@@ -220,7 +220,7 @@ const ProductCard = ({
   };
 
   return (
-    <div className="group relative font-rubik bg-white shadow-lg rounded-2xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-2xl hover:scale-105">
+    <div className="group relative font-Kahroba bg-white shadow-lg rounded-2xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-2xl hover:scale-105">
       {/* Hover Overlay for entire card */}
       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-2xl z-10">
         {/* Add to Cart Button - Center */}

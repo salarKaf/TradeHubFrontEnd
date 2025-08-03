@@ -77,7 +77,7 @@ const ProductSlider = () => {
   if (products.length === 0) return null;
 
   return (
-    <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden font-rubik">
+    <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden font-Kahroba">
       {/* Background */}
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"

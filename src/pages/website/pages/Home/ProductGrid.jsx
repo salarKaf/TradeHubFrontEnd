@@ -80,7 +80,7 @@ export default function ProductGrid() {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen px-4 py-12">
+      <div className="bg-gradient-to-br from-gray-50 font-Kahroba to-white min-h-screen px-4 py-12">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">جدیدترین محصولات</h2>
           <div className="w-24 h-1 bg-blue-500 mx-auto rounded-full"></div>
@@ -94,7 +94,7 @@ export default function ProductGrid() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen px-4 py-12">
+    <div className="bg-gradient-to-br from-gray-50 font-Kahroba to-white min-h-screen px-4 py-12">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">جدیدترین محصولات</h2>
         <div className="w-24 h-1 bg-blue-500 mx-auto rounded-full"></div>

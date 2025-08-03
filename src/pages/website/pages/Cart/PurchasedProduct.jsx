@@ -136,18 +136,18 @@ const PurchasedProduct = () => {
 
     if (loading) {
         return (
-            <div className="text-center py-10 text-gray-600">در حال بارگذاری محصول...</div>
+            <div className="text-center py-10 text-gray-600 font-Kahroba">در حال بارگذاری محصول...</div>
         );
     }
 
     if (!product) {
         return (
-            <div className="text-center py-10 text-red-500">محصولی یافت نشد</div>
+            <div className="text-center py-10 text-red-500 font-Kahroba">محصولی یافت نشد</div>
         );
     }
 
     return (
-        <div className='font-rubik'>
+        <div className='font-kahroba'>
             <div className="max-w-6xl mx-auto p-6 bg-white" dir="rtl">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     {/* تصاویر */}
@@ -199,7 +199,7 @@ const PurchasedProduct = () => {
                     </div>
 
                     {/* اطلاعات محصول */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 font-Kahroba">
                         <div className="flex items-center gap-2 text-green-500">
                             <CheckCircle className="w-6 h-6" />
                             <span className="text-xl font-semibold">خریداری شده</span>
@@ -266,7 +266,7 @@ const PurchasedProduct = () => {
 
                 {/* توضیحات خرید */}
                 <div id="introduction" className="mt-20">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between font-Kahroba items-center">
                         <div className="flex items-center gap-2">
                             <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r from-black via-gray-600 to-gray-800 rounded-full text-white">
                                 توضیحات پس از خرید

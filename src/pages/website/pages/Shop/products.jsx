@@ -251,7 +251,7 @@ const Products = () => {
     );
 
     return (
-        <div className="bg-white min-h-screen px-4 py-8 mb-64">
+        <div className="bg-white min-h-screen px-4 py-8 mb-64 font-Kahroba">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                 {/* Sidebar */}
                 <aside className="lg:col-span-1 pr-1">

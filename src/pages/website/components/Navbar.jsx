@@ -44,7 +44,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full h-20 z-50 bg-gradient-to-l from-white to-gray-100 shadow-md rounded-b-3xl flex items-center justify-between px-6">
+    <nav className="fixed font-Kahroba top-0 left-0 w-full h-20 z-50 bg-gradient-to-l from-white to-gray-100 shadow-md rounded-b-3xl flex items-center justify-between px-6">
       {/* منو موبایل - دکمه همبرگر */}
       <div className="lg:hidden">
         <button onClick={() => setMenuOpen(!menuOpen)} className="text-gray-700">
