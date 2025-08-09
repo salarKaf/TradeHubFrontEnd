@@ -11,7 +11,6 @@ const OrdersHeader = ({ isOpenTable, setIsOpenTable, title, logo }) => {
                 />
                 <h2 className="text-xl sm:text-2xl font-semibold">{title}</h2>
                 
-                {/* آیکون فلش برای باز و بسته کردن جدول */}
                 <div className="flex justify-between items-center mb-4 mt-5">
                     <button 
                         onClick={() => setIsOpenTable(!isOpenTable)}

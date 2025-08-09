@@ -1,4 +1,3 @@
-// ProductsHeader.js
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
@@ -9,7 +8,6 @@ const ProductsHeader = ({ isOpenTable, setIsOpenTable }) => {
     return (
         <div className="px-4 py-4">
             <div className="relative flex flex-col md:flex-row md:items-center mb-6 gap-3 font-modam">
-                {/* Title Section */}
                 <div className="flex items-center gap-3">
                     <img
                         className="w-9 h-9"
@@ -18,7 +16,6 @@ const ProductsHeader = ({ isOpenTable, setIsOpenTable }) => {
                     />
                     <h2 className="text-2xl font-semibold">محصولات</h2>
                     
-                    {/* Toggle Button */}
                     <button
                         onClick={() => setIsOpenTable(!isOpenTable)}
                         className="text-xl text-[#4D4D4D] hover:text-black transition-colors"
@@ -31,7 +28,6 @@ const ProductsHeader = ({ isOpenTable, setIsOpenTable }) => {
                     </button>
                 </div>
 
-                {/* Add Product Button */}
                 <Link
                     to={`/seller/products/${websiteId}/add`}
                     className="md:mr-auto md:pr-8 bg-[#1e202d] font-modam font-medium text-sm md:text-lg w-full md:w-64 text-white py-3 md:py-4 rounded-full shadow-md text-center md:text-right  hover:bg-[#2a2d3f] transition-colors"
@@ -39,7 +35,6 @@ const ProductsHeader = ({ isOpenTable, setIsOpenTable }) => {
                     + افزودن محصــول جدید
                 </Link>
                 
-                {/* Bottom Line */}
                 <div className="absolute bottom-0 left-8 right-0 h-[0.8px] bg-black bg-opacity-20 shadow-[0_2px_6px_rgba(0,0,0,0.3)]"></div>
             </div>
         </div>

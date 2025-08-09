@@ -25,10 +25,8 @@ const Products = () => {
     const [activeFilter, setActiveFilter] = useState(null);
     const productsPerPage = 9;
 
-    // دریافت پارامتر جستجو از URL
     const searchQuery = searchParams.get('search') || '';
 
-    // Fetch website ID and categories
     useEffect(() => {
         const fetchWebsiteIdAndCategories = async () => {
             if (!slug) return;
@@ -93,7 +91,6 @@ const Products = () => {
         fetchWebsiteIdAndCategories();
     }, [slug]);
 
-    // ریست کردن فیلترها وقتی جستجو تغییر می‌کنه
     useEffect(() => {
         if (searchQuery) {
             setActiveFilter({ type: 'search', query: searchQuery });
@@ -121,7 +118,6 @@ const Products = () => {
                 response = [];
             }
 
-            // فیلتر کردن محصولات موجود
             const availableItems = response.filter(item => item.is_available === true);
 
             const formatted = availableItems.map((item, index) => ({
@@ -136,7 +132,7 @@ const Products = () => {
                 stock: item.stock || 0,
                 description: item.description || '',
                 category: item.category || '',
-                salesCount: parseInt(item.sales_count) || 0 // ✅ اضافه کردن sales_count
+                salesCount: parseInt(item.sales_count) || 0 
             }));
 
             setProducts(formatted);
@@ -147,7 +143,6 @@ const Products = () => {
         }
     };
 
-    // Fetch subcategories when category is toggled
     useEffect(() => {
         const fetchSubcategories = async () => {
             if (openCategory) {
@@ -188,11 +183,9 @@ const Products = () => {
         }
     };
 
-    // فیلتر قیمت، جستجو و مرتب‌سازی
     const getFilteredAndSortedProducts = () => {
         let filtered = [...products];
 
-        // فیلتر جستجو
         if (searchQuery.trim()) {
             filtered = filtered.filter(product =>
                 product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -201,13 +194,11 @@ const Products = () => {
             );
         }
 
-        // فیلتر قیمت
         filtered = filtered.filter((product) => {
             const productPrice = product.discountedPrice || product.price;
             return productPrice >= priceRange[0] && productPrice <= priceRange[1];
         });
 
-        // مرتب‌سازی
         switch (sortOption) {
             case "ارزان‌ترین":
                 filtered.sort((a, b) => {
@@ -230,7 +221,6 @@ const Products = () => {
                 filtered.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)); // ✅ استفاده از salesCount
                 break;
             default:
-                // جدیدترین - ترتیب اصلی
                 break;
         }
 
@@ -263,7 +253,6 @@ const Products = () => {
 
     const handleResetFilters = () => {
         if (searchQuery) {
-            // اگر در حالت جستجو هستیم، به صفحه shop بدون پارامتر برمی‌گردیم
             navigate(`/${slug}/shop`);
         } else {
             loadProducts(websiteId);
@@ -272,19 +261,16 @@ const Products = () => {
         setSortOption("جدیدترین");
     };
 
-    // فرمت نمایش قیمت با جداکننده
     const formatPrice = (price) => {
         if (!price) return "0 ریال";
-        return `${price.toLocaleString('fa-IR')} ریال`; // ✅ جداکننده سه‌تایی
+        return `${price.toLocaleString('fa-IR')} ریال`; 
     };
 
-    // فرمت نمایش اعداد برای input (بدون ریال)
     const formatNumber = (num) => {
         if (!num) return "";
         return num.toLocaleString('fa-IR');
     };
 
-    // تعیین عنوان صفحه
     const getPageTitle = () => {
         if (searchQuery) {
             return `نتایج جستجو برای: "${searchQuery}"`;
@@ -310,7 +296,6 @@ const Products = () => {
     return (
         <div className="bg-white min-h-screen px-4 py-8 mb-64 font-Kahroba">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                {/* Sidebar */}
                 <aside className="lg:col-span-1 pr-1">
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
                         <h2 className="text-xl font-bold mb-6 flex items-center">
@@ -329,7 +314,6 @@ const Products = () => {
                             </div>
                         )}
 
-                        {/* نمایش دسته‌بندی‌ها فقط وقتی که در حالت جستجو نیستیم */}
                         {!searchQuery && (
                             <div className="mb-6">
                                 <h3 className="text-lg font-semibold mb-4">دسته‌بندی‌ها</h3>
@@ -385,7 +369,6 @@ const Products = () => {
                             </div>
                         )}
 
-                        {/* فیلتر قیمت */}
                         <div className="mt-6">
                             <h3 className="text-lg font-semibold mb-3">محدوده قیمت</h3>
 
@@ -428,7 +411,6 @@ const Products = () => {
                     </div>
                 </aside>
 
-                {/* Product Grid */}
                 <main className="lg:col-span-3">
                     {error && <div className="mb-6">{error}</div>}
 
@@ -503,7 +485,6 @@ const Products = () => {
                                 ))}
                             </div>
 
-                            {/* Pagination */}
                             {totalPages > 1 && (
                                 <div className="flex justify-center mt-8 gap-1">
                                     <button

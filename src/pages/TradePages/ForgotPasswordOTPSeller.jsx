@@ -7,7 +7,7 @@ export default function ForgotPasswordOTPSeller() {
     const navigate = useNavigate();
     
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const [timer, setTimer] = useState(120); // 2 minutes
+    const [timer, setTimer] = useState(120);
     const [canResend, setCanResend] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -261,7 +261,6 @@ export default function ForgotPasswordOTPSeller() {
                 className="absolute bottom-6 left-6 w-20 h-auto z-10"
             />
 
-            {/* Error Modal */}
             {showErrorModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
                     <div className="bg-[#1E212D] rounded-2xl p-8 max-w-md mx-4 border border-[#EABF9F] shadow-2xl">

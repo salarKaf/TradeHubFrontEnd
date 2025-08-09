@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { FaQuestionCircle, FaSortAmountDown, FaUser, FaReply } from "react-icons/fa";
-import { getItemQuestions, answerQuestion } from '../../../API/qsn'; // مسیر API تو
+import { getItemQuestions, answerQuestion } from '../../../API/qsn'; 
 
 const ProductQuestions = ({ productId }) => {
     const [questions, setQuestions] = useState([]);
-    const [sortBy, setSortBy] = useState('newest'); // 'newest' or 'mostAnswered'
+    const [sortBy, setSortBy] = useState('newest'); 
     const [activeAnswerForm, setActiveAnswerForm] = useState(null);
     const [newAnswer, setNewAnswer] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // بارگذاری سوالات
     useEffect(() => {
         const loadQuestions = async () => {
             try {
                 setLoading(true);
                 const questionsData = await getItemQuestions(productId);
                 
-                // تبدیل format API به format کامپوننت
                 const formattedQuestions = questionsData.map(q => ({
                     id: q.question_id,
                     text: q.question_text,
@@ -42,12 +40,10 @@ const ProductQuestions = ({ productId }) => {
         }
     }, [productId]);
 
-    // مرتب سازی پرسش‌ها
     const sortedQuestions = [...questions].sort((a, b) => {
         if (sortBy === 'newest') {
             return new Date(b.createdAt) - new Date(a.createdAt);
         } else if (sortBy === 'mostAnswered') {
-            // اول پاسخ داده شده‌ها، بعد پاسخ داده نشده‌ها
             if (a.hasAnswer && !b.hasAnswer) return -1;
             if (!a.hasAnswer && b.hasAnswer) return 1;
             return new Date(b.createdAt) - new Date(a.createdAt);
@@ -55,14 +51,12 @@ const ProductQuestions = ({ productId }) => {
         return 0;
     });
 
-    // ارسال پاسخ
     const handleSubmitAnswer = async (questionId) => {
         if (!newAnswer.trim()) return;
 
         try {
             const updatedQuestion = await answerQuestion(questionId, newAnswer);
             
-            // آپدیت کردن state محلی
             setQuestions(prevQuestions =>
                 prevQuestions.map(q =>
                     q.id === questionId
@@ -84,7 +78,6 @@ const ProductQuestions = ({ productId }) => {
         }
     };
 
-    // فرمت کردن تاریخ
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('fa-IR', {
             year: 'numeric',
@@ -136,7 +129,6 @@ const ProductQuestions = ({ productId }) => {
                         {`${questions.length} پرسش درباره‌ی این محصول وجود دارد.`}
                     </p>
 
-                    {/* بخش مرتب سازی */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 pb-4 border-b border-gray-200">
                         <span className="text-xs md:text-sm font-medium text-gray-700 flex items-center gap-2">
                             <FaSortAmountDown className="text-sm" />
@@ -166,10 +158,8 @@ const ProductQuestions = ({ productId }) => {
                         </div>
                     </div>
 
-                    {/* پرسش‌ها */}
                     {sortedQuestions.map((question) => (
                         <div key={question.id} className="border-b border-gray-300 pb-4 md:pb-6 last:border-b-0">
-                            {/* متن پرسش */}
                             <div className="flex items-start gap-2 md:gap-3 mb-4">
                                 <FaQuestionCircle className="text-blue-600 text-base md:text-lg mt-1 flex-shrink-0" />
                                 <div className="flex-1">
@@ -199,7 +189,6 @@ const ProductQuestions = ({ productId }) => {
                                 </div>
                             </div>
 
-                            {/* پاسخ موجود */}
                             {question.hasAnswer && (
                                 <div className="pr-4 md:pr-8 mb-4">
                                     <div className="bg-green-50 rounded-lg p-3 md:p-4 border border-green-100">
@@ -223,7 +212,6 @@ const ProductQuestions = ({ productId }) => {
                                 </div>
                             )}
 
-                            {/* فرم پاسخ/ویرایش پاسخ */}
                             <div className="pr-4 md:pr-8">
                                 {activeAnswerForm !== question.id ? (
                                     <button

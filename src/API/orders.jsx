@@ -18,10 +18,8 @@ export const getLatestOrders = async (websiteId) => {
     return [];
   }
 };
-// API functions for orders and payment
-// Add these to your API folder
 
-// orders.js
+
 
 export const createOrder = async (websiteId, token) => {
   try {
@@ -66,7 +64,7 @@ export const getMyOrders = async () => {
 
 
 
-import { getProductById } from './Items'; // مسیر صحیح به API محصول
+import { getProductById } from './Items'; 
 
 export const getOrderWithProduct = async (orderId) => {
   const websiteId = localStorage.getItem('current_store_website_id');
@@ -84,7 +82,7 @@ export const getOrderWithProduct = async (orderId) => {
     throw new Error('آیتمی در سفارش یافت نشد');
   }
 
-  const orderItem = order.order_items[0]; // اگر همیشه فقط یک آیتم داریم
+  const orderItem = order.order_items[0]; 
 
   const product = await getProductById(orderItem.item_id);
 
@@ -117,8 +115,6 @@ const getAuthHeaders = (token) => ({
   Authorization: `Bearer ${token}`,
 });
 
-// 📌 دریافت فروش کل (بدون محدودیت پلن)
-// API/orders.js
 export const getTotalSalesCount = async (websiteId, token) => {
   const response = await fetch(`${coreBaseURL}/websites/sales/total-count/${websiteId}`, {
     headers: {
@@ -133,7 +129,6 @@ export const getTotalSalesCount = async (websiteId, token) => {
 
   const data = await response.json();
 
-  // اگر فقط count برگشت، دستی مقدار amount رو 0 بذار
   return {
     total_sales_count: data.total_sales_count ?? 0,
     total_sales_amount: data.total_sales_amount ?? 0
@@ -141,7 +136,6 @@ export const getTotalSalesCount = async (websiteId, token) => {
 };
 
 
-// 📌 دریافت خلاصه فروش (برای daily/monthly/yearly)
 export const getSalesSummary = async (websiteId, token, mode) => {
   const res = await fetch(`${coreBaseURL}/websites/sales/summary/${websiteId}?mode=${mode}`, {
     headers: getAuthHeaders(token),
@@ -149,7 +143,7 @@ export const getSalesSummary = async (websiteId, token, mode) => {
 
   if (!res.ok) throw new Error(`خطا در دریافت فروش ${mode}`);
 
-  return await res.json(); // { count: ..., revenue: ... }
+  return await res.json(); 
 };
 
 
@@ -170,7 +164,7 @@ export const getOrdersByWebsite = async (websiteId, token) => {
     throw new Error('خطا در دریافت سفارش‌ها');
   }
 
-  return await response.json(); // آرایه‌ای از سفارش‌ها
+  return await response.json(); 
 };
 
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "/src/API/auth.jsx";
-import { getMyWebsite, getActivePlan, getStoreSlug } from "/src/API/website"; 
+import { getMyWebsite, getActivePlan, getStoreSlug } from "/src/API/website";
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -36,35 +36,38 @@ export default function LoginForm() {
 
 
             try {
-                console.log(websiteId);
+                const activePlan = await getActivePlan(websiteId);
+                console.log("✅ activePlan", activePlan);
+
+                const planName = activePlan?.plan?.name?.toLowerCase() || "";
+                const isValidPlan =
+                    activePlan?.is_active === true &&
+                    ["basic", "pro"].includes(planName);
+
+                if (!isValidPlan) {
+                    navigate(`/PricingPlans/${websiteId}`);
+                    return;
+                }
+            } catch (planError) {
+                navigate(`/PricingPlans/${websiteId}`);
+                return;
+            }
+
+            try {
                 const slug = await getStoreSlug(websiteId);
-                console.log('Slug from API:', slug);
 
                 if (!slug || slug.trim() === '' || slug.toLowerCase() === 'store') {
                     navigate(`/Slug/${websiteId}`);
                 } else {
                     navigate(`/HomeSeller/${websiteId}`);
                 }
-                return; 
             } catch (slugError) {
-                console.error('❌ Error checking slug:', slugError);
                 navigate(`/Slug/${websiteId}`);
-
             }
 
-            try {
-                const activePlan = await getActivePlan(websiteId);
 
-                if (activePlan?.plan?.name === "Basic" || activePlan?.plan?.name === "Pro") {
-                    navigate(`/HomeSeller/${websiteId}`);
-                } else {
-                    navigate(`/PricingPlans/${websiteId}`);
-                }
 
-            } catch (planError) {
-                console.error('❌ Error checking active plan:', planError);
-                navigate(`/PricingPlans/${websiteId}`);
-            }
+
 
         } catch (error) {
             const detail = error.response?.data?.detail;
@@ -78,7 +81,7 @@ export default function LoginForm() {
                 setErrorMsg(detail || "خطا در ورود. لطفاً اطلاعات را بررسی کنید.");
             }
         } finally {
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     };
 
@@ -143,7 +146,6 @@ export default function LoginForm() {
                         </p>
                     </div>
 
-                    {/* 🔴 نمایش خطا */}
                     {errorMsg && (
                         <div className="bg-red-100 border border-red-400 text-red-800 text-xs md:text-sm rounded px-3 md:px-4 py-2 font-rubik">
                             {errorMsg}
@@ -241,7 +243,6 @@ export default function LoginForm() {
                 </div>
             </div>
 
-            {/* Cart icon - responsive */}
             <img
                 src="/TradePageimages/icon-cart-shop.png"
                 alt="logo"

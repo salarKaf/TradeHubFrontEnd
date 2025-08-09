@@ -90,7 +90,6 @@ export default function ForgotPasswordSeller() {
                         </p>
                     </div>
 
-                    {/* نمایش خطا */}
                     {errorMsg && (
                         <div className="bg-red-100 border border-red-400 text-red-800 text-sm rounded px-4 py-2 font-rubik">
                             {errorMsg}

@@ -55,10 +55,8 @@ const SignUp = () => {
         const result = await registerBuyer(websiteId, name, email, password, confirmPassword);
         console.log("Registration successful:", result);
 
-        // نمایش مودال موفقیت
         setShowSuccessModal(true);
         
-        // بعد از 2 ثانیه خودکار انتقال
         setTimeout(() => {
           navigate(`/${slug}/otp-verification`, {
             state: {
@@ -86,10 +84,9 @@ const SignUp = () => {
       <div
         className="min-h-screen bg-cover bg-center relative px-4 sm:px-6 lg:px-8"
         style={{
-          backgroundImage: "url('/public/website/backHomoShop 1.png')",
+          backgroundImage: "url('/website/backHomoShop 1.png')",
         }}
       >
-        {/* Back to Shop Button */}
         <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
           <button
             onClick={handleBackToShop}
@@ -100,21 +97,16 @@ const SignUp = () => {
           </button>
         </div>
 
-        {/* Form container */}
         <div className="flex justify-center items-center min-h-screen py-8">
-          {/* Glassmorphism container */}
           <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md font-Kahroba">
-            {/* Enhanced inner glow effect */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 via-white/10 to-transparent pointer-events-none"></div>
             <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-white/20 pointer-events-none"></div>
 
             <div className="relative z-10">
-              {/* Header */}
               <div className="text-center mb-4 sm:mb-6">
                 <p className="text-black text-sm sm:text-base leading-relaxed">جهت ثبت نام در فروشگاه فرم زیر را پر کنید</p>
               </div>
 
-              {/* Error message */}
               {errors.general && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded mb-4 text-sm">
                   {errors.general}
@@ -122,7 +114,6 @@ const SignUp = () => {
               )}
 
               <div className="space-y-4 sm:space-y-6">
-                {/* Name field */}
                 <div>
                   <label className="block text-black text-xs sm:text-sm mb-2">نام خود را وارد کنید</label>
                   <input
@@ -135,7 +126,6 @@ const SignUp = () => {
                   {errors.name && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.name}</p>}
                 </div>
 
-                {/* Email field */}
                 <div>
                   <label className="block text-black text-xs sm:text-sm mb-2">ایمیل خود را وارد کنید</label>
                   <input
@@ -148,7 +138,6 @@ const SignUp = () => {
                   {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email}</p>}
                 </div>
 
-                {/* Password field */}
                 <div className="relative">
                   <label className="block text-black text-xs sm:text-sm mb-2">رمز عبور</label>
                   <input
@@ -173,7 +162,6 @@ const SignUp = () => {
                   {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.password}</p>}
                 </div>
 
-                {/* Confirm Password field */}
                 <div className="relative">
                   <label className="block text-black text-xs sm:text-sm mb-2">تکرار رمز عبور</label>
                   <input
@@ -199,7 +187,6 @@ const SignUp = () => {
                 </div>
               </div>
 
-              {/* Submit button */}
               <button
                 onClick={handleSubmit}
                 disabled={loading}
@@ -208,7 +195,6 @@ const SignUp = () => {
                 {loading ? 'در حال ثبت نام...' : 'ثبت نام'}
               </button>
 
-              {/* Login link */}
               <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-black/80">
                 <span>آیا از قبل حساب دارید؟ </span>
                 <Link
@@ -220,36 +206,29 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/* Decorative elements */}
             <div className="absolute -top-2 -right-2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl"></div>
             <div className="absolute -bottom-2 -left-2 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-lg"></div>
           </div>
         </div>
       </div>
 
-      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
           
-          {/* Modal */}
           <div className="relative bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-sm w-full mx-4 transform transition-all duration-300 scale-100">
-            {/* Success Icon */}
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
               </div>
             </div>
             
-            {/* Content */}
             <div className="text-center">
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">ثبت نام موفقیت‌آمیز!</h3>
               <p className="text-sm sm:text-base text-gray-600 mb-4">
                 کد تایید به ایمیل شما ارسال شد. در حال انتقال به صفحه تایید...
               </p>
               
-              {/* Progress indicator */}
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div className="bg-green-600 h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
               </div>

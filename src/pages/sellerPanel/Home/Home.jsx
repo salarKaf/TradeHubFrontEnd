@@ -1,4 +1,3 @@
-// Home.jsx - نحوه استفاده جدید
 import React from 'react';
 import HomeContent from './HomeContent';
 import MainLayout from '../Layouts/MainLayout';

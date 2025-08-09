@@ -31,7 +31,6 @@ const PurchasedProduct = () => {
 
                 const data = await getOrderWithProduct(orderId);
 
-                // اگر سفارش کنسل شده بود، کاربر رو بفرست به صفحه محصول
                 if (data?.order?.status === "Canceled") {
                     const slug = window.location.pathname.split('/')[1];
                     window.location.href = `/${slug}/product/${data.product.item_id}`;
@@ -41,11 +40,9 @@ const PurchasedProduct = () => {
                 setProduct(data.product);
                 setPriceAtPurchase(data.priceAtPurchase);
 
-                // گرفتن اطلاعات کامل محصول برای تعداد خریدار
                 const fullProductData = await getProductById(data.product.item_id);
                 setBuyers(fullProductData?.sales_count || 0);
 
-                // گرفتن امتیاز
                 try {
                     const ratingData = await getItemRating(data.product.item_id);
                     setRating(ratingData?.rating || 0);
@@ -53,12 +50,11 @@ const PurchasedProduct = () => {
                     console.warn("⚠️ خطا در دریافت امتیاز:", ratingErr);
                 }
 
-                // گرفتن تصاویر محصول
                 try {
                     const images = await getItemImages(data.product.item_id);
 
                     if (!images || images.length === 0) {
-                        setProductImages(['/public/website/Image(1).png']);
+                        setProductImages(['/website/Image(1).png']);
                     } else {
                         const imageUrls = await Promise.all(
                             images.map(async (img) => {
@@ -66,7 +62,7 @@ const PurchasedProduct = () => {
                                     const url = await getItemImageById(img.image_id);
                                     return { url, isMain: img.is_main };
                                 } catch {
-                                    return { url: '/public/website/Image(1).png', isMain: false };
+                                    return { url: '/website/Image(1).png', isMain: false };
                                 }
                             })
                         );
@@ -75,12 +71,12 @@ const PurchasedProduct = () => {
                         setProductImages(sorted.map(img => img.url));
                     }
                 } catch (imgErr) {
-                    console.warn("⚠️ خطا در گرفتن تصاویر محصول:", imgErr);
+                    console.warn("خطا در گرفتن تصاویر محصول:", imgErr);
                     setProductImages(['/website/default-product.png']);
                 }
 
             } catch (err) {
-                console.error('❌ خطا در دریافت اطلاعات سفارش:', err);
+                console.error(' خطا در دریافت اطلاعات سفارش:', err);
             } finally {
                 setLoading(false);
             }
@@ -150,7 +146,6 @@ const PurchasedProduct = () => {
         <div className='font-kahroba'>
             <div className="max-w-6xl mx-auto p-6 bg-white" dir="rtl">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    {/* تصاویر */}
                     <div className="space-y-4">
                         <div className="relative bg-gray-100 rounded-lg overflow-hidden">
                             <img
@@ -191,14 +186,13 @@ const PurchasedProduct = () => {
                                         src={image}
                                         alt={`تصویر ${index + 1}`}
                                         className="w-full h-full object-cover"
-                                        onError={(e) => { e.target.src = '/public/website/Image(1).png'; }}
+                                        onError={(e) => { e.target.src = '/website/Image(1).png'; }}
                                     />
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* اطلاعات محصول */}
                     <div className="space-y-6 font-Kahroba">
                         <div className="flex items-center gap-2 text-green-500">
                             <CheckCircle className="w-6 h-6" />
@@ -264,7 +258,6 @@ const PurchasedProduct = () => {
                     </div>
                 </div>
 
-                {/* توضیحات خرید */}
                 <div id="introduction" className="mt-20">
                     <div className="flex justify-between font-Kahroba items-center">
                         <div className="flex items-center gap-2">

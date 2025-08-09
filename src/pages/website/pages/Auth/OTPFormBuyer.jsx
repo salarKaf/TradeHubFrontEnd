@@ -12,7 +12,6 @@ const OTPForm = () => {
   const [showResendModal, setShowResendModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Timer effect
   useEffect(() => {
     if (timer > 0) {
       const countdown = setTimeout(() => {
@@ -28,11 +27,9 @@ const OTPForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // دریافت ایمیل و websiteId از state
   const [email, setEmail] = useState(location.state?.email || '');
   const [websiteId, setWebsiteId] = useState(location.state?.websiteId || '');
 
-  // Format timer to MM:SS
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -45,7 +42,6 @@ const OTPForm = () => {
       newOtp[index] = value;
       setOtp(newOtp);
 
-      // Auto focus next input (left to right)
       if (value && index < 5) {
         const nextInput = document.getElementById(`otp-${index + 1}`);
         if (nextInput) nextInput.focus();
@@ -57,11 +53,9 @@ const OTPForm = () => {
     if (e.key === 'Backspace') {
       const newOtp = [...otp];
       if (otp[index]) {
-        // Clear current input
         newOtp[index] = '';
         setOtp(newOtp);
       } else if (index > 0) {
-        // Move to previous input and clear it
         newOtp[index - 1] = '';
         setOtp(newOtp);
         const prevInput = document.getElementById(`otp-${index - 1}`);
@@ -82,7 +76,6 @@ const OTPForm = () => {
       }
       setOtp(newOtp);
 
-      // Focus the next empty input or the last one
       const nextIndex = Math.min(digits.length, 5);
       const nextInput = document.getElementById(`otp-${nextIndex}`);
       if (nextInput) nextInput.focus();
@@ -147,20 +140,16 @@ const OTPForm = () => {
     <div
       className="min-h-screen bg-cover bg-center relative px-4 sm:px-6 lg:px-8"
       style={{
-        backgroundImage: "url('/public/website/backHomoShop 1.png')",
+        backgroundImage: "url('/website/backHomoShop 1.png')",
       }}
     >
 
-      {/* Form container */}
       <div className="flex justify-center items-center min-h-screen py-8">
-        {/* Glassmorphism container */}
         <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg font-rubik">
-          {/* Enhanced inner glow effect */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 via-white/10 to-transparent pointer-events-none"></div>
           <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-white/20 pointer-events-none"></div>
 
           <div className="relative z-10">
-            {/* Header */}
             <div className="text-center mb-6 sm:mb-8">
               <h1 className="text-xl sm:text-2xl font-bold text-black mb-2">تایید کد امنیتی</h1>
               <p className="text-black/80 text-xs sm:text-sm px-2">
@@ -168,7 +157,6 @@ const OTPForm = () => {
               </p>
             </div>
 
-            {/* OTP Input Fields */}
             <div className="flex justify-center gap-2 sm:gap-3 mb-6 sm:mb-8" dir="ltr">
               {otp.map((digit, index) => (
                 <input
@@ -187,7 +175,6 @@ const OTPForm = () => {
               ))}
             </div>
 
-            {/* Timer */}
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 text-black font-bold text-base sm:text-lg">
                 <Clock size={18} className="sm:w-5 sm:h-5" />
@@ -195,7 +182,6 @@ const OTPForm = () => {
               </div>
             </div>
 
-            {/* Main Action Button */}
             <button
               type="button"
               onClick={handleMainButton}
@@ -209,7 +195,6 @@ const OTPForm = () => {
               {canResend ? 'ارسال مجدد کد تایید' : 'تایید کد'}
             </button>
 
-            {/* Back to Login */}
             <div className="text-center mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/20">
               <button
                 onClick={() => navigate(`/${slug}/home`)}
@@ -221,13 +206,11 @@ const OTPForm = () => {
             </div>
           </div>
 
-          {/* Additional decorative elements */}
           <div className="absolute -top-2 -right-2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl"></div>
           <div className="absolute -bottom-2 -left-2 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-lg"></div>
         </div>
       </div>
 
-      {/* Error Modal */}
       {showErrorModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">
@@ -250,7 +233,6 @@ const OTPForm = () => {
         </div>
       )}
 
-      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">
@@ -267,7 +249,6 @@ const OTPForm = () => {
         </div>
       )}
 
-      {/* Resend Success Modal */}
       {showResendModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">

@@ -1,20 +1,20 @@
-// src/API/media.test.js
+
 import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest'
 import axios from 'axios'
 import { getItemImages, getItemImageById } from './Items'
 import { uploadLogo } from './website'
 
-// Mock axios
+
 vi.mock('axios')
 const mockedAxios = vi.mocked(axios)
 
-// Mock the API base URLs
+
 vi.mock('./api', () => ({
   coreBaseURL: 'http://core.localhost/api/v1',
   mediaBaseURL: 'http://media.localhost/api/v1'
 }))
 
-// Mock localStorage
+
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -23,7 +23,7 @@ const localStorageMock = {
 }
 global.localStorage = localStorageMock
 
-// Mock URL.createObjectURL
+
 global.URL = {
   createObjectURL: vi.fn()
 }
@@ -38,7 +38,7 @@ describe('Media Service Tests', () => {
     vi.restoreAllMocks()
   })
 
-  // Test getItemImages - GET
+
   describe('getItemImages', () => {
     test('should successfully get item images list', async () => {
       const itemId = '12345'
@@ -95,7 +95,7 @@ describe('Media Service Tests', () => {
       const itemId = '12345'
       localStorageMock.getItem.mockReturnValue(null)
 
-      // حتی با token = null، باید یک response mock کنیم
+
       const mockResponse = { data: [] }
       mockedAxios.get.mockResolvedValueOnce(mockResponse)
 
@@ -113,7 +113,7 @@ describe('Media Service Tests', () => {
     })
   })
 
-  // Test getItemImageById - GET  
+
   describe('getItemImageById', () => {
     test('should successfully get image blob and create object URL', async () => {
       const imageId = 'img123'
@@ -168,7 +168,7 @@ describe('Media Service Tests', () => {
     })
   })
 
-  // Test uploadLogo - PUT/POST
+
   describe('uploadLogo', () => {
     test('should successfully upload logo', async () => {
       const websiteId = 'website123'
@@ -184,12 +184,12 @@ describe('Media Service Tests', () => {
 
       mockedAxios.put.mockResolvedValueOnce(mockResponse)
 
-      // تابع uploadLogo خودش FormData می‌سازه، پس فقط file رو پاس می‌دیم
+
       const result = await uploadLogo(websiteId, mockFile)
 
       expect(localStorageMock.getItem).toHaveBeenCalledWith('token')
       
-      // بررسی تماس‌ها به صورت جداگانه
+
       expect(mockedAxios.put).toHaveBeenCalledTimes(1)
       
       const [url, sentFormData, config] = mockedAxios.put.mock.calls[0]

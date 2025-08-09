@@ -1,7 +1,6 @@
 import axios from "axios";
 import { coreBaseURL, mediaBaseURL } from './api';
 
-// ساخت فروشگاه با فیلدهای کامل اما خالی
 export const createWebsite = async (business_name) => {
   const token = localStorage.getItem("token");
 
@@ -33,13 +32,11 @@ export const createWebsite = async (business_name) => {
     }
   );
 
-  // 🔍 لاگ خروجی واقعی سرور
   console.log("✅ پاسخ دریافتی از سرور:", response.data);
 
   return response.data;
 };
 
-// api/slugApi.js
 
 export const getWebsiteIdBySlug = async (slug) => {
   try {
@@ -67,7 +64,6 @@ export const getWebsiteIdBySlug = async (slug) => {
   }
 };
 
-// دریافت فروشگاه با ID (بدون توکن)
 export const getWebsiteById = async (websiteId) => {
   try {
     const response = await fetch(`${coreBaseURL}/websites/get_website/${websiteId}`, {
@@ -88,24 +84,7 @@ export const getWebsiteById = async (websiteId) => {
     throw error;
   }
 };
-// دریافت فروشگاه با ID
-// export const getWebsiteById = async (websiteId) => {
-//     const token = localStorage.getItem("token");
 
-//     const response = await axios.get(
-//         `${coreBaseURL}/websites/get_website/${websiteId}`,
-//         {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//                 "Content-Type": "application/json"
-//             },
-//         }
-//     );
-
-//     return response.data;
-// };
-
-// آپلود لوگو
 export const uploadLogo = async (websiteId, file) => {
   const token = localStorage.getItem("token");
   const formData = new FormData();
@@ -125,7 +104,6 @@ export const uploadLogo = async (websiteId, file) => {
   return response.data;
 };
 
-// آپلود بنر
 export const uploadBanner = async (websiteId, file) => {
   const token = localStorage.getItem("token");
   const formData = new FormData();
@@ -155,16 +133,15 @@ export const getMyWebsite = async () => {
         "Content-Type": "application/json",
       },
     });
-    return response.data; // اطلاعات فروشگاه
+    return response.data; 
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      return null; // یعنی فروشگاهی وجود نداره
+      return null; 
     }
     throw new Error("خطا در دریافت فروشگاه کاربر");
   }
 };
 
-// تابع جدید برای چک کردن پلن فعال
 export const getActivePlan = async (websiteId) => {
   try {
     const response = await axios.get(`${coreBaseURL}/websites/plans/active_plan/${websiteId}`, {
@@ -179,7 +156,6 @@ export const getActivePlan = async (websiteId) => {
   }
 };
 
-// ویرایش بخشی از سایت
 export const updateWebsitePartial = async (websiteId, data) => {
   const token = localStorage.getItem('token');
 
@@ -226,16 +202,15 @@ export const updateWebsiteFaqs = async (websiteId, faqs) => {
 };
 
 
-// گرفتن لوگو
 export const getLogo = async (websiteId) => {
   const response = await axios.get(`${mediaBaseURL}/website/get_logo/${websiteId}`, { responseType: 'blob' });
-  return URL.createObjectURL(response.data);  // تبدیل Blob به URL
+  return URL.createObjectURL(response.data);  
 };
 
 // گرفتن بنر
 export const getBanner = async (websiteId) => {
   const response = await axios.get(`${mediaBaseURL}/website/get_banner/${websiteId}`, { responseType: 'blob' });
-  return URL.createObjectURL(response.data);  // تبدیل Blob به URL
+  return URL.createObjectURL(response.data);  
 };
 
 export const getStoreSlug = async (websiteId) => {
@@ -244,24 +219,20 @@ export const getStoreSlug = async (websiteId) => {
       `${coreBaseURL}/slug/get-slug-by/${websiteId}`
     );
     
-    // لاگ کامل پاسخ برای دیباگ
     console.log('Raw API response:', {
       status: response.status,
       data: response.data,
       headers: response.headers
     });
     
-    // اگر پاسخ مستقیماً slug است (مثلاً "lolo")
     if (typeof response.data === 'string') {
       return response.data;
     }
     
-    // اگر پاسخ یک آبجکت است و slug دارد
     if (response.data?.slug) {
       return response.data.slug;
     }
     
-    // اگر هیچکدام نبود، مقدار پیش‌فرض
     return 'store';
   } catch (error) {
     console.error('Error getting slug:', {

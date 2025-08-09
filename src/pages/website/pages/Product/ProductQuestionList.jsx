@@ -10,8 +10,8 @@ import { useEffect } from 'react';
 const QuestionAnswerSystem = () => {
 
 
-    const { productId } = useParams(); // برای گرفتن ID محصول
-    const [questions, setQuestions] = useState([]); // خالی کن
+    const { productId } = useParams(); 
+    const [questions, setQuestions] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -28,12 +28,10 @@ const QuestionAnswerSystem = () => {
                 setLoading(true);
                 const questionsData = await getItemQuestions(productId);
 
-                // تبدیل format API به format کامپوننت
-                // در useEffect، قسمت formattedQuestions رو اینطوری تغییر بده:
                 const formattedQuestions = questionsData.map(q => ({
                     id: q.question_id,
                     text: q.question_text,
-                    buyerName: q.buyer_name, // اضافه کردن اسم فرستنده
+                    buyerName: q.buyer_name,
                     answers: q.answer_text ? [{
                         id: 1,
                         text: q.answer_text,
@@ -59,10 +57,8 @@ const QuestionAnswerSystem = () => {
         }
     }, [productId]);
 
-    // محاسبه تعداد کل سوالات
     const totalQuestions = questions.length;
 
-    // مرتب‌سازی سوالات
     const sortedQuestions = useMemo(() => {
         const sorted = [...questions];
         switch (sortBy) {
@@ -70,7 +66,6 @@ const QuestionAnswerSystem = () => {
                 return sorted.sort((a, b) => b.timestamp - a.timestamp);
             case 'بیشترین پاسخ':
                 return sorted.sort((a, b) => {
-                    // اول پاسخ داده شده‌ها، بعد بر اساس تعداد پاسخ
                     if (a.isAnswered && !b.isAnswered) return -1;
                     if (!a.isAnswered && b.isAnswered) return 1;
                     return b.answerCount - a.answerCount;
@@ -80,7 +75,6 @@ const QuestionAnswerSystem = () => {
         }
     }, [questions, sortBy]);
 
-    // فیلتر کردن سوالات بر اساس جستجو
     const filteredQuestions = useMemo(() => {
         if (!searchTerm.trim()) return sortedQuestions;
         return sortedQuestions.filter(question =>
@@ -93,10 +87,8 @@ const QuestionAnswerSystem = () => {
             try {
                 setLoading(true);
 
-                // ساخت سوال در سرور
                 const newQuestionData = await createQuestion(productId, newQuestion);
 
-                // اضافه کردن به state محلی
                 const question = {
                     id: newQuestionData.question_id,
                     text: newQuestionData.question_text,
@@ -122,10 +114,8 @@ const QuestionAnswerSystem = () => {
         const answerText = newAnswers[questionId];
         if (answerText && answerText.trim()) {
             try {
-                // پاسخ دادن در سرور
                 const updatedQuestion = await answerQuestion(questionId, answerText);
 
-                // آپدیت کردن state محلی
                 setQuestions(questions.map(q => {
                     if (q.id === questionId) {
                         return {
@@ -185,7 +175,6 @@ const QuestionAnswerSystem = () => {
                 </div>
             ) : (
                 <div className="flex gap-6">
-                    {/* سایدبار ثبت پرسش */}
                     <div className="w-80">
                         <div className="bg-white border border-gray-200 rounded-2xl p-6 sticky top-6 shadow-sm">
                             <button
@@ -202,12 +191,9 @@ const QuestionAnswerSystem = () => {
                         </div>
                     </div>
 
-                    {/* محتوای اصلی */}
                     <div className="flex-1 font-Kahroba">
-                        {/* کنترل‌ها */}
                         <div className="bg-white rounded-2xl p-6 mb-6">
                             <div className="flex items-center justify-between gap-4">
-                                {/* فیلترها */}
                                 <div dir='ltr' className="flex items-center gap-2">
                                     <button
                                         onClick={() => handleSort('بیشترین پاسخ')}
@@ -230,17 +216,15 @@ const QuestionAnswerSystem = () => {
                                     <h1 className="px-4 py-2 text-gray-700 font-semibold rounded-lg transition-colors">
                                         : مرتب سازی بر اساس
                                     </h1>
-                                    <img src='/public/website/icons8-sort-by-50 2.png' className="w-6 h-6 flex items-center justify-center" alt="sort icon" />
+                                    <img src='/website/icons8-sort-by-50 2.png' className="w-6 h-6 flex items-center justify-center" alt="sort icon" />
                                 </div>
 
-                                {/* تعداد پرسش‌ها */}
                                 <div className="text-gray-600 font-medium">
                                     {totalQuestions} پرسش
                                 </div>
                             </div>
                         </div>
 
-                        {/* فرم ثبت پرسش جدید */}
                         {showNewQuestionForm && (
                             <div className="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-200">
                                 <h3 className="text-lg font-bold text-gray-800 mb-4">ثبت پرسش جدید</h3>
@@ -274,19 +258,16 @@ const QuestionAnswerSystem = () => {
                             </div>
                         )}
 
-                        {/* لیست پرسش‌ها */}
                         <div className="space-y-6">
                             {filteredQuestions.map((question, index) => (
                                 <div key={question.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                                    {/* پرسش اصلی */}
                                     <div className="p-6">
                                         <div className="flex items-start gap-4">
                                             <div className="w-10 h-10 flex items-center justify-center text-white font-bold text-lg">
-                                                <img src='/public/website/icons8-question-64 1.png' alt="question icon" className="w-8 h-8" />
+                                                <img src='/website/icons8-question-64 1.png' alt="question icon" className="w-8 h-8" />
                                             </div>
 
                                             <div className="flex-1">
-                                                {/* اضافه کردن نام فرستنده */}
                                                 <div className="text-base font-semibold text-gray-700 mb-2">
                                                      {question.buyerName}
                                                 </div>
@@ -295,7 +276,6 @@ const QuestionAnswerSystem = () => {
                                         </div>
                                     </div>
 
-                                    {/* فرم پاسخ - فقط اگر پاسخ داده نشده */}
                                     {!question.isAnswered && showAnswerForm[question.id] && (
                                         <div className="px-6 pb-4">
                                             <div className="bg-gray-50 rounded-xl p-4">
@@ -319,7 +299,6 @@ const QuestionAnswerSystem = () => {
                                         </div>
                                     )}
 
-                                    {/* پاسخ‌ها */}
                                     {question.answers.length > 0 && (
                                         <div className="px-6 pb-6">
                                             <div className="space-y-4">
@@ -344,7 +323,6 @@ const QuestionAnswerSystem = () => {
                             ))}
                         </div>
 
-                        {/* پیام عدم وجود پرسش */}
                         {filteredQuestions.length === 0 && (
                             <div className="text-center py-12">
                                 <MessageSquare size={48} className="mx-auto text-gray-400 mb-4" />

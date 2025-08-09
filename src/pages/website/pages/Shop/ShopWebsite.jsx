@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '../../components/Navbar';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Products from './products'; // مطمئن شو مسیر درست باشه   
+import Products from './products';   
 
 const ShopWebsite = () => {
 

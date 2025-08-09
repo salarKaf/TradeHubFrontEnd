@@ -1,13 +1,10 @@
-// src/API/coupon.test.js
 import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest'
 import axios from 'axios'
 import { getCouponsByWebsite, createCoupon } from './coupons'
 
-// Mock axios
 vi.mock('axios')
 const mockedAxios = vi.mocked(axios)
 
-// Mock localStorage
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -26,7 +23,6 @@ describe('Coupon Service Tests', () => {
     vi.restoreAllMocks()
   })
 
-  // Test getCouponsByWebsite - GET
   describe('getCouponsByWebsite', () => {
     test('should successfully get coupons list for website', async () => {
       const websiteId = 'website123'
@@ -92,7 +88,6 @@ describe('Coupon Service Tests', () => {
       const websiteId = 'website123'
       localStorageMock.getItem.mockReturnValue(null)
       
-      // 🔥 اینجا باید یک response mock کنیم
       const mockResponse = {
         data: []
       }
@@ -121,7 +116,6 @@ describe('Coupon Service Tests', () => {
     })
   })
 
-  // Test createCoupon - POST
   describe('createCoupon', () => {
     test('should successfully create new coupon', async () => {
       const couponData = {
@@ -181,8 +175,8 @@ describe('Coupon Service Tests', () => {
 
     test('should handle validation errors', async () => {
       const invalidCouponData = {
-        code: '', // empty code
-        discount_percent: -5, // negative discount
+        code: '', 
+        discount_percent: -5, 
         website_id: 'website123'
       }
       

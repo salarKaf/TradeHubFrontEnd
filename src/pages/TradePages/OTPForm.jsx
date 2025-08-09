@@ -9,7 +9,7 @@ export default function OTPForm() {
     const fromSignup = location.state?.fromSignup;
 
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const [timer, setTimer] = useState(120); // 2 minutes in seconds
+    const [timer, setTimer] = useState(120); 
     const [canResend, setCanResend] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
 

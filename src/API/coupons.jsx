@@ -9,11 +9,10 @@ const getAuthHeader = () => {
     };
 };
 
-// ساخت کوپن جدید
 export const createCoupon = async (couponData) => {
     try {
         const response = await axios.post(`${coreBaseURL}/coupon/create_coupon`, couponData,
-            getAuthHeader() // 🔥 باید این باشه!
+            getAuthHeader() 
 
         );
         return response.data;
@@ -23,11 +22,10 @@ export const createCoupon = async (couponData) => {
     }
 };
 
-// دریافت لیست کوپن‌های یک وبسایت
 export const getCouponsByWebsite = async (websiteId) => {
     try {
         const response = await axios.get(`${coreBaseURL}/coupon/website/${websiteId}/coupons`,
-            getAuthHeader() // 🔥 باید این باشه!
+            getAuthHeader() 
         );
         return response.data;
     } catch (error) {
@@ -36,11 +34,10 @@ export const getCouponsByWebsite = async (websiteId) => {
     }
 };
 
-// حذف کوپن
 export const deleteCoupon = async (couponId) => {
     try {
         const response = await axios.delete(`${coreBaseURL}/coupon/coupon/${couponId}`,
-            getAuthHeader() // 🔥 باید این باشه!
+            getAuthHeader()
 
         );
         return response.data;

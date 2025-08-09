@@ -89,7 +89,7 @@ const ShopDescriptionCard = () => {
         <div className="flex items-center gap-3 font-bold text-[#1E212D] text-2xl">
           <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-0">
             <img
-              src="/public/SellerPanel/Settings/icons8-about-me-50 1.png"
+              src="/SellerPanel/Settings/icons8-about-me-50 1.png"
               alt="Logo"
               className="w-25 h-25 object-contain"
               onError={(e) => {

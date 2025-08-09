@@ -143,7 +143,6 @@ export default function CreateStore() {
             </div>
           </div>
 
-          {/* دکمه‌ها */}
           <div className="flex justify-between pt-6">
             <button
               onClick={handleCreateStore}

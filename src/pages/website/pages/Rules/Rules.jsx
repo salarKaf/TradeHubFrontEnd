@@ -19,7 +19,6 @@ const TermsAndConditions = () => {
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // آیکون‌های مرتبط با انواع قوانین
   const getIconForPolicy = (sectionTitle) => {
     const title = sectionTitle?.toLowerCase() || '';
     
@@ -33,10 +32,9 @@ const TermsAndConditions = () => {
     if (title.includes('زمان') || title.includes('مدت')) return Clock;
     if (title.includes('هشدار') || title.includes('اخطار')) return AlertTriangle;
     
-    return FileText; // آیکون پیش‌فرض
+    return FileText; 
   };
 
-  // بررسی اینکه آیا قانون معتبر است یا نه
   const isValidPolicy = (policy) => {
     return policy && 
            policy.section && 
@@ -51,7 +49,6 @@ const TermsAndConditions = () => {
         const { website_id } = await getWebsiteIdBySlug(slug);
         const data = await getWebsiteById(website_id);
         
-        // فیلتر کردن قوانین معتبر
         const validPolicies = (data?.store_policy || []).filter(isValidPolicy);
         setPolicies(validPolicies);
       } catch (err) {
@@ -75,7 +72,6 @@ const TermsAndConditions = () => {
     );
   }
 
-  // اگر هیچ قانون معتبری وجود نداشت
   if (policies.length === 0) {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-12 font-Kahroba bg-gray-30 min-h-screen">
@@ -90,7 +86,6 @@ const TermsAndConditions = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-12 font-Kahroba bg-gray-30 min-h-screen">
-      {/* هدر اصلی */}
       <div className="rounded-xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-10">
         <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="p-2 sm:p-3 bg-blue-100 rounded-full">
@@ -110,7 +105,6 @@ const TermsAndConditions = () => {
         </div>
       </div>
 
-      {/* لیست قوانین */}
       <div className="space-y-4 sm:space-y-6 mr-0 sm:mr-10">
         {policies.map((item, index) => {
           const IconComponent = getIconForPolicy(item.section);
@@ -140,14 +134,12 @@ const TermsAndConditions = () => {
                 </div>
               </div>
               
-              {/* خط جداکننده زیبا */}
               <div className="h-1 bg-gradient-to-r"></div>
             </div>
           );
         })}
       </div>
 
-      {/* فوتر */}
       <div className="mt-8 sm:mt-12 bg-white rounded-xl shadow-md p-4 sm:p-6 border-t-2 border-gray-200 mr-0 sm:mr-10">
         <div className="flex items-start sm:items-center gap-3 text-gray-600">
           <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0 mt-0.5 sm:mt-0" />

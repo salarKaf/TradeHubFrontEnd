@@ -1,4 +1,3 @@
-// API/buyers.js
 import axios from 'axios';
 import { iamBaseURL } from './api';
 
@@ -26,7 +25,6 @@ export const registerBuyer = async (websiteId, name, email, password, confirmPas
 };
 
 
-// در فایل API/buyerAuth.js
 export const loginBuyer = async (data) => {
     try {
         const response = await fetch(`${iamBaseURL}/buyers/login?website_id=${data.website_id}`, {
@@ -51,10 +49,8 @@ export const loginBuyer = async (data) => {
 
         const result = await response.json();
 
-        // فقط این دو خط اضافه شده ▼
         localStorage.setItem(`buyer_token_${data.website_id}`, result.access_token);
         localStorage.setItem('current_store_website_id', data.website_id);
-        // ▲ فقط همین تغییرات کافیست
 
         return result;
     } catch (error) {
@@ -65,7 +61,6 @@ export const loginBuyer = async (data) => {
 
 
 
-// Forget Password - ارسال ایمیل برای بازیابی رمز عبور
 export const forgetPassword = async (email, website_id) => {
     try {
         const response = await fetch(`${iamBaseURL}/buyers/ForgetPassword`, {
@@ -82,12 +77,10 @@ export const forgetPassword = async (email, website_id) => {
         const data = await response.json();
 
         if (!response.ok) {
-            // مدیریت خطاهای مختلف از سرور
             let errorMessage = 'خطا در ارسال ایمیل بازیابی';
 
             if (data.detail) {
                 if (Array.isArray(data.detail)) {
-                    // اگر detail آرایه از آبجکت‌های خطا باشه
                     errorMessage = data.detail.map(err => err.msg || err.message || JSON.stringify(err)).join(', ');
                 } else if (typeof data.detail === 'string') {
                     errorMessage = data.detail;
@@ -109,7 +102,6 @@ export const forgetPassword = async (email, website_id) => {
     } catch (error) {
         console.error('Forget Password error:', error);
 
-        // اگر خطا از fetch نیامده و خطای شبکه یا چیز دیگه است
         if (!error.response) {
             error.message = 'خطا در اتصال به سرور';
         }
@@ -118,7 +110,6 @@ export const forgetPassword = async (email, website_id) => {
     }
 };
 
-// Resend OTP for Forget Password  
 export const resendOTPForgetPassword = async (email, website_id) => {
     try {
         const response = await fetch(`${iamBaseURL}/buyers/ResendOTP`, {
@@ -166,7 +157,6 @@ export const resendOTPForgetPassword = async (email, website_id) => {
     }
 };
 
-// Verify OTP For Forget Password
 export const verifyOTPForgetPassword = async (email, otp, website_id) => {
     try {
         const response = await fetch(`${iamBaseURL}/buyers/VerifyOTPForgetPassword`, {
@@ -215,7 +205,6 @@ export const verifyOTPForgetPassword = async (email, otp, website_id) => {
     }
 };
 
-// Reset Password - تغییر رمز عبور جدید
 export const resetPassword = async (email, password, confirmPassword, website_id) => {
     try {
         const response = await fetch(`${iamBaseURL}/buyers/ForgetPassword`, {
@@ -259,9 +248,6 @@ export const resetPassword = async (email, password, confirmPassword, website_id
 
 
 
-
-
-// otp.js
 
 export const verifyOTP = async ({ email, websiteId, otp }) => {
     const response = await fetch(`${iamBaseURL}/buyers/VerifyOTP`, {

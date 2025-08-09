@@ -9,27 +9,23 @@ const api = axios.create({
     }
 });
 
-// 🔴 تغییر ۱: اضافه کردن تابع جدید برای دریافت توکن مخصوص فروشگاه
 const getBuyerToken = () => {
   const websiteId = localStorage.getItem('current_store_website_id');
   return localStorage.getItem(`buyer_token_${websiteId}`); // توکن مخصوص این فروشگاه
 };
 
-// 🔴 تغییر ۲: اصلاح اینترسپتور axios
 api.interceptors.request.use((config) => {
-  const token = getBuyerToken(); // استفاده از تابع جدید
+  const token = getBuyerToken(); 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// 🔴 تغییر 1: تابع کمکی برای دریافت website_id فروشگاه مشتری
 const getStoreWebsiteId = () => {
     return localStorage.getItem('current_store_website_id');
 };
 
-// 🔴 تغییر 2: اصلاح تابع افزودن به سبد خرید
 export const addItemToCart = async (itemId, quantity = 1) => {
     try {
         const websiteId = getStoreWebsiteId();
@@ -47,15 +43,15 @@ export const addItemToCart = async (itemId, quantity = 1) => {
     }
 };
 
-// 🔴 تغییر 3: اصلاح تابع دریافت سبد خرید
-// دریافت سبد خرید فیلتر شده بر اساس website_id
+
+
+
 export const getMyCart = async () => {
     try {
         const websiteId = localStorage.getItem('current_store_website_id');
         if (!websiteId) throw new Error('Store website ID not found');
 
         const response = await api.get('/carts/my_cart');
-        // فیلتر کردن آیتم‌ها بر اساس website_id
         const filteredItems = response.data.filter(item => item.website_id === websiteId);
         return filteredItems;
     } catch (error) {
@@ -72,7 +68,6 @@ export const getMyCart = async () => {
     }
 };
 
-// 🔴 تغییر 4: اصلاح توابع دیگر به همین شکل
 export const removeOneFromCart = async (cartItemId) => {
     try {
         const websiteId = getStoreWebsiteId();
@@ -113,9 +108,8 @@ export const getMyCartItem = async () => {
     if (!websiteId) throw new Error('Store website ID not found');
 
     const response = await api.get('/carts/my_cart');
-    // فیلتر کردن آیتم‌ها بر اساس website_id
     const filteredItems = response.data.filter(item => item.website_id === websiteId);
-    return { items: filteredItems }; // 🔴 تغییر اینجا
+    return { items: filteredItems }; 
   } catch (error) {
     console.error('Error fetching cart:', {
       message: error.message,

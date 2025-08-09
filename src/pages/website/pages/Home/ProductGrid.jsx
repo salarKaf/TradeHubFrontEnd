@@ -72,10 +72,8 @@ export default function ProductGrid() {
     }
   };
 
-  // callback برای وقتی محصول به سبد خرید اضافه میشه
   const handleAddToCart = (productId, result) => {
     console.log(`محصول ${productId} به سبد خرید اضافه شد:`, result);
-    // اینجا می‌تونی state سبد خرید رو آپدیت کنی یا notification نشون بدی
   };
 
   if (loading) {

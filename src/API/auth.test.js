@@ -1,13 +1,10 @@
-// src/API/auth.test.js
 import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest'
 import axios from 'axios'
 import { login, getMe } from './auth'
 
-// Mock axios
 vi.mock('axios')
 const mockedAxios = vi.mocked(axios)
 
-// Mock localStorage
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -25,7 +22,6 @@ describe('Auth Service Tests', () => {
     vi.restoreAllMocks()
   })
 
-  // Test login - POST
   describe('login', () => {
     test('should successfully login user', async () => {
       const mockLoginData = { email: 'test@example.com', password: 'password123' }
@@ -85,7 +81,6 @@ describe('Auth Service Tests', () => {
     })
   })
 
-  // Test getMe - GET
   describe('getMe', () => {
     test('should return user data when token is valid', async () => {
       const mockUser = { 

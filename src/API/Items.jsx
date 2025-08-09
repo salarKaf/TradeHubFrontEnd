@@ -88,7 +88,7 @@ export const getItemImages = async (itemId) => {
     },
   });
 
-  return res.data; // لیستی از image_id و is_main
+  return res.data; 
 };
 
 export const getItemImageById = async (imageId) => {
@@ -98,10 +98,10 @@ export const getItemImageById = async (imageId) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    responseType: "blob", // چون عکس معمولاً به صورت فایل برمی‌گرده
+    responseType: "blob", 
   });
 
-  return URL.createObjectURL(res.data); // برای نمایش در <img>
+  return URL.createObjectURL(res.data); 
 };
 
 
@@ -143,7 +143,7 @@ export const createItem = async (data) => {
 export const getItemsBySubcategoryId = async (subcategoryId) => {
   const response = await fetch(`${coreBaseURL}/items/items/by_subcategory/${subcategoryId}`);
   const data = await response.json();
-  return data; // آرایه‌ای از محصولات
+  return data; 
 };
 
 
@@ -200,7 +200,7 @@ export const getItemRevenue = async (itemId) => {
     },
   });
 
-  return res.data.revenue; // ✅ اصلاح شد
+  return res.data.revenue; 
 };
 
 export const getItemSalesCount = async (itemId) => {
@@ -212,13 +212,12 @@ export const getItemSalesCount = async (itemId) => {
     },
   });
 
-  return res.data.total_sold; // ✅ اصلاح شد
+  return res.data.total_sold; 
 };
 
 
 
 
-// GET /api/v1/review/items/{item_id}/reviews
 export const getItemReviews = async (itemId) => {
     try {
         const response = await axios.get(`${coreBaseURL}/review/items/${itemId}/reviews`);
@@ -232,7 +231,6 @@ export const getItemReviews = async (itemId) => {
 
 
 
-// POST /api/v1/review/create_review
 export const createReview = async ({ website_id, item_id, rating, text }) => {
     try {
         const response = await fetch(`${coreBaseURL}/review/create_review`, {

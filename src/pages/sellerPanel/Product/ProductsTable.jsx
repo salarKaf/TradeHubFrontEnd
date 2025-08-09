@@ -1,4 +1,3 @@
-// ProductsTable.js
 import ProductRow from './ProductRow';
 import TableHeader from './TableHeader';
 import { useParams } from 'react-router-dom';

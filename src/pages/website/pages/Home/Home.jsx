@@ -1,4 +1,3 @@
-// pages/website/pages/Home/Home.jsx
 import React from "react";
 import Navbar from "../../components/Navbar";
 import Header from "../../components/Header";

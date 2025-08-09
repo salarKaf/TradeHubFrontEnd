@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
 const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تاریخ", minDate }) => {
   const [isOpen, setIsOpen] = useState(false);
-  // جدید (درست):
   const getTodayDate = () => {
     const today = new Date();
     const persianDate = today.toLocaleDateString('fa-IR-u-nu-latn').split('/');
@@ -20,24 +19,19 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     return getTodayDate();
   });
 
-  // ماه‌های شمسی
   const persianMonths = [
     'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
     'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
   ];
 
-  // روزهای هفته
   const weekDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
 
-  // تعداد روز در هر ماه
   const getDaysInMonth = (year, month) => {
     if (month <= 6) return 31;
     if (month <= 11) return 30;
-    // بررسی سال کبیسه برای اسفند
     return isLeapYear(year) ? 30 : 29;
   };
 
-  // بررسی سال کبیسه
   const isLeapYear = (year) => {
     const breaks = [
       -61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210,
@@ -66,15 +60,12 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     return (leap + 1) % 7 < 2;
   };
 
-  // محاسبه روز اول ماه در هفته
   const getFirstDayOfMonth = (year, month) => {
-    // تبدیل تاریخ شمسی به میلادی
     const gregorianDate = jalaliToGregorian(year, month, 1);
     const jsDate = new Date(gregorianDate.year, gregorianDate.month - 1, gregorianDate.day);
-    return (jsDate.getDay() + 1) % 7; // تنظیم برای شنبه = 0
+    return (jsDate.getDay() + 1) % 7; 
   };
 
-  // تبدیل شمسی به میلادی (ساده شده)
   const jalaliToGregorian = (jy, jm, jd) => {
     const epOff = jy - 979;
     let epYear = 621 + 33 * Math.floor(epOff / 1029);
@@ -123,7 +114,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     return { year: gy, month: gm, day: gd };
   };
 
-  // بررسی اینکه آیا روز معین قبل از minDate است یا نه
   const isDateDisabled = (year, month, day) => {
     if (!minDate) return false;
 
@@ -137,18 +127,15 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     return day < minDate.day;
   };
 
-  // تولید تقویم ماه
   const generateCalendar = () => {
     const daysInMonth = getDaysInMonth(currentDate.year, currentDate.month);
     const firstDay = getFirstDayOfMonth(currentDate.year, currentDate.month);
     const days = [];
 
-    // روزهای خالی ابتدای ماه
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
 
-    // روزهای ماه
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(day);
     }
@@ -156,7 +143,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     return days;
   };
 
-  // انتخاب روز
   const selectDay = (day) => {
     if (day && !isDateDisabled(currentDate.year, currentDate.month, day)) {
       const selectedDate = {
@@ -169,7 +155,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     }
   };
 
-  // ماه قبل
   const prevMonth = () => {
     if (currentDate.month === 1) {
       setCurrentDate({ year: currentDate.year - 1, month: 12 });
@@ -178,7 +163,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     }
   };
 
-  // ماه بعد
   const nextMonth = () => {
     if (currentDate.month === 12) {
       setCurrentDate({ year: currentDate.year + 1, month: 1 });
@@ -187,7 +171,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
     }
   };
 
-  // تغییر سال
   const changeYear = (newYear) => {
     setCurrentDate({ ...currentDate, year: newYear });
   };
@@ -196,7 +179,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
 
   return (
     <div className="relative">
-      {/* فیلد ورودی */}
       <div
         className="bg-white w-full px-4 py-3 border border-gray-300 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 rounded-lg transition-colors cursor-pointer flex items-center justify-between"
         onClick={() => setIsOpen(!isOpen)}
@@ -210,21 +192,18 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
         <Calendar className="w-5 h-5 text-gray-400" />
       </div>
 
-      {/* تقویم */}
       {isOpen && (
         <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-4 min-w-80">
-          {/* هدر */}
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={prevMonth}
-              type="button"  // این خط را اضافه کنید
+              type="button"  
               className="p-1 rounded-lg hover:bg-gray-100"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-2">
-              {/* انتخاب سال */}
               <select
                 value={currentDate.year}
                 onChange={(e) => changeYear(parseInt(e.target.value))}
@@ -245,14 +224,13 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
 
             <button
               onClick={nextMonth}
-              type="button"  // این خط را اضافه کنید
+              type="button"  
               className="p-1 rounded-lg hover:bg-gray-100"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
           </div>
 
-          {/* روزهای هفته */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             {weekDays.map((day) => (
               <div key={day} className="text-center text-sm font-medium text-gray-500 p-2">
@@ -261,7 +239,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
             ))}
           </div>
 
-          {/* روزهای ماه */}
           <div className="grid grid-cols-7 gap-1">
             {days.map((day, index) => {
               const isDisabled = day && isDateDisabled(currentDate.year, currentDate.month, day);
@@ -290,7 +267,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
             })}
           </div>
 
-          {/* دکمه پاک کردن */}
           <div className="mt-4 pt-4 border-t border-gray-200">
             <button
               onClick={() => {
@@ -305,7 +281,6 @@ const JalaliDatePicker = ({ value, onChange, placeholder = "انتخاب تار�
         </div>
       )}
 
-      {/* کلیک خارج از تقویم */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40"

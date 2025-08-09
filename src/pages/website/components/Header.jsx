@@ -9,8 +9,7 @@ const Header = () => {
   const [error, setError] = useState(null);
 
 
-  // تصاویر پیش‌فرض
-  const defaultBackgroundImage = "/public/website/Group 432.png";
+  const defaultBackgroundImage = "/website/Group 432.png";
   const defaultLogoImage = "/website/Picsart_25-04-16_19-30-26-995 1.png";
   const defaultStoreName = "ویترین";
   const defaultSubSlogan = "خرید امن محصولات اینترنتی با کیفیت و بهترین قیمت در سریع‌ترین زمان ممکن";
@@ -38,7 +37,6 @@ const Header = () => {
 
         console.log('✅ Step 2: Website ID found:', websiteId);
 
-        // دریافت داده‌های وبسایت و تصاویر لوگو و بنر
         const [websiteData, logoUrl, bannerUrl] = await Promise.all([
           getWebsiteById(websiteId),
           getLogo(websiteId),
@@ -49,8 +47,8 @@ const Header = () => {
 
         setWebsiteData({
           ...websiteData,
-          logo_url: logoUrl,    // لوگو رو از URL داده‌شده استفاده می‌کنیم
-          banner_image: bannerUrl,  // بنر رو از URL داده‌شده استفاده می‌کنیم
+          logo_url: logoUrl,   
+          banner_image: bannerUrl,  
         });
         setError(null);
 
@@ -64,8 +62,7 @@ const Header = () => {
 
     fetchData();
   }, [slug]);
-  // در Header.js بعد از دریافت websiteId
-  // استخراج اطلاعات
+
   const storeName = websiteData?.business_name || defaultStoreName;
   const storeSlogan = websiteData?.store_slogan || defaultSubSlogan;
   const logoImage = websiteData?.logo_url || defaultLogoImage;
@@ -73,7 +70,6 @@ const Header = () => {
 
   console.log('🎬 Header State:', { loading, error, hasData: !!websiteData, storeName });
 
-  // حالت لودینگ
   if (loading) {
     return (
       <div className="relative w-full h-[calc(100vh-5rem)] font-rubik flex items-center justify-center">
@@ -82,7 +78,6 @@ const Header = () => {
     );
   }
 
-  // حالت خطا
   if (error) {
     return (
       <div className="relative w-full h-[calc(100vh-5rem)] font-rubik flex items-center justify-center">
@@ -102,7 +97,6 @@ const Header = () => {
 
   return (
     <div className="font-Kahroba relative w-full h-[calc(100vh-5rem)]">
-      {/* بنر */}
       <img
         src={backgroundImage}
         alt="هدر سایت"
@@ -114,10 +108,8 @@ const Header = () => {
         }}
       />
 
-      {/* محتوا */}
       <div className="absolute inset-0 flex flex-col items-start justify-center text-right px-4 z-10 mr-4 sm:mr-8 md:mr-16 lg:mr-32">
 
-        {/* لوگو و نام فروشگاه - همیشه افقی */}
         <div className="flex items-center mb-6 gap-2">
           <img
             src={logoImage}
@@ -134,7 +126,6 @@ const Header = () => {
           </h1>
         </div>
 
-        {/* شعار - فقط در md به بالا نمایش داده میشه */}
         <div className="hidden md:flex mt-12 mb-6 flex-col items-start mr-0 md:mr-16">
           <p className="font-medium text-black text-base md:text-lg">{storeSlogan}</p>
           <div className="relative mt-4 w-full max-w-xs sm:max-w-sm md:max-w-lg h-8">

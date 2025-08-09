@@ -1,9 +1,7 @@
-// reviewsAPI.js
 import axios from 'axios';
 
 import {coreBaseURL} from './api';
 
-// دریافت توکن خریدار
 const getBuyerToken = () => {
     const websiteId = localStorage.getItem('current_store_website_id');
     if (websiteId) {
@@ -12,12 +10,10 @@ const getBuyerToken = () => {
     return null;
 };
 
-// دریافت website_id
 const getWebsiteId = () => {
     return localStorage.getItem('current_store_website_id');
 };
 
-// ساخت هدرهای احراز هویت
 const getAuthHeaders = () => {
     const token = getBuyerToken();
     return {
@@ -26,7 +22,6 @@ const getAuthHeaders = () => {
     };
 };
 
-// ایجاد نظر جدید
 export const createReview = async (itemId, rating, text) => {
     try {
         const websiteId = getWebsiteId();
@@ -56,7 +51,6 @@ export const createReview = async (itemId, rating, text) => {
     }
 };
 
-// دریافت نظرات یک محصول
 export const getItemReviews = async (itemId) => {
     try {
         const response = await fetch(`${coreBaseURL}/review/items/${itemId}/reviews`, {
@@ -75,7 +69,6 @@ export const getItemReviews = async (itemId) => {
     }
 };
 
-// دریافت یک نظر خاص
 export const getReview = async (reviewId) => {
     try {
         const response = await fetch(`${coreBaseURL}/review/reviews/${reviewId}`, {

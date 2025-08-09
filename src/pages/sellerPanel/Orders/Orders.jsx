@@ -7,11 +7,6 @@ const Orders = () => {
     return (
 
         <div>
-
-
-
-
-
             <MainLayout>
                 <ReportOrder></ReportOrder>
                 <OrderContent></OrderContent>

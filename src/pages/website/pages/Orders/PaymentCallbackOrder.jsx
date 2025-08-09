@@ -3,7 +3,6 @@ import { CheckCircle, XCircle, Loader, Home } from 'lucide-react';
 import axios from 'axios';
 import { coreBaseURL } from '../../../../API/api.jsx';
 
-// تابع گرفتن slug از websiteId
 const getStoreSlug = async (websiteId) => {
   try {
     const response = await axios.get(
@@ -15,11 +14,10 @@ const getStoreSlug = async (websiteId) => {
       }
     );
     
-    // response.data مستقیماً یک string است (مثل "vitrin")
     return response.data || 'store';
   } catch (error) {
     console.error('Error getting store slug:', error);
-    return 'store'; // مقدار پیشفرض
+    return 'store';
   }
 };
 
@@ -31,34 +29,20 @@ const PaymentCallbackOrder = () => {
   useEffect(() => {
     const processPaymentCallback = async () => {
       try {
-        // Debug: Log full URL information
-        console.log('Full URL:', window.location.href);
-        console.log('Search params:', window.location.search);
-        console.log('Path:', window.location.pathname);
 
-        // Get parameters from URL
+
         const urlParams = new URLSearchParams(window.location.search);
         let authority = urlParams.get('Authority') || urlParams.get('authority');
         let paymentStatus = urlParams.get('Status') || urlParams.get('status');
 
-        // Get stored data
         let orderId = localStorage.getItem('current_order_id');
         let websiteId = localStorage.getItem('current_store_website_id');
 
-        console.log('🔄 Processing payment callback:', {
-          authority,
-          paymentStatus,
-          orderId,
-          websiteId
-        });
-
-        // گرفتن slug برای websiteId
         if (websiteId) {
           const slug = await getStoreSlug(websiteId);
           setStoreSlug(slug);
         }
 
-        // 🔥 اگه authority و status نداریم، از localStorage یا فرض موفق استفاده کن
         if (!authority || !paymentStatus) {
           console.log('⚠️ No URL parameters found');
           authority = authority || 'A00000000000000000000000000000000000';
@@ -66,7 +50,6 @@ const PaymentCallbackOrder = () => {
           console.log('⚠️ Assuming successful payment (reached callback)');
         }
 
-        // حالا که اطلاعات داریم، ادامه بده
         if (orderId && websiteId) {
           if (paymentStatus === 'OK' || paymentStatus === 'success') {
             await callOrderPaymentCallback(orderId, websiteId, authority, paymentStatus);
@@ -75,12 +58,10 @@ const PaymentCallbackOrder = () => {
             setMessage('پرداخت لغو شد یا ناموفق بود');
           }
         } else {
-          // اگه orderId نداریم، فقط success نمایش بده
           setStatus('success');
           setMessage('پرداخت انجام شد');
         }
 
-        // پاک کردن localStorage
         localStorage.removeItem('current_order_id');
         localStorage.removeItem('current_store_website_id');
 
@@ -89,17 +70,14 @@ const PaymentCallbackOrder = () => {
         setStatus('failed');
         setMessage('❌ ' + error.message);
 
-        // پاک کردن localStorage در صورت خطا
         localStorage.removeItem('current_order_id');
         localStorage.removeItem('current_store_website_id');
       }
     };
 
-    // تاخیر 1 ثانیه برای نمایش loading
     setTimeout(processPaymentCallback, 1000);
   }, []);
 
-  // ✅ تابع اصلاح شده با axios و URL درست
   const callOrderPaymentCallback = async (orderId, websiteId, authority, status) => {
     try {
       const token = localStorage.getItem(`buyer_token_${websiteId}`) || localStorage.getItem('token');
@@ -112,12 +90,11 @@ const PaymentCallbackOrder = () => {
 
       console.log('🔄 Calling order payment callback API...');
 
-      // ✅ استفاده از axios و URL درست بک‌اند
       const response = await axios.get(
         `${coreBaseURL}/payment/order_payment/callback/${orderId}`,
         {
           params: {
-            website_id: websiteId,  // ✅ اضافه کردن website_id
+            website_id: websiteId,  
             Authority: authority,
             Status: status
           },
@@ -126,7 +103,7 @@ const PaymentCallbackOrder = () => {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          timeout: 15000, // 15 second timeout
+          timeout: 15000, 
           withCredentials: false
         }
       );
@@ -138,13 +115,11 @@ const PaymentCallbackOrder = () => {
     } catch (error) {
       console.error('❌ Payment verification failed:', error);
 
-      // بررسی نوع خطا
       if (error.code === 'ECONNABORTED') {
         setStatus('success');
         setMessage('پرداخت انجام شد (تأیید با تأخیر انجام می‌شود)');
       } else if (error.response) {
         if (error.response.status === 307) {
-          // در صورت redirect، سعی کن مجدد با URL جدید
           console.log('🔄 Handling redirect...');
           setStatus('success');
           setMessage('پرداخت با موفقیت انجام شد');
@@ -155,7 +130,6 @@ const PaymentCallbackOrder = () => {
           setStatus('failed');
           setMessage('خطا در احراز هویت');
         } else {
-          // حتی در صورت خطا پرداخت موفق نشان داده شود
           setStatus('success');
           setMessage('پرداخت انجام شد (ممکن است تأیید نهایی با تأخیر انجام شود)');
         }
@@ -167,7 +141,6 @@ const PaymentCallbackOrder = () => {
   };
 
   const handleBackToStore = () => {
-    // هدایت به /{slug}
     window.location.href = `/${storeSlug}`;
   };
 
@@ -175,7 +148,6 @@ const PaymentCallbackOrder = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 font-sans flex items-center justify-center p-4" dir="rtl">
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center max-w-md w-full">
 
-        {/* Processing State */}
         {status === 'processing' && (
           <>
             <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -193,7 +165,6 @@ const PaymentCallbackOrder = () => {
           </>
         )}
 
-        {/* Success State */}
         {status === 'success' && (
           <>
             <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -202,7 +173,6 @@ const PaymentCallbackOrder = () => {
             <h2 className="text-2xl font-bold text-green-600 mb-4">پرداخت موفق!</h2>
             <p className="text-gray-600 mb-6">{message}</p>
 
-            {/* فقط دکمه بازگشت به فروشگاه */}
             <button
               onClick={handleBackToStore}
               className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
@@ -213,7 +183,6 @@ const PaymentCallbackOrder = () => {
           </>
         )}
 
-        {/* Failed State */}
         {status === 'failed' && (
           <>
             <div className="w-24 h-24 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -231,7 +200,6 @@ const PaymentCallbackOrder = () => {
               </ul>
             </div>
 
-            {/* فقط دکمه بازگشت به فروشگاه */}
             <button
               onClick={handleBackToStore}
               className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl flex items-center justify-center gap-2"

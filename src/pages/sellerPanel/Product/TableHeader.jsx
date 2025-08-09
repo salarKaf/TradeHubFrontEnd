@@ -1,4 +1,3 @@
-// TableHeader.js
 const TableHeader = () => {
     return (
         <div className="bg-[#eac09fad] border-b shadow-inner min-w-[800px]">

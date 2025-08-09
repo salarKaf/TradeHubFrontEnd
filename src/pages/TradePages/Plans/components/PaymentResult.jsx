@@ -1,4 +1,3 @@
-// components/PaymentResult.jsx
 import React from 'react';
 
 const PaymentResult = ({ paymentSuccess, selectedPlan, plans, onClose }) => {

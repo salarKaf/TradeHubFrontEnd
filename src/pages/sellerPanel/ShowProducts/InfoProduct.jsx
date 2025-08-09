@@ -404,7 +404,7 @@ const ShowProduct = () => {
                         {productData.isBestSeller && (
                             <div className="flex items-center px-4 md:px-10 py-3 md:py-5 border-black border-opacity-50 rounded-lg">
                                 <span className="font-modam font-medium text-sm md:text-lg px-2">از پرفروش های فروشگاه شما</span>
-                                <img className='w-8 h-8 md:w-10 md:h-10' src='/public/SellerPanel/Products/icons8-instagram-check-mark-50 2.png'></img>
+                                <img className='w-8 h-8 md:w-10 md:h-10' src='/SellerPanel/Products/icons8-instagram-check-mark-50 2.png'></img>
                             </div>
                         )}
                     </div>
@@ -414,21 +414,21 @@ const ShowProduct = () => {
                         <InfoCard
                             title={(productData.rating || 0).toFixed(1)}
                             subtitle="امتیاز کسب شده از خریداران"
-                            logo="/public/SellerPanel/Products/stars.png"
+                            logo="/SellerPanel/Products/stars.png"
                             titleColor="text-green-700"
                         />
 
                         <InfoCard
                             title={(productData.salesCount ?? 0).toLocaleString()}
                             subtitle="تعداد فروش محصول"
-                            logo="/public/SellerPanel/Home/icons8-package-64(1).png"
+                            logo="/SellerPanel/Home/icons8-package-64(1).png"
                             titleColor="text-black"
                         />
 
                         <InfoCard
                             title={(productData.totalSales ?? 0).toLocaleString()}
                             subtitle="میزان درآمد کسب شده"
-                            logo="/public/SellerPanel/Home/icons8-package-64(1).png"
+                            logo="/SellerPanel/Home/icons8-package-64(1).png"
                             titleColor="text-black"
                         />
                     </div>

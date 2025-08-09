@@ -111,7 +111,6 @@ const ForgotPasswordOTP = () => {
 
     setResendLoading(true);
     try {
-      // اصلاح پارامترهای ارسالی
       await resendOTPForgetPassword(email, websiteId);
       setTimer(120);
       setCanResend(false);
@@ -144,10 +143,9 @@ const ForgotPasswordOTP = () => {
   return (
     <div
       className="min-h-screen bg-cover bg-center relative px-4 sm:px-6 lg:px-8 font-Kahroba"
-      style={{ backgroundImage: "url('/public/website/backHomoShop 1.png')" }}
+      style={{ backgroundImage: "url('/website/backHomoShop 1.png')" }}
     >
 
-      {/* Main container */}
       <div className="flex font-Kahroba justify-center items-center min-h-screen py-8">
         <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg ">
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 via-white/10 to-transparent pointer-events-none"></div>
@@ -159,7 +157,6 @@ const ForgotPasswordOTP = () => {
               <p className="text-black/80 text-xs sm:text-sm">کد 6 رقمی ارسال شده به ایمیل {email} را وارد کنید</p>
             </div>
 
-            {/* OTP fields */}
             <div className="flex justify-center gap-2 sm:gap-3 mb-6 sm:mb-8" dir="ltr">
               {otp.map((digit, index) => (
                 <input
@@ -177,7 +174,6 @@ const ForgotPasswordOTP = () => {
               ))}
             </div>
 
-            {/* Timer */}
             <div className="text-center mb-4 sm:mb-6">
               <div className="flex items-center justify-center gap-2 text-black font-bold text-base sm:text-lg">
                 <Clock size={16} className="sm:w-5 sm:h-5" />
@@ -185,7 +181,6 @@ const ForgotPasswordOTP = () => {
               </div>
             </div>
 
-            {/* Submit / Resend */}
             <button
               type="button"
               onClick={handleMainButton}
@@ -201,7 +196,6 @@ const ForgotPasswordOTP = () => {
               {loading ? 'در حال تایید...' : resendLoading ? 'در حال ارسال...' : canResend ? 'ارسال مجدد کد بازیابی' : 'تایید کد'}
             </button>
 
-            {/* Back button */}
             <div className="text-center mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/20">
               <button
                 onClick={() => navigate(`/${slug}/forgot-password`)}
@@ -218,7 +212,6 @@ const ForgotPasswordOTP = () => {
         </div>
       </div>
 
-      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">
@@ -241,7 +234,6 @@ const ForgotPasswordOTP = () => {
         </div>
       )}
 
-      {/* Error Modal */}
       {showErrorModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">

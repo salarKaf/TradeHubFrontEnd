@@ -45,14 +45,13 @@ const Navbar = () => {
 
   return (
     <nav className="fixed font-Kahroba top-0 left-0 w-full h-20 z-50 bg-gradient-to-l from-white to-gray-100 shadow-md rounded-b-3xl flex items-center justify-between px-6">
-      {/* منو موبایل - دکمه همبرگر */}
       <div className="lg:hidden">
         <button onClick={() => setMenuOpen(!menuOpen)} className="text-gray-700">
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* منوی لینک‌ها - دسکتاپ */}
+
       <div className="hidden lg:flex gap-8 text-gray-700 text-base font-medium">
         {navLinks.map(({ label, path }) => (
           <NavLink
@@ -73,12 +72,12 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* سرچ‌بار - فقط دسکتاپ */}
+
       <div className="hidden lg:flex justify-center px-4 w-80">
         <SearchBar />
       </div>
 
-      {/* آیکون‌ها */}
+
       <div className="flex items-center gap-6">
         <NavLink to={getPageUrl("signup")} className="w-8 h-8 hover:bg-gray-200 rounded-full flex items-center justify-center">
           <img src="/website/icons8-user-24 1.png" alt="اکانت" className="w-6 h-6" />
@@ -91,7 +90,7 @@ const Navbar = () => {
         </NavLink>
       </div>
 
-      {/* منو موبایل - نمایش لینک‌ها */}
+
       {menuOpen && (
         <div className="absolute top-20 left-0 w-full bg-white shadow-lg flex flex-col items-start px-6 py-4 gap-4 lg:hidden z-50">
           {navLinks.map(({ label, path }) => (

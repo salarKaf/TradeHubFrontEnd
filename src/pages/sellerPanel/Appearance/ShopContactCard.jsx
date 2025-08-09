@@ -152,7 +152,7 @@ const ContactInfo = () => {
 
       {/* Title Section */}
       <div onClick={toggleOpen} className="flex items-center gap-2 cursor-pointer w-fit font-modam mb-4">
-        <img src='/public/SellerPanel/Settings/Group 257.png' className="text-[#1E212D] w-9 h-9" />
+        <img src='/SellerPanel/Settings/Group 257.png' className="text-[#1E212D] w-9 h-9" />
         <h1 className="font-bold text-[#1E212D] opacity-80 text-2xl">راه های ارتباط با مشتری</h1>
         {open ? (
           <FaChevronDown className="w-5 h-5 text-[#1E212D]" />

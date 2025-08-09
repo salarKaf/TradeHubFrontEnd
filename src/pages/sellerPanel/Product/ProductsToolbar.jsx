@@ -1,4 +1,3 @@
-// ProductsToolbar.js
 import { Search } from 'lucide-react';
 
 const ProductsToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleSearch }) => {
@@ -6,9 +5,7 @@ const ProductsToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleSe
     
     return (
         <div className="px-6 py-4">
-            {/* Desktop Layout */}
             <div className="hidden md:flex items-center justify-between gap-4">
-                {/* Filters */}
                 <div dir='ltr' className="flex items-center gap-2 font-modam">
                     <button
                         onClick={() => handleSort('bestselling')}
@@ -31,9 +28,8 @@ const ProductsToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleSe
                     <h1 className="px-4 py-2 text-gray-700 font-semibold rounded-lg transition-colors">
                         :مرتب سازی
                     </h1>
-                    <img src='/public/SellerPanel/Products/icons8-sort-by-50 1.png' alt="sort" />
+                    <img src='/SellerPanel/Products/icons8-sort-by-50 1.png' alt="sort" />
                 </div>
-                {/* Search */}
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                     <input
@@ -46,9 +42,7 @@ const ProductsToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleSe
                 </div>
             </div>
 
-            {/* Mobile Layout */}
             <div className="md:hidden space-y-4">
-                {/* Search Input */}
                 <div className="relative">
                     <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
@@ -60,9 +54,8 @@ const ProductsToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleSe
                     />
                 </div>
 
-                {/* Sort Options */}
                 <div className="flex items-center gap-2">
-                    <img src='/public/SellerPanel/Products/icons8-sort-by-50 1.png' alt="sort" className="w-5 h-5" />
+                    <img src='/SellerPanel/Products/icons8-sort-by-50 1.png' alt="sort" className="w-5 h-5" />
                     <span className="text-sm text-gray-700 font-medium">مرتب سازی:</span>
                     <div className="flex gap-1">
                         <button

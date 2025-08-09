@@ -4,19 +4,18 @@ import { getActivePlan } from '../../../../API/website.js';
 import CommentsSystem from './ProductCommentList';
 import QuestionAnswerSystem from './ProductQuestionList';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductById, getItemImages, getItemImageById, getItemRating } from '../../../../API/Items'; // ✅ import کردن API functions
+import { getProductById, getItemImages, getItemImageById, getItemRating } from '../../../../API/Items';
 import { addItemToCart, getMyCart, removeOneFromCart, deleteItemFromCart } from '../../../../API/cart.jsx';
 import { addToFavorites, removeFromFavorites, isItemInFavorites, getFavoriteIdByItemId } from '../../../../API/favorites';
 const ProductShow = () => {
-    const { productId, slug } = useParams(); // 👈 slug رو هم بگیر
-    const navigate = useNavigate(); // 👈 navigate رو تعریف کن
+    const { productId, slug } = useParams();
+    const navigate = useNavigate();
     const [selectedImage, setSelectedImage] = useState(0);
     const [isFavorite, setIsFavorite] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // ✅ State های جدید برای داده‌های دینامیک
     const [productData, setProductData] = useState(null);
     const [productImages, setProductImages] = useState([]);
     const [productRating, setProductRating] = useState(0);
@@ -35,7 +34,6 @@ const ProductShow = () => {
 
     const [favoriteId, setFavoriteId] = useState(null);
 
-    // چک کردن وضعیت علاقه‌مندی
     useEffect(() => {
         const checkFavoriteStatus = async () => {
             try {
@@ -62,7 +60,6 @@ const ProductShow = () => {
     }, [productId]);
 
 
-    // چک کردن وضعیت سبد خرید
     useEffect(() => {
         const checkCartStatus = async () => {
             try {
@@ -118,7 +115,6 @@ const ProductShow = () => {
         }
     };
 
-    // افزودن به سبد خرید
     const handleAddToCart = async () => {
         try {
             setIsAddingToCart(true);
@@ -135,7 +131,6 @@ const ProductShow = () => {
             setCartQuantity(1);
             alert('محصول با موفقیت به سبد خرید اضافه شد!');
 
-            // دوباره چک کردن وضعیت سبد
             const cartItems = await getMyCart();
             const currentItem = cartItems.find(item => item.item_id === productId);
             if (currentItem) {
@@ -149,7 +144,6 @@ const ProductShow = () => {
         }
     };
 
-    // افزایش تعداد
     const handleIncreaseQuantity = async () => {
         try {
             await addItemToCart(productId);
@@ -160,7 +154,6 @@ const ProductShow = () => {
         }
     };
 
-    // کاهش تعداد
     const handleDecreaseQuantity = async () => {
         try {
             if (cartQuantity > 1) {
@@ -178,36 +171,31 @@ const ProductShow = () => {
         }
     };
 
-    // رفتن به صفحه سبد خرید
     const handleGoToCart = () => {
         navigate(`/${slug}/cart`);
     };
-    // ✅ useEffect برای بارگذاری اطلاعات محصول
     useEffect(() => {
         const loadProductData = async () => {
             setLoading(true);
             try {
-                // 1. دریافت اطلاعات محصول
                 const product = await getProductById(productId);
                 setProductData(product);
 
-                // 2. دریافت پلن فعال بر اساس website_id
                 try {
                     const websiteId = product?.website_id || localStorage.getItem('current_store_website_id');
                     const activePlan = await getActivePlan(websiteId);
                     setHasPro(activePlan?.is_active && activePlan?.plan?.name === 'Pro');
                 } catch (planError) {
-                    console.warn("⚠️ خطا در دریافت پلن:", planError);
+                    console.warn(" خطا در دریافت پلن:", planError);
                     setHasPro(false);
                 } finally {
                     setPlanLoading(false);
                 }
 
-                // 3. دریافت تصاویر محصول
                 try {
                     const images = await getItemImages(productId);
                     if (images.length === 0) {
-                        setProductImages(['/public/website/Image(1).png']);
+                        setProductImages(['/website/Image(1).png']);
                     } else {
                         const imageUrls = await Promise.all(
                             images.map(async (img) => {
@@ -215,7 +203,7 @@ const ProductShow = () => {
                                     const url = await getItemImageById(img.image_id);
                                     return { url, isMain: img.is_main };
                                 } catch (err) {
-                                    console.warn("⚠️ خطا در بارگذاری تصویر:", err);
+                                    console.warn(" خطا در بارگذاری تصویر:", err);
                                     return { url: '/website/default-product.png', isMain: false };
                                 }
                             })
@@ -224,21 +212,20 @@ const ProductShow = () => {
                         setProductImages(sorted.map(i => i.url));
                     }
                 } catch (imgError) {
-                    console.warn("⚠️ خطا کلی در دریافت تصاویر:", imgError);
+                    console.warn(" خطا کلی در دریافت تصاویر:", imgError);
                     setProductImages(['/website/default-product.png']);
                 }
 
-                // 4. دریافت امتیاز محصول
                 try {
                     const rating = await getItemRating(productId);
                     setProductRating(rating.rating || 0);
                 } catch (ratingError) {
-                    console.warn("⚠️ خطا در دریافت امتیاز:", ratingError);
+                    console.warn(" خطا در دریافت امتیاز:", ratingError);
                     setProductRating(0);
                 }
 
             } catch (err) {
-                console.error("❌ خطا در بارگذاری محصول:", err);
+                console.error(" خطا در بارگذاری محصول:", err);
                 setError("خطا در بارگذاری اطلاعات محصول");
             } finally {
                 setLoading(false);
@@ -250,7 +237,6 @@ const ProductShow = () => {
         }
     }, [productId]);
 
-    // محاسبه تعداد ستاره‌ها
     const getStars = (rating) => {
         const fullStars = Math.floor(rating);
         const hasHalfStar = (rating % 1) >= 0.5;
@@ -304,7 +290,6 @@ const ProductShow = () => {
         };
     }, [isZoomed]);
 
-    // ✅ نمایش لودینگ
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -313,7 +298,6 @@ const ProductShow = () => {
         );
     }
 
-    // ✅ نمایش خطا
     if (error || !productData) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -331,7 +315,6 @@ const ProductShow = () => {
             <div className="max-w-6xl mx-auto p-6 bg-white" dir="rtl">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <div className="space-y-4">
-                        {/* Main Image */}
                         <div className="relative bg-gray-100 rounded-lg overflow-hidden">
                             <img
                                 src={productImages[selectedImage] || '/website/default-product.png'}
@@ -341,7 +324,6 @@ const ProductShow = () => {
                                     e.target.src = '/website/default-product.png';
                                 }}
                             />
-                            {/* Navigation Arrows - فقط اگر بیش از یک تصویر باشد */}
                             {productImages.length > 1 && (
                                 <>
                                     <button
@@ -360,7 +342,6 @@ const ProductShow = () => {
                                 </>
                             )}
 
-                            {/* Search/Zoom Icon */}
                             <button
                                 onClick={() => setIsZoomed(true)}
                                 className="absolute bottom-4 right-4 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all"
@@ -369,7 +350,6 @@ const ProductShow = () => {
                             </button>
                         </div>
 
-                        {/* Thumbnails - فقط اگر بیش از یک تصویر باشد */}
                         {productImages.length > 1 && (
                             <div className="flex gap-2 justify-center">
                                 {productImages.map((image, index) => (
@@ -404,24 +384,18 @@ const ProductShow = () => {
                         </div>
 
                         <div className="flex justify-between items-start mb-4">
-                            {/* اسم محصول سمت راست */}
                             <h1 className="text-2xl font-bold text-gray-800">{productData.name || "نام محصول"}</h1>
 
-                            {/* قیمت‌ها سمت چپ */}
                             <div className="text-left">
                                 {productData.discount_active ? (
                                     <div className="space-y-2">
-                                        {/* درصد تخفیف */}
                                         <div className="inline-block bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold">
                                             {productData.discount_percent}% تخفیف
                                         </div>
-                                        {/* قیمت‌ها در یک خط */}
                                         <div className="flex items-center gap-3">
-                                            {/* قیمت بعد تخفیف */}
                                             <div className="text-2xl font-bold text-red-500">
                                                 {parseInt(productData.discount_price).toLocaleString()} تومان
                                             </div>
-                                            {/* قیمت اصلی */}
                                             <div className="text-lg text-gray-500 line-through">
                                                 {parseInt(productData.price).toLocaleString()} تومان
                                             </div>
@@ -435,19 +409,15 @@ const ProductShow = () => {
                             </div>
                         </div>
 
-                        {/* خط جداکننده */}
                         <div className="border-t-[1px] border-gray-300 my-2" />
 
-                        {/* Rating and Reviews */}
-                        {/* Rating and Reviews */}
+
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1">
-                                {/* ستاره‌های پر */}
                                 {[...Array(fullStars)].map((_, i) => (
                                     <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                                 ))}
 
-                                {/* ستاره نیمه‌پر */}
                                 {hasHalfStar && (
                                     <div className="relative">
                                         <Star className="w-5 h-5 fill-gray-300 text-gray-300" />
@@ -457,7 +427,6 @@ const ProductShow = () => {
                                     </div>
                                 )}
 
-                                {/* ستاره‌های خالی */}
                                 {[...Array(emptyStars)].map((_, i) => (
                                     <Star key={i + fullStars + (hasHalfStar ? 1 : 0)} className="w-5 h-5 fill-gray-300 text-gray-300" />
                                 ))}
@@ -474,16 +443,15 @@ const ProductShow = () => {
                                 onClick={() => scrollToSection('comments')}
                                 className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
                             >
-                                نظرات 
+                                نظرات
                             </button>
 
-                            {/* دکمه پرسش‌ها فقط برای پلن پرو */}
                             {hasPro && (
                                 <button
                                     onClick={() => scrollToSection('questions')}
                                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
                                 >
-                                    پرسش‌ها 
+                                    پرسش‌ها
                                 </button>
                             )}
 
@@ -497,7 +465,7 @@ const ProductShow = () => {
 
                         <div className="flex gap-4 pt-28 justify-end">
                             <button
-                                onClick={handleFavoriteToggle}  // 👈 این رو تغییر بده
+                                onClick={handleFavoriteToggle}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all ${isFavorite
                                     ? 'border-red-500 text-red-500 bg-red-50'
                                     : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-500'
@@ -509,7 +477,6 @@ const ProductShow = () => {
 
                             {isInCart ? (
                                 <div className="flex gap-2">
-                                    {/* کنترل تعداد */}
                                     <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden">
                                         <button
                                             onClick={handleDecreaseQuantity}
@@ -526,7 +493,6 @@ const ProductShow = () => {
                                         </button>
                                     </div>
 
-                                    {/* دکمه رفتن به سبد خرید */}
                                     <button
                                         onClick={handleGoToCart}
                                         className="flex items-center gap-2 px-8 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all"
@@ -566,7 +532,6 @@ const ProductShow = () => {
                     </p>
                 </div>
 
-                {/* سایر بخش‌ها */}
                 <div id="comments" className="mt-20">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
@@ -579,20 +544,21 @@ const ProductShow = () => {
                     <CommentsSystem />
                 </div>
 
-                <div id="questions" className="mt-20">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r from-black via-gray-600 to-gray-800 rounded-full text-white">
-                                پرسش‌ها
+                {hasPro && (
+                    <div id="questions" className="mt-20">
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center text-xl justify-center px-12 py-4 bg-gradient-to-r from-black via-gray-600 to-gray-800 rounded-full text-white">
+                                    پرسش‌ها
+                                </div>
                             </div>
                         </div>
+                        <div className="flex-1 border-t-[1.4px] border-gray-800 mr-[27px] mb-10"></div>
+                        <QuestionAnswerSystem />
                     </div>
-                    <div className="flex-1 border-t-[1.4px] border-gray-800 mr-[27px] mb-10"></div>
-                    <QuestionAnswerSystem />
-                </div>
+                )}
             </div>
 
-            {/* ✅ Modal برای نمایش تصویر بزرگ */}
             {isZoomed && (
                 <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
                     <div className="relative max-w-4xl max-h-4xl">

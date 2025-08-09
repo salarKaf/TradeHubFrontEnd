@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { coreBaseURL } from './api';
 
-// گرفتن لیست پلنها
 export const getAllPlans = async () => {
   try {
     const response = await axios.get(`${coreBaseURL}/plan/get-all-plans/`);
@@ -12,7 +11,6 @@ export const getAllPlans = async () => {
   }
 };
 
-// درخواست پرداخت برای پلن
 export const requestPlanPayment = async (planId) => {
   try {
     const token = localStorage.getItem('token');
@@ -36,7 +34,6 @@ export const requestPlanPayment = async (planId) => {
   }
 };
 
-// بررسی وضعیت پرداخت
 export const checkPaymentStatus = async (orderId) => {
   try {
     const token = localStorage.getItem('token');
@@ -95,12 +92,11 @@ export const handlePaymentCallback = async (orderId, authority, status) => {
       throw new Error('اطلاعات پرداخت ناقص است');
     }
 
-    // ✅ استفاده از axios به جای fetch
     const response = await axios.get(
       `${coreBaseURL}/payment/order_payment/callback/${orderId}`,
       {
         params: {
-          website_id: websiteId,  // ✅ اضافه کردن website_id
+          website_id: websiteId, 
           Authority: authority,
           Status: status
         },

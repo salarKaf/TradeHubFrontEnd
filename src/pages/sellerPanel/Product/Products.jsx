@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from '../Layouts/Header'
 import MainLayout from '../Layouts/MainLayout';
 import Category from './Category'
 import ShopifyAdminInterface from './ShopifyAdminInterface'

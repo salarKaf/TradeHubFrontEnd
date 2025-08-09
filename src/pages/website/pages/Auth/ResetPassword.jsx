@@ -61,10 +61,9 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen bg-cover bg-center relative px-4 sm:px-6 lg:px-8" 
-         style={{ backgroundImage: "url('/public/website/backHomoShop 1.png')" }}>
+         style={{ backgroundImage: "url('/website/backHomoShop 1.png')" }}>
 
 
-      {/* Form container */}
       <div className="flex justify-center items-center min-h-screen py-8">
         <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-md font-Kahroba">
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 via-white/10 to-transparent pointer-events-none"></div>
@@ -77,7 +76,6 @@ const ResetPassword = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              {/* رمز عبور جدید */}
               <div className="relative">
                 <label className="block text-black text-xs sm:text-sm mb-2">رمز عبور جدید</label>
                 <input
@@ -102,7 +100,6 @@ const ResetPassword = () => {
                 {errors.newPassword && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.newPassword}</p>}
               </div>
 
-              {/* الزامات جمع‌وجور */}
               {newPassword && (
                 <div className="flex items-center gap-2 mt-1 text-xs sm:text-sm">
                   {isPasswordValid ? (
@@ -116,7 +113,6 @@ const ResetPassword = () => {
                 </div>
               )}
 
-              {/* تکرار رمز عبور */}
               <div className="relative">
                 <label className="block text-black text-xs sm:text-sm mb-2">تکرار رمز عبور</label>
                 <input
@@ -141,7 +137,6 @@ const ResetPassword = () => {
                 {errors.confirmPassword && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.confirmPassword}</p>}
               </div>
 
-              {/* دکمه ارسال */}
               <button
                 type="submit"
                 disabled={loading || !isPasswordValid}
@@ -151,7 +146,6 @@ const ResetPassword = () => {
               </button>
             </form>
 
-            {/* بازگشت */}
             <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-black/80">
               <button
                 onClick={() => navigate(`/${slug}/login`)}
@@ -162,13 +156,11 @@ const ResetPassword = () => {
             </div>
           </div>
 
-          {/* تزئینات */}
           <div className="absolute -top-2 -right-2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl"></div>
           <div className="absolute -bottom-2 -left-2 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-lg"></div>
         </div>
       </div>
 
-      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">
@@ -186,7 +178,6 @@ const ResetPassword = () => {
         </div>
       )}
 
-      {/* Error Modal */}
       {showErrorModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">

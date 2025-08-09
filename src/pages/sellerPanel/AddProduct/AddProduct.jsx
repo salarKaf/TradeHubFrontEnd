@@ -196,7 +196,7 @@ const AddProduct = () => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `https://media-tradehub.liara.run/api/v1/item/upload_item_images/${itemId}`,
+                `http://media.localhost/api/v1/item/upload_item_images/${itemId}`,
                 formData,
                 {
                     headers: {

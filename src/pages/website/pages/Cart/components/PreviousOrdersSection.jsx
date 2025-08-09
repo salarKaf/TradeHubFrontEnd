@@ -27,7 +27,6 @@ const PreviousOrdersSection = ({
 
   return (
     <section id="previous-section" className="scroll-mt-24 font-Kahroba px-4 py-6 max-w-6xl mx-auto">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 sm:p-3 bg-gray-800 rounded-lg">
           <Package className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
@@ -35,7 +34,6 @@ const PreviousOrdersSection = ({
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">سفارش‌های قبلی</h2>
       </div>
 
-      {/* Orders Grid */}
       {previousOrders.length === 0 ? (
         <div className="bg-white rounded-lg p-8 text-center border">
           <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -47,7 +45,6 @@ const PreviousOrdersSection = ({
           {previousOrders.map((order) => (
             <div key={order.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow p-4 sm:p-6">
               
-              {/* Order Header */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-gray-800 mb-2">سفارش #{order.id.slice(-6)}</h3>
@@ -71,7 +68,6 @@ const PreviousOrdersSection = ({
                 </div>
               </div>
 
-              {/* Order Items */}
               <div className="space-y-3">
                 <h4 className="font-semibold text-gray-700 text-sm border-b border-gray-100 pb-2">
                   محصولات ({order.items.length} آیتم)
@@ -81,7 +77,6 @@ const PreviousOrdersSection = ({
                   {order.items.map((item, index) => (
                     <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                       
-                      {/* Product Image */}
                       <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                         {item.image ? (
                           <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
@@ -90,7 +85,6 @@ const PreviousOrdersSection = ({
                         )}
                       </div>
 
-                      {/* Product Info */}
                       <div className="flex-1 min-w-0">
                         <h5 className="font-semibold text-gray-800 text-sm truncate">
                           {item.name}
@@ -105,7 +99,6 @@ const PreviousOrdersSection = ({
                         </div>
                       </div>
 
-                      {/* Action Button */}
                       <button
                         onClick={() => {
                           if (order.status === 'Canceled') {
@@ -124,7 +117,6 @@ const PreviousOrdersSection = ({
                 </div>
               </div>
 
-              {/* Order Summary - Mobile */}
               <div className="mt-4 pt-4 border-t border-gray-100 sm:hidden">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">تعداد کل آیتم‌ها:</span>

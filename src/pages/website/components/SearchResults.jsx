@@ -1,4 +1,3 @@
-// 3. SearchResults.js - صفحه نمایش نتایج جستجو
 import React, { useState } from 'react';
 import { useSearch , SearchProvider } from './SearchContext';
 import ProductCard from '../pages/Home/ProductCard';
@@ -61,7 +60,7 @@ const SearchResults = () => {
   return (
     <div className="bg-white min-h-screen px-4 py-8 mt-20">
       <div className="max-w-7xl mx-auto">
-        {/* هدر نتایج جستجو */}
+
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-2">
             نتایج جستجو برای: "{searchTerm}"
@@ -73,7 +72,7 @@ const SearchResults = () => {
 
         {searchResults.length > 0 ? (
           <>
-            {/* مرتب‌سازی */}
+
             <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
               <div className="flex items-center gap-2">
                 <label htmlFor="sort" className="text-sm font-medium text-gray-700">
@@ -97,7 +96,7 @@ const SearchResults = () => {
               </div>
             </div>
 
-            {/* گرید محصولات */}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
               {paginatedProducts().map((product) => (
                 <ProductCard
@@ -112,7 +111,7 @@ const SearchResults = () => {
               ))}
             </div>
 
-            {/* صفحه‌بندی */}
+
             {totalPages > 1 && (
               <div className="flex justify-center mt-12 gap-1">
                 <button

@@ -42,7 +42,7 @@ const CustomersToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleS
                         :مرتب سازی
                     </h1>
                     <img 
-                        src='/public/SellerPanel/Products/icons8-sort-by-50 1.png' 
+                        src='/SellerPanel/Products/icons8-sort-by-50 1.png' 
                         alt="sort" 
                         className="w-4 h-4 sm:w-5 sm:h-5"
                     />

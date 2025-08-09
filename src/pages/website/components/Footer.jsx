@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, Phone, MessageCircle, Users, FileText } from "lucide-react";
-import InstagramIcon from "/public/website/Icon(1).png";
-import telegramIcon from "/public/website/icons8-telegram-48(1).png";
+import InstagramIcon from "/website/Icon(1).png";
+import telegramIcon from "/website/icons8-telegram-48(1).png";
 import { getWebsiteById } from "../../../API/website";
 import { useSlugNavigation } from "../../website/pages/Slug/useSlugNavigation";
 
@@ -45,7 +45,6 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
 
-            {/* لودر بخش تماس */}
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-slate-200 rounded-full animate-pulse"></div>
@@ -66,7 +65,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* لودر بخش قوانین و سوالات */}
             <div className="space-y-8">
               <div className="rounded-lg p-6 shadow-sm border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
@@ -90,7 +88,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* لودر بخش شعار */}
             <div className="rounded-lg p-6 shadow-sm border border-slate-200 h-fit">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div>
@@ -108,7 +105,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* لودر فوتر پایین */}
         <div className="border-t border-slate-200 py-8">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center space-y-3">
@@ -134,7 +130,6 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
 
-          {/* بخش تماس */}
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -152,7 +147,6 @@ const Footer = () => {
               </div>
             )}
 
-            {/* شبکه های اجتماعی */}
             {(footerData.instagram || footerData.telegram) && (
               <div className="rounded-lg p-4 shadow-sm ">
                 <p className="text-sm text-slate-600 mb-3">شبکه‌های اجتماعی:</p>
@@ -182,10 +176,8 @@ const Footer = () => {
             )}
           </div>
 
-          {/* سوالات متداول و قوانین */}
           <div className="space-y-8">
 
-            {/* قوانین */}
             <div className="rounded-lg p-6 shadow-sm ">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
@@ -201,7 +193,6 @@ const Footer = () => {
               </a>
             </div>
 
-            {/* سوالات */}
             {footerData.faqs.length > 0 && (
               <div className="rounded-lg p-6 shadow-sm ">
                 <div className="flex items-center gap-3 mb-4">
@@ -234,7 +225,6 @@ const Footer = () => {
             )}
           </div>
 
-          {/* شعار فروشگاه */}
           <div className="rounded-lg p-6 shadow-sm  h-fit">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -258,7 +248,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* فوتر پایین */}
       <div className="border-t border-slate-200 py-8">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center space-y-3">

@@ -1,4 +1,3 @@
-// Pagination.js
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Pagination = ({
@@ -27,10 +26,8 @@ const Pagination = ({
     
     return (
         <div className="mt-6">
-            {/* Pagination Controls */}
             <div className="flex items-center justify-center">
                 <div className="flex items-center gap-1 md:gap-2">
-                    {/* Previous Button */}
                     <button
                         onClick={onPreviousPage}
                         disabled={currentPage === 1}
@@ -43,7 +40,6 @@ const Pagination = ({
                         <ChevronRight size={14} className="md:w-4 md:h-4" />
                     </button>
                     
-                    {/* Page Numbers */}
                     {getPageNumbers().map((page) => (
                         <button
                             key={page}
@@ -58,7 +54,6 @@ const Pagination = ({
                         </button>
                     ))}
                     
-                    {/* Next Button */}
                     <button
                         onClick={onNextPage}
                         disabled={currentPage === totalPages}
@@ -73,7 +68,6 @@ const Pagination = ({
                 </div>
             </div>
             
-            {/* Pagination Info */}
             {totalItems > 0 && (
                 <div className="text-center mt-4 text-xs md:text-sm text-gray-600">
                     نمایش {startIndex + 1} تا {Math.min(startIndex + itemsPerPage, totalItems)} از {totalItems} محصول

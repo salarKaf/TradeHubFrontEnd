@@ -19,12 +19,10 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form submitted!"); // Debug log
+        console.log("Form submitted!"); 
 
-        // Reset previous errors
         setErrors({});
 
-        // اعتبارسنجی فیلدها
         const newErrors = {};
         if (!email.trim()) {
             newErrors.email = 'ایمیل ضروری است';
@@ -44,21 +42,17 @@ const Login = () => {
         console.log("Starting login process...");
         setLoading(true);
 
-        // تعریف websiteId در بالای try-catch block
         let websiteId = null;
 
         try {
-            // پاک کردن توکن قبلی
             localStorage.removeItem('buyer_access_token');
             console.log("Removed previous token");
             
-            // دریافت website_id از slug
             console.log("Getting website ID for slug:", slug);
             const websiteResponse = await getWebsiteIdBySlug(slug);
-            websiteId = websiteResponse.website_id; // اختصاص به متغیر خارج از try block
+            websiteId = websiteResponse.website_id; 
             console.log("Website ID:", websiteId);
 
-            // ارسال درخواست لاگین
             console.log("Attempting login with:", { email, websiteId });
             const response = await loginBuyer({
                 website_id: websiteId,
@@ -69,7 +63,6 @@ const Login = () => {
 
             console.log("Login successful:", response);
             
-            // ذخیره توکن و انتقال به صفحه اصلی
             localStorage.setItem('buyer_access_token', response.access_token);
             console.log("Token saved, navigating to home");
             navigate(`/${slug}/home`);
@@ -78,7 +71,6 @@ const Login = () => {
             console.error("Login failed:", error);
             console.error("Error details:", error.response?.data);
             
-            // چک کردن اینکه آیا کاربر تأیید نشده است
             const errorMessage = error.message || '';
             const errorDetail = error.response?.data?.detail || '';
             
@@ -89,7 +81,6 @@ const Login = () => {
             if (errorMessage.includes('not verified') || errorDetail.includes('not verified')) {
                 console.log("User not verified, sending OTP...");
                 
-                // بررسی وجود websiteId قبل از استفاده
                 if (!websiteId) {
                     console.error("websiteId is not available");
                     setErrorMessage('خطا در شناسایی فروشگاه');
@@ -104,7 +95,6 @@ const Login = () => {
                     setSuccessMessage('حساب شما هنوز تأیید نشده است. کد تأیید ارسال شد.');
                     setShowSuccessModal(true);
                     
-                    // بعد از 2 ثانیه انتقال به صفحه OTP
                     setTimeout(() => {
                         console.log("Navigating to OTP page");
                         navigate(`/${slug}/otp-verification`, { 
@@ -122,7 +112,6 @@ const Login = () => {
                     setShowErrorModal(true);
                 }
             } else {
-                // سایر خطاها
                 console.log("Other login error");
                 setErrorMessage(errorMessage || errorDetail || 'ایمیل یا رمز عبور نادرست است');
                 setShowErrorModal(true);
@@ -139,9 +128,8 @@ const Login = () => {
 
     return (
         <div className="min-h-screen bg-cover bg-center relative px-4 sm:px-6 lg:px-8" 
-             style={{ backgroundImage: "url('/public/website/backHomoShop 1.png')" }}>
+             style={{ backgroundImage: "url('/website/backHomoShop 1.png')" }}>
             
-            {/* Back to Shop Button */}
             <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
                 <button
                     onClick={handleBackToShop}
@@ -152,22 +140,17 @@ const Login = () => {
                 </button>
             </div>
 
-            {/* Form container */}
             <div className="flex justify-center items-center min-h-screen py-8 font-Kahroba">
-                {/* Glassmorphism container */}
                 <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-md">
-                    {/* Enhanced inner glow effect */}
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 via-white/10 to-transparent pointer-events-none"></div>
                     <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-white/20 pointer-events-none"></div>
 
                     <div className="relative z-10">
-                        {/* Header */}
                         <div className="text-center mb-8 sm:mb-12">
                             <p className="text-black text-sm sm:text-base">جهت ورود به فروشگاه فرم زیر را پر کنید</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                            {/* فیلد ایمیل */}
                             <div>
                                 <label className="block text-black text-xs sm:text-sm mb-2">ایمیل خود را وارد کنید</label>
                                 <input
@@ -180,7 +163,6 @@ const Login = () => {
                                 {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email}</p>}
                             </div>
 
-                            {/* فیلد رمز عبور */}
                             <div className="relative">
                                 <label className="block text-black text-xs sm:text-sm mb-2">رمز عبور</label>
                                 <input
@@ -205,7 +187,6 @@ const Login = () => {
                                 {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.password}</p>}
                             </div>
 
-                            {/* لینک بازیابی رمز عبور */}
                             <div className="text-right mb-4">
                                 <Link
                                     to={`/${slug}/forgot-password`}
@@ -215,7 +196,6 @@ const Login = () => {
                                 </Link>
                             </div>
 
-                            {/* دکمه ورود */}
                             <button
                                 type="submit"
                                 disabled={loading}
@@ -225,7 +205,6 @@ const Login = () => {
                             </button>
                         </form>
 
-                        {/* لینک به صفحه ثبت‌نام */}
                         <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-black/80">
                             <span>آیا حسابی ندارید؟ </span>
                             <Link
@@ -237,13 +216,11 @@ const Login = () => {
                         </div>
                     </div>
 
-                    {/* Additional decorative elements */}
                     <div className="absolute -top-2 -right-2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl"></div>
                     <div className="absolute -bottom-2 -left-2 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-lg"></div>
                 </div>
             </div>
 
-            {/* Error Modal */}
             {showErrorModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
                     <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">
@@ -266,7 +243,6 @@ const Login = () => {
                 </div>
             )}
 
-            {/* Success Modal */}
             {showSuccessModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
                     <div className="relative backdrop-blur-xl bg-white/20 border border-white/30 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm sm:max-w-md mx-4 w-full">

@@ -155,7 +155,7 @@ const CustomersContent = () => {
                     isOpenTable={isOpenTable}
                     setIsOpenTable={setIsOpenTable}
                     title="جزئیات "
-                    logo="/public/SellerPanel/Customers/icons8-detail-64 1.png"
+                    logo="/SellerPanel/Customers/icons8-detail-64 1.png"
                 />
 
                 <CustomersToolbar

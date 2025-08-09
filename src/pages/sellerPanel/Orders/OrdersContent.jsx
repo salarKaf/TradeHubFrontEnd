@@ -49,11 +49,9 @@ const OrderContent = () => {
 
     const itemsPerPage = 5;
 
-    // فیلتر و مرتب‌سازی سفارشات
     const filteredAndSortedOrders = useMemo(() => {
         let filtered = orders;
 
-        // اگر سرچ شده، سفارشات رو به محصولات فردی تبدیل کن
         if (searchTerm) {
             const expandedResults = []
             orders.forEach(order => {
@@ -75,7 +73,6 @@ const OrderContent = () => {
             filtered = expandedResults;
         }
 
-        // مرتب‌سازی
         if (sortBy === 'bestselling') {
             filtered = filtered.sort((a, b) => {
                 const amountA = parseInt((a.totalAmount || a.amount).replace(/,/g, ''));
@@ -89,17 +86,14 @@ const OrderContent = () => {
         return filtered;
     }, [orders, searchTerm, sortBy]);
 
-    // محاسبه صفحه‌بندی
     const totalPages = Math.ceil(filteredAndSortedOrders.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentOrders = filteredAndSortedOrders.slice(startIndex, startIndex + itemsPerPage);
 
-    // تنظیم صفحه فعلی هنگام تغییر فیلتر
     React.useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, sortBy]);
 
-    // عملکردها
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
     };
@@ -120,7 +114,6 @@ const OrderContent = () => {
         });
     };
 
-    // فانکشن‌های صفحه‌بندی
     const goToPage = (page) => {
         setCurrentPage(page);
     };
@@ -144,7 +137,7 @@ const OrderContent = () => {
                     isOpenTable={isOpenTable}
                     setIsOpenTable={setIsOpenTable}
                     title="فاکتور سفارشات"
-                    logo="/public/SellerPanel/Orders/icons8-purchase-order-52 2.png"
+                    logo="/SellerPanel/Orders/icons8-purchase-order-52 2.png"
                 />
 
                 <OrdersToolbar

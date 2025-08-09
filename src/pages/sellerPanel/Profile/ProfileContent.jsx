@@ -91,21 +91,16 @@ const ProfileContent = () => {
         </div>
       )}
 
-      {/* Title */}
       <div className="flex items-center gap-2 w-fit font-modam">
-        <img src='/public/SellerPanel/Profile/User.png' className="text-[#1E212D] w-8 h-8" />
+        <img src='/SellerPanel/Profile/User.png' className="text-[#1E212D] w-8 h-8" />
         <h1 className="font-bold text-[#1E212D] opacity-80 text-2xl">اطلاعات حساب شما</h1>
       </div>
 
-      {/* خط زیر تیتر */}
       <div className="w-full h-[0.8px] bg-black bg-opacity-20 shadow-[0_2px_6px_rgba(0,0,0,0.3)] mb-6 mt-4" />
 
       <>
-        {/* فاصله از خط */}
         <div className="mt-8">
-          {/* جدول اطلاعات */}
           <div className="relative w-full max-w-xl">
-            {/* آیکن ادیت - چسبیده به بالای جدول سمت چپ */}
             <div className="absolute -top-4 left-0 z-10">
               <button
                 onClick={isEditing ? handleSave : handleEditClick}
@@ -115,12 +110,9 @@ const ProfileContent = () => {
               </button>
             </div>
 
-            {/* جدول */}
             <div className="bg-transparent rounded-lg border-2 border-gray-300 overflow-hidden relative">
-              {/* خط عمودی سراسری */}
               <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-300"></div>
 
-              {/* نام */}
               <div className="px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-[#1E212D] rounded-full ml-2"></div>
@@ -142,7 +134,6 @@ const ProfileContent = () => {
                 </div>
               </div>
 
-              {/* نام خانوادگی */}
               <div className="px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-[#1E212D] rounded-full ml-2"></div>
@@ -164,7 +155,6 @@ const ProfileContent = () => {
                 </div>
               </div>
 
-              {/* ایمیل */}
               <div className="px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-[#1E212D] rounded-full ml-2"></div>
@@ -176,7 +166,6 @@ const ProfileContent = () => {
               </div>
             </div>
 
-            {/* دکمه تغییر رمز عبور - پایین سمت راست */}
             <div className="flex justify-end mt-4">
               <button
                 onClick={() =>
@@ -196,22 +185,18 @@ const ProfileContent = () => {
           </div>
         </div>
 
-        {/* بخش پشتیبانی */}
         <div className="mt-8">
-          {/* تیتر پشتیبانی */}
           <div className="flex items-center gap-2 w-fit font-modam">
-            <img src='/public/SellerPanel/Profile/icons8-ask-question-48 1.png' className="text-[#1E212D] w-8 h-8" />
+            <img src='/SellerPanel/Profile/icons8-ask-question-48 1.png' className="text-[#1E212D] w-8 h-8" />
             <h1 className="font-bold text-[#1E212D] opacity-90 text-2xl">پشتیبانی</h1>
           </div>
 
-          {/* متن توضیحی */}
           <div className=" rounded-lg p-4 mb-4">
             <p className="text-gray-700  text-md sm:text-lg leading-relaxed font-rubik">
               در صورت بروز هرگونه مشکل یا سوال، می‌توانید از طریق این بخش با تیم پشتیبانی در ارتباط باشید. لطفاً شرح دقیق مشکل یا درخواست خود را وارد کرده و برای بررسی و پاسخگویی سریع‌تر، اطلاعات لازم را کامل نمایید. ما در کوتاه‌ترین زمان ممکن به شما پاسخ خواهیم داد.
             </p>
           </div>
 
-          {/* ایمیل پشتیبانی */}
           <div className="bg-white border-2 border-[#1e212d37] rounded-lg p-4">
             <div className="flex items-center gap-3">
               <div className="bg-[#1E212D] p-2 rounded-full">

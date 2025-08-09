@@ -24,7 +24,6 @@ const ImageManager = ({
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
 
-    // دریافت تصاویر از بک‌اند
     useEffect(() => {
         const fetchImages = async () => {
             try {
@@ -47,7 +46,6 @@ const ImageManager = ({
                 setImages(imagesList);
                 setPrimaryImageIndex(primaryIndex);
 
-                // اطلاع رسانی به کامپوننت والد
                 if (onImagesChange) {
                     onImagesChange({
                         images: imagesList,
@@ -64,7 +62,6 @@ const ImageManager = ({
         }
     }, [productId, onImagesChange]);
 
-    // انتخاب فایل برای آپلود
     const handleAddImage = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -72,7 +69,6 @@ const ImageManager = ({
         e.target.value = '';
     };
 
-    // آپلود تصویر
     const uploadImage = async () => {
         if (!selectedImageFile) return;
 
@@ -86,7 +82,7 @@ const ImageManager = ({
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `https://media-tradehub.liara.run/api/v1/item/upload_item_images/${productId}`,
+                `http://media.localhost/api/v1/item/upload_item_images/${productId}`,
                 formData,
                 {
                     headers: {
@@ -96,7 +92,6 @@ const ImageManager = ({
                 }
             );
 
-            // بروزرسانی تصاویر
             const imageMetaList = await getItemImages(productId);
             const imageUrls = await Promise.all(
                 imageMetaList.map(async (img) => {
@@ -115,7 +110,6 @@ const ImageManager = ({
             setImages(imagesList);
             setPrimaryImageIndex(primaryIndex);
 
-            // اطلاع رسانی به کامپوننت والد
             if (onImagesChange) {
                 onImagesChange({
                     images: imagesList,
@@ -141,7 +135,6 @@ const ImageManager = ({
         setUploadStatus(null);
     };
 
-    // تنظیم عکس اصلی
     const setPrimaryImage = async () => {
         const selected = images[currentImageIndex];
 
@@ -171,11 +164,9 @@ const ImageManager = ({
 
             setTimeout(() => setShowPrimarySetConfirm(false), 2000);
         } catch (err) {
-            // خطا در حال حاضر در API فایل لاگ شده
         }
     };
 
-    // حذف تصویر
     const confirmDeleteImage = (index) => {
         setShowDeleteConfirm(index);
     };
@@ -193,7 +184,6 @@ const ImageManager = ({
         try {
             await deleteItemImage(targetImage.imageId);
 
-            // حذف از state
             const newImages = images.filter((_, i) => i !== showDeleteConfirm);
 
             let newPrimaryIndex = primaryImageIndex;
@@ -229,7 +219,6 @@ const ImageManager = ({
         }
     };
 
-    // ناوبری تصاویر
     const prevImage = () => {
         setCurrentImageIndex(currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1);
     };
@@ -241,7 +230,6 @@ const ImageManager = ({
     return (
         <>
             <div className={`flex flex-col items-center space-y-4 w-full max-w-md mx-auto ${className}`}>
-                {/* تصویر اصلی */}
                 <div className="w-full aspect-square max-w-[420px] md:max-w-[600px] relative bg-gray-100 border border-gray-300 rounded-lg overflow-hidden">                    {images.length > 0 ? (
                     <>
                         <img
@@ -250,7 +238,6 @@ const ImageManager = ({
                             className="object-cover w-full h-full"
                         />
 
-                        {/* دکمه‌های ناوبری */}
                         {images.length > 1 && (
                             <>
                                 <button
@@ -268,7 +255,6 @@ const ImageManager = ({
                             </>
                         )}
 
-                        {/* دکمه تنظیم به عنوان اصلی */}
                         <button
                             onClick={setPrimaryImage}
                             className={`absolute bottom-2 left-2 px-2 md:px-3 py-1 text-xs rounded-md transition-all ${currentImageIndex === primaryImageIndex
@@ -290,7 +276,6 @@ const ImageManager = ({
                             )}
                         </button>
 
-                        {/* دکمه تمام صفحه */}
                         <button
                             onClick={() => setIsFullscreen(true)}
                             className="absolute bottom-2 right-2 bg-gray-700 bg-opacity-70 text-white p-1.5 md:p-2 rounded-md hover:bg-opacity-90"
@@ -305,7 +290,6 @@ const ImageManager = ({
                 )}
                 </div>
 
-                {/* تصاویر کوچک */}
                 <div className="flex items-center gap-2 flex-wrap justify-center max-w-full overflow-x-auto pb-2">
                     {images.map((image, index) => (
                         <div key={index} className="relative group flex-shrink-0">
@@ -318,7 +302,6 @@ const ImageManager = ({
                                     } ${index === primaryImageIndex ? 'ring-2 ring-green-400' : ''}`}
                                 onClick={() => setCurrentImageIndex(index)}
                             />
-                            {/* دکمه حذف */}
                             <button
                                 onClick={() => confirmDeleteImage(index)}
                                 className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -329,7 +312,6 @@ const ImageManager = ({
                         </div>
                     ))}
 
-                    {/* دکمه افزودن تصویر */}
                     {!selectedImageFile ? (
                         <label className="w-12 h-12 md:w-16 md:h-16 border-2 border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all flex-shrink-0">
                             <FaPlus className="text-gray-400 text-xs mb-0.5" />
@@ -343,7 +325,6 @@ const ImageManager = ({
                         </label>
                     ) : (
                         <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                            {/* پیش‌نمایش تصویر انتخاب شده */}
                             <div className="w-12 h-12 md:w-16 md:h-16 border-2 border-blue-400 rounded-md overflow-hidden">
                                 <img
                                     src={URL.createObjectURL(selectedImageFile)}
@@ -352,7 +333,6 @@ const ImageManager = ({
                                 />
                             </div>
 
-                            {/* دکمه‌های ارسال و انصراف */}
                             <div className="flex gap-1">
                                 <button
                                     onClick={uploadImage}
@@ -383,7 +363,6 @@ const ImageManager = ({
                 </div>
             </div>
 
-            {/* مودال تمام صفحه */}
             {isFullscreen && (
                 <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
                     <div className="relative max-w-full max-h-full">
@@ -419,7 +398,6 @@ const ImageManager = ({
                 </div>
             )}
 
-            {/* مودال تایید حذف */}
             {showDeleteConfirm !== null && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white p-4 md:p-6 rounded-lg max-w-sm w-full">
@@ -449,7 +427,6 @@ const ImageManager = ({
                 </div>
             )}
 
-            {/* نوتیفیکیشن تنظیم عکس اصلی */}
             {showPrimarySetConfirm && (
                 <div className="fixed top-4 right-4 bg-green-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-xs">
                     <FaCheck className="flex-shrink-0" />
@@ -457,7 +434,6 @@ const ImageManager = ({
                 </div>
             )}
 
-            {/* نوتیفیکیشن وضعیت آپلود */}
             {uploadStatus === 'success' && (
                 <div className="fixed top-4 right-4 bg-green-500 text-white px-3 md:px-4 py-2 rounded-md z-50 flex items-center gap-2 text-sm md:text-base max-w-xs">
                     <FaCheck className="flex-shrink-0" />

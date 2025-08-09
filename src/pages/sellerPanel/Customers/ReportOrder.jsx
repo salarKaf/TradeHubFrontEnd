@@ -61,7 +61,7 @@ const ReportOrder = () => {
                     isOpenTable={isOpen}
                     setIsOpenTable={setIsOpen}
                     title="آمار مشتریان"
-                    logo="/public/SellerPanel/Customers/icons8-stats-32 1.png"
+                    logo="/SellerPanel/Customers/icons8-stats-32 1.png"
                 />
                 {isOpen && (
                     <div className="px-3 md:px-6">
@@ -94,7 +94,7 @@ const ReportOrder = () => {
                                 <SalesCard
                                     title="تعداد کل مشتریان"
                                     amount={stats.total?.buyers_count?.toLocaleString('fa-IR') || '0'}
-                                    logo="/public/SellerPanel/Customers/icons8-numbers-50 2.png"
+                                    logo="/SellerPanel/Customers/icons8-numbers-50 2.png"
                                     desc=" "
                                 />
 
@@ -103,13 +103,13 @@ const ReportOrder = () => {
                                     <>
                                         <SalesCard
                                             title="میانگین خرید هر مشتری"
-                                            amount={`${stats.average?.average_order_per_buyer?.toLocaleString('fa-IR') || '0'} ریال`} logo="/public/SellerPanel/Customers/icons8-shopping-cart-48(2).png"
+                                            amount={`${stats.average?.average_order_per_buyer?.toLocaleString('fa-IR') || '0'} ریال`} logo="/SellerPanel/Customers/icons8-shopping-cart-48(2).png"
                                             desc=" "
                                         />
                                         <SalesCard
                                             title="تعداد مشتریان فعال"
                                             amount={stats.active?.active_buyers_count?.toLocaleString('fa-IR') || '0'}
-                                            logo="/public/SellerPanel/Customers/icons8-active-50 1.png"
+                                            logo="/SellerPanel/Customers/icons8-active-50 1.png"
                                             desc="مشتریانی که حداقل یک سفارش در سه ماه اخیر داشته‌اند"
                                         />
                                     </>

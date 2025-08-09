@@ -7,7 +7,6 @@ export const useSlugNavigation = () => {
   const location = useLocation();
   const { slug, websiteId } = useWebsite();
 
-  // تابع برای رفتن به صفحات مختلف فروشگاه
   const navigateToPage = (pageName, params = {}) => {
     if (!slug) {
       console.error('Slug not found');
@@ -16,7 +15,6 @@ export const useSlugNavigation = () => {
 
     let path = `/${slug}/${pageName}`;
    
-    // اگه پارامتر اضافی داشتیم (مثل productId)
     if (params.productId) {
       path += `/${params.productId}`;
     }
@@ -27,7 +25,6 @@ export const useSlugNavigation = () => {
     });
   };
 
-  // تابع برای گرفتن لینک صفحات
   const getPageUrl = (pageName, params = {}) => {
     if (!slug) return '#';
    
@@ -40,14 +37,12 @@ export const useSlugNavigation = () => {
     return path;
   };
 
-  // تابع برای چک کردن اینکه آیا در صفحه فعلی هستیم
   const isCurrentPage = (pageName) => {
     if (!slug) return false;
     const expectedPath = `/${slug}/${pageName}`;
     return location.pathname === expectedPath;
   };
 
-  // تابع برای navigate کردن با حفظ websiteId در state
   const navigateWithState = (path, additionalState = {}) => {
     navigate(path, {
       state: {

@@ -68,7 +68,7 @@ const ForgotPassword = () => {
 
     return (
         <div className="font-Kahroba min-h-screen bg-cover bg-center relative px-4 sm:px-6 lg:px-8" 
-             style={{ backgroundImage: "url('/public/website/backHomoShop 1.png')" }}>
+             style={{ backgroundImage: "url('/website/backHomoShop 1.png')" }}>
 
             {/* Form container */}
             <div className="flex justify-center items-center min-h-screen py-8">

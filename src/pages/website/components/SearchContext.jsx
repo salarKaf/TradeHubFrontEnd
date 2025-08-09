@@ -1,4 +1,4 @@
-// 1. SearchContext.js - ایجاد Context برای مدیریت جستجو
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const SearchContext = createContext();
@@ -16,7 +16,7 @@ export const SearchProvider = ({ children }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // داده‌های نمونه محصولات (در پروژه واقعی از API دریافت می‌شود)
+
   const allProducts = Array.from({ length: 50 }).map((_, i) => ({
     id: i + 1,
     name: `محصول شماره ${i + 1}`,
@@ -29,7 +29,7 @@ export const SearchProvider = ({ children }) => {
     createdAt: new Date(Date.now() - i * 10000000),
   }));
 
-  // تابع جستجو
+
   const performSearch = (term) => {
     setSearchTerm(term);
     setIsSearching(true);
@@ -40,7 +40,7 @@ export const SearchProvider = ({ children }) => {
       return;
     }
 
-    // شبیه‌سازی تاخیر API
+
     setTimeout(() => {
       const filtered = allProducts.filter(product => 
         product.name.toLowerCase().includes(term.toLowerCase()) ||
@@ -53,7 +53,7 @@ export const SearchProvider = ({ children }) => {
     }, 300);
   };
 
-  // پاک کردن جستجو
+
   const clearSearch = () => {
     setSearchTerm('');
     setSearchResults([]);

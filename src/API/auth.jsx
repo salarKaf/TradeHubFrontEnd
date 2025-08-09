@@ -67,7 +67,6 @@ export async function login({ email, password }) {
 
 
 
-// تابع جدید برای چک کردن پلن فعال
 export const getMe = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -85,7 +84,6 @@ export const getMe = async () => {
 };
 
 
-// src/API/user.js
 
 export const changeUserPassword = async ({ password, confirm_password, token }) => {
   const response = await axios.put(
@@ -125,9 +123,6 @@ export const changeUserProfile = async ({ first_name, last_name, token }) => {
 
 
 
-// این تابع‌ها رو به فایل auth.jsx اضافه کن
-
-// ارسال ایمیل برای فراموشی رمز عبور
 export const sendForgotPasswordOTP = async (email) => {
   const response = await fetch(`${iamBaseURL}/users/ResendOTP`, {
     method: 'POST',
@@ -145,7 +140,7 @@ export const sendForgotPasswordOTP = async (email) => {
   return response.json();
 };
 
-// تایید OTP برای فراموشی رمز عبور
+
 export const verifyForgotPasswordOTP = async ({ otp, email }) => {
   const response = await fetch(`${iamBaseURL}/users/VerifyOTPForgetPassword`, {
     method: 'POST',
@@ -163,7 +158,7 @@ export const verifyForgotPasswordOTP = async ({ otp, email }) => {
   return response.json();
 };
 
-// تغییر رمز عبور با OTP
+
 export const resetPasswordWithOTP = async ({ email, new_password, confirm_password }) => {
   const response = await fetch(`${iamBaseURL}/users/ForgetPassword`, {
     method: 'PUT',

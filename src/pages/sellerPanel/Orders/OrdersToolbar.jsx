@@ -23,7 +23,7 @@ const ProductsToolbar = ({ isOpenTable, sortBy, handleSort, searchTerm, handleSe
                     <h1 className="px-2 sm:px-4 py-2 text-gray-700 font-semibold rounded-lg transition-colors text-xs sm:text-base whitespace-nowrap">
                         مرتب سازی بر اساس:
                     </h1>
-                    <img src='/public/SellerPanel/Products/icons8-sort-by-50 1.png' alt="sort" className="w-6 h-6 flex-shrink-0" />
+                    <img src='/SellerPanel/Products/icons8-sort-by-50 1.png' alt="sort" className="w-6 h-6 flex-shrink-0" />
 
                     <button
                         onClick={() => handleSort('newest')}

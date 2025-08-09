@@ -52,7 +52,6 @@ const AboutUs = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-12 bg-gray-30 min-h-screen font-Kahroba">
       
-      {/* درباره ما */}
       {aboutContent.trim() && (
         <div className="rounded-xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-10">
           <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -81,7 +80,6 @@ const AboutUs = () => {
         </div>
       )}
 
-      {/* سوالات متداول */}
       {faqData.length > 0 && (
         <div className="rounded-xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-10">
           <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -127,7 +125,6 @@ const AboutUs = () => {
         </div>
       )}
 
-      {/* در صورت عدم وجود محتوا */}
       {!aboutContent.trim() && faqData.length === 0 && (
         <div className="bg-white rounded-xl shadow-md p-6 sm:p-8 text-center mr-0 sm:mr-10">
           <Users className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />

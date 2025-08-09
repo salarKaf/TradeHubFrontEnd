@@ -2,16 +2,14 @@ import React, { useState } from "react";
 import { FaThumbsUp, FaThumbsDown, FaSortAmountDown, FaStar, FaCommentAlt } from "react-icons/fa";
 
 const ProductReviews = ({ reviews, onAddReply, onLikeReview, onDislikeReview, onLikeReply, onDislikeReply }) => {
-    const [sortBy, setSortBy] = useState('newest'); // 'newest' or 'highestRating'
+    const [sortBy, setSortBy] = useState('newest'); 
     const [activeReplyForm, setActiveReplyForm] = useState(null);
     const [newReply, setNewReply] = useState('');
 
-    // مرتب سازی نظرات
     const sortedReviews = [...reviews].sort((a, b) => {
         if (sortBy === 'newest') {
             return new Date(b.createdAt) - new Date(a.createdAt);
         } else if (sortBy === 'highestRating') {
-            // اول بیشترین امتیاز، بعد جدیدترین
             if (b.rating !== a.rating) {
                 return b.rating - a.rating;
             }
@@ -61,7 +59,6 @@ const ProductReviews = ({ reviews, onAddReply, onLikeReview, onDislikeReview, on
                 <>
                     <p className="text-xs md:text-sm text-gray-700">{`تعداد ${reviews.length} نظر درباره‌ی این محصول وجود دارد.`}</p>
 
-                    {/* بخش مرتب سازی */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 pb-4 border-b border-gray-200">
                         <span className="text-xs md:text-sm font-medium text-gray-700 flex items-center gap-2">
                             <FaSortAmountDown className="text-sm" />
@@ -89,10 +86,8 @@ const ProductReviews = ({ reviews, onAddReply, onLikeReview, onDislikeReview, on
                         </div>
                     </div>
 
-                    {/* نظرات */}
                     {sortedReviews.map((review) => (
                         <div key={review.id} className="border-b border-gray-300 pb-4 md:pb-6 last:border-b-0">
-                            {/* اطلاعات کاربر و امتیاز */}
                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-2">
                                 <div className="flex flex-col gap-2">
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
@@ -102,7 +97,6 @@ const ProductReviews = ({ reviews, onAddReply, onLikeReview, onDislikeReview, on
                                         </span>
                                     </div>
 
-                                    {/* امتیاز با ستاره */}
                                     <div className="flex items-center gap-2">
                                         {renderStars(review.rating)}
                                         <span className="text-xs md:text-sm text-gray-600">({review.rating}/5)</span>
@@ -110,12 +104,9 @@ const ProductReviews = ({ reviews, onAddReply, onLikeReview, onDislikeReview, on
                                 </div>
                             </div>
 
-                            {/* متن نظر */}
                             <p className="text-xs md:text-sm text-gray-700 mb-4 leading-relaxed">{review.text}</p>
 
-                            {/* عملیات نظر */}
 
-                            {/* فرم پاسخ */}
                             {activeReplyForm === review.id && (
                                 <div className="mt-4 bg-white rounded-lg p-3 md:p-4 border border-gray-200">
                                     <div className="mb-3">

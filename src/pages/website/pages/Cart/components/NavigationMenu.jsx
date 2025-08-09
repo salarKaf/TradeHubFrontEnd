@@ -5,7 +5,6 @@ const NavigationMenu = ({ activePlan, scrollToSection }) => {
   return (
     <div className="bg-white shadow-lg md:sticky md:top-0 z-50 border-b border-gray-200 font-Kahroba font-semibold ">
       <div className="max-w-6xl mx-auto px-3 py-4 md:px-4 md:py-5">
-        {/* Mobile Layout - Vertical Stack */}
         <div className="md:hidden flex flex-col gap-3">
           <button
             onClick={() => scrollToSection('cart-section')}
@@ -44,7 +43,6 @@ const NavigationMenu = ({ activePlan, scrollToSection }) => {
           </div>
         </div>
 
-        {/* Desktop Layout - Horizontal */}
         <div className="hidden md:flex justify-center items-center gap-6 lg:gap-8">
           <button
             onClick={() => scrollToSection('cart-section')}

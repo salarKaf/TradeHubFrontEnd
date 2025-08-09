@@ -48,7 +48,6 @@ const ReportOrder = () => {
                 const plan = await getActivePlan(websiteId);
                 setPlanType(plan?.plan?.name || null);
 
-                // گرفتن آمار فروش کل
                 const [countRes, revenueRes] = await Promise.all([
                     getTotalSalesCount(websiteId, token),
                     getTotalRevenue(websiteId),
@@ -98,7 +97,6 @@ const ReportOrder = () => {
                 {isOpen && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 w-full justify-items-center ">
                         {isLoading ? (
-                            // نمایش لودر
                             <>
                                 <LoadingSkeleton />
                                 {planType === 'Pro' && (
@@ -111,17 +109,15 @@ const ReportOrder = () => {
                             </>
                         ) : (
                             <>
-                                {/* نمایش فروش کل فقط در صورتی که دیتا موجود باشه */}
                                 {stats.total && (
                                     <SalesCard
                                         title="فروش کل"
                                         amount={stats.total.total_sales_amount?.toLocaleString('fa-IR') || 'نامشخص'}
                                         count={stats.total.total_sales_count?.toLocaleString('fa-IR') || '0'}
-                                        logo='/public/SellerPanel/Orders/icons8-shopping-cart-48(1).png'
+                                        logo='/SellerPanel/Orders/icons8-shopping-cart-48(1).png'
                                     />
                                 )}
 
-                                {/* کارت‌های دیگر فقط برای پلن Pro و زمانی که دیتا وجود دارد */}
                                 {planType === 'Pro' && stats.daily && (
                                     <SalesCard
                                         title="فروش روزانه"

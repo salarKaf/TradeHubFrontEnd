@@ -42,7 +42,7 @@ const ProductSlider = () => {
 
         const formatted = await Promise.all(
           activeProducts.map(async (item) => {
-            let imageUrl = "/public/website/Image(1).png"; // پیش‌فرض
+            let imageUrl = "/website/Image(1).png"; // پیش‌فرض
 
             try {
               const images = await getItemImages(item.item_id);

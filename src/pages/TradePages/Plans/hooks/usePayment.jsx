@@ -12,7 +12,7 @@ const usePayment = () => {
             console.log('🔥 Sending payment request for plan:', planId, 'website:', websiteId);
 
             const response = await axios.post(
-                `https://core-tradehub.liara.run/api/v1/payment/plan_payment_request/${planId}`,
+                `http://tradehub.localhost/api/v1/payment/plan_payment_request/${planId}`,
                 {
                     website_id: websiteId 
                 },
@@ -75,7 +75,7 @@ const usePayment = () => {
             console.log('🔥 Sending free trial request for website:', websiteId);
 
             const response = await axios.post(
-                `https://core-tradehub.liara.run/api/v1/payment/order_request`,
+                `http://tradehub.localhost/api/v1/payment/order_request`,
                 {
                     website_id: websiteId
                 },
@@ -121,7 +121,7 @@ const usePayment = () => {
             console.log('🔥 Activating free plan for website:', websiteId);
 
             const response = await axios.post(
-                `https://core-tradehub.liara.run/api/v1/plan/activate-free-plan?website_id=${websiteId}`,
+                `http://tradehub.localhost/api/v1/plan/activate-free-plan?website_id=${websiteId}`,
                 {},
                 {
                     headers: {
@@ -178,7 +178,7 @@ const usePayment = () => {
             });
 
             const response = await axios.get(
-                `https://core-tradehub.liara.run/api/v1/payment/plan_payment/callback`,
+                `http://tradehub.localhost/api/v1/payment/plan_payment/callback`,
                 {
                     params: {
                         website_id: websiteId,

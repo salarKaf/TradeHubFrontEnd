@@ -12,7 +12,6 @@ import ProductCard from '../Home/ProductCard.jsx';
 import { getMyOrders } from '../../../../API/orders.jsx';
 import { applyCouponToOrder } from '../../../../API/coupons.jsx';
 
-// Import کامپوننت‌های جدید
 import CartSection from './components/CartSection.jsx';
 import CouponsSection from './components/CouponsSection.jsx';
 import PreviousOrdersSection from './components/PreviousOrdersSection.jsx';
@@ -41,9 +40,7 @@ export default function Card() {
 
 
 
-  // 1. اضافه کردن state جدید برای isCreatingOrder
 
-  // 2. تابع جدید برای ایجاد سفارش
   const handleCreateOrder = async () => {
     if (cartItems.length === 0) {
       alert('سبد خرید شما خالی است!');
@@ -90,7 +87,6 @@ export default function Card() {
     }
   }, [copiedCode]);
 
-  // useEffect برای بارگذاری علاقه‌مندی‌ها
   useEffect(() => {
     const fetchFavorites = async () => {
       if (!isLoggedIn) return;
@@ -99,10 +95,8 @@ export default function Card() {
         setLoadingFavorites(true);
         const websiteId = localStorage.getItem('current_store_website_id');
 
-        // دریافت لیست علاقه‌مندی‌ها
         const favorites = await getFavorites(websiteId);
 
-        // دریافت جزئیات هر محصول
         const favoriteDetails = await Promise.all(
           favorites.map(async (fav) => {
             try {
@@ -193,7 +187,7 @@ useEffect(() => {
 
       setPreviousOrders(formatted);
     } catch (err) {
-      console.error('⛔️ خطا در دریافت سفارش‌ها:', err);
+      console.error('خطا در دریافت سفارش‌ها:', err);
     }
   };
 
@@ -203,7 +197,6 @@ useEffect(() => {
 }, [isLoggedIn]);
 
 
-  // چک کردن لاگین و بارگذاری سبد خرید
   useEffect(() => {
     const checkLoginAndLoadCart = async () => {
       const websiteId = localStorage.getItem('current_store_website_id');
@@ -222,7 +215,6 @@ useEffect(() => {
     checkLoginAndLoadCart();
   }, []);
 
-  // بارگذاری آیتم‌های سبد خرید
   const loadCartItems = async () => {
     try {
       setLoading(true);
@@ -253,9 +245,6 @@ useEffect(() => {
     }
   };
 
-
-  // 4. تغییر handleCheckout
-  // 4. تغییر handleCheckout
   const handleCheckout = async () => {
     if (!currentOrderId) {
       alert('ابتدا سفارش را ایجاد کنید');
@@ -295,21 +284,17 @@ useEffect(() => {
     }
   };
 
-
-  // دریافت پلن فعال و کوپن‌ها
   useEffect(() => {
     const fetchPlanAndCoupons = async () => {
       try {
         const websiteId = localStorage.getItem('current_store_website_id');
         if (!websiteId) return;
 
-        // دریافت پلن فعال
         const planData = await getActivePlan(websiteId);
         setActivePlan(planData);
 
         const hasPro = planData?.is_active && planData?.plan?.name === 'Pro';
 
-        // اگر پلن Pro باشه، کوپن‌ها رو بگیر
         if (hasPro) {
           setLoadingCoupons(true);
           try {
@@ -348,7 +333,6 @@ useEffect(() => {
 
   const [couponCode, setCouponCode] = useState('');
 
-  // حذف آیتم از سبد خرید
   const removeItem = async (cartItemId) => {
     try {
       await deleteItemFromCart(cartItemId);
@@ -359,7 +343,6 @@ useEffect(() => {
     }
   };
 
-  // تغییر تعداد آیتم
   const updateQuantity = async (cartItemId, newQuantity, currentQuantity, itemId, websiteId) => {
     try {
       if (newQuantity > currentQuantity) {
@@ -383,9 +366,7 @@ useEffect(() => {
     }, 0);
   };
 
-  // 3. تغییر handleCouponSubmit
 
-  // 3. تغییر handleCouponSubmit
   const handleCouponSubmit = async () => {
     if (!couponCode.trim()) {
       alert('لطفاً کد تخفیف را وارد کنید');
@@ -404,7 +385,6 @@ useEffect(() => {
 
       setAppliedCoupon(couponCode);
 
-      // بجای discount_amount، total_price رو از response بگیر
       const newTotalPrice = parseFloat(couponResponse.total_price) || 0;
       const currentTotal = calculateTotal();
       const discountAmount = Math.max(0, currentTotal - newTotalPrice);
@@ -442,18 +422,15 @@ useEffect(() => {
     }
   };
 
-  // callback برای وقتی محصول به سبد خرید اضافه میشه
   const handleAddToCart = async (productId, result) => {
     console.log(`محصول ${productId} به سبد خرید اضافه شد:`, result);
     await loadCartItems();
   };
 
-  // callback برای کلیک روی محصول
   const handleProductClick = (productId) => {
     navigate(`/${slug}/product/${productId}`);
   };
 
-  // تابع برای رفرش کردن علاقه‌مندی‌ها بعد از تغییر
   const refreshFavorites = async () => {
     if (!isLoggedIn) return;
 
@@ -506,12 +483,10 @@ useEffect(() => {
     }
   };
 
-  // callback برای وقتی محصول از علاقه‌مندی‌ها حذف/اضافه میشه
   const handleFavoriteChange = () => {
     refreshFavorites();
   };
 
-  // توابع محاسبه
   const calculateOriginalTotal = () => {
     return cartItems.reduce((total, item) => {
       const originalPrice = item.originalPrice || item.price || 0;
@@ -544,7 +519,6 @@ useEffect(() => {
     return Math.max(0, baseTotal - couponDiscount);
   };
 
-  // اگر لاگین نکرده
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center" dir="rtl">
@@ -565,7 +539,6 @@ useEffect(() => {
     );
   }
 
-  // اگر در حال بارگذاری
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center" dir="rtl">
@@ -588,8 +561,8 @@ useEffect(() => {
         <CartSection
           cartItems={cartItems}
           isProcessingPayment={isProcessingPayment}
-          isCreatingOrder={isCreatingOrder}  // جدید
-          currentOrderId={currentOrderId}    // جدید
+          isCreatingOrder={isCreatingOrder}
+          currentOrderId={currentOrderId}    
           couponCode={couponCode}
           setCouponCode={setCouponCode}
           appliedCoupon={appliedCoupon}
@@ -600,7 +573,7 @@ useEffect(() => {
           calculateFinalTotal={calculateFinalTotal}
           getTotalItems={getTotalItems}
           formatPrice={formatPrice}
-          handleCreateOrder={handleCreateOrder}  // جدید
+          handleCreateOrder={handleCreateOrder}  
           handleCheckout={handleCheckout}
           handleCouponSubmit={handleCouponSubmit}
           removeItem={removeItem}

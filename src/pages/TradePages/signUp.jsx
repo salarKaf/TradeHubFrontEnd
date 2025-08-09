@@ -33,7 +33,7 @@ export default function SignupForm() {
         setIsLoading(true);
 
         try {
-            const response = await axios.post("https://iam-tradehub.liara.run/api/v1/users/Register", {
+            const response = await axios.post("http://iam.localhost/api/v1/users/Register", {
                 first_name: formData.firstName,
                 last_name: formData.lastName,
                 email: formData.email,

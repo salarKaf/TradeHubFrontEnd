@@ -143,19 +143,19 @@ const AppearanceContent = () => {
                 items={rulesList}
                 viewText="مشاهده‌ی توضیحات"
                 onSave={handleSaveRules}
-                editIcon={<img src="/public/SellerPanel/Settings/icons8-edit-48.png" alt="ویرایش" className="w-35 h-35" />}
-                deleteIcon={<img src="/public/SellerPanel/Settings/icons8-delete-64 1.png" alt="حذف" className="w-35 h-35" />}
+                editIcon={<img src="/SellerPanel/Settings/icons8-edit-48.png" alt="ویرایش" className="w-35 h-35" />}
+                deleteIcon={<img src="/SellerPanel/Settings/icons8-delete-64 1.png" alt="حذف" className="w-35 h-35" />}
             />
 
             {/* جدول پرسش‌ها */}
             <EditableList
                 title="پرسش‌های متداول"
-                icon={<img src="/public/SellerPanel/Settings/icons8-questions-60.png" alt="پرسش" className="w-8 h-8" />}
+                icon={<img src="/SellerPanel/Settings/icons8-questions-60.png" alt="پرسش" className="w-8 h-8" />}
                 items={faqList}
                 viewText="مشاهده‌ی پرسش و پاسخ"
                 onSave={handleSaveFAQ}
-                editIcon={<img src="/public/SellerPanel/Settings/icons8-edit-48.png" alt="ویرایش" className="w-35 h-35" />}
-                deleteIcon={<img src="/public/SellerPanel/Settings/icons8-delete-64 1.png" alt="حذف" className="w-35 h-35" />}
+                editIcon={<img src="/SellerPanel/Settings/icons8-edit-48.png" alt="ویرایش" className="w-35 h-35" />}
+                deleteIcon={<img src="/SellerPanel/Settings/icons8-delete-64 1.png" alt="حذف" className="w-35 h-35" />}
             />
 
             <ShopDescriptionCard></ShopDescriptionCard>

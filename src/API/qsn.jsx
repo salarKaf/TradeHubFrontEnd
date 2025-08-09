@@ -1,10 +1,6 @@
-// questionsAPI.js
-; // آدرس API خودت رو اینجا بذار
-// reviewsAPI.js
 import axios from 'axios';
 
 import { coreBaseURL } from './api';
-// دریافت توکن خریدار
 const getBuyerToken = () => {
     const websiteId = localStorage.getItem('current_store_website_id');
     if (websiteId) {
@@ -13,12 +9,10 @@ const getBuyerToken = () => {
     return null;
 };
 
-// دریافت website_id
 const getWebsiteId = () => {
     return localStorage.getItem('current_store_website_id');
 };
 
-// ساخت هدرهای احراز هویت
 const getAuthHeaders = () => {
     const token = getBuyerToken();
     return {
@@ -27,7 +21,6 @@ const getAuthHeaders = () => {
     };
 };
 
-// ایجاد سوال جدید
 export const createQuestion = async (itemId, questionText) => {
     try {
         const websiteId = getWebsiteId();
@@ -56,11 +49,9 @@ export const createQuestion = async (itemId, questionText) => {
     }
 };
 
-// پاسخ دادن به سوال
 export const answerQuestion = async (questionId, answerText) => {
     try {
-        // مستقیماً seller token رو از localStorage بگیر
-        const sellerToken = localStorage.getItem('token'); // یا هر key که برای seller token استفاده می‌کنی
+        const sellerToken = localStorage.getItem('token'); 
         
         const response = await fetch(`${coreBaseURL}/question/questions/${questionId}/answer`, {
             method: 'PATCH',
@@ -84,7 +75,6 @@ export const answerQuestion = async (questionId, answerText) => {
     }
 };
 
-// دریافت سوالات یک محصول
 export const getItemQuestions = async (itemId) => {
     try {
         const response = await fetch(`${coreBaseURL}/question/items/${itemId}/questions`, {
@@ -103,7 +93,6 @@ export const getItemQuestions = async (itemId) => {
     }
 };
 
-// دریافت یک سوال خاص
 export const getQuestion = async (questionId) => {
     try {
         const response = await fetch(`${coreBaseURL}/question/questions/${questionId}`, {

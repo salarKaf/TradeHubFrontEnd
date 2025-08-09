@@ -1,124 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=Krona+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Vazirmatn:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Krona+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Vazirmatn:wght@100..900&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet');
 
 @font-face {
-  font-family: 'Modam';
-  src: 
-
-  url('/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-Regular.woff') format(woff);
+  font-family: "Modam";
+  src: url("/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-Regular.woff")
+    format(woff);
   font-weight: normal;
   font-style: normal;
-  font-display: swap; 
+  font-display: swap;
 }
 @font-face {
-  font-family: 'Modam';
-  src: 
-
-  url('/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-Medium.woff') format(woff);
+  font-family: "Modam";
+  src: url("/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-Medium.woff")
+    format(woff);
   font-weight: 500;
   font-style: normal;
-  font-display: swap; 
+  font-display: swap;
 }
 @font-face {
-  font-family: 'Modam';
-  src: 
-
-  url('/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-ExtraBold.woff') format(woff);
+  font-family: "Modam";
+  src: url("/public/fonts/modam/WEBFONTS/FONTS/WOFF/ModamFaNumWeb-ExtraBold.woff")
+    format(woff);
   font-weight: 800;
   font-style: normal;
-  font-display: swap; 
-}
-
-
-
-@font-face {
-  font-family: 'mahoor';
-  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-  font-family: 'mahoor';
-  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-}
-
-
-
-@font-face {
-  font-family: 'mahoor';
-  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-Bold.woff2') format('woff2');
+  font-family: "Kahroba";
+  src: url("/public/fonts/Kahroba/Statics/woff2-web/KahrobaB-EHC.woff2")
+    format("woff2");
   font-weight: 700;
   font-style: normal;
 }
 
-
-
 @font-face {
-  font-family: 'mahoor';
-  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-Regular.woff2') format('woff2');
+  font-family: "Kahroba";
+  src: url("/public/fonts/Kahroba/Statics/woff2-web/KahrobaM-EHC.woff2")
+    format("woff2");
   font-weight: 400;
   font-style: normal;
 }
 
-
-
 @font-face {
-  font-family: 'mahoor';
-  src: url('/public/fonts/mahoor/Statics/woff2-webfonts/Mahoor-ExtraBold.woff2  ') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-@font-face {
-  font-family: 'Kahroba';
-  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ B-EHC.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-}
-
-
-@font-face {
-  font-family: 'Kahroba';
-  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ M-EHC.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-}
-
-
-@font-face {
-  font-family: 'Kahroba';
-  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ SB-ELC.woff2') format('woff2');
+  font-family: "Kahroba";
+  src: url("/public/fonts/Kahroba/Statics/woff2-web/KahrobaSB-ELC.woff2")
+    format("woff2");
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Kahroba';
-  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ L-EHC.woff2') format('woff2');
+  font-family: "Kahroba";
+  src: url("/public/fonts/Kahroba/Statics/woff2-web/KahrobaL-EHC.woff2")
+    format("woff2");
   font-weight: 400;
   font-style: normal;
 }
 
-
 @font-face {
-  font-family: 'Kahroba';
-  src: url('/public/fonts/Kahroba/Statics/woff2-web/Kahroba\ RG.woff2') format('woff2');
+  font-family: "Kahroba";
+  src: url("/public/fonts/Kahroba/Statics/woff2-web/KahrobaRG.woff2")
+    format("woff2");
   font-weight: normal;
   font-style: normal;
 }

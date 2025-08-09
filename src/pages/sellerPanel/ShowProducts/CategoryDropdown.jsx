@@ -41,7 +41,6 @@ const CategoryDropdown = ({
         }
     }, [websiteId]);
 
-    // انتخاب دسته‌بندی
     const handleCategorySelect = (category, level) => {
         const newPath = selectedPath.slice(0, level);
         newPath.push(category);
@@ -50,19 +49,16 @@ const CategoryDropdown = ({
         const categoryString = newPath.join('/');
         onChange(categoryString);
 
-        // بررسی اینکه آیا زیر دسته دارد یا نه
         let currentLevel = categoryTree;
         for (let i = 0; i < newPath.length; i++) {
             currentLevel = currentLevel[newPath[i]];
         }
 
-        // اگر زیر دسته نداشت، دراپ‌داون را ببند
         if (!currentLevel || Object.keys(currentLevel).length === 0) {
             setShowCategoryDropdown(false);
         }
     };
 
-    // بازگشت به سطح قبلی
     const goBackToLevel = (level) => {
         const newPath = selectedPath.slice(0, level);
         setSelectedPath(newPath);
@@ -71,22 +67,18 @@ const CategoryDropdown = ({
         onChange(categoryString);
     };
 
-    // ریست کردن انتخاب
     const resetSelection = () => {
         setSelectedPath([]);
         onChange('');
     };
 
-    // رندر کردن گزینه‌های دسته‌بندی
     const renderCategoryOptions = () => {
         let currentLevel = categoryTree;
 
-        // اگر مسیری انتخاب شده، به آن سطح برو
         for (let i = 0; i < selectedPath.length; i++) {
             currentLevel = currentLevel[selectedPath[i]];
         }
 
-        // اگر زیردسته نداشت، پیام مناسب نمایش بده
         if (!currentLevel || Object.keys(currentLevel).length === 0) {
             return (
                 <div className="px-4 py-2 text-gray-500 text-center">
@@ -106,7 +98,6 @@ const CategoryDropdown = ({
         ));
     };
 
-    // رندر کردن مسیر انتخاب شده (Breadcrumb)
     const renderBreadcrumb = () => {
         if (selectedPath.length === 0) return null;
 
@@ -114,7 +105,6 @@ const CategoryDropdown = ({
             <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-2 text-sm">
                 <span className="text-gray-600">مسیر انتخاب شده:</span>
 
-                {/* دکمه بازگشت به ابتدا */}
                 <button
                     onClick={() => goBackToLevel(0)}
                     className="text-blue-600 hover:text-blue-800 underline"
@@ -149,7 +139,6 @@ const CategoryDropdown = ({
                         {value || placeholder}
                     </span>
                     <div className="flex items-center gap-2">
-                        {/* دکمه پاک کردن انتخاب */}
                         {value && (
                             <span
                                 onClick={(e) => {
@@ -174,7 +163,6 @@ const CategoryDropdown = ({
                             {renderCategoryOptions()}
                         </div>
 
-                        {/* دکمه ریست در پایین */}
                         {selectedPath.length > 0 && (
                             <div className="border-t border-gray-200 p-2">
                                 <button
@@ -189,7 +177,6 @@ const CategoryDropdown = ({
                 )}
             </div>
 
-            {/* کلیک بیرون دراپ‌داون برای بستن */}
             {showCategoryDropdown && (
                 <div
                     className="fixed inset-0 z-5"

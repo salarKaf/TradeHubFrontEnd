@@ -1,8 +1,8 @@
-// favorites.js - API functions for favorites
+
 import axios from 'axios';
 import { coreBaseURL } from './api';
 
-// Helper function برای گرفتن buyer token
+
 const getBuyerAuthHeader = (websiteId = null) => {
   const id = websiteId || localStorage.getItem('current_store_website_id');
   const token = localStorage.getItem(`buyer_token_${id}`);
@@ -19,14 +19,13 @@ const getBuyerAuthHeader = (websiteId = null) => {
   };
 };
 
-// ✅ افزودن محصول به علاقه‌مندی‌ها
 export const addToFavorites = async (itemId, websiteId = null) => {
   try {
     console.log('🔥 Adding to favorites:', { itemId, websiteId });
     
     const response = await axios.post(
       `${coreBaseURL}/favorite/`,
-      null, // body خالی چون item_id در query است
+      null,
       {
         ...getBuyerAuthHeader(websiteId),
         params: { item_id: itemId }
@@ -41,7 +40,7 @@ export const addToFavorites = async (itemId, websiteId = null) => {
   }
 };
 
-// ✅ دریافت لیست علاقه‌مندی‌ها
+
 export const getFavorites = async (websiteId = null) => {
   try {
     console.log('🔥 Getting favorites list');
@@ -59,7 +58,7 @@ export const getFavorites = async (websiteId = null) => {
   }
 };
 
-// ✅ حذف از علاقه‌مندی‌ها
+
 export const removeFromFavorites = async (favoriteId, websiteId = null) => {
   try {
     console.log('🔥 Removing from favorites:', { favoriteId });
@@ -77,7 +76,7 @@ export const removeFromFavorites = async (favoriteId, websiteId = null) => {
   }
 };
 
-// ✅ چک کردن آیا محصول در علاقه‌مندی‌هاست یا نه
+
 export const isItemInFavorites = async (itemId, websiteId = null) => {
   try {
     const favorites = await getFavorites(websiteId);
@@ -88,7 +87,7 @@ export const isItemInFavorites = async (itemId, websiteId = null) => {
   }
 };
 
-// ✅ پیدا کردن favorite_id از روی item_id
+
 export const getFavoriteIdByItemId = async (itemId, websiteId = null) => {
   try {
     const favorites = await getFavorites(websiteId);

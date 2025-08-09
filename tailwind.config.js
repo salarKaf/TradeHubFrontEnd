@@ -1,5 +1,5 @@
-const rtl = require('tailwindcss-rtl');
-module.exports = {
+import rtl from 'tailwindcss-rtl';
+export default {
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -13,7 +13,6 @@ module.exports = {
         jua: ["Jua", "sans-serif"],
         fredoka: ['Fredoka', 'cursive'],
         modam: ['Modam', 'sans-serif'],
-        mahoor: ['mahoor', 'sans-serif'],
         Kahroba: ['Kahroba', 'sans-serif'],
 
 

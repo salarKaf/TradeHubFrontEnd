@@ -25,7 +25,6 @@ const CartSection = ({
   return (
     <section id="cart-section" className="scroll-mt-24 font-Kahroba px-4 md:px-0">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        {/* Cart Summary Card */}
         <div className="order-2 lg:order-1 bg-white rounded-xl shadow-lg p-4 md:p-6 h-fit border border-gray-200">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-gray-800 rounded-lg">
@@ -35,13 +34,11 @@ const CartSection = ({
           </div>
 
           <div className="space-y-3 md:space-y-4 mb-6">
-            {/* قیمت اصلی محصولات */}
             <div className="flex justify-between items-center py-2">
               <span className="text-sm md:text-base text-gray-600">قیمت اصلی محصولات</span>
               <span className="font-bold text-sm md:text-base text-gray-800">{formatPrice(calculateOriginalTotal())}</span>
             </div>
 
-            {/* قیمت محصولات (با یا بدون تخفیف) */}
             <div className="flex justify-between items-center py-2">
               <span className="text-sm md:text-base text-gray-600">قیمت محصولات</span>
               <div className="text-left">
@@ -77,7 +74,6 @@ const CartSection = ({
               </div>
             </div>
 
-            {/* مرحله 1: ایجاد سفارش */}
             {!currentOrderId ? (
               <div className="pt-4 border-t border-gray-200">
                 <button
@@ -110,7 +106,6 @@ const CartSection = ({
               </div>
             ) : (
               <div className="pt-4 border-t border-gray-200 space-y-4">
-                {/* نمایش اعمال کد تخفیف */}
                 {appliedCoupon && (
                   <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
                     <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
@@ -120,7 +115,6 @@ const CartSection = ({
                   </div>
                 )}
 
-                {/* مرحله 2: اعمال کد تخفیف (اختیاری) */}
                 <div className="space-y-3">
                   <p className="text-xs md:text-sm text-gray-600 font-medium">کد تخفیف دارید؟</p>
                   <div className="space-y-3">
@@ -145,7 +139,6 @@ const CartSection = ({
                   </div>
                 </div>
 
-                {/* مرحله 3: پرداخت نهایی */}
                 <button
                   onClick={handleCheckout}
                   disabled={isProcessingPayment}
@@ -172,7 +165,6 @@ const CartSection = ({
           </div>
         </div>
 
-        {/* Cart Items */}
         <div className="order-1 lg:order-2 lg:col-span-2">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
             {cartItems.length === 0 ? (
@@ -185,12 +177,10 @@ const CartSection = ({
               </div>
             ) : (
               <>
-                {/* Mobile Card Layout */}
                 <div className="block md:hidden divide-y divide-gray-100">
                   {cartItems.map((item, index) => (
                     <div key={item.id || index} className="p-4 space-y-4">
                       <div className="flex items-start gap-4">
-                        {/* تصویر محصول */}
                         <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
                           {item.image ? (
                             <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
@@ -199,13 +189,11 @@ const CartSection = ({
                           )}
                         </div>
 
-                        {/* اطلاعات محصول */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-bold text-gray-800 text-sm truncate">
                             {item.name || `محصول ${item.itemId.substring(0, 8)}`}
                           </h4>
                           
-                          {/* قیمت */}
                           <div className="mt-1">
                             {item.hasDiscount ? (
                               <div>
@@ -222,7 +210,6 @@ const CartSection = ({
                           </div>
                         </div>
 
-                        {/* دکمه حذف */}
                         <button
                           onClick={() => removeItem(item.id)}
                           className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50"
@@ -231,7 +218,6 @@ const CartSection = ({
                         </button>
                       </div>
 
-                      {/* کنترل تعداد و قیمت کل */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <button
@@ -260,9 +246,7 @@ const CartSection = ({
                   ))}
                 </div>
 
-                {/* Desktop Table Layout */}
                 <div className="hidden md:block">
-                  {/* Table Header */}
                   <div className="grid grid-cols-6 gap-4 p-6 bg-gray-100 border-b border-gray-200 font-bold text-gray-700 text-sm">
                     <div className="text-center">محصول</div>
                     <div className="text-center">نام محصول</div>
@@ -272,11 +256,9 @@ const CartSection = ({
                     <div className="text-center">حذف</div>
                   </div>
 
-                  {/* Cart Items */}
                   <div className="divide-y divide-gray-100">
                     {cartItems.map((item, index) => (
                       <div key={item.id || index} className="grid grid-cols-6 gap-4 p-6 items-center hover:bg-gray-50 transition-all duration-300">
-                        {/* محصول */}
                         <div className="flex justify-center">
                           <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center shadow-lg">
                             {item.image ? (
@@ -287,14 +269,12 @@ const CartSection = ({
                           </div>
                         </div>
 
-                        {/* نام محصول */}
                         <div className="text-center">
                           <span className="font-bold text-gray-800 text-sm">
                             {item.name}
                           </span>
                         </div>
 
-                        {/* قیمت واحد */}
                         <div className="text-center">
                           {item.hasDiscount ? (
                             <div className="space-y-1">
@@ -310,7 +290,6 @@ const CartSection = ({
                           )}
                         </div>
 
-                        {/* تعداد */}
                         <div className="flex justify-center items-center gap-3">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1, item.quantity, item.itemId, item.websiteId)}
@@ -327,14 +306,12 @@ const CartSection = ({
                           </button>
                         </div>
 
-                        {/* قیمت کل */}
                         <div className="text-center">
                           <span className="font-bold text-xl text-gray-800 whitespace-nowrap">
                             {formatPrice((item.price || 0) * (item.quantity || 1))}
                           </span>
                         </div>
 
-                        {/* حذف */}
                         <div className="flex justify-center">
                           <button
                             onClick={() => removeItem(item.id)}

@@ -1,4 +1,3 @@
-// فایل: /src/API/customers.js
 import { coreBaseURL } from './api';
 
 export const fetchCustomerSummary = async (websiteId, token) => {
@@ -25,8 +24,6 @@ export const fetchCustomerSummary = async (websiteId, token) => {
 
 
 
-
-// تعداد کل مشتریان
 export const getTotalBuyers = async (websiteId, token) => {
     const res = await fetch(`${coreBaseURL}/websites/buyers/count/${websiteId}`, {
         headers: {
@@ -38,7 +35,6 @@ export const getTotalBuyers = async (websiteId, token) => {
     return await res.json();
 };
 
-// میانگین سفارش هر مشتری
 export const getAverageOrder = async (websiteId, token) => {
     const res = await fetch(`${coreBaseURL}/websites/buyers/average-order/${websiteId}`, {
         headers: {
@@ -50,7 +46,6 @@ export const getAverageOrder = async (websiteId, token) => {
     return await res.json();
 };
 
-// تعداد مشتریان فعال
 export const getActiveBuyers = async (websiteId, token) => {
     const res = await fetch(`${coreBaseURL}/websites/buyers/active/count/${websiteId}`, {
         headers: {

@@ -1,5 +1,3 @@
-
-// components/FAQ.jsx
 import React from 'react';
 
 const FAQ = () => {

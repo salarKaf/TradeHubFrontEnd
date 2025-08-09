@@ -1,12 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Plus, Search, User, MessageSquare, Star } from 'lucide-react';
-import { createReview, getItemReviews } from '../../../../API/reviews'; // مسیر فایل API رو درست کن
-import { useParams } from 'react-router-dom';
+import { createReview, getItemReviews } from '../../../../API/reviews'; 
 const CommentsSystem = () => {
-    const { productId } = useParams(); // برای گرفتن ID محصول
+    const { productId } = useParams(); 
 
 
-    const [comments, setComments] = useState([]); // خالی کن تا از API بیاد
+    const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -17,19 +16,17 @@ const CommentsSystem = () => {
     const [showNewCommentForm, setShowNewCommentForm] = useState(false);
     const [showReplyForm, setShowReplyForm] = useState({});
     const [newRating, setNewRating] = useState(5);
-    // بعد از useState ها اضافه کن
     useEffect(() => {
         const loadReviews = async () => {
             try {
                 setLoading(true);
                 const reviews = await getItemReviews(productId);
 
-                // تبدیل format API به format کامپوننت
-                // تبدیل format API به format کامپوننت
+
                 const formattedComments = reviews.map(review => ({
                     id: review.review_id,
                     text: review.text,
-                    author: review.buyer_name, // ✅ تغییر از buyer_id به buyer_name
+                    author: review.buyer_name,
                     rating: review.rating,
                     timestamp: new Date(review.created_at).getTime(),
                 }));
@@ -48,10 +45,8 @@ const CommentsSystem = () => {
         }
     }, [productId]);
 
-    // محاسبه تعداد کل نظرات
     const totalComments = comments.length;
 
-    // مرتب‌سازی نظرات
     const sortedComments = useMemo(() => {
         const sorted = [...comments];
         switch (sortBy) {
@@ -64,7 +59,6 @@ const CommentsSystem = () => {
         }
     }, [comments, sortBy]);
 
-    // فیلتر کردن نظرات بر اساس جستجو
     const filteredComments = useMemo(() => {
         if (!searchTerm.trim()) return sortedComments;
         return sortedComments.filter(comment =>
@@ -77,10 +71,8 @@ const CommentsSystem = () => {
             try {
                 setLoading(true);
 
-                // ساخت نظر در سرور
                 const newReview = await createReview(productId, newRating, newComment);
 
-                // اضافه کردن به state محلی
                 const comment = {
                     id: newReview.review_id,
                     text: newReview.text,
@@ -155,7 +147,6 @@ const CommentsSystem = () => {
                 </div>
             ) : (
                 <div className="flex gap-6">
-                    {/* سایدبار ثبت نظر */}
                     <div className="w-80">
                         <div className="bg-white border border-gray-200 rounded-2xl p-6 sticky top-6 shadow-sm">
                             <button
@@ -172,12 +163,9 @@ const CommentsSystem = () => {
                         </div>
                     </div>
 
-                    {/* محتوای اصلی */}
                     <div className="flex-1 font-Kahroba">
-                        {/* کنترل‌ها */}
                         <div className="bg-white rounded-2xl  p-6 mb-6">
                             <div className="flex items-center justify-between gap-4">
-                                {/* فیلترها */}
                                 <div dir='ltr' className="flex items-center gap-2 ">
                                     <button
                                         onClick={() => handleSort('بالاترین امتیاز')}
@@ -200,22 +188,19 @@ const CommentsSystem = () => {
                                     <h1 className="px-4 py-2 text-gray-700 font-semibold rounded-lg transition-colors">
                                         : مرتب سازی بر اساس
                                     </h1>
-                                    <img src='/public/website/icons8-sort-by-50 2.png' className="w-6 h-6 flex items-center justify-center" alt="sort icon" />
+                                    <img src='/website/icons8-sort-by-50 2.png' className="w-6 h-6 flex items-center justify-center" alt="sort icon" />
                                 </div>
 
-                                {/* تعداد نظرات */}
                                 <div className="text-gray-600 font-medium">
                                     {totalComments} نظر
                                 </div>
                             </div>
                         </div>
 
-                        {/* فرم ثبت نظر جدید */}
                         {showNewCommentForm && (
                             <div className="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-200">
                                 <h3 className="text-lg font-bold text-gray-800 mb-4">ثبت نظر جدید</h3>
 
-                                {/* امتیاز */}
                                 <div className="mb-4">
                                     <label className="block text-gray-700 font-medium mb-2">امتیاز شما:</label>
                                     {renderStars(newRating, true, setNewRating)}
@@ -251,11 +236,9 @@ const CommentsSystem = () => {
                             </div>
                         )}
 
-                        {/* لیست نظرات */}
                         <div className="space-y-6">
                             {filteredComments.map((comment, index) => (
                                 <div key={comment.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                                    {/* نظر اصلی */}
                                     <div className="p-6">
                                         <div className="flex items-start gap-4">
                                             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
@@ -268,7 +251,6 @@ const CommentsSystem = () => {
                                                     <span className="text-gray-500 text-sm">{formatDate(comment.timestamp)}</span>
                                                 </div>
 
-                                                {/* امتیاز */}
                                                 <div className="mb-3">
                                                     {renderStars(comment.rating)}
                                                 </div>
@@ -282,7 +264,6 @@ const CommentsSystem = () => {
                             ))}
                         </div>
 
-                        {/* پیام عدم وجود نظر */}
                         {filteredComments.length === 0 && (
                             <div className="text-center py-12">
                                 <MessageSquare size={48} className="mx-auto text-gray-400 mb-4" />

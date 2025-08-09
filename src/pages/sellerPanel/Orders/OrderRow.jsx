@@ -4,7 +4,6 @@ import { Link, useParams } from 'react-router-dom';
 const OrderRow = ({ order, expandedOrders, onToggleExpansion, isSearchMode }) => {
     const { websiteId } = useParams();
 
-    // اگر در حالت سرچ هستیم، نمایش ساده محصول
     if (isSearchMode || order.isExpandedView) {
         return (
             <div className="px-6 py-4 hover:bg-gray-50 transition-colors">
@@ -20,7 +19,6 @@ const OrderRow = ({ order, expandedOrders, onToggleExpansion, isSearchMode }) =>
         );
     }
 
-    // نمایش عادی سفارش
     const isExpanded = expandedOrders?.has(order.id);
 
     return (
@@ -46,7 +44,6 @@ const OrderRow = ({ order, expandedOrders, onToggleExpansion, isSearchMode }) =>
                 </div>
             </div>
 
-            {/* نمایش محصولات expanded */}
             {isExpanded && order.products && (
                 <div className="mx-4 sm:mx-6 mb-4 bg-gradient-to-r rounded-xl border shadow-sm">
                     <div className="p-3 sm:p-5">

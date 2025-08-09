@@ -14,13 +14,12 @@ const Home = () => {
           <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-12">
             <div className="md:w-1/2 w-full flex justify-center">
               <img
-                src="/public/TradePageimages/Picsart_25-04-10_19-01-52-544 1.png"
+                src="/TradePageimages/Picsart_25-04-10_19-01-52-544 1.png"
                 alt="phone delivery"
                 className="max-w-xs md:max-w-sm w-full object-contain"
               />
             </div>
 
-            {/* متن */}
             <div className="md:w-1/2 w-full text-right space-y-3 md:space-y-4">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
                 از ایده تا فروش، بدون نیاز به کدنویسی!
@@ -158,7 +157,7 @@ const Home = () => {
               ].map((item, i) => (
                 <div key={i} className="space-y-3 md:space-y-4">
                   <div className="flex items-start gap-3 md:gap-4">
-                    <img src="/public/TradePageimages/icons8-problem-48 1.png" alt="problem" className="w-6 h-6 md:w-8 md:h-8 mt-1" />
+                    <img src="/TradePageimages/icons8-problem-48 1.png" alt="problem" className="w-6 h-6 md:w-8 md:h-8 mt-1" />
                     <div>
                       <h4 className="font-bold text-base md:text-lg text-gray-800">مشکل:</h4>
                       <p className="text-gray-700 text-sm md:text-base leading-relaxed">{item.problem}</p>
@@ -166,7 +165,7 @@ const Home = () => {
                   </div>
 
                   <div className="flex items-start gap-3 md:gap-4">
-                    <img src="/public/TradePageimages/icons8-wrench-64(1) 1(1).png" alt="solution" className="w-6 h-6 md:w-8 md:h-8 mt-1" />
+                    <img src="/TradePageimages/icons8-wrench-64(1) 1(1).png" alt="solution" className="w-6 h-6 md:w-8 md:h-8 mt-1" />
                     <div>
                       <h4 className="font-bold text-base md:text-lg text-gray-800">راه‌حل:</h4>
                       <p className="text-gray-700 text-sm md:text-base leading-relaxed">{item.solution}</p>

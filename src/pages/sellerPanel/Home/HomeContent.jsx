@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import InfoCard from '../Layouts/card';
-import { FiBell } from 'react-icons/fi'; // آیکن نوتیفیکیشن
+import { FiBell } from 'react-icons/fi'; 
 import { Line } from 'react-chartjs-2';
 import { useParams } from 'react-router-dom';
 import { getActivePlan } from '../../../API/website';
@@ -19,7 +19,6 @@ import {
   Legend
 } from 'chart.js';
 
-// Registering the required components of Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,11 +29,10 @@ ChartJS.register(
   Legend
 );
 
-// تابع تعیین رنگ نمودار بر اساس روند داده‌ها
 const getChartTrendColor = (dataPoints) => {
   if (!dataPoints || dataPoints.length < 2) {
     return {
-      border: 'rgba(107, 114, 128, 1)', // خاکستری
+      border: 'rgba(107, 114, 128, 1)', 
       background: 'rgba(107, 114, 128, 0.2)'
     };
   }
@@ -42,21 +40,17 @@ const getChartTrendColor = (dataPoints) => {
   const first = dataPoints[0];
   const last = dataPoints[dataPoints.length - 1];
 
-  // مقایسه ساده بین اولین و آخرین مقدار برای تشخیص روند
   if (last > first) {
-    // روند صعودی - سبز
     return {
       border: 'rgba(34, 197, 94, 1)',
       background: 'rgba(34, 197, 94, 0.2)'
     };
   } else if (last < first) {
-    // روند نزولی - قرمز
     return {
       border: 'rgba(239, 68, 68, 1)',
       background: 'rgba(239, 68, 68, 0.2)'
     };
   } else {
-    // بدون تغییر خاص - خاکستری
     return {
       border: 'rgba(107, 114, 128, 1)',
       background: 'rgba(107, 114, 128, 0.2)'
@@ -77,7 +71,7 @@ const HomeContent = () => {
     bestProducts: [],
   });
 
-  const [planType, setPlanType] = useState(null); // "Basic" یا "Pro"
+  const [planType, setPlanType] = useState(null); 
   const [salesChartData, setSalesChartData] = useState(null);
 
 
@@ -86,12 +80,10 @@ const HomeContent = () => {
       try {
         const website_Id = websiteId;
 
-        // دریافت پلن کاربر
         const activePlan = await getActivePlan(website_Id);
         setPlanType(activePlan?.plan?.name || null);
         let announcements = [];
         if (activePlan?.plan?.name === "Pro") {
-          // 📥 دریافت اعلان‌های دارای متن (یعنی نظر جدید)
           const res = await getLatestAnnouncements(website_Id);
           announcements = res
             .filter(item => item.text)
@@ -101,12 +93,10 @@ const HomeContent = () => {
             }));
         }
 
-        // دریافت داده‌های نمودار فقط اگر پلن Pro باشه
         let last6MonthSales = [];
         if (activePlan?.plan?.name === "Pro") {
           last6MonthSales = await getLast6MonthsSales(website_Id);
 
-          // برعکس کردن ترتیب داده‌ها (از قدیم به جدید)
           const reversedSales = [...last6MonthSales].reverse();
           const labels = reversedSales.map(item => item.month);
           const dataPoints = reversedSales.map(item => item.revenue);
@@ -126,7 +116,6 @@ const HomeContent = () => {
           });
         }
 
-        // دریافت سایر داده‌ها
         const [
           revenue,
           salesCount,
@@ -180,7 +169,6 @@ const HomeContent = () => {
       </div>
 
       <div className="p-4 h-auto lg:h-44 flex flex-col lg:flex-row w-full gap-4 lg:justify-between">
-        {/* اولین کارت */}
         <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full lg:max-w-[450px]">
           <div>
             <h2 className="text-lg lg:text-3xl font-medium">{data.totalSales.toLocaleString()}</h2>
@@ -191,18 +179,16 @@ const HomeContent = () => {
           </div>
         </div>
 
-        {/* دومین کارت */}
         <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full lg:max-w-[350px]">
           <div>
             <h2 className="text-lg lg:text-3xl font-medium">{data.totalProducts.toLocaleString()}</h2>
             <p className="text-sm lg:text-lg text-opacity-5 font-extralight">محصولات</p>
           </div>
           <div>
-            <img src="/public/SellerPanel/Home/icons8-package-64(1).png" alt="products" className="w-12 h-12 lg:w-auto lg:h-auto" />
+            <img src="/SellerPanel/Home/icons8-package-64(1).png" alt="products" className="w-12 h-12 lg:w-auto lg:h-auto" />
           </div>
         </div>
 
-        {/* سومین کارت */}
         <div className="flex font-modam justify-between items-center p-6 rounded-xl border-2 border-black border-opacity-20 w-full lg:max-w-[300px]">
           <div>
             <h2 className="text-lg lg:text-3xl font-medium">{data.totalOrders}</h2>
@@ -215,7 +201,6 @@ const HomeContent = () => {
       </div>
 
       <div className='p-4 flex flex-col lg:flex-row gap-4 lg:gap-0 lg:justify-between'>
-        {/* جدول آخرین سفارشات */}
         <div className={`mb-6 pb-6 p-5 font-modam rounded-xl border-black border-opacity-20 border-2 w-full ${planType === "Pro" ? "lg:w-[55%]" : "lg:w-[48%]"}`}>
           <h2 className="text-xl lg:text-2xl font-semibold mb-4 p-5 text-zinc-600">آخرین سفارشات</h2>
           <div className="overflow-x-auto">
@@ -284,7 +269,6 @@ const HomeContent = () => {
       </div>
 
       <div className='p-4 flex flex-col lg:flex-row gap-4 lg:gap-0 lg:justify-between'>
-        {/* اعلان‌های جدید - فقط برای Pro */}
         {planType === "Pro" && (
           <div className="mb-6 w-full lg:w-[42%] font-modam rounded-xl border-black border-opacity-20 border-2">
             <h2 className="text-xl lg:text-2xl font-semibold mb-10 p-6 text-zinc-600">اعلان‌های جدید</h2>
@@ -324,13 +308,13 @@ const HomeContent = () => {
                       maintainAspectRatio: true,
                       plugins: {
                         legend: {
-                          display: false // این legend رو مخفی می‌کنه
+                          display: false 
                         }
                       },
                       scales: {
                         y: {
                           type: 'linear',
-                          min: 0, // کف نمودار صفر باشه
+                          min: 0, 
                           ticks: {
                             callback: function (value) {
                               const dataValues = salesChartData.datasets[0].data;

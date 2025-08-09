@@ -8,17 +8,14 @@ const ProductRow = ({ product, onDelete, websiteId }) => {
    const [isToggling, setIsToggling] = useState(false);
    const [isAvailable, setIsAvailable] = useState(product.category === "فعال");
   
-   // Function to format number with proper Persian formatting
    const formatNumber = (num) => {
        if (!num && num !== 0) return '0';
        
        const cleanNum = parseFloat(num);
        
-       // اگر عدد صحیح است یا اعشارش صفر است
        if (cleanNum % 1 === 0) {
            return cleanNum.toLocaleString('fa-IR');
        } else {
-           // اگر اعشار دارد، حداکثر ۲ رقم اعشار نشان بده
            return cleanNum.toLocaleString('fa-IR', {
                maximumFractionDigits: 2,
                minimumFractionDigits: 0
@@ -47,23 +44,18 @@ const ProductRow = ({ product, onDelete, websiteId }) => {
    return (
        <div className="px-5 py-5 hover:bg-gray-50 transition-colors min-w-[800px] font-modam">
            <div className="grid grid-cols-12 gap-4 items-center">
-               {/* Product Name */}
                <div className="col-span-3">
                    <span className="font-medium text-gray-900 text-sm md:text-base">{product.name}</span>
                </div>
-               {/* Sales */}
                <div className="col-span-2 text-gray-600 text-sm md:text-base">
                    {formatNumber(product.sales)} فروش
                </div>
-               {/* Price */}
                <div className="col-span-2 font-medium text-gray-900 text-sm md:text-base">
                    {formatNumber(product.price)} ریال
                </div>
-               {/* Category */}
                <div className="col-span-2 text-gray-600 text-sm md:text-base text-center">
                    {product.status}
                </div>
-               {/* Status toggle */}
                <div className="col-span-2">
                    <button
                        onClick={toggleAvailability}
@@ -75,7 +67,6 @@ const ProductRow = ({ product, onDelete, websiteId }) => {
                        {isToggling ? "..." : isAvailable ? "فعال" : "غیرفعال"}
                    </button>
                </div>
-               {/* Actions */}
                <div className="col-span-1 flex items-center justify-center gap-2">
                    <button
                        onClick={() => onDelete(product)}

@@ -7,21 +7,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { deleteItemFromCart, removeOneFromCart } from "../../../../API/cart";
 import { getItemImages, getItemImageById, getItemRating } from '../../../../API/Items';
 
-// کامپوننت مدال
 const Modal = ({ isOpen, onClose, type, title, message }) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
         onClick={onClose}
       />
       
-      {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 left-4 text-gray-400 hover:text-gray-600 transition-colors"
@@ -29,9 +25,7 @@ const Modal = ({ isOpen, onClose, type, title, message }) => {
           <X size={20} />
         </button>
 
-        {/* Content */}
         <div className="text-center">
-          {/* Icon */}
           <div className="mb-4">
             {type === 'success' ? (
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
@@ -40,17 +34,14 @@ const Modal = ({ isOpen, onClose, type, title, message }) => {
             )}
           </div>
 
-          {/* Title */}
           <h3 className="text-xl font-bold text-gray-900 mb-2 font-Kahroba">
             {title}
           </h3>
 
-          {/* Message */}
           <p className="text-gray-600 mb-6 font-Kahroba">
             {message}
           </p>
 
-          {/* Button */}
           <button
             onClick={onClose}
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 font-Kahroba ${
@@ -89,10 +80,9 @@ const ProductCard = ({
   const [actualRating, setActualRating] = useState(0);
   const [mainImage, setMainImage] = useState(null);
   
-  // Modal states
   const [modal, setModal] = useState({
     isOpen: false,
-    type: 'success', // 'success' or 'error'
+    type: 'success',
     title: '',
     message: ''
   });
@@ -100,7 +90,6 @@ const ProductCard = ({
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  // تابع نمایش مدال
   const showModal = (type, title, message) => {
     setModal({
       isOpen: true,
@@ -215,7 +204,7 @@ const ProductCard = ({
 
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      console.error('❌ خطا در تغییر تعداد:', error);
+      console.error(' خطا در تغییر تعداد:', error);
       showModal('error', 'خطا!', 'مشکلی در تغییر تعداد محصول پیش آمد');
     } finally {
       setIsUpdatingQuantity(false);
@@ -260,7 +249,7 @@ const ProductCard = ({
 
       showModal('success', 'موفقیت آمیز!', 'محصول با موفقیت به سبد خرید اضافه شد');
     } catch (error) {
-      console.error('❌ Error adding to cart:', error);
+      console.error('Error adding to cart:', error);
       showModal('error', 'خطا!', 'مشکلی در افزودن محصول به سبد خرید پیش آمد');
     } finally {
       setIsAddingToCart(false);
@@ -327,9 +316,7 @@ const ProductCard = ({
   return (
     <>
       <div className="group relative font-Kahroba bg-white shadow-lg rounded-2xl p-4 w-full max-w-[260px] transition-all duration-300 hover:shadow-2xl hover:scale-105">
-        {/* Hover Overlay for entire card */}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 rounded-2xl z-10">
-          {/* Add to Cart Button - Center */}
           <div className="absolute inset-0 flex items-center justify-center">
             {cartItem ? (
               <div className="flex gap-2 items-center bg-white px-3 py-1 rounded-full shadow-md min-w-[100px] justify-center">
@@ -369,7 +356,6 @@ const ProductCard = ({
             )}
           </div>
 
-          {/* Action Buttons - Bottom Full Width */}
           <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 flex transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
             <button
               onClick={handleFavoriteToggle}
@@ -395,18 +381,16 @@ const ProductCard = ({
           </div>
         </div>
 
-        {/* Product Image Container */}
         <div className="relative mb-4 overflow-hidden rounded-xl">
           <div className="h-52 flex items-center justify-center bg-gray-50">
             <img
-              src={mainImage || image || "/public/website/Image(1).png"}
+              src={mainImage || image || "/website/Image(1).png"}
               alt={name}
               className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
-              onError={(e) => { e.target.src = "/public/website/Image(1).png"; }}
+              onError={(e) => { e.target.src = "/website/Image(1).png"; }}
             />
           </div>
 
-          {/* Discount Badge */}
           {discount && (
             <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg z-20">
               {discount}%
@@ -414,11 +398,9 @@ const ProductCard = ({
           )}
         </div>
 
-        {/* Product Info */}
         <div className="text-right space-y-2">
           <h3 className="text-gray-800 font-bold text-lg leading-tight">{name}</h3>
 
-          {/* Price Section */}
           <div className="space-y-1 font-modam">
             {discount && discountedPrice ? (
               <>
@@ -445,14 +427,11 @@ const ProductCard = ({
             )}
           </div>
 
-          {/* Rating با ستاره‌های درست */}
           <div className="flex justify-end items-center gap-1">
-            {/* ستاره‌های پر */}
             {[...Array(fullStars)].map((_, i) => (
               <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             ))}
 
-            {/* ستاره نیمه‌پر */}
             {hasHalfStar && (
               <div className="relative">
                 <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
@@ -462,12 +441,10 @@ const ProductCard = ({
               </div>
             )}
 
-            {/* ستاره‌های خالی */}
             {[...Array(emptyStars)].map((_, i) => (
               <Star key={i + fullStars + (hasHalfStar ? 1 : 0)} className="w-4 h-4 fill-gray-300 text-gray-300" />
             ))}
 
-            {/* نمایش عدد امتیاز */}
             <span className="text-sm text-gray-600 mr-1">
               {actualRating > 0 ? actualRating.toFixed(1) : '۰'}
             </span>
@@ -475,7 +452,6 @@ const ProductCard = ({
         </div>
       </div>
 
-      {/* Modal Component */}
       <Modal
         isOpen={modal.isOpen}
         onClose={closeModal}

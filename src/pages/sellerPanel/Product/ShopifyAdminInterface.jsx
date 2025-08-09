@@ -6,7 +6,7 @@ import ProductsHeader from './ProductsHeader';
 import ProductsTable from './ProductsTable';
 import ProductsToolbar from './ProductsToolbar';
 import { useParams } from 'react-router-dom';
-import { getActivePlan } from '../../../API/website'; // مسیر درست جایگزین شود
+import { getActivePlan } from '../../../API/website'; 
 import { getNewestItems } from '../../../API/Items'
 import { deleteItemById } from '../../../API/Items';
 
@@ -133,13 +133,11 @@ const ShopifyAdminInterface = () => {
 
     const itemsPerPage = 5;
 
-    // فیلتر و مرتب‌سازی محصولات
     const filteredAndSortedProducts = useMemo(() => {
         let filtered = products.filter(product =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
-        // مرتب‌سازی
         if (sortBy === 'bestselling') {
             filtered = filtered.sort((a, b) => b.sales - a.sales);
         } else if (sortBy === 'newest') {
@@ -149,12 +147,10 @@ const ShopifyAdminInterface = () => {
         return filtered;
     }, [products, searchTerm, sortBy]);
 
-    // محاسبه صفحه‌بندی
     const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentProducts = filteredAndSortedProducts.slice(startIndex, startIndex + itemsPerPage);
 
-    // تنظیم صفحه فعلی هنگام تغییر فیلتر
     React.useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, sortBy]);
@@ -165,7 +161,7 @@ const ShopifyAdminInterface = () => {
             return planName === 'pro' ? 500 : 100;
         } catch (error) {
             console.error("❌ Error fetching plan:", error);
-            return 100; // پیش‌فرض
+            return 100; 
         }
     };
 
@@ -207,7 +203,6 @@ const ShopifyAdminInterface = () => {
     }, [websiteId]);
 
 
-    // عملکردها
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
     };
@@ -246,7 +241,6 @@ const ShopifyAdminInterface = () => {
         setSelectedProduct(null);
     };
 
-    // فانکشن‌های صفحه‌بندی
     const goToPage = (page) => {
         setCurrentPage(page);
     };
@@ -263,7 +257,6 @@ const ShopifyAdminInterface = () => {
         }
     };
 
-    // اگر صفحه ProductC باز است
     if (showProductC) {
         return <ProductC product={selectedProduct} onBack={handleBackFromProductC} />;
     }

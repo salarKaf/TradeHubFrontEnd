@@ -10,7 +10,7 @@ const usePlans = (websiteId) => {
             const token = localStorage.getItem("token");
 
             const checkRes = await axios.get(
-                `https://core-tradehub.liara.run/api/v1/plan/check-plan-history/?website_id=${websiteId}`,
+                `http://tradehub.localhost/api/v1/plan/check-plan-history?website_id=${websiteId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -18,10 +18,10 @@ const usePlans = (websiteId) => {
                 }
             );
 
-            const hasBoughtPlan = checkRes.data?.has_bought;
+            const hasBoughtPlan = checkRes.data;
 
             const response = await axios.get(
-                'https://core-tradehub.liara.run/api/v1/plan/get-all-plans/',
+                'http://tradehub.localhost/api/v1/plan/get-all-plans',
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

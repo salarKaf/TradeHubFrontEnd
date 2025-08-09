@@ -10,7 +10,6 @@ const getAuthHeader = () => {
   };
 };
 
-// گرفتن مجموع درآمد
 export const getTotalRevenue = async (websiteId) => {
   try {
     const response = await axios.get(
@@ -29,7 +28,6 @@ export const getTotalRevenue = async (websiteId) => {
   }
 };
 
-// گرفتن تعداد فروش
 export const getTotalSalesCount = async (websiteId) => {
   try {
     const response = await axios.get(
@@ -49,7 +47,7 @@ export const getLast6MonthsSales = async (websiteId) => {
   try {
     const response = await axios.get(
       `${coreBaseURL}/websites/sales/last-6-months/${websiteId}`,
-      getAuthHeader() // 🔥 باید این باشه!
+      getAuthHeader() 
     );
     console.log("📊 داده ۶ ماه اخیر:", response.data);
     return response.data;
@@ -66,7 +64,7 @@ export const getProductCount = async (websiteId) => {
   try {
     const response = await axios.get(
       `${coreBaseURL}/items/items/count/${websiteId}`,
-      getAuthHeader() // 🔥 باید این باشه!
+      getAuthHeader() 
     );
     console.log("📊 داده ۶ ماه اخیر:", response.data);
     return response.data;
@@ -90,7 +88,7 @@ export const getLatestOrders = async (websiteId, sortBy = 'latest') => {
         },
       }
     );
-    return response.data; // این باید آرایه‌ای از سفارشات باشه
+    return response.data; 
   } catch (error) {
     console.error('خطا در دریافت آخرین سفارشات:', error);
     return [];
@@ -100,7 +98,6 @@ export const getLatestOrders = async (websiteId, sortBy = 'latest') => {
 
 
 
-// API/announcement.js
 
 export const getLatestAnnouncements = async (websiteId) => {
   const token = localStorage.getItem("token");

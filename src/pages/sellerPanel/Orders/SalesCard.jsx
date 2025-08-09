@@ -1,5 +1,4 @@
 
-// SalesCard.js
 import React from 'react';
 
 function SalesCard({ title, amount, count, logo }) {

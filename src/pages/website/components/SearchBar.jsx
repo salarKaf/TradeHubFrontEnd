@@ -5,12 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const { slug } = useParams(); // دریافت slug از URL
+  const { slug } = useParams(); 
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      // هدایت به صفحه shop همان slug با پارامتر search
+
+      
       navigate(`/${slug}/shop?search=${encodeURIComponent(searchTerm)}`);
       setSearchTerm("");
     }

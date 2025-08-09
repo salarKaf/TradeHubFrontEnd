@@ -123,7 +123,6 @@ export default function ChangePasswordForm() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Password */}
                     <div className="relative">
                         <input
                             type={showPassword.new ? "text" : "password"}
@@ -137,7 +136,6 @@ export default function ChangePasswordForm() {
                         {renderEyeIcon("new")}
                     </div>
 
-                    {/* Confirm Password */}
                     <div className="relative">
                         <input
                             type={showPassword.confirm ? "text" : "password"}
@@ -151,7 +149,6 @@ export default function ChangePasswordForm() {
                         {renderEyeIcon("confirm")}
                     </div>
 
-                    {/* Button */}
                     <button
                         type="submit"
                         disabled={isLoading || redirecting}
@@ -173,7 +170,6 @@ export default function ChangePasswordForm() {
                             "تغییر رمز عبور"
                         )}
                     </button>
-                    {/* Cancel Button */}
                     <div className="flex justify-center">
                         <button
                             type="button"
