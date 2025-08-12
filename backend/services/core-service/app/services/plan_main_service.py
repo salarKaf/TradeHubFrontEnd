@@ -22,11 +22,11 @@ class PlanMainService(BaseService):
 
 
     async def check_had_plan(self, website_id:UUID): 
-        plan = self.service.check_had_plan(website_id)
+        plan = await self.service.check_had_plan(website_id)
         if plan:
             return True
         else:
             return False
         
     async def get_left_days(self,website_id:UUID):
-        return self.service.get_left_days(website_id)        
+        return await self.service.get_left_days(website_id)        

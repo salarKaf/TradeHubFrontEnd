@@ -38,6 +38,8 @@ class WebsiteUpdateSchema(BaseModel):
     store_slogan: Optional[str] = None
     welcome_text: Optional[str] = None
     guide_page: Optional[str] = None
+    logo_url: Optional[str] = None
+    banner_image: Optional[str] = None
     social_links: Optional[SocialLinksSchema] = None
     faqs: Optional[List[FAQSchema]] = None
 

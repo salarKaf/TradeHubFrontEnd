@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
-from decimal import Decimal
 
 class ItemCreateSchema(BaseModel):
     website_id: UUID
@@ -10,7 +9,7 @@ class ItemCreateSchema(BaseModel):
     subcategory_id: Optional[UUID] = None
     name: str
     description: Optional[str] = None
-    price: Decimal
+    price: int
     delivery_url: str
     post_purchase_note: Optional[str] = None
     stock: int
@@ -26,8 +25,8 @@ class ItemResponseSchema(BaseModel):
     subcategory_id: Optional[UUID] = None
     name: str
     description: Optional[str] = None
-    price: Decimal
-    discount_price: Optional[Decimal] = None
+    price: int
+    discount_price: Optional[int] = None
     discount_active: bool
     discount_percent: Optional[int] = None
     discount_expires_at: Optional[datetime] = None
@@ -49,8 +48,8 @@ class ItemResponseWithNameSchema(BaseModel):
     subcategory_name: Optional[str] = None
     name: str
     description: Optional[str] = None
-    price: Decimal
-    discount_price: Optional[Decimal] = None
+    price: int
+    discount_price: Optional[int] = None
     discount_active: bool
     discount_percent: Optional[int] = None
     discount_expires_at: Optional[datetime] = None
@@ -66,7 +65,7 @@ class ItemResponseWithNameSchema(BaseModel):
 class ItemUpdateSchema(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    price: Optional[Decimal] = None
+    price: Optional[int] = None
     discount_active: Optional[bool] = None
     discount_percent: Optional[int] = None
     discount_expires_at: Optional[datetime] = None
@@ -92,8 +91,8 @@ class NewestItemResponseSchema(BaseModel):
     subcategory_name: Optional[str] = None
     name: str
     description: Optional[str] = None
-    price: Decimal
-    discount_price: Optional[Decimal] = None
+    price: int
+    discount_price: Optional[int] = None
     discount_active: bool
     discount_percent: Optional[int] = None
     discount_expires_at: Optional[datetime] = None
@@ -107,6 +106,7 @@ class NewestItemResponseSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
 class ItemResponseWithRateSchema(BaseModel):
     item_id: UUID
     website_id: UUID
@@ -116,8 +116,8 @@ class ItemResponseWithRateSchema(BaseModel):
     subcategory_name: Optional[str] = None
     name: str
     description: Optional[str] = None
-    price: Decimal
-    discount_price: Optional[Decimal] = None
+    price: int
+    discount_price: Optional[int] = None
     discount_active: bool
     discount_percent: Optional[int] = None
     discount_expires_at: Optional[datetime] = None

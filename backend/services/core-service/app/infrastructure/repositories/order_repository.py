@@ -180,11 +180,10 @@ class OrderRepository:
         return result
 
     def get_best_selling_items(self, website_id: UUID, limit: int) -> list:
-        from sqlalchemy import func
         results = self.db.query(
             Item.item_id,
             Item.name,
-            func.sum(OrderItem.price).label("total_amount"),
+            Item.price,
             func.count(OrderItem.item_id).label("sales_count")
         ).join(
             OrderItem, OrderItem.item_id == Item.item_id
@@ -201,7 +200,7 @@ class OrderRepository:
             {
                 "item_id": result.item_id,
                 "product_name": result.name,
-                "total_amount": result.total_amount,
+                "total_amount": result.price,
                 "sales_count": result.sales_count
             }
             for result in results
