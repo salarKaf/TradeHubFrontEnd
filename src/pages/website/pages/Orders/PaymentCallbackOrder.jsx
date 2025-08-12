@@ -135,7 +135,7 @@ const PaymentCallbackOrder = () => {
         }
       } else {
         setStatus('success');
-        setMessage('پرداخت انجام شد (بررسی اتصال اینترنت)');
+        setMessage('پرداخت انجام شد');
       }
     }
   };

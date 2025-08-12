@@ -8,7 +8,7 @@ import { getItemImages, getItemImageById } from '../../../../API/Items';
 
 import { useParams } from 'react-router-dom';
 import { getOrderWithProduct } from '../../../../API/orders';
-import { getProductById, getItemRating } from '../../../../API/Items'; // اگر نیست
+import { getProductById, getItemRating } from '../../../../API/Items'; 
 
 const PurchasedProduct = () => {
     const [selectedImage, setSelectedImage] = useState(0);
@@ -211,7 +211,7 @@ const PurchasedProduct = () => {
                             </h1>
                             {priceAtPurchase && (
                                 <div className="text-2xl font-bold text-red-500">
-                                    {priceAtPurchase.toLocaleString('fa-IR')} ریال
+                                    {product?.price.toLocaleString('fa-IR')} ریال
                                 </div>
                             )}
                         </div>

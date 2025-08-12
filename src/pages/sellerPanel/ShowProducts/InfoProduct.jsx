@@ -30,22 +30,17 @@ const ShowProduct = () => {
 
     const [reviews, setReviews] = useState(reviewsData);
     const [planType, setPlanType] = useState(null);
-    // تابع برای فرمت کردن عدد برای نمایش
     const formatNumberForDisplay = (value) => {
         if (!value) return '';
-        // حذف همه چیز غیر از اعداد
         const cleanNumber = value.toString().replace(/[^\d]/g, '');
-        // اضافه کردن کاما هر سه رقم
         return cleanNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
 
-    // تابع برای تبدیل به عدد خالص برای ارسال به بک
+
     const parseNumberForBackend = (value) => {
         if (!value) return 0;
-        // حذف کاما و تبدیل به عدد
         return parseInt(value.toString().replace(/,/g, ''), 10);
     };
-    // تابع اضافه کردن پاسخ جدید به نظر
     const handleAddReply = (reviewId, newReply) => {
         setReviews(prevReviews =>
             prevReviews.map(review =>
@@ -59,7 +54,6 @@ const ShowProduct = () => {
 
 
 
-    // تابع لایک کردن نظر
     const handleLikeReview = (reviewId) => {
         setReviews(prevReviews =>
             prevReviews.map(review =>
@@ -70,7 +64,6 @@ const ShowProduct = () => {
         );
     };
 
-    // تابع دیسلایک کردن نظر
     const handleDislikeReview = (reviewId) => {
         setReviews(prevReviews =>
             prevReviews.map(review =>
@@ -81,7 +74,6 @@ const ShowProduct = () => {
         );
     };
 
-    // تابع لایک کردن پاسخ
     const handleLikeReply = (reviewId, replyIndex) => {
         setReviews(prevReviews =>
             prevReviews.map(review =>
@@ -99,7 +91,6 @@ const ShowProduct = () => {
         );
     };
 
-    // تابع دیسلایک کردن پاسخ
     const handleDislikeReply = (reviewId, replyIndex) => {
         setReviews(prevReviews =>
             prevReviews.map(review =>
@@ -119,7 +110,6 @@ const ShowProduct = () => {
 
 
 
-    // وضعیت برای فیلدها و تصاویر
     const [productData, setProductData] = useState({
         discountExpiresAt: null,
         name: '',
@@ -141,7 +131,6 @@ const ShowProduct = () => {
 
     const [errors, setErrors] = useState({});
 
-    // شبیه‌سازی دریافت اطلاعات محصول از بک‌اند
     useEffect(() => {
         const fetchProductData = async () => {
             try {
@@ -248,7 +237,7 @@ const ShowProduct = () => {
 
                 const formatted = raw.map((r) => ({
                     id: r.review_id,
-                    userName: r.buyer_name, // تغییر این خط
+                    userName: r.buyer_name,
                     createdAt: r.created_at,
                     rating: r.rating,
                     text: r.text,
@@ -279,13 +268,11 @@ const ShowProduct = () => {
         if (websiteId) fetchPlan();
     }, [websiteId]);
 
-    // تغییرات ورودی‌ها
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
 
         let newValue = type === 'checkbox' ? checked : value;
 
-        // برای فیلد قیمت، فرمت کردن با کاما
         if (name === 'price') {
             newValue = formatNumberForDisplay(value);
         }
@@ -295,14 +282,12 @@ const ShowProduct = () => {
             [name]: newValue,
         };
 
-        // اگر isActive تغییر کرده، مقدار stock را هم تنظیم کن
         if (name === "isActive") {
             updatedData.stock = newValue ? 10000 : 0;
         }
 
         setProductData(updatedData);
 
-        // پاک کردن خطا وقتی کاربر شروع به تایپ می‌کند
         if (errors[name]) {
             setErrors({
                 ...errors,
@@ -311,7 +296,6 @@ const ShowProduct = () => {
         }
     };
 
-    // اعتبارسنجی فیلدها
     const validateFields = () => {
         const newErrors = {};
 
@@ -332,14 +316,13 @@ const ShowProduct = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // ذخیره تغییرات
     const handleSave = async () => {
         if (!validateFields()) return;
 
         const payload = {
             name: productData.name,
             description: productData.description,
-            price: parseNumberForBackend(productData.price), // اینجا عدد خالص میفرستی
+            price: parseNumberForBackend(productData.price),
             delivery_url: productData.link,
             post_purchase_note: productData.additionalInfo,
             is_available: productData.isActive,
@@ -347,7 +330,6 @@ const ShowProduct = () => {
             discount_active: productData.discountActive,
         };
 
-        // فقط اگر تخفیف فعال باشه، این فیلدها رو اضافه کن
         if (productData.discountActive) {
             payload.discount_percent = Number(productData.discount) || 0;
             payload.discount_expires_at = productData.discountExpiresAt
@@ -364,7 +346,8 @@ const ShowProduct = () => {
         }
     };
 
-    // رندر ستاره‌های امتیاز
+
+
     const renderRatingStars = () => {
         const stars = [];
         const fullStars = Math.floor(productData.rating);
@@ -386,7 +369,6 @@ const ShowProduct = () => {
     return (
         <>
             <div className="p-4 md:p-6 min-h-screen">
-                {/* برگشت به صفحه قبلی */}
                 <button
                     onClick={() => window.history.back()}
                     className="flex items-center mb-4 md:mb-6 text-blue-500 hover:text-blue-700"
@@ -395,12 +377,10 @@ const ShowProduct = () => {
                     برگشت به صفحه قبل
                 </button>
 
-                {/* بخش اطلاعات محصول */}
                 <div className="rounded-lg p-4 md:p-6 mb-4 md:mb-6">
                     <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4 gap-4">
                         <h2 className="text-lg md:text-xl font-bold">اطلاعات محصول</h2>
 
-                        {/* وضعیت پرفروش بودن */}
                         {productData.isBestSeller && (
                             <div className="flex items-center px-4 md:px-10 py-3 md:py-5 border-black border-opacity-50 rounded-lg">
                                 <span className="font-modam font-medium text-sm md:text-lg px-2">از پرفروش های فروشگاه شما</span>
@@ -410,7 +390,6 @@ const ShowProduct = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {/* امتیاز محصول */}
                         <InfoCard
                             title={(productData.rating || 0).toFixed(1)}
                             subtitle="امتیاز کسب شده از خریداران"
@@ -434,13 +413,11 @@ const ShowProduct = () => {
                     </div>
                 </div>
 
-                {/* فرم ویرایش محصول */}
                 <div className="p-4 md:p-6 font-modam">
                     <p className="text-sm md:text-lg mb-8 md:mb-12">فروشنده‌ی گرامی! پس از ویرایش و یا افزودن اطلاعات محصول برای ذخیره شدن و اعمال تغییرات دکمه‌ی ذخیره را بزنید.</p>
                     <h2 className="text-xl md:text-2xl font-semibold mb-8 md:mb-12">ویرایش محصول</h2>
 
                     <div className="flex flex-col xl:flex-row gap-8 xl:gap-24 xl:justify-center">
-                        {/* بخش تصاویر */}
                         <div className="w-full xl:w-auto flex justify-center">
                             <ImageManager
                                 productId={productId}
@@ -454,9 +431,7 @@ const ShowProduct = () => {
                             />
                         </div>
 
-                        {/* بخش فرم */}
                         <div className="space-y-6 w-full xl:w-2/4">
-                            {/* نام محصول */}
                             <div className="font-modam text-sm md:text-lg">
                                 <div className="relative">
                                     <input
@@ -473,7 +448,6 @@ const ShowProduct = () => {
                             </div>
 
                             <div className="flex flex-col md:flex-row gap-2 font-modam text-sm md:text-lg">
-                                {/* قیمت محصول */}
                                 <div className="w-full md:w-[30%]">
                                     <div className="relative">
                                         <input
@@ -489,7 +463,6 @@ const ShowProduct = () => {
                                     {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
                                 </div>
 
-                                {/* دسته بندی محصول */}
                                 <div className="w-full md:w-[70%]">
                                     <input
                                         type="text"
@@ -500,7 +473,6 @@ const ShowProduct = () => {
                                 </div>
                             </div>
 
-                            {/* لینک محصول دیجیتال */}
                             <div className="font-modam text-sm md:text-lg">
                                 <div className="relative">
                                     <input
@@ -516,7 +488,6 @@ const ShowProduct = () => {
                                 {errors.link && <p className="text-red-500 text-sm mt-1">{errors.link}</p>}
                             </div>
 
-                            {/* وضعیت فعال بودن محصول */}
                             <div className="font-modam text-sm md:text-lg flex items-center gap-4">
                                 <label className="flex items-center cursor-pointer">
                                     <div className="relative">
@@ -536,7 +507,6 @@ const ShowProduct = () => {
                                 </label>
                             </div>
 
-                            {/* توضیحات محصول */}
                             <div className="font-modam text-sm md:text-lg">
                                 <textarea
                                     name="description"
@@ -548,7 +518,6 @@ const ShowProduct = () => {
                                 />
                             </div>
 
-                            {/* بخش تخفیف */}
                             <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-2xl p-4 md:p-6 font-modam">
                                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-4 md:mb-6 gap-4">
                                     <div className="flex-1">
@@ -561,7 +530,6 @@ const ShowProduct = () => {
                                         </p>
                                     </div>
 
-                                    {/* سوئیچ فعال/غیرفعال تخفیف */}
                                     <div className="flex items-center gap-4">
                                         <label className="flex items-center cursor-pointer">
                                             <div className="relative">
@@ -586,10 +554,8 @@ const ShowProduct = () => {
                                     </div>
                                 </div>
 
-                                {/* فیلدهای تخفیف */}
                                 {productData.discountActive && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
-                                        {/* درصد تخفیف */}
                                         <div>
                                             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                                 درصد تخفیف
@@ -611,7 +577,6 @@ const ShowProduct = () => {
                                             </div>
                                         </div>
 
-                                        {/* تاریخ انقضای تخفیف */}
                                         <div>
                                             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                                 تاریخ انقضا (شمسی)
@@ -637,7 +602,6 @@ const ShowProduct = () => {
                                     </div>
                                 )}
 
-                                {/* پیش‌نمایش قیمت با تخفیف */}
                                 {productData.discountActive && productData.discount && productData.price && (
                                     <div className="mt-4 md:mt-6 p-3 md:p-4 bg-white rounded-xl border-2 border-dashed border-orange-200">
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -647,7 +611,7 @@ const ShowProduct = () => {
                                                     {parseNumberForBackend(productData.price).toLocaleString()} ریال
                                                 </span>
                                                 <span className="text-lg md:text-xl font-bold text-green-600">
-                                                    {(parseNumberForBackend(productData.price) * (1 - Number(productData.discount) / 100)).toLocaleString()} ریال
+                                                    {Math.round(parseNumberForBackend(productData.price) * (1 - Number(productData.discount) / 100)).toLocaleString()} ریال
                                                 </span>
                                                 <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs md:text-sm font-bold w-fit">
                                                     {productData.discount}% تخفیف
@@ -660,7 +624,6 @@ const ShowProduct = () => {
                         </div>
                     </div>
 
-                    {/* توضیحات پس از خرید */}
                     <div className="mx-4 md:mx-8 lg:mx-16 my-6 md:my-8">
                         <div className="ml-auto mb-4 bg-gradient-to-l from-[#1E212D] via-[#2E3A55] to-[#626C93] font-modam font-medium text-sm md:text-lg w-full sm:w-80 md:w-80 lg:w-64  text-white py-5 md:py-4 px-4 md:px-2 rounded-full shadow-md text-center">                            توضیحات پس از خرید محصول
                         </div>
@@ -674,7 +637,6 @@ const ShowProduct = () => {
                         />
                     </div>
 
-                    {/* دکمه ذخیره تغییرات */}
                     <div className="flex justify-center md:justify-end mt-6 px-4 md:pl-16">
                         <button
                             onClick={handleSave}
@@ -687,7 +649,6 @@ const ShowProduct = () => {
                 </div>
 
                 <div>
-                    {/* سایر اجزای صفحه محصول */}
                     {planType === "Pro" && (
                         <ProductQuestions
                             productId={productId}

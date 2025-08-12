@@ -668,12 +668,6 @@ const Category = () => {
                         آیا می‌خواهید {isMainCategory ? 'دسته‌بندی' : 'زیردسته‌بندی'} "{categoryToDelete.name}" را حذف کنید؟
                     </p>
 
-                    <div className="pb-6 pt-2 flex gap-2">
-                        <FaExclamationTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                        <h2 className="text-red-600 text-sm sm:text-base">
-                            توجه کنید که با حذف این {isMainCategory ? 'دسته‌بندی' : 'زیردسته‌بندی'} تمام محصولات آن حذف خواهد شد!
-                        </h2>
-                    </div>
 
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 text-sm">
@@ -685,9 +679,9 @@ const Category = () => {
                         <button
                             onClick={deleteCategoryWithProducts}
                             className="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base"
-                            disabled={!categoryToDelete.id} // غیرفعال کردن اگر ID نداشته باشد
+                            disabled={!categoryToDelete.id} 
                         >
-                            این {isMainCategory ? 'دسته‌بندی' : 'زیردسته‌بندی'} را با تمام محصولاتش حذف کن
+                            این {isMainCategory ? 'دسته‌بندی' : 'زیردسته‌بندی'} را  حذف کن
                         </button>
 
                         <button

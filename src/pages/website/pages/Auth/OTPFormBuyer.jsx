@@ -95,7 +95,7 @@ const OTPForm = () => {
 
       setShowSuccessModal(true);
       setTimeout(() => {
-        navigate(`/${slug}/home`);
+        navigate(`/${slug}/login`);
       }, 2500);
     } catch (err) {
       console.error('OTP verification failed:', err);

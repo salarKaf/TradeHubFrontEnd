@@ -19,11 +19,12 @@ const Products = () => {
     const [subcategories, setSubcategories] = useState({});
     const [categoryItemCounts, setCategoryItemCounts] = useState({});
     const [openCategory, setOpenCategory] = useState(null);
-    const [priceRange, setPriceRange] = useState([0, 10000000]);
     const [sortOption, setSortOption] = useState("جدیدترین");
     const [currentPage, setCurrentPage] = useState(1);
     const [activeFilter, setActiveFilter] = useState(null);
     const productsPerPage = 9;
+    const [priceRange, setPriceRange] = useState([null, null]);
+    const [priceDisplay, setPriceDisplay] = useState(['', '']);
 
     const searchQuery = searchParams.get('search') || '';
 
@@ -98,6 +99,8 @@ const Products = () => {
         }
     }, [searchQuery]);
 
+
+
     const loadProducts = async (websiteId, categoryId = null, subcategoryId = null) => {
         try {
             let response;
@@ -132,7 +135,7 @@ const Products = () => {
                 stock: item.stock || 0,
                 description: item.description || '',
                 category: item.category || '',
-                salesCount: parseInt(item.sales_count) || 0 
+                salesCount: parseInt(item.sales_count) || 0
             }));
 
             setProducts(formatted);
@@ -183,6 +186,11 @@ const Products = () => {
         }
     };
 
+
+
+    const isPriceFilterActive = () => {
+        return priceRange[0] !== null || priceRange[1] !== null;
+    };
     const getFilteredAndSortedProducts = () => {
         let filtered = [...products];
 
@@ -194,10 +202,14 @@ const Products = () => {
             );
         }
 
-        filtered = filtered.filter((product) => {
-            const productPrice = product.discountedPrice || product.price;
-            return productPrice >= priceRange[0] && productPrice <= priceRange[1];
-        });
+        if (isPriceFilterActive()) {
+            filtered = filtered.filter((product) => {
+                const productPrice = product.discountedPrice || product.price;
+                const minPrice = priceRange[0] || 0;
+                const maxPrice = priceRange[1] || Infinity;
+                return productPrice >= minPrice && productPrice <= maxPrice;
+            });
+        }
 
         switch (sortOption) {
             case "ارزان‌ترین":
@@ -218,7 +230,7 @@ const Products = () => {
                 filtered = filtered.filter((item) => item.discount);
                 break;
             case "پرفروش‌ترین":
-                filtered.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)); // ✅ استفاده از salesCount
+                filtered.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)); 
                 break;
             default:
                 break;
@@ -257,13 +269,14 @@ const Products = () => {
         } else {
             loadProducts(websiteId);
         }
-        setPriceRange([0, 10000000]);
+        setPriceRange([null, null]); 
+        setPriceDisplay(['', '']); 
         setSortOption("جدیدترین");
     };
 
     const formatPrice = (price) => {
         if (!price) return "0 ریال";
-        return `${price.toLocaleString('fa-IR')} ریال`; 
+        return `${price.toLocaleString('fa-IR')} ریال`;
     };
 
     const formatNumber = (num) => {
@@ -285,6 +298,18 @@ const Products = () => {
         }
         return 'همه محصولات';
     };
+
+    const formatNumberWithComma = (num) => {
+        if (!num) return '';
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+
+    const parseFormattedNumber = (str) => {
+        if (!str) return 0;
+        return parseInt(str.replace(/,/g, ''), 10) || 0;
+    };
+
+
 
     if (loading) return (
         <div className="relative w-full h-[calc(100vh-5rem)] font-rubik flex flex-col items-center justify-center text-center">
@@ -370,17 +395,36 @@ const Products = () => {
                         )}
 
                         <div className="mt-6">
-                            <h3 className="text-lg font-semibold mb-3">محدوده قیمت</h3>
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-lg font-semibold">محدوده قیمت</h3>
+                                {isPriceFilterActive() && (
+                                    <button
+                                        onClick={() => {
+                                            setPriceRange([0, 10000000]);
+                                            setPriceDisplay(['0', '10,000,000']);
+                                            setCurrentPage(1);
+                                        }}
+                                        className="text-xs text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-full transition-colors"
+                                    >
+                                        حذف فیلتر
+                                    </button>
+                                )}
+                            </div>
 
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-xs text-gray-600 block mb-1">از:</label>
                                     <input
                                         type="text"
-                                        value={formatNumber(priceRange[0])}
+                                        value={priceDisplay[0]}
                                         onChange={(e) => {
-                                            const value = e.target.value.replace(/[^\d]/g, ''); // فقط اعداد
-                                            setPriceRange([parseInt(value) || 0, priceRange[1]]);
+                                            const value = e.target.value.replace(/[^\d]/g, ''); 
+                                            const formatted = formatNumberWithComma(value);
+                                            setPriceDisplay([formatted, priceDisplay[1]]);
+
+                                            const numValue = parseFormattedNumber(formatted);
+                                            setPriceRange([numValue, priceRange[1]]);
+                                            setCurrentPage(1);
                                         }}
                                         placeholder="حداقل قیمت"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -391,10 +435,15 @@ const Products = () => {
                                     <label className="text-xs text-gray-600 block mb-1">تا:</label>
                                     <input
                                         type="text"
-                                        value={formatNumber(priceRange[1])}
+                                        value={priceDisplay[1]}
                                         onChange={(e) => {
-                                            const value = e.target.value.replace(/[^\d]/g, ''); // فقط اعداد
-                                            setPriceRange([priceRange[0], parseInt(value) || 10000000]);
+                                            const value = e.target.value.replace(/[^\d]/g, ''); 
+                                            const formatted = formatNumberWithComma(value);
+                                            setPriceDisplay([priceDisplay[0], formatted]);
+
+                                            const numValue = parseFormattedNumber(formatted) || 10000000;
+                                            setPriceRange([priceRange[0], numValue]);
+                                            setCurrentPage(1);
                                         }}
                                         placeholder="حداکثر قیمت"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -458,7 +507,7 @@ const Products = () => {
                                 {searchQuery ? 'هیچ محصولی یافت نشد' : 'محصولی یافت نشد'}
                             </h3>
                             <p className="text-gray-500 mt-1">
-                                {searchQuery 
+                                {searchQuery
                                     ? `متاسفانه برای جستجوی "${searchQuery}" نتیجه‌ای یافت نشد`
                                     : 'با فیلترهای انتخابی هیچ محصولی پیدا نشد.'
                                 }

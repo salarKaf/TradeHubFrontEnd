@@ -394,16 +394,16 @@ const ProductShow = () => {
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className="text-2xl font-bold text-red-500">
-                                                {parseInt(productData.discount_price).toLocaleString()} تومان
+                                                {parseInt(productData.discount_price).toLocaleString()} ریال
                                             </div>
                                             <div className="text-lg text-gray-500 line-through">
-                                                {parseInt(productData.price).toLocaleString()} تومان
+                                                {parseInt(productData.price).toLocaleString()} ریال
                                             </div>
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="text-2xl font-bold text-red-500">
-                                        {productData.price ? `${parseInt(productData.price).toLocaleString()} تومان` : "قیمت نامشخص"}
+                                        {productData.price ? `${parseInt(productData.price).toLocaleString()} ریال` : "قیمت نامشخص"}
                                     </div>
                                 )}
                             </div>

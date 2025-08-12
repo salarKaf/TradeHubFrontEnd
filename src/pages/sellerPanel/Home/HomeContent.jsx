@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import InfoCard from '../Layouts/card';
-import { FiBell } from 'react-icons/fi'; 
+import { FiBell } from 'react-icons/fi';
 import { Line } from 'react-chartjs-2';
 import { useParams } from 'react-router-dom';
 import { getActivePlan } from '../../../API/website';
@@ -32,7 +32,7 @@ ChartJS.register(
 const getChartTrendColor = (dataPoints) => {
   if (!dataPoints || dataPoints.length < 2) {
     return {
-      border: 'rgba(107, 114, 128, 1)', 
+      border: 'rgba(107, 114, 128, 1)',
       background: 'rgba(107, 114, 128, 0.2)'
     };
   }
@@ -71,7 +71,7 @@ const HomeContent = () => {
     bestProducts: [],
   });
 
-  const [planType, setPlanType] = useState(null); 
+  const [planType, setPlanType] = useState(null);
   const [salesChartData, setSalesChartData] = useState(null);
 
 
@@ -85,10 +85,12 @@ const HomeContent = () => {
         let announcements = [];
         if (activePlan?.plan?.name === "Pro") {
           const res = await getLatestAnnouncements(website_Id);
+          console.log("📢 Announcement API response:", res);
+
           announcements = res
             .filter(item => item.text)
             .map(item => ({
-              message: item.text ,
+              message: item.text,
               date: item.date
             }));
         }
@@ -308,13 +310,13 @@ const HomeContent = () => {
                       maintainAspectRatio: true,
                       plugins: {
                         legend: {
-                          display: false 
+                          display: false
                         }
                       },
                       scales: {
                         y: {
                           type: 'linear',
-                          min: 0, 
+                          min: 0,
                           ticks: {
                             callback: function (value) {
                               const dataValues = salesChartData.datasets[0].data;

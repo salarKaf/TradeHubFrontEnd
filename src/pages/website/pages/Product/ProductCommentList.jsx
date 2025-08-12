@@ -1,6 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect  } from 'react';
 import { Plus, Search, User, MessageSquare, Star } from 'lucide-react';
 import { createReview, getItemReviews } from '../../../../API/reviews'; 
+import { useParams } from 'react-router-dom';
+
 const CommentsSystem = () => {
     const { productId } = useParams(); 
 

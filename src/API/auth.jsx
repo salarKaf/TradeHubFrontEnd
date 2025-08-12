@@ -40,7 +40,7 @@ import axios from "axios";
 
 
 export async function login({ email, password }) {
-  console.log("🔑 Sending login request with:", email, password);
+  console.log(" Sending login request with:", email, password);
 
   const params = new URLSearchParams();
   params.append("grant_type", "password");
